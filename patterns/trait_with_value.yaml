@@ -1,0 +1,27 @@
+# GENERATED from templates/node_templates.yaml by scripts/gen_dosdp.py. Do not edit.
+pattern_name: trait_with_value
+pattern_iri: https://w3id.org/ecoweaver/patterns/trait_with_value.yaml
+description: 'A trait refined by a categorical PATO value: rhizomatous vegetative spread; non-adhesive eggs. Uses RO has modifier (attribute to attribute), so the valued trait is a subclass of the bare trait. Numeric values need a data property, which the generator does not support.'
+status: development
+classes:
+  quality: PATO:0000001
+relations:
+  has modifier: RO:0002573
+vars:
+  trait: '''quality'''
+  value: '''quality'''
+name:
+  text: '%s %s'
+  vars:
+  - value
+  - trait
+def:
+  text: The trait %s with value %s.
+  vars:
+  - trait
+  - value
+equivalentTo:
+  text: '%s and (''has modifier'' some %s)'
+  vars:
+  - trait
+  - value

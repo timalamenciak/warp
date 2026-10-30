@@ -1,0 +1,17 @@
+# GENERATED. Pass to dosdp-tools with --prefixes.
+BFO: http://purl.obolibrary.org/obo/BFO_
+CHEBI: http://purl.obolibrary.org/obo/CHEBI_
+ECOCORE: http://purl.obolibrary.org/obo/ECOCORE_
+ELMO: https://w3id.org/elmo/elmo_
+ENVO: http://purl.obolibrary.org/obo/ENVO_
+FLOPO: http://purl.obolibrary.org/obo/FLOPO_
+GO: http://purl.obolibrary.org/obo/GO_
+NCBITaxon: http://purl.obolibrary.org/obo/NCBITaxon_
+OBA: http://purl.obolibrary.org/obo/OBA_
+PATO: http://purl.obolibrary.org/obo/PATO_
+PCO: http://purl.obolibrary.org/obo/PCO_
+PO: http://purl.obolibrary.org/obo/PO_
+RO: http://purl.obolibrary.org/obo/RO_
+TO: http://purl.obolibrary.org/obo/TO_
+UBERON: http://purl.obolibrary.org/obo/UBERON_
+node: https://w3id.org/causal-mosaic/node/

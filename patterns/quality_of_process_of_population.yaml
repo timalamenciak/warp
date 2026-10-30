@@ -1,0 +1,36 @@
+# GENERATED from templates/node_templates.yaml by scripts/gen_dosdp.py. Do not edit.
+pattern_name: quality_of_process_of_population
+pattern_iri: https://w3id.org/ecoweaver/patterns/quality_of_process_of_population.yaml
+description: 'A measurable characteristic (rate, magnitude, duration) of a process a population takes part in. The garlic mustard case: rate of population growth of an Alliaria petiolata population. Carries no direction of change: the node is the variable, and the statement''s predicate supplies the sign. BFO note: BFO 2020 treats characteristics of processes as process profiles, not qualities; PATO-quality-of-process is common OBO practice but should be reviewed.'
+status: development
+classes:
+  process: BFO:0000015
+  cellular organisms: NCBITaxon:131567
+  quality: PATO:0000001
+  population of organisms: PCO:0000001
+relations:
+  characteristic of: RO:0000052
+  has participant: RO:0000057
+  has member: RO:0002351
+vars:
+  quality: '''quality'''
+  process: '''process'''
+  taxon: '''cellular organisms'''
+name:
+  text: '%s of %s of %s population'
+  vars:
+  - quality
+  - process
+  - taxon
+def:
+  text: The %s of a %s process whose participant is a population of %s.
+  vars:
+  - quality
+  - process
+  - taxon
+equivalentTo:
+  text: '%s and (''characteristic of'' some (%s and (''has participant'' some (''population of organisms'' and (''has member'' some %s)))))'
+  vars:
+  - quality
+  - process
+  - taxon

@@ -1,0 +1,34 @@
+# GENERATED from templates/node_templates.yaml by scripts/gen_dosdp.py. Do not edit.
+pattern_name: intervention_with_timing
+pattern_iri: https://w3id.org/ecoweaver/patterns/intervention_with_timing.yaml
+description: An intervention restricted to a season or phase (spring burn, dormant season cutting). Timing is an occurrent the action happens during.
+status: development
+classes:
+  occurrent: BFO:0000003
+  process: BFO:0000015
+  material entity: BFO:0000040
+relations:
+  has participant: RO:0000057
+  happens during: RO:0002092
+vars:
+  action: '''process'''
+  target: '''material entity'''
+  timing: '''occurrent'''
+name:
+  text: '%s of %s during %s'
+  vars:
+  - action
+  - target
+  - timing
+def:
+  text: A %s process acting on %s that happens during %s.
+  vars:
+  - action
+  - target
+  - timing
+equivalentTo:
+  text: '%s and (''has participant'' some %s) and (''happens during'' some %s)'
+  vars:
+  - action
+  - target
+  - timing

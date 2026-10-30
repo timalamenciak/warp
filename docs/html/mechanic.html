@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WARP Mechanic Guide</title>
+<meta name="description" content="WARP internals for maintainers: the LinkML profile, vendored upstreams, the predicate-group registry, proposition derivation, statement checks, node templates to DOSDP and OWL, and compiling a full database.">
+<link rel="stylesheet" href="warp-docs.css">
+</head>
+<body>
+<header class="topbar"><div class="topbar-inner">
+  <a class="brand" href="index.html"><span>WARP</span> docs</a>
+  <nav class="levels" aria-label="Documentation level">
+    <a class="l-basic" href="basic.html">Contributor</a>
+    <a class="l-camo" href="camo.html">CAMO annotators</a>
+    <a class="l-advanced" href="advanced.html">Advanced</a>
+    <a class="l-mechanic" href="mechanic.html" aria-current="page">Mechanic</a>
+  </nav>
+</div></header>
+
+<div class="layout">
+<nav class="toc" aria-label="On this page">
+  <h2>On this page</h2>
+  <ol>
+    <li><a href="#layout">Repository map</a></li>
+    <li><a href="#setup">Toolchain and setup</a></li>
+    <li><a href="#pipeline">The build pipeline</a></li>
+    <li><a href="#full">Compiling a full database</a></li>
+    <li><a href="#schema">Schema architecture</a></li>
+    <li><a href="#classes">Profile classes</a></li>
+    <li><a href="#refs">Inlining and references</a></li>
+    <li><a href="#registry">Predicate-group registry</a></li>
+    <li><a href="#derive">Derivation algorithm</a></li>
+    <li><a href="#check">Statement checks</a></li>
+    <li><a href="#templates">Node template subsystem</a></li>
+    <li><a href="#upstream">Vendored upstreams</a></li>
+    <li><a href="#generated">Generated artefacts</a></li>
+    <li><a href="#extend">Extending WARP</a></li>
+    <li><a href="#release">Versioning and release</a></li>
+    <li><a href="#trouble">Troubleshooting</a></li>
+    <li><a href="#gotchas">Gotchas</a></li>
+    <li><a href="#backlog">Maintenance backlog</a></li>
+  </ol>
+</nav>
+
+<main>
+  <span class="eyebrow mechanic">Mechanic guide</span>
+  <h1>Schema internals and the build</h1>
+  <p class="lede">Everything needed to maintain the WARP schema and compile a database: what each file is, how the scripts work line by line where it matters, what the checks enforce, and where the sharp edges are. Assumes you've read the <a href="advanced.html">advanced guide</a> for the concepts.</p>
+
+  <section id="layout">
+    <h2>Repository map</h2>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Path</th><th>What</th><th>Edit?</th></tr></thead>
+      <tbody>
+        <tr><td><code>src/warp/schema/warp.yaml</code></td><td>The WARP LinkML profile (v0.5.0)</td><td><strong>Yes</strong></td></tr>
+        <tr><td><code>src/warp/schema/warp_templates.yaml</code></td><td>LinkML schema that node templates must conform to (v0.1.0)</td><td><strong>Yes</strong></td></tr>
+        <tr><td><code>src/warp/schema/upstream/</code></td><td>Vendored SEPIO (<code>sepio_classes.yaml</code>) and CAMO (<code>causalmosaic.yaml</code>, 0.8.0), pinned in <code>UPSTREAM.md</code></td><td><strong>Never</strong>; re-vendor</td></tr>
+        <tr><td><code>templates/node_templates.yaml</code></td><td>Node templates, prefixes and term labels</td><td><strong>Yes</strong></td></tr>
+        <tr><td><code>patterns/*.yaml</code>, <code>patterns/prefixes.yaml</code></td><td>DOSDP patterns</td><td>Generated</td></tr>
+        <tr><td><code>patterns/data/*.tsv</code></td><td>DOSDP fill tables</td><td>Generated</td></tr>
+        <tr><td><code>project/nodes.ttl</code></td><td>Node OWL classes (OWL 2 EL)</td><td>Generated</td></tr>
+        <tr><td><code>project/warp.schema.json</code>, <code>project/warp.owl.ttl</code></td><td>JSON Schema and OWL for the profile</td><td>Generated</td></tr>
+        <tr><td><code>examples/*.yaml</code></td><td>Worked example; <code>*.derived.yaml</code> is generated</td><td>Inputs yes; derived no</td></tr>
+        <tr><td><code>scripts/derive_propositions.py</code></td><td>Proposition derivation, all groups, identity rule v3</td><td>Code</td></tr>
+        <tr><td><code>scripts/check_statements.py</code></td><td>Constraints the schema can't express</td><td>Code</td></tr>
+        <tr><td><code>scripts/gen_dosdp.py</code></td><td>Templates → DOSDP patterns</td><td>Code</td></tr>
+        <tr><td><code>scripts/expand_nodes.py</code></td><td>Node definitions → OWL + fill tables</td><td>Code</td></tr>
+        <tr><td><code>scripts/templates_lib.py</code></td><td>Shared template code: loading, checking, Manchester rendering</td><td>Code</td></tr>
+        <tr><td><code>scripts/update_upstream.sh</code></td><td>Re-vendor SEPIO and CAMO at given refs</td><td>Code</td></tr>
+        <tr><td><code>docs/</code></td><td>How-to guides (<code>node-templates.md</code>, <code>predicate-groups.md</code>) and these pages</td><td>Yes</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section id="setup">
+    <h2>Toolchain and setup</h2>
+<pre>pip install -r requirements.txt    <span class="c"># linkml&gt;=1.9, PyYAML&gt;=6, rdflib&gt;=7, dosdp&gt;=0.1.9</span></pre>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Tool</th><th>Needed for</th><th>Required?</th></tr></thead>
+      <tbody>
+        <tr><td>Python 3.10+</td><td>All scripts</td><td>Yes</td></tr>
+        <tr><td><code>linkml</code> (<code>linkml-validate</code>, <code>linkml-lint</code>, <code>gen-json-schema</code>, <code>gen-owl</code>)</td><td>Validation and generation; <code>SchemaView</code> in the scripts</td><td>Yes</td></tr>
+        <tr><td><code>dosdp</code> (Python)</td><td><code>python -m dosdp validate</code> on generated patterns</td><td>Yes, for <code>make patterns</code></td></tr>
+        <tr><td>GNU make, bash</td><td>The Makefile and <code>update_upstream.sh</code></td><td>Convenient; see below</td></tr>
+        <tr><td><a href="https://github.com/INCATools/dosdp-tools">dosdp-tools</a> + Java</td><td><code>make owl-dosdp</code> (the ODK route)</td><td>Optional</td></tr>
+        <tr><td>ROBOT</td><td>OWL 2 EL profile check, <code>robot diff</code> between routes</td><td>Optional</td></tr>
+        <tr><td>git</td><td><code>update_upstream.sh</code></td><td>For re-vendoring</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout warn">
+      <strong class="t">Windows</strong>
+      Git Bash ships without <code>make</code>. Either install it (<code>choco install make</code> or <code>winget install GnuWin32.Make</code>), or run the equivalent commands in the <a href="#pipeline">pipeline table</a> directly from Git Bash. Recipes use <code>rm -rf</code>, <code>mkdir -p</code> and shell <code>for</code> loops, so run them in bash, not PowerShell or cmd.
+    </div>
+  </section>
+
+  <section id="pipeline">
+    <h2>The build pipeline</h2>
+    <p><code>make all</code> = <code>patterns nodes derive validate check gen</code>.</p>
+    <div class="flow">
+      <div class="box hl"><b>node_templates.yaml</b>validated against warp_templates.yaml</div>
+      <div class="arrow">→</div>
+      <div class="box gen"><b>patterns/</b>DOSDP patterns + prefixes, each DOSDP-validated</div>
+    </div>
+    <div class="flow">
+      <div class="box hl"><b>StatementSet</b>node_definitions</div>
+      <div class="arrow">→</div>
+      <div class="box gen"><b>expand_nodes.py</b>project/nodes.ttl + patterns/data/*.tsv</div>
+      <div class="arrow">→</div>
+      <div class="box gen"><b>owl-dosdp</b> (optional)<br>project/dosdp/*.ofn, same axioms</div>
+    </div>
+    <div class="flow">
+      <div class="box hl"><b>StatementSet</b>statements, open questions</div>
+      <div class="arrow">→</div>
+      <div class="box gen"><b>derive</b>*.derived.yaml</div>
+      <div class="arrow">→</div>
+      <div class="box"><b>validate</b>linkml-validate, all files</div>
+      <div class="arrow">→</div>
+      <div class="box"><b>check</b>check_statements.py, files together</div>
+    </div>
+    <div class="flow">
+      <div class="box hl"><b>warp.yaml</b></div>
+      <div class="arrow">→</div>
+      <div class="box gen"><b>gen</b>project/warp.schema.json, project/warp.owl.ttl</div>
+    </div>
+    <div class="legend"><span><i class="hl"></i>source</span><span><i class="gen"></i>generated</span><span><i></i>check only</span></div>
+
+    <div class="table-wrap"><table>
+      <thead><tr><th>Target</th><th>Depends on</th><th>Equivalent command (bash, repo root)</th></tr></thead>
+      <tbody>
+        <tr><td><code>templates</code></td><td>-</td><td class="wrap"><code>linkml-validate -s src/warp/schema/warp_templates.yaml -C NodeTemplateCollection templates/node_templates.yaml</code></td></tr>
+        <tr><td><code>patterns</code></td><td>templates</td><td class="wrap"><code>python scripts/gen_dosdp.py templates/node_templates.yaml patterns</code><br><code>for f in patterns/*_*.yaml; do python -m dosdp validate -i $f || exit 1; done</code></td></tr>
+        <tr><td><code>nodes</code></td><td>templates</td><td class="wrap"><code>python scripts/expand_nodes.py templates/node_templates.yaml examples/bloodroot_statements.yaml --owl project/nodes.ttl --tsv-dir patterns/data</code></td></tr>
+        <tr><td><code>owl-dosdp</code></td><td>patterns, nodes</td><td class="wrap">per TSV: <code>dosdp-tools generate --obo-prefixes=true --prefixes=patterns/prefixes.yaml --template=patterns/&lt;p&gt;.yaml --infile=patterns/data/&lt;p&gt;.tsv --outfile=project/dosdp/&lt;p&gt;.ofn</code></td></tr>
+        <tr><td><code>derive</code></td><td>-</td><td class="wrap"><code>python scripts/derive_propositions.py examples/bloodroot_statements.yaml examples/bloodroot_statements.derived.yaml</code></td></tr>
+        <tr><td><code>validate</code></td><td>derive</td><td class="wrap"><code>linkml-validate -s src/warp/schema/warp.yaml -C StatementSet examples/bloodroot_statements.yaml examples/bloodroot_statements.derived.yaml examples/bloodroot_assessment.yaml</code></td></tr>
+        <tr><td><code>check</code></td><td>derive</td><td class="wrap"><code>python scripts/check_statements.py examples/bloodroot_statements.derived.yaml examples/bloodroot_assessment.yaml</code></td></tr>
+        <tr><td><code>lint</code></td><td>-</td><td class="wrap"><code>linkml-lint src/warp/schema/warp.yaml</code> (failures ignored) ; <code>linkml-lint src/warp/schema/warp_templates.yaml</code></td></tr>
+        <tr><td><code>gen</code></td><td>-</td><td class="wrap"><code>gen-json-schema src/warp/schema/warp.yaml &gt; project/warp.schema.json</code><br><code>gen-owl src/warp/schema/warp.yaml &gt; project/warp.owl.ttl</code></td></tr>
+        <tr><td><code>clean</code></td><td>-</td><td class="wrap"><code>rm -rf project examples/*.derived.yaml patterns/data patterns/*.yaml</code></td></tr>
+      </tbody>
+    </table></div>
+    <p>Makefile variables: <code>PY</code> (default <code>python</code>), <code>DOSDP_TOOLS</code> (default <code>dosdp-tools</code>), <code>STATEMENTS</code> (used by <code>nodes</code> and <code>derive</code>'s input). Note that the <code>derive</code> output path and the <code>validate</code>/<code>check</code> file lists are hard-coded to the example.</p>
+    <p>Expected output of a clean <code>derive</code> + <code>check</code> on the example:</p>
+<pre>causal: 2 proposition(s) under warp-prop-identity/3
+  warp:prop/aea4ac8269ae  [asserted]  In a particular case, planting of Sanguinaria canadensis prevents ...
+  warp:prop/question-bloodroot-garlic-mustard  [asserted]  Typically, planting of ...
+interaction: 1 proposition(s) under warp-prop-identity/3
+  warp:prop/6ac6fc0d7703  [asserted]  Typically, it is not the case that Odocoileus virginianus population eats ...
+0 error(s), 0 warning(s) in 2 file(s)</pre>
+  </section>
+
+  <section id="full">
+    <h2>Compiling a full database</h2>
+    <p>The Makefile builds the worked example. A real database is the same pipeline over many StatementSet files. Three constraints shape how you organize it:</p>
+    <div class="callout warn">
+      <strong class="t">1. Derivation is per file.</strong>
+      <code>derive_propositions.py</code> takes one input and one output. Statements only share a proposition if they're in the <strong>same StatementSet</strong>. Two files with matching statements produce the same hash id (the key is deterministic) but separate proposition objects with separate <code>derived_from_statements</code>. To aggregate across sources, merge statement sets before deriving, or derive per file and union propositions by id afterwards.
+    </div>
+    <div class="callout warn">
+      <strong class="t">2. References resolve only across the files you check together.</strong>
+      <code>check_statements.py</code> builds its id index from the files on its command line. An assessment citing statements and propositions must be checked alongside the derived files that define them.
+    </div>
+    <div class="callout warn">
+      <strong class="t">3. Assessments should cite stable ids.</strong>
+      Derived proposition ids are SHA-1 hashes of the identity key, stable across runs but <strong>changed by every identity-rule version</strong>. Open-question ids never change. Assessments that cite derived ids need re-pointing after a rule bump.
+    </div>
+    <p>A sequence that respects all three:</p>
+<pre><span class="c"># 0. One-time per template change</span>
+linkml-validate -s src/warp/schema/warp_templates.yaml -C NodeTemplateCollection templates/node_templates.yaml
+python scripts/gen_dosdp.py templates/node_templates.yaml patterns
+for f in patterns/*_*.yaml; do python -m dosdp validate -i "$f" || exit 1; done
+
+<span class="c"># 1. Nodes: expand_nodes takes any number of StatementSets and dedupes rows by node id</span>
+python scripts/expand_nodes.py templates/node_templates.yaml data/*.yaml \
+  --owl project/nodes.ttl --tsv-dir patterns/data
+
+<span class="c"># 2. Merge statement sets that should aggregate, then derive</span>
+python scripts/derive_propositions.py build/merged.yaml build/merged.derived.yaml
+
+<span class="c"># 3. Shape validation: every file, including assessments</span>
+linkml-validate -s src/warp/schema/warp.yaml -C StatementSet build/merged.derived.yaml assessments/*.yaml
+
+<span class="c"># 4. Semantic checks: everything that cross-references, in one call</span>
+python scripts/check_statements.py build/merged.derived.yaml assessments/*.yaml
+
+<span class="c"># 5. Optional: OWL 2 EL check of the node classes</span>
+robot validate-profile --profile EL --input project/nodes.ttl --output build/el-report.txt</pre>
+    <p>The merge step isn't implemented in the repository. A merge must concatenate every list slot of <code>StatementSet</code> (agents, nodes, node_definitions, each group's statements and propositions, assessments, study_results, documents), dedupe by id, and fail if one id maps to two different objects (the same rule <code>check_statements.py</code> applies within a file). Open questions must be carried through untouched so their ids survive.</p>
+  </section>
+
+  <section id="schema">
+    <h2>Schema architecture</h2>
+    <h3>Import, don't fork</h3>
+<pre>imports:
+  - linkml:types
+  - upstream/sepio_classes      <span class="c"># SEPIO Core IM, pinned</span>
+  - upstream/causalmosaic       <span class="c"># CAMO 0.8.x, pinned</span>
+default_prefix: warp            <span class="c"># https://w3id.org/ecoweaver/warp/</span>
+default_range: string</pre>
+    <p>Upstream files are vendored unchanged. All EcoWeaver changes are made in <code>warp.yaml</code> by:</p>
+    <ul>
+      <li><strong><code>is_a</code></strong>: subclassing SEPIO classes (<code>EcoStatement is_a Statement</code>, …);</li>
+      <li><strong><code>slot_usage</code></strong>: narrowing inherited slots (range, required, identifier, inlining);</li>
+      <li><strong><code>attributes</code></strong>: adding class-local fields;</li>
+      <li>own <strong><code>class_uri</code></strong>s in the <code>warp:</code> namespace, so profile classes aren't mistaken for SEPIO's.</li>
+    </ul>
+    <p>Vendoring rather than URL imports is deliberate: LinkML URL imports aren't pinned, and an upstream change must never silently change what data means.</p>
+    <h3>Specialize, then leave the generic field empty</h3>
+    <p>Following SEPIO's advice for profiles, generic <code>Coding</code> fields are specialized as named, enum-typed attributes, and the generic field must stay empty (enforced by <code>check_statements.py</code>):</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>SEPIO generic</th><th>WARP specialization</th><th>Enum</th></tr></thead>
+      <tbody>
+        <tr><td><code>EvidenceLine.subtype</code></td><td><code>EcoEvidenceLine.evidence_type</code></td><td>CAMO <code>EvidenceTypeEnum</code></td></tr>
+        <tr><td><code>Contribution.activityType</code></td><td><code>EcoContribution.role</code></td><td><code>ContributionRoleEnum</code></td></tr>
+      </tbody>
+    </table></div>
+    <h3>Enums</h3>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Defined in WARP</th><th>Reused from CAMO</th></tr></thead>
+      <tbody>
+        <tr><td class="wrap"><code>SemanticUnitScopeEnum</code>, <code>EvidenceDirectionEnum</code>, <code>EvidenceStrengthEnum</code>, <code>InteractionPredicateEnum</code>, <code>InteractionEffectEnum</code>, <code>PropositionStatusEnum</code>, <code>AgentKindEnum</code>, <code>ContributionRoleEnum</code>, <code>AccessLevelEnum</code></td>
+            <td class="wrap"><code>CausalPredicateEnum</code>, <code>ClaimStrengthEnum</code>, <code>EvidenceTypeEnum</code>, <code>EvidenceObjectEnum</code>, <code>CertaintyGradeEnum</code>, <code>EvidenceBalanceEnum</code>, <code>FeatureAssertionEnum</code>, <code>PhilosophicalAccountEnum</code>, <code>DeterminismEnum</code>, <code>ProximateDistalEnum</code>, <code>ContributingSoleEnum</code>, <code>ReversibilityEnum</code>, <code>EcosystemFunctionalGroupEnum</code>; classes <code>CausalNode</code>, <code>TextSpan</code>, <code>ComparatorAnnotation</code>, <code>ContextAnnotation</code>, <code>DirectionAnnotation</code>, <code>MediationAnnotation</code>, <code>ModerationAnnotation</code>, <code>StrengthAnnotation</code>, <code>TemporalExtent</code></td></tr>
+      </tbody>
+    </table></div>
+    <p>One shared top-level slot, <code>scope</code> (range <code>SemanticUnitScopeEnum</code>), is used by both <code>EcoStatement</code> (recommended) and <code>EcoProposition</code> (required).</p>
+  </section>
+
+  <section id="classes">
+    <h2>Profile classes</h2>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Class</th><th>Builds on</th><th>Key changes</th></tr></thead>
+      <tbody>
+        <tr><td><code>StatementSet</code></td><td>(new, <code>tree_root</code>)</td><td class="wrap">Container: <code>id</code>, <code>profile_version</code> (ifabsent <code>0.5.0</code>), and one <code>inlined_as_list</code> list per kind: <code>agents</code>, <code>nodes</code>, <code>node_definitions</code>, <code>causal_statements</code>, <code>causal_propositions</code>, <code>interaction_statements</code>, <code>interaction_propositions</code>, <code>assessments</code>, <code>study_results</code>, <code>documents</code>.</td></tr>
+        <tr><td><code>EcoStatement</code> (abstract)</td><td>SEPIO <code>Statement</code></td><td class="wrap"><code>id</code> identifier; <code>proposition</code> → <code>EcoProposition</code> by reference, annotated <code>loom_role: calculated</code>; <code>direction</code> → <code>EvidenceDirectionEnum</code>; <code>hasEvidenceLines</code> → <code>EcoEvidenceLine</code>; <code>contributions</code> → <code>EcoContribution</code> (recommended); <code>recordMetadata</code> → <code>EcoRecordMetadata</code>. Adds <code>scope</code>, <code>original_text</code>, <code>source_spans</code>, <code>care</code>. Broad mapping IAO:0000030.</td></tr>
+        <tr><td><code>CausalStatement</code></td><td><code>EcoStatement</code></td><td class="wrap">Registry: group <code>causal</code>. subject/object → <code>CausalNode</code> (required), predicate → <code>CausalPredicateEnum</code> (required). Adds <code>negated</code> (ifabsent false), <code>causal_language</code>, <code>predicate_qualifiers</code>, <code>comparator</code>, <code>context</code>, <code>ecosystem_context</code>, <code>temporal_extent</code>, <code>camo_edge_id</code>.</td></tr>
+        <tr><td><code>CausalPredicateQualifiers</code></td><td>(new)</td><td class="wrap">CAMO Layers 2–3 grouped; <code>direction</code>→<code>causal_direction</code>, <code>strength</code>→<code>effect_strength</code>.</td></tr>
+        <tr><td><code>InteractionStatement</code></td><td><code>EcoStatement</code></td><td class="wrap">Registry: group <code>interaction</code>. predicate → <code>InteractionPredicateEnum</code>. Adds <code>negated</code>, <code>predicate_qualifiers</code> → <code>InteractionQualifiers</code>.</td></tr>
+        <tr><td><code>InteractionQualifiers</code></td><td>(new)</td><td><code>effect_on_subject</code>, <code>effect_on_object</code></td></tr>
+        <tr><td><code>SynthesisAssessment</code></td><td><code>EcoStatement</code></td><td class="wrap">Proposition Assessment Mode: <code>proposition</code>, <code>direction</code> required; <code>strength</code> → CAMO <code>CertaintyGradeEnum</code>, required. Adds <code>evidence_balance</code>. Not a registered group.</td></tr>
+        <tr><td><code>CareMetadata</code></td><td>(new)</td><td class="wrap"><code>knowledge_holders</code> (→ <code>EcoAgent</code>, by reference), <code>community</code>, <code>consent_reference</code>, <code>access_level</code> (required), <code>local_contexts_labels</code> (uri), <code>protocols</code>.</td></tr>
+        <tr><td><code>EcoProposition</code> (abstract)</td><td>SEPIO <code>Proposition</code></td><td class="wrap"><code>scope</code> required; adds <code>status</code> (required), <code>raised_as_question</code>, <code>identity_key</code>, <code>identity_rule_version</code>, <code>derived_from_statements</code> (by reference). <code>negated</code> comes from SEPIO.</td></tr>
+        <tr><td><code>CausalProposition</code>, <code>InteractionProposition</code></td><td><code>EcoProposition</code></td><td>subject/predicate/object constrained as for their statements (not required).</td></tr>
+        <tr><td><code>NodeDefinition</code></td><td>(new)</td><td class="wrap"><code>node</code> (identifier, → <code>CausalNode</code>), <code>template</code> (template id string), <code>fillers</code> (required).</td></tr>
+        <tr><td><code>TemplateFiller</code></td><td>(new)</td><td><code>var</code>, <code>value</code> (uriorcurie), optional <code>label</code></td></tr>
+        <tr><td><code>EcoEvidenceLine</code></td><td>SEPIO <code>EvidenceLine</code></td><td class="wrap"><code>targetProposition</code> → <code>EcoProposition</code> by reference; <code>directionOfEvidenceProvided</code> required enum; <code>strengthOfEvidenceProvided</code> enum; <code>contributions</code>. Adds <code>evidence_type</code> (required), <code>evidence_object</code>, <code>evidence_item_refs</code> (uriorcurie, multivalued).</td></tr>
+        <tr><td><code>EcoAgent</code>, <code>EcoContribution</code>, <code>EcoRecordMetadata</code></td><td>SEPIO <code>Agent</code>, <code>Contribution</code>, <code>RecordMetadata</code></td><td class="wrap">Agent: identifier id, <code>agent_kind</code>. Contribution: <code>contributor</code> → <code>EcoAgent</code> by reference (required), <code>role</code> (required). RecordMetadata: <code>contributions</code> typed.</td></tr>
+        <tr><td><code>EcoStudyResult</code>, <code>EcoDocument</code></td><td>SEPIO <code>StudyResult</code>, <code>Document</code></td><td class="wrap">Identifier ids so evidence lines can point at them. StudyResult: <code>focus</code> → <code>CausalNode</code>.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section id="refs">
+    <h2>Inlining and references</h2>
+    <p>Which objects are nested and which are referenced by id determines what <code>linkml-validate</code> can and can't check.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Inlined (nested objects)</th><th>Referenced by id</th></tr></thead>
+      <tbody>
+        <tr><td class="wrap">Every <code>StatementSet</code> list; <code>hasEvidenceLines</code>; <code>contributions</code>; <code>recordMetadata</code>; <code>care</code>; <code>predicate_qualifiers</code>; <code>comparator</code>; <code>context</code>; <code>temporal_extent</code>; <code>source_spans</code>; <code>fillers</code>; <code>dataItems</code>; <code>sourceDataSet</code></td>
+            <td class="wrap"><code>subject</code>/<code>object</code> (→ nodes); <code>proposition</code>; <code>targetProposition</code>; <code>derived_from_statements</code>; <code>contributor</code>; <code>knowledge_holders</code>; <code>reportedIn</code>; <code>evidence_item_refs</code> (plain <code>uriorcurie</code>)</td></tr>
+      </tbody>
+    </table></div>
+    <p><code>linkml-validate</code> doesn't verify that references resolve, and <code>evidence_item_refs</code> isn't range-typed at all (an item can be a statement, study result, document or dataset record). Referential integrity is entirely <code>check_statements.py</code>'s job.</p>
+    <p>The <code>type</code> field on objects names the concrete class (<code>CausalStatement</code>, <code>EcoEvidenceLine</code>, …) and is how the validator picks the class for polymorphic ranges.</p>
+  </section>
+
+  <section id="registry">
+    <h2>Predicate-group registry</h2>
+    <p>Scripts discover groups from annotations, so adding one needs no code changes. A group is any class carrying <code>warp_group</code>:</p>
+<pre>CausalStatement:
+  is_a: EcoStatement
+  annotations:
+    warp_group: causal                          <span class="c"># part of the identity key</span>
+    warp_statements_slot: causal_statements     <span class="c"># StatementSet list of statements</span>
+    warp_propositions_slot: causal_propositions <span class="c"># StatementSet list of propositions</span>
+    warp_proposition_class: CausalProposition   <span class="c"># written as `type` on derived propositions</span></pre>
+    <p><code>load_groups(schema_path)</code> in <code>derive_propositions.py</code>:</p>
+    <ol>
+      <li>Builds a <code>SchemaView</code> and iterates <code>all_classes()</code>.</li>
+      <li>Skips classes without their <em>own</em> <code>warp_group</code> annotation (annotations aren't inherited here, so a subclass of <code>CausalStatement</code> isn't a group unless annotated).</li>
+      <li>Resolves <code>induced_slot("predicate", cls).range</code>. If it isn't an enum, exits: <code>&lt;cls&gt;: predicate range X is not an enum</code>.</li>
+      <li>Collects each permissible value's <code>rosetta_template</code> annotation for rendering.</li>
+      <li>Returns groups sorted by group name. <code>check_statements.py</code> imports this same function.</li>
+    </ol>
+    <p>The registry doesn't verify that the named slots exist on <code>StatementSet</code>; a typo just means the group finds no statements. Check the derivation report lists your group with the counts you expect.</p>
+  </section>
+
+  <section id="derive">
+    <h2>Derivation algorithm</h2>
+    <p><code>derive_propositions.py IN OUT [--schema PATH]</code>. <code>RULE_VERSION = "warp-prop-identity/3"</code>.</p>
+    <h3>Identity key and id</h3>
+<pre>identity_key = "|".join([group, subject, predicate, object,
+                         "negated" if negated else "affirmed", scope])
+proposition_id = "warp:prop/" + sha1(identity_key).hexdigest()[:12]</pre>
+    <p>Subject and object are compared as raw node id strings: no normalization, no reasoning. Two different node ids for the same OWL class are different propositions. Keep node ids canonical.</p>
+    <h3>Per group</h3>
+    <ol>
+      <li><strong>Seed with open questions.</strong> For each existing proposition in the group's list: if <code>status == open_question</code>, set <code>raised_as_question: true</code>. Keep only propositions with <code>raised_as_question</code>; reset their key, rule version, <code>derived_from_statements: []</code> and <code>status: open_question</code>. <strong>Every other existing proposition is discarded</strong>: derived propositions are rebuilt from scratch.</li>
+      <li><strong>Walk statements.</strong> If <code>scope</code> is missing, empty or <code>unclear</code>: remove <code>proposition</code>, remove <code>targetProposition</code> from its evidence lines, record it as skipped, continue.</li>
+      <li>Compute the key. Look it up; if absent, create a proposition with the hash id, <code>type</code> = the group's proposition class, s/p/o, <code>negated</code>, <code>scope</code>, rendered <code>propositionText</code>.</li>
+      <li>If the match is a raised question with no <code>description</code> yet: move its question text to <code>description</code> ("Raised as an open question: …") and replace <code>propositionText</code> with the rendered fact.</li>
+      <li>Set <code>status: asserted</code>, key, rule version; append the statement id to <code>derived_from_statements</code> (no duplicates).</li>
+      <li>Set the statement's <code>proposition</code>, and <code>targetProposition</code> on <strong>each of its own evidence lines</strong>.</li>
+      <li>Write propositions sorted by id; drop the list if empty.</li>
+    </ol>
+    <h3>Rendering</h3>
+<pre>text = rosetta_template.format(subject=node.name, object=node.name)
+       <span class="c"># fallback: "{subject} &lt;predicate with _ → space&gt; {object}"</span>
+if negated: text = "it is not the case that " + text
+prefix = {assertional: "In a particular case, ", contingent: "Sometimes, ",
+          prototypical: "Typically, ", universal: "Always, "}[scope]
+text = prefix + lowercase_first_char(text)  + "."</pre>
+    <p>Node <code>name</code>s are inserted verbatim, so a capitalized node name mid-sentence stays capitalized ("…prevents Population growth rate of…").</p>
+    <h3>Output and guarantees</h3>
+    <ul>
+      <li>Writes <code># GENERATED by scripts/derive_propositions.py (warp-prop-identity/3). Do not edit propositions by hand.</code> then <code>yaml.safe_dump(sort_keys=False, width=100)</code>. <strong>Comments in the input are not preserved.</strong></li>
+      <li>Report to stdout: per group, each proposition id, status, text and source statements. Skipped statements to stderr. Exit status is 0 even when statements are skipped.</li>
+      <li><strong>Idempotent</strong>: running on its own output gives the same result. The example's derived file reproduces byte-for-byte.</li>
+    </ul>
+  </section>
+
+  <section id="check">
+    <h2>Statement checks</h2>
+    <p><code>check_statements.py FILE [FILE …] [--schema PATH]</code>. Covers what SEPIO leaves to "additional tooling". Exit status 1 on any error.</p>
+    <h3>How it indexes</h3>
+    <p><code>walk_ids</code> collects every object with a string <code>id</code>, at any depth, in every file: statements, propositions, agents, contributions, evidence lines, documents, study results, data items, datasets. All become resolvable reference targets. Within one file, an id seen twice must map to identical objects (so a dataset inlined under two study results is fine if the copies match). Across files, ids are unioned without comparison.</p>
+    <h3>Errors</h3>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Check</th><th>Applies to</th><th>Rule</th></tr></thead>
+      <tbody>
+        <tr><td>Assertion Mode</td><td>Annotated statements</td><td><code>direction</code>, <code>strength</code>, <code>score</code>, <code>subjectClassification</code> must be empty</td></tr>
+        <tr><td>Negation</td><td>Any statement with <code>causal_language</code></td><td><code>negated</code> ⇔ <code>causal_language == no_relationship</code></td></tr>
+        <tr><td>Specialized fields</td><td>Contributions; evidence lines</td><td><code>activityType</code> must be empty; <code>subtype</code> must be empty when <code>evidence_type</code> is set</td></tr>
+        <tr><td>Role placement</td><td>Contributions</td><td><code>author</code> → statement; <code>evidence_assessor</code> → evidence line; <code>annotator</code> → recordMetadata. <code>reviewer</code> anywhere.</td></tr>
+        <tr><td>CARE</td><td>Statements and assessments</td><td>If any author's agent has <code>agent_kind</code> <code>indigenous_knowledge_holder</code> or <code>community_member</code>, <code>care</code> is required</td></tr>
+        <tr><td>References</td><td>Statements, evidence lines, propositions</td><td class="wrap"><code>proposition</code>, <code>reportedIn</code>, <code>subject</code>, <code>object</code>, <code>care.knowledge_holders</code>, <code>contributor</code>, <code>targetProposition</code>, <code>evidence_item_refs</code>; proposition <code>subject</code>/<code>object</code></td></tr>
+        <tr><td>Id uniqueness</td><td>Per file</td><td>Same id, different object → error</td></tr>
+      </tbody>
+    </table></div>
+    <h3>Warnings</h3>
+    <ul>
+      <li>A statement or assessment with no <code>author</code> contribution.</li>
+      <li>An annotated statement with no <code>annotator</code> in <code>recordMetadata.contributions</code>.</li>
+    </ul>
+    <p>Assessments are checked with <code>annotated=False</code>: they may fill <code>direction</code>/<code>strength</code>, and don't need an annotator. Agents are looked up for the CARE rule only if they appear in some file's top-level <code>agents</code> list. Agent kinds of authors not in any file are treated as unknown (no CARE requirement), though the unresolved <code>contributor</code> reference is itself an error.</p>
+  </section>
+
+  <section id="templates">
+    <h2>Node template subsystem</h2>
+    <h3>Template schema (<code>warp_templates.yaml</code>)</h3>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Class</th><th>Fields</th></tr></thead>
+      <tbody>
+        <tr><td><code>NodeTemplateCollection</code> (root)</td><td><code>templates</code>, <code>prefixes</code>, <code>terms</code> (all required)</td></tr>
+        <tr><td><code>NodeTemplate</code></td><td class="wrap"><code>id</code> (<code>^[a-z][a-z0-9_]*$</code>), <code>title</code>, <code>description</code>, <code>camo_entity_type</code>, <code>vars</code>, <code>name</code>, <code>definition</code>, <code>equivalent_to</code> (all required); <code>examples</code>; <code>status</code> (draft · testing · released · deprecated, default draft)</td></tr>
+        <tr><td><code>TemplateVar</code></td><td class="wrap"><code>name</code> (same pattern), <code>range</code> (root class CURIE), <code>allowed_prefixes</code> (all required); <code>description</code></td></tr>
+        <tr><td><code>ClassExpression</code></td><td>exactly one of <code>genus</code> (CURIE) or <code>var</code>; optional <code>restrictions</code></td></tr>
+        <tr><td><code>Restriction</code></td><td><code>property</code> (object property CURIE), <code>filler</code> (ClassExpression)</td></tr>
+        <tr><td><code>PrefixDeclaration</code>, <code>Term</code></td><td><code>prefix</code>/<code>expansion</code>; <code>id</code>/<code>label</code>/<code>kind</code> (class · object_property)</td></tr>
+      </tbody>
+    </table></div>
+    <p>Grammar:</p>
+<pre>ClassExpression := (genus CURIE | var NAME)  AND  Restriction*
+Restriction     := property CURIE  some  ClassExpression</pre>
+    <p>That's EL: intersections and existential restrictions. Unions, negation, subClassOf-only patterns, data properties and list variables aren't supported; adding them means changing <code>templates_lib.py</code> and <code>gen_dosdp.py</code> together.</p>
+    <h3><code>check_template</code> (<code>templates_lib.py</code>)</h3>
+    <p>Run by both generators. Raises <code>TemplateError</code> for: duplicate var names; a level with both or neither of genus/var; a genus, property or var range without a label in <code>terms</code>; a term used as the wrong <code>kind</code>; vars used but undeclared; vars declared but unused; <code>{placeholders}</code> in <code>name</code>/<code>definition</code> that aren't vars. Unknown prefixes fail in <code>expand_curie</code>.</p>
+    <h3><code>gen_dosdp.py</code>: template → DOSDP pattern</h3>
+    <div class="table-wrap"><table>
+      <thead><tr><th>DOSDP key</th><th>From</th></tr></thead>
+      <tbody>
+        <tr><td><code>pattern_name</code></td><td>template <code>id</code></td></tr>
+        <tr><td><code>pattern_iri</code></td><td><code>https://w3id.org/ecoweaver/patterns/&lt;id&gt;.yaml</code></td></tr>
+        <tr><td><code>status</code></td><td>draft/testing → <code>development</code>; released → <code>published</code>; deprecated → key omitted</td></tr>
+        <tr><td><code>classes</code>, <code>relations</code></td><td><code>{label: CURIE}</code> for every genus/var range and property used (relations omitted if none)</td></tr>
+        <tr><td><code>vars</code></td><td><code>{name: "'&lt;label of range&gt;'"}</code></td></tr>
+        <tr><td><code>name</code>, <code>def</code></td><td><code>{placeholder}</code> → <code>%s</code>, with vars in order of appearance</td></tr>
+        <tr><td><code>equivalentTo</code></td><td>Manchester text with quoted labels; vars become <code>%s</code> in traversal order; nested fillers parenthesized</td></tr>
+      </tbody>
+    </table></div>
+    <p>Also writes <code>patterns/prefixes.yaml</code> (sorted). Errors per template are printed and the script exits 1 after processing the rest.</p>
+    <h3><code>expand_nodes.py</code>: node definitions → OWL + TSV</h3>
+    <p>For each <code>node_definitions</code> entry, in every StatementSet given:</p>
+    <ol>
+      <li>Template must exist. Every declared var filled exactly once; no undeclared vars; filler CURIE prefix in <code>allowed_prefixes</code>; if the node has an <code>entity_type</code>, it must equal the template's <code>camo_entity_type</code>. Problems are collected, not fatal, until the end.</li>
+      <li>Label and definition: <code>name</code>/<code>definition</code> filled with filler <code>label</code>s (falling back to CURIEs), whitespace collapsed.</li>
+      <li>OWL: <code>owl:Class</code> with <code>rdfs:label</code>, <code>IAO:0000115</code> definition, <code>dcterms:conformsTo</code> the pattern IRI, and <code>owl:equivalentClass</code> built recursively (intersection of head and <code>owl:someValuesFrom</code> restrictions). Every referenced class and property is declared, so the file is a standalone OWL 2 EL ontology.</li>
+      <li>TSV row: <code>defined_class</code>, <code>defined_class_label</code>, then <code>&lt;var&gt;</code>, <code>&lt;var&gt;_label</code> per var. Rows are deduplicated by node across files and sorted.</li>
+    </ol>
+    <p>It doesn't check that a filler is actually a subclass of the var's <code>range</code>: that needs the ontologies, and is left to ODK/ROBOT. Exits 1 listing every problem, so it's CI-safe.</p>
+    <h3>Two routes, same axioms</h3>
+    <p>Turtle from <code>expand_nodes.py</code>, or <code>dosdp-tools generate</code> on the patterns and fill tables (<code>make owl-dosdp</code>, or an ODK repo: copy patterns to <code>src/patterns/dosdp-patterns/</code>, TSVs to <code>src/patterns/data/default/</code>, set <code>use_dosdps: TRUE</code>). The logical axioms were confirmed identical with <code>robot diff</code>.</p>
+  </section>
+
+  <section id="upstream">
+    <h2>Vendored upstreams</h2>
+    <div class="table-wrap"><table>
+      <thead><tr><th>File</th><th>Source</th><th>Pinned commit</th></tr></thead>
+      <tbody>
+        <tr><td><code>sepio_classes.yaml</code></td><td>sepio-framework/sepio-linkml, <code>src/sepio_linkml/schema/</code> (Apache-2.0)</td><td><code>4a174b1e879c</code></td></tr>
+        <tr><td><code>causalmosaic.yaml</code></td><td>timalamenciak/causalmosaic (CC0)</td><td><code>4e1faa4dc75a</code></td></tr>
+      </tbody>
+    </table></div>
+    <p>Vendored 2026-10-10. To update:</p>
+<pre>scripts/update_upstream.sh [SEPIO_REF] [CAMO_REF]   <span class="c"># branch, tag or commit; default main</span>
+make validate check lint gen</pre>
+    <p>The script clones both repos to a temp dir, checks out the refs, copies the schema files and SEPIO's LICENSE, and rewrites <code>UPSTREAM.md</code> with the resolved SHAs and date. Then review the diff in <code>upstream/</code> and look for renamed slots or enum values the profile narrows or references. CAMO is treated exactly like SEPIO, even though it's maintained in-house: profile needs from CAMO become visible, explicit upstream changes.</p>
+    <p>A real fork of SEPIO is only for preparing pull requests upstream, never for carrying EcoWeaver changes.</p>
+  </section>
+
+  <section id="generated">
+    <h2>Generated artefacts and expected warnings</h2>
+    <ul>
+      <li><code>project/warp.schema.json</code>: JSON Schema for the whole profile, including imported classes (~8k lines).</li>
+      <li><code>project/warp.owl.ttl</code>: OWL rendering of the profile. <strong>Not yet grounded</strong>: SEPIO's LinkML has no <code>class_uri</code>s or mappings to the SEPIO OWL ontology, and its default prefix is the placeholder <code>https://example.org/sepio-model/</code>.</li>
+      <li><code>linkml-lint warp.yaml</code>: camelCase slot-name warnings come from upstream SEPIO and are expected (the Makefile ignores this lint's exit code). Anything else is yours.</li>
+      <li><code>gen-owl</code>: "ambiguous attribute" warnings come from CAMO's <code>CausalEdge</code> defining fields as inline attributes; expected until CAMO promotes them to slots.</li>
+    </ul>
+  </section>
+
+  <section id="extend">
+    <h2>Extending WARP</h2>
+    <h3>Add a node template</h3>
+    <p>Full guide: <code>docs/node-templates.md</code>. In short:</p>
+    <ol>
+      <li>Design the shape as a phrase with blanks, leaving out direction of change. Reuse an existing template if the logical shape matches.</li>
+      <li>Add every fixed class and property to <code>terms</code> with its current OLS label (labels drift: RO:0000052 is now <em>characteristic of</em>); add new <code>prefixes</code>.</li>
+      <li>Add the template entry. Keep <code>allowed_prefixes</code> tight. Use an id containing an underscore (see <a href="#gotchas">gotchas</a>).</li>
+      <li><code>make patterns</code>, then fill it in a <code>node_definitions</code> entry and <code>make nodes</code>.</li>
+    </ol>
+    <p><strong>Released templates are frozen.</strong> Changing one's logical definition silently changes every node made with it. Make a new id and mark the old one <code>deprecated</code>.</p>
+    <h3>Add a predicate group</h3>
+    <p>Full guide: <code>docs/predicate-groups.md</code>. All edits in <code>warp.yaml</code>:</p>
+    <ul class="checklist">
+      <li>Predicate enum, each value with a <code>meaning</code> (checked in OLS) and a <code>rosetta_template</code> annotation</li>
+      <li>Qualifier class, avoiding SEPIO slot names (<code>direction</code>, <code>strength</code>, <code>score</code>, <code>subject</code>, <code>predicate</code>, <code>object</code>, <code>qualifier</code>)</li>
+      <li>Statement class: <code>is_a: EcoStatement</code>, own <code>class_uri</code>, the four <code>warp_*</code> annotations, subject/predicate/object constrained and required, <code>negated</code> with <code>ifabsent: "false"</code></li>
+      <li>Proposition class: <code>is_a: EcoProposition</code>, same constraints</li>
+      <li>Two <code>StatementSet</code> lists, named exactly as in the annotations, <code>inlined_as_list</code></li>
+      <li>Node templates for the subjects and objects</li>
+      <li>An example statement; <code>make lint all</code> passes; the derivation report lists the group; version bumped; README updated</li>
+    </ul>
+    <h3>Change the identity rule</h3>
+    <ol>
+      <li>Edit <code>identity_key()</code> (and the module docstring) in <code>derive_propositions.py</code>.</li>
+      <li>Bump <code>RULE_VERSION</code>. Every proposition records it.</li>
+      <li>Re-derive everything. All derived ids change; open-question ids don't. Re-point assessments that cite derived ids.</li>
+      <li>Record the change in the README's identity section and changelog.</li>
+    </ol>
+  </section>
+
+  <section id="release">
+    <h2>Versioning and release</h2>
+    <p>The profile version appears in several places that must move together:</p>
+    <ul class="checklist">
+      <li><code>version:</code> in <code>warp.yaml</code></li>
+      <li><code>StatementSet.profile_version</code> <code>ifabsent: string(0.5.0)</code> in <code>warp.yaml</code></li>
+      <li><code>profile_version</code> in each example file</li>
+      <li>README status line and <em>Changes</em> section</li>
+      <li><code>RULE_VERSION</code>, if identity changed</li>
+      <li><code>warp_templates.yaml</code> <code>version</code>, if the template schema changed</li>
+      <li><code>make clean all</code>, commit regenerated <code>patterns/</code>, <code>project/</code> and <code>*.derived.yaml</code></li>
+    </ul>
+  </section>
+
+  <section id="trouble">
+    <h2>Troubleshooting</h2>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Symptom</th><th>Cause / fix</th></tr></thead>
+      <tbody>
+        <tr><td><code>make: command not found</code></td><td>Windows/Git Bash: install make or run the <a href="#pipeline">equivalent commands</a>.</td></tr>
+        <tr><td>A group is missing from the derivation report</td><td>Registry annotations incomplete, or the predicate's range isn't an enum.</td></tr>
+        <tr><td><code>X: predicate range Y is not an enum</code></td><td>The statement class's <code>slot_usage.predicate.range</code> must be an enum.</td></tr>
+        <tr><td><code>Not grouped (scope missing or unclear): …</code></td><td>Those statements need a scope decision. Not an error; exit 0.</td></tr>
+        <tr><td>A proposition you wrote disappeared</td><td>Only <code>open_question</code> / <code>raised_as_question</code> propositions survive derivation.</td></tr>
+        <tr><td><code>… does not resolve to any id</code></td><td>Pass every cross-referencing file to <code>check_statements.py</code> together; check for typos.</td></tr>
+        <tr><td><code>negated is … but causal_language is …</code></td><td>Make them agree: <code>negated: true</code> iff <code>no_relationship</code>.</td></tr>
+        <tr><td><code>role 'X' belongs on a …</code></td><td>Move the contribution: author → statement, evidence_assessor → evidence line, annotator → recordMetadata.</td></tr>
+        <tr><td><code>… has no care metadata</code></td><td>Statement authored by an Indigenous knowledge holder or community member; add <code>care</code> with at least <code>access_level</code>.</td></tr>
+        <tr><td><code>X has no label; add it under 'terms'</code></td><td>Add the CURIE to <code>terms</code>.</td></tr>
+        <tr><td><code>each class expression needs exactly one of genus or var</code></td><td>A level has both or neither.</td></tr>
+        <tr><td><code>logical definition uses undeclared vars</code> / <code>vars never used</code></td><td>Align <code>vars</code> with <code>equivalent_to</code>.</td></tr>
+        <tr><td><code>X is declared as class, used as object_property</code></td><td>Fix <code>kind</code> in <code>terms</code>.</td></tr>
+        <tr><td><code>Unknown prefix in '…'</code></td><td>Declare it under <code>prefixes</code> in the templates file.</td></tr>
+        <tr><td><code>var 'x' = … must use one of [...]</code></td><td>Filler from the wrong ontology (often a Wikidata QID where NCBITaxon is needed).</td></tr>
+        <tr><td><code>CAMO entity_type is …, template … expects …</code></td><td>The node's <code>entity_type</code> doesn't match the template's <code>camo_entity_type</code>.</td></tr>
+        <tr><td>Generated DOSDP pattern doesn't match the ontology</td><td>A term label in <code>terms</code> is out of date; re-check in OLS.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section id="gotchas">
+    <h2>Gotchas</h2>
+    <ul>
+      <li><strong>Template ids without an underscore aren't DOSDP-validated.</strong> <code>make patterns</code> loops over <code>patterns/*_*.yaml</code> (to skip <code>prefixes.yaml</code>), so a template id like <code>population</code> is generated but never validated.</li>
+      <li><strong>Derivation drops comments</strong> from the input YAML. Keep annotator commentary in fields (<code>description</code>, <code>original_text</code>), not YAML comments, if it must survive.</li>
+      <li><strong>Derivation drops hand-written asserted propositions</strong> silently.</li>
+      <li><strong>Derivation is per file</strong>; see <a href="#full">compiling a full database</a>.</li>
+      <li><strong>Node identity is string identity</strong> during derivation. Two node ids with equivalent OWL definitions still split propositions.</li>
+      <li><strong><code>make clean</code> deletes all of <code>project/</code></strong>, including committed outputs, and all of <code>patterns/*.yaml</code>.</li>
+      <li><strong><code>make check</code> skips the raw statements file</strong>: it checks the derived file (a superset) and the assessment.</li>
+      <li><strong>Duplicate-id comparison is per file only.</strong> The same id used for different objects in two files isn't detected.</li>
+      <li><strong>The <code>scripts/</code> directory must be importable</strong>: <code>expand_nodes.py</code> and <code>gen_dosdp.py</code> import <code>templates_lib</code>, and <code>check_statements.py</code> imports from <code>derive_propositions</code>. Running them by path (<code>python scripts/x.py</code>) handles this.</li>
+      <li><strong>Mid-sentence capitals</strong> in rendered proposition text come straight from node <code>name</code>s.</li>
+    </ul>
+  </section>
+
+  <section id="backlog">
+    <h2>Maintenance backlog</h2>
+    <p>From <code>TODOS.md</code> and README §9, the items that touch the schema or build:</p>
+    <h3>SEPIO pull requests</h3>
+    <ul>
+      <li>Mappings / <code>class_uri</code>s to the SEPIO OWL ontology and a real default prefix (highest value; <code>EcoStatement</code> and <code>EcoProposition</code> carry TODOs for <code>exact_mappings</code>).</li>
+      <li><code>direction</code> as an enum; reference-by-id for evidence items; offer <code>evidence_object</code>. Contact Matthew Brush before opening PRs.</li>
+    </ul>
+    <h3>CAMO refactors</h3>
+    <ul>
+      <li>Promote <code>CausalEdge</code> attributes to top-level slots (reuse in the profile; clears <code>gen-owl</code> warnings).</li>
+      <li>Rename edge <code>direction</code>/<code>strength</code>; replace <code>token_or_type</code> with <code>scope</code>; rename <code>CausalNode</code> (used for non-causal groups) and <code>ClaimStrengthEnum</code>.</li>
+      <li>ELMO planting/seeding action term to replace <code>ELMO:TODO_planting</code>.</li>
+    </ul>
+    <h3>Profile</h3>
+    <ul>
+      <li><code>assertion_method</code> (ECO:0000218 manual / ECO:0000203 automatic) on evidence lines and probably statements.</li>
+      <li>Constrain <code>informationQuality</code> on <code>EcoStudyResult</code>/<code>EcoDocument</code> to a chosen appraisal scheme.</li>
+      <li>Decide where CAMO's <code>certainty_grade</code> lives; update the Rosetta renderer.</li>
+      <li>Map <code>ContributionRoleEnum</code> to CRO; confirm scope definitions against Vogt; SSSOM crosswalk Wikidata ↔ NCBITaxon.</li>
+      <li>ECO term requests for ecological study designs (draft list in <code>TODOS.md</code> §2; the Indigenous knowledge entry must be framed with knowledge holders first).</li>
+      <li>Prototype exporters (evidence gap map, fuzzy cognitive map, Bayesian network, TREK); versioned evidence-type weighting config.</li>
+    </ul>
+  </section>
+</main>
+</div>
+<footer>WARP 0.5.0 · <a href="camo.html">CAMO annotators</a> · Mechanic guide · <a href="basic.html">Contributor</a> · <a href="advanced.html">Advanced</a></footer>
+</body>
+</html>

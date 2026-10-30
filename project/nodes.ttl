@@ -1,0 +1,78 @@
+@prefix ELMO: <https://w3id.org/elmo/elmo_> .
+@prefix NCBITaxon: <http://purl.obolibrary.org/obo/NCBITaxon_> .
+@prefix PATO: <http://purl.obolibrary.org/obo/PATO_> .
+@prefix PCO: <http://purl.obolibrary.org/obo/PCO_> .
+@prefix RO: <http://purl.obolibrary.org/obo/RO_> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix node: <https://w3id.org/causal-mosaic/node/> .
+@prefix obo: <http://purl.obolibrary.org/obo/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+obo:IAO_0000115 a owl:AnnotationProperty .
+
+dcterms:conformsTo a owl:AnnotationProperty .
+
+node:planting_of_sanguinaria_canadensis a owl:Class ;
+    rdfs:label "planting of Sanguinaria canadensis" ;
+    obo:IAO_0000115 "A planting process in which organisms of Sanguinaria canadensis participate." ;
+    dcterms:conformsTo <https://w3id.org/ecoweaver/patterns/intervention_involving_taxon.yaml> ;
+    owl:equivalentClass [ a owl:Class ;
+            owl:intersectionOf ( ELMO:TODO_planting [ a owl:Restriction ;
+                        owl:onProperty RO:0000057 ;
+                        owl:someValuesFrom NCBITaxon:3472 ] ) ] .
+
+node:population_of_alliaria_petiolata a owl:Class ;
+    rdfs:label "Alliaria petiolata population" ;
+    obo:IAO_0000115 "A population of organisms whose members are Alliaria petiolata." ;
+    dcterms:conformsTo <https://w3id.org/ecoweaver/patterns/population_of_taxon.yaml> ;
+    owl:equivalentClass [ a owl:Class ;
+            owl:intersectionOf ( PCO:0000001 [ a owl:Restriction ;
+                        owl:onProperty RO:0002351 ;
+                        owl:someValuesFrom NCBITaxon:126270 ] ) ] .
+
+node:population_of_odocoileus_virginianus a owl:Class ;
+    rdfs:label "Odocoileus virginianus population" ;
+    obo:IAO_0000115 "A population of organisms whose members are Odocoileus virginianus." ;
+    dcterms:conformsTo <https://w3id.org/ecoweaver/patterns/population_of_taxon.yaml> ;
+    owl:equivalentClass [ a owl:Class ;
+            owl:intersectionOf ( PCO:0000001 [ a owl:Restriction ;
+                        owl:onProperty RO:0002351 ;
+                        owl:someValuesFrom NCBITaxon:9874 ] ) ] .
+
+node:rate_of_population_growth_of_alliaria_petiolata a owl:Class ;
+    rdfs:label "rate of population growth of Alliaria petiolata population" ;
+    obo:IAO_0000115 "The rate of a population growth process whose participant is a population of Alliaria petiolata." ;
+    dcterms:conformsTo <https://w3id.org/ecoweaver/patterns/quality_of_process_of_population.yaml> ;
+    owl:equivalentClass [ a owl:Class ;
+            owl:intersectionOf ( PATO:0000161 [ a owl:Restriction ;
+                        owl:onProperty RO:0000052 ;
+                        owl:someValuesFrom [ a owl:Class ;
+                                owl:intersectionOf ( PCO:0000011 [ a owl:Restriction ;
+                                            owl:onProperty RO:0000057 ;
+                                            owl:someValuesFrom [ a owl:Class ;
+                                                    owl:intersectionOf ( PCO:0000001 [ a owl:Restriction ;
+                                                                owl:onProperty RO:0002351 ;
+                                                                owl:someValuesFrom NCBITaxon:126270 ] ) ] ] ) ] ] ) ] .
+
+NCBITaxon:3472 a owl:Class .
+
+NCBITaxon:9874 a owl:Class .
+
+PATO:0000161 a owl:Class .
+
+PCO:0000011 a owl:Class .
+
+RO:0000052 a owl:ObjectProperty .
+
+ELMO:TODO_planting a owl:Class .
+
+NCBITaxon:126270 a owl:Class .
+
+RO:0000057 a owl:ObjectProperty .
+
+PCO:0000001 a owl:Class .
+
+RO:0002351 a owl:ObjectProperty .
+

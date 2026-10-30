@@ -1,0 +1,21 @@
+# GENERATED from templates/node_templates.yaml by scripts/gen_dosdp.py. Do not edit.
+pattern_name: environment_type
+pattern_iri: https://w3id.org/ecoweaver/patterns/environment_type.yaml
+description: 'A kind of environment, habitat or substrate: fen; rotten wood; pool margin. Equivalent to the ENVO class; see taxon for why a template exists. Use environment_type_in_setting for a refined environment (substrate in a microsite). CAMO has no habitat entity type; environmental_variable is the closest.'
+status: development
+classes:
+  material entity: BFO:0000040
+vars:
+  environment: '''material entity'''
+name:
+  text: '%s'
+  vars:
+  - environment
+def:
+  text: A %s.
+  vars:
+  - environment
+equivalentTo:
+  text: '%s'
+  vars:
+  - environment

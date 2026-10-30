@@ -1,0 +1,28 @@
+# GENERATED from templates/node_templates.yaml by scripts/gen_dosdp.py. Do not edit.
+pattern_name: disturbance_or_stressor
+pattern_iri: https://w3id.org/ecoweaver/patterns/disturbance_or_stressor.yaml
+description: 'An event or condition not deliberately applied for restoration: acidification, drought, spring flooding, metal contamination, damming. Int or Dist is decided by the study''s question. Where the same action (ELMO harvesting) appears in both framings, prefer one node and record the role on the statement, so the two framings do not split into two propositions.'
+status: development
+classes:
+  process: BFO:0000015
+  environmental system: ENVO:01000254
+relations:
+  occurs in: BFO:0000066
+vars:
+  process: '''process'''
+  system: '''environmental system'''
+name:
+  text: '%s in %s'
+  vars:
+  - process
+  - system
+def:
+  text: A %s process occurring in %s.
+  vars:
+  - process
+  - system
+equivalentTo:
+  text: '%s and (''occurs in'' some %s)'
+  vars:
+  - process
+  - system

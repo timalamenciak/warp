@@ -1,0 +1,34 @@
+# GENERATED from templates/node_templates.yaml by scripts/gen_dosdp.py. Do not edit.
+pattern_name: intervention_with_level
+pattern_iri: https://w3id.org/ecoweaver/patterns/intervention_with_level.yaml
+description: 'An intervention with a level: deer density reduction to 7.5 km-2; environmental flow with increased minimum flow. A numeric level has no ontology class: mint it under node: (deer density of 7.5 per km2) as a subclass of the attribute it sets. The level is attached with has characteristic; review whether it should instead characterize the target''s resulting state.'
+status: development
+classes:
+  process: BFO:0000015
+  material entity: BFO:0000040
+  quality: PATO:0000001
+relations:
+  has characteristic: RO:0000053
+  has participant: RO:0000057
+vars:
+  action: '''process'''
+  target: '''material entity'''
+  level: '''quality'''
+name:
+  text: '%s of %s to %s'
+  vars:
+  - action
+  - target
+  - level
+def:
+  text: A %s process acting on %s, with level %s.
+  vars:
+  - action
+  - target
+  - level
+equivalentTo:
+  text: '%s and (''has participant'' some %s) and (''has characteristic'' some %s)'
+  vars:
+  - action
+  - target
+  - level

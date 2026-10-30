@@ -1,0 +1,21 @@
+# GENERATED from templates/node_templates.yaml by scripts/gen_dosdp.py. Do not edit.
+pattern_name: trait
+pattern_iri: https://w3id.org/ecoweaver/patterns/trait.yaml
+description: 'A trait, without the taxon (the taxon is the subject of the statement): low palatability; wind-dispersed seeds. Equivalent to the TO, FLOPO or PATO class; FLOPO terms already carry their value. Use trait_with_value when the trait and its value are separate terms. CAMO has no trait entity type; environmental_variable is the closest.'
+status: development
+classes:
+  quality: PATO:0000001
+vars:
+  trait: '''quality'''
+name:
+  text: '%s'
+  vars:
+  - trait
+def:
+  text: The trait %s.
+  vars:
+  - trait
+equivalentTo:
+  text: '%s'
+  vars:
+  - trait

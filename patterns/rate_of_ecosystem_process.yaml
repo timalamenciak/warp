@@ -1,0 +1,34 @@
+# GENERATED from templates/node_templates.yaml by scripts/gen_dosdp.py. Do not edit.
+pattern_name: rate_of_ecosystem_process
+pattern_iri: https://w3id.org/ecoweaver/patterns/rate_of_ecosystem_process.yaml
+description: 'The rate or magnitude of a process measured at system level: the net of all organisms and abiotic fluxes together, even where one taxon dominates. Examples: net ecosystem production of a regenerating aspen-dominated stand; carbon accumulation in salt marsh sediment; evapotranspiration; nitrification. If the paper attributes the flux to one taxon, that is a separate Causal proposition, not a different node. The quality is a variable (usually PATO rate) so rate and total magnitude stay distinct; same BFO caveat as quality_of_process_of_population.'
+status: development
+classes:
+  process: BFO:0000015
+  environmental system: ENVO:01000254
+  quality: PATO:0000001
+relations:
+  occurs in: BFO:0000066
+  characteristic of: RO:0000052
+vars:
+  quality: '''quality'''
+  process: '''process'''
+  system: '''environmental system'''
+name:
+  text: '%s of %s in %s'
+  vars:
+  - quality
+  - process
+  - system
+def:
+  text: The %s of %s occurring in %s, measured at system level.
+  vars:
+  - quality
+  - process
+  - system
+equivalentTo:
+  text: '%s and (''characteristic of'' some (%s and (''occurs in'' some %s)))'
+  vars:
+  - quality
+  - process
+  - system

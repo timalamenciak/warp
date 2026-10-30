@@ -1,0 +1,221 @@
+# Worked example: "Planting bloodroot reduces garlic mustard population growth."
+#
+# What annotators produce: agents, nodes, statements, evidence lines, sources.
+# No propositions: those are derived by scripts/derive_propositions.py.
+#
+# ILLUSTRATIVE ONLY. "Murphy 2005" is a stand-in for the study discussed in
+# design conversations; its citation, wording and data are placeholders (TODO).
+
+id: warp:statementset/bloodroot-example
+profile_version: 0.5.0
+
+# Who makes, records and judges statements. Contributions and CARE metadata
+# refer to these by id.
+agents:
+  - id: warp:agent/murphy2005-authors
+    type: EcoAgent
+    name: "TODO: Murphy et al. 2005 authors"
+    subtype: organization
+    agent_kind: researcher
+  - id: warp:agent/practitioner-1
+    type: EcoAgent
+    name: "TODO: practitioner name or pseudonym"
+    subtype: person
+    agent_kind: practitioner
+  - id: orcid:0000-0000-0000-0000
+    type: EcoAgent
+    name: "TODO: annotator"
+    subtype: person
+    agent_kind: researcher
+
+nodes:
+  - id: node:planting_of_sanguinaria_canadensis
+    name: Planting of Sanguinaria canadensis
+    entity_type: management_intervention
+    entity_term: Sanguinaria canadensis   # TODO: Wikidata QID
+  - id: node:rate_of_population_growth_of_alliaria_petiolata
+    name: Population growth rate of Alliaria petiolata
+    entity_type: taxon
+    entity_term: Alliaria petiolata       # TODO: Wikidata QID
+    measured_attribute: PATO:0000161      # rate
+    # No state_or_change_qualifier: the node is the variable, and the
+    # predicate (prevents) carries the sign.
+  - id: node:population_of_odocoileus_virginianus
+    name: Odocoileus virginianus population
+    entity_type: taxon
+    entity_term: Odocoileus virginianus   # TODO: Wikidata QID
+  - id: node:population_of_alliaria_petiolata
+    name: Alliaria petiolata population
+    entity_type: taxon
+    entity_term: Alliaria petiolata       # TODO: Wikidata QID
+
+# Logical definitions: which node template each node fills, and with what.
+# scripts/expand_nodes.py turns these into OWL classes and DOSDP fill tables.
+# Taxon IDs checked against NCBITaxon via OLS on 2026-10-10.
+node_definitions:
+  - node: node:rate_of_population_growth_of_alliaria_petiolata
+    template: quality_of_process_of_population
+    fillers:
+      - {var: quality, value: "PATO:0000161", label: rate}
+      - {var: process, value: "PCO:0000011", label: population growth}
+      - {var: taxon, value: "NCBITaxon:126270", label: Alliaria petiolata}
+  - node: node:planting_of_sanguinaria_canadensis
+    template: intervention_involving_taxon
+    fillers:
+      - {var: action, value: "ELMO:TODO_planting", label: planting}   # TODO: ELMO action term
+      - {var: taxon, value: "NCBITaxon:3472", label: Sanguinaria canadensis}
+  - node: node:population_of_odocoileus_virginianus
+    template: population_of_taxon
+    fillers:
+      - {var: taxon, value: "NCBITaxon:9874", label: Odocoileus virginianus}
+  - node: node:population_of_alliaria_petiolata
+    template: population_of_taxon
+    fillers:
+      - {var: taxon, value: "NCBITaxon:126270", label: Alliaria petiolata}
+
+# An open question, written before any statements were annotated (e.g. a
+# practitioner's question in TREK, or an empty evidence gap map cell).
+# The derivation script marks it "asserted" once a statement matches it.
+causal_propositions:
+  - id: warp:prop/question-bloodroot-garlic-mustard
+    type: CausalProposition
+    subject: node:planting_of_sanguinaria_canadensis
+    predicate: prevents
+    object: node:rate_of_population_growth_of_alliaria_petiolata
+    scope: prototypical
+    status: open_question
+    propositionText: Does planting bloodroot typically suppress garlic mustard population growth?
+
+documents:
+  - id: warp:doc/murphy2005
+    type: EcoDocument
+    title: "TODO: Murphy 2005"
+    doi: "TODO"
+  - id: warp:doc/notebook-entry-1
+    type: EcoDocument
+    subtype: {label: field notebook}
+
+study_results:
+  - id: warp:result/murphy2005-planted
+    type: EcoStudyResult
+    focus: node:rate_of_population_growth_of_alliaria_petiolata
+    dataItems:
+      - {id: warp:data/murphy2005-planted-mean, type: DataItem, subtype: {label: mean}, value: "TODO"}
+      - {id: warp:data/murphy2005-planted-sd, type: DataItem, subtype: {label: standard deviation}, value: "TODO"}
+      - {id: warp:data/murphy2005-planted-n, type: DataItem, subtype: {label: number of plots}, value: "TODO"}
+    sourceDataSet:
+      - {id: warp:dataset/murphy2005, type: DataSet, version: "TODO"}
+  - id: warp:result/murphy2005-control
+    type: EcoStudyResult
+    focus: node:rate_of_population_growth_of_alliaria_petiolata
+    dataItems:
+      - {id: warp:data/murphy2005-control-mean, type: DataItem, subtype: {label: mean}, value: "TODO"}
+    sourceDataSet:
+      - {id: warp:dataset/murphy2005, type: DataSet, version: "TODO"}
+
+causal_statements:
+
+  # A published, type-level statement backed by an experiment.
+  - id: warp:statement/murphy2005-c1
+    type: CausalStatement
+    subject: node:planting_of_sanguinaria_canadensis
+    predicate: prevents
+    object: node:rate_of_population_growth_of_alliaria_petiolata
+    scope: prototypical
+    causal_language: direct_causal
+    statementText: Planting bloodroot reduces the population growth rate of garlic mustard.
+    original_text: "TODO: verbatim sentence from the source"
+    dateAuthored: "2005"
+    contributions:
+      - {id: warp:contrib/murphy2005-c1-author, type: EcoContribution, role: author, contributor: warp:agent/murphy2005-authors}
+    recordMetadata:
+      dateRecordCreated: "2026-10-10T14:00:00Z"
+      contributions:
+        - {id: warp:contrib/murphy2005-c1-annotation, type: EcoContribution, role: annotator, contributor: "orcid:0000-0000-0000-0000", date: "2026-10-10"}
+    reportedIn: [warp:doc/murphy2005]
+    comparator:
+      - {status: explicitly_asserted, comparator_type: untreated_control}
+    predicate_qualifiers:
+      philosophical_accounts: [interventionist]
+      causal_direction: {status: asserted, evidence_for_direction: experimental}
+      reversibility: not_addressed
+    hasEvidenceLines:
+      - id: warp:el/murphy2005-c1-1
+        type: EcoEvidenceLine
+        evidence_type: randomized_experiment
+        evidence_object: correlation
+        directionOfEvidenceProvided: supports
+        strengthOfEvidenceProvided: not_assessed
+        evidence_item_refs: [warp:result/murphy2005-planted, warp:result/murphy2005-control]
+
+  # A practitioner's field observation: an assertional (token-level) statement.
+  # The practitioner is the agent making the statement, with CARE metadata.
+  - id: warp:statement/notebook-c1
+    type: CausalStatement
+    subject: node:planting_of_sanguinaria_canadensis
+    predicate: prevents
+    object: node:rate_of_population_growth_of_alliaria_petiolata
+    scope: assertional
+    causal_language: associational
+    statementText: After bloodroot was planted by the path, there was less garlic mustard the following year.
+    original_text: Planted bloodroot by the path last year and noticed there was not as much garlic mustard this year
+    contributions:
+      - {id: warp:contrib/notebook-c1-author, type: EcoContribution, role: author, contributor: warp:agent/practitioner-1}
+    recordMetadata:
+      dateRecordCreated: "2026-10-10T14:30:00Z"
+      contributions:
+        - {id: warp:contrib/notebook-c1-annotation, type: EcoContribution, role: annotator, contributor: "orcid:0000-0000-0000-0000"}
+    reportedIn: [warp:doc/notebook-entry-1]
+    care:
+      knowledge_holders: [warp:agent/practitioner-1]
+      consent_reference: "TODO: consent record"
+      access_level: attribution_required
+    comparator:
+      - {status: implicitly_assumed, comparator_type: pre_treatment_baseline}
+    context:
+      status: explicitly_asserted
+      geographic_scope: plot beside the path
+    hasEvidenceLines:
+      - id: warp:el/notebook-c1-1
+        type: EcoEvidenceLine
+        evidence_type: practitioner_experience
+        evidence_object: correlation
+        directionOfEvidenceProvided: supports
+        strengthOfEvidenceProvided: weak
+        evidence_item_refs: [warp:doc/notebook-entry-1]
+        # The annotator judged this line's strength; recorded explicitly here
+        # (without it, the judgement would be attributed to the annotator anyway).
+        contributions:
+          - {id: warp:contrib/notebook-c1-1-assessment, type: EcoContribution, role: evidence_assessor, contributor: "orcid:0000-0000-0000-0000"}
+
+# A statement from the second predicate group (biotic interactions): a negated,
+# general statement that deer do not eat garlic mustard. Illustrative only.
+interaction_statements:
+  - id: warp:statement/notebook-i1
+    type: InteractionStatement
+    subject: node:population_of_odocoileus_virginianus
+    predicate: eats
+    object: node:population_of_alliaria_petiolata
+    negated: true
+    scope: prototypical
+    statementText: Deer generally do not browse garlic mustard.
+    contributions:
+      - {id: warp:contrib/notebook-i1-author, type: EcoContribution, role: author, contributor: warp:agent/practitioner-1}
+    recordMetadata:
+      contributions:
+        - {id: warp:contrib/notebook-i1-annotation, type: EcoContribution, role: annotator, contributor: "orcid:0000-0000-0000-0000"}
+    reportedIn: [warp:doc/notebook-entry-1]
+    care:
+      knowledge_holders: [warp:agent/practitioner-1]
+      access_level: attribution_required
+    predicate_qualifiers:
+      effect_on_subject: not_reported
+      effect_on_object: not_reported
+    hasEvidenceLines:
+      - id: warp:el/notebook-i1-1
+        type: EcoEvidenceLine
+        evidence_type: practitioner_experience
+        evidence_object: correlation
+        directionOfEvidenceProvided: supports
+        strengthOfEvidenceProvided: weak
+        evidence_item_refs: [warp:doc/notebook-entry-1]

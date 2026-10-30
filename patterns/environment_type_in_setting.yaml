@@ -1,0 +1,27 @@
+# GENERATED from templates/node_templates.yaml by scripts/gen_dosdp.py. Do not edit.
+pattern_name: environment_type_in_setting
+pattern_iri: https://w3id.org/ecoweaver/patterns/environment_type_in_setting.yaml
+description: 'An environment or substrate located in a wider setting: rotten wood in a shaded cool dry-forest patch. A setting with no ENVO class is minted under node:.'
+status: development
+classes:
+  material entity: BFO:0000040
+relations:
+  located in: RO:0001025
+vars:
+  environment: '''material entity'''
+  setting: '''material entity'''
+name:
+  text: '%s in %s'
+  vars:
+  - environment
+  - setting
+def:
+  text: A %s located in a %s.
+  vars:
+  - environment
+  - setting
+equivalentTo:
+  text: '%s and (''located in'' some %s)'
+  vars:
+  - environment
+  - setting

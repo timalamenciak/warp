@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How WARP Works</title>
+<meta name="description" content="How WARP models ecological statements: nodes, predicate groups, scope, propositions and identity, evidence lines, synthesis assessments, agents and CARE metadata.">
+<link rel="stylesheet" href="warp-docs.css">
+</head>
+<body>
+<header class="topbar"><div class="topbar-inner">
+  <a class="brand" href="index.html"><span>WARP</span> docs</a>
+  <nav class="levels" aria-label="Documentation level">
+    <a class="l-basic" href="basic.html">Contributor</a>
+    <a class="l-camo" href="camo.html">CAMO annotators</a>
+    <a class="l-advanced" href="advanced.html" aria-current="page">Advanced</a>
+    <a class="l-mechanic" href="mechanic.html">Mechanic</a>
+  </nav>
+</div></header>
+
+<div class="layout">
+<nav class="toc" aria-label="On this page">
+  <h2>On this page</h2>
+  <ol>
+    <li><a href="#shape">The overall shape</a></li>
+    <li><a href="#layers">Statement → proposition → assessment</a></li>
+    <li><a href="#nodes">Nodes and node templates</a></li>
+    <li><a href="#groups">Predicate groups</a></li>
+    <li><a href="#statement">Anatomy of a statement</a></li>
+    <li><a href="#qualifiers">Causal features</a></li>
+    <li><a href="#two-directions">Two kinds of direction</a></li>
+    <li><a href="#scope">Scope</a></li>
+    <li><a href="#identity">Propositions and identity</a></li>
+    <li><a href="#evidence">Evidence lines</a></li>
+    <li><a href="#assessment">Synthesis assessments</a></li>
+    <li><a href="#people">Agents, roles and CARE</a></li>
+    <li><a href="#suggest">Writing a precise suggestion</a></li>
+    <li><a href="#example">Reading the worked example</a></li>
+    <li><a href="#camo">Coming from CAMO</a></li>
+    <li><a href="#open">Open decisions</a></li>
+  </ol>
+</nav>
+
+<main>
+  <span class="eyebrow advanced">Advanced user guide</span>
+  <h1>How WARP works</h1>
+  <p class="lede">The full conceptual model, for people who want to know why a suggestion is recorded the way it is, read WARP data, or write suggestions in WARP's own format. Building and maintaining the database is covered in the <a href="mechanic.html">mechanic guide</a>.</p>
+
+  <section id="shape">
+    <h2>The overall shape</h2>
+    <p>WARP is a <strong>profile</strong> of the <a href="https://github.com/sepio-framework/sepio-linkml">SEPIO</a> Core Information Model, a general model for scientific evidence and provenance. It reuses the <a href="https://github.com/timalamenciak/causalmosaic">Causal Mosaic (CAMO)</a> for everything specific to causal claims. WARP adds the ecology: scope, practitioner and Indigenous knowledge, ecological evidence types, and node templates.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Part</th><th>What it is</th><th>Comes from</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Node shapes</strong></td><td>Fillable templates for what statements are about, e.g. <em>rate of a process of a population of a taxon</em></td><td>WARP node templates, compiled to OWL</td></tr>
+        <tr><td><strong>Predicate groups</strong></td><td>Controlled relationship words plus the qualifiers that say what <em>kind</em> of relation is asserted</td><td>Causal: CAMO. Interaction: Relation Ontology (RO)</td></tr>
+        <tr><td><strong>Overall shape</strong></td><td>Statement, proposition, evidence line, agent, contribution</td><td>SEPIO</td></tr>
+        <tr><td><strong>Scope</strong></td><td>One case, some cases, typical cases, all cases</td><td>WARP, after Vogt's semantic unit types</td></tr>
+        <tr><td><strong>Evidential basis</strong></td><td>Study design, evidence object, practitioner and Indigenous knowledge as evidence</td><td>WARP, using CAMO's evidence types</td></tr>
+      </tbody>
+    </table></div>
+    <p>The <em>warp</em> (fixed threads) is the SEPIO frame, scope and evidence. The <em>weft</em> (woven across, changing) is the node templates and predicate groups. Adding a new kind of statement means adding weft, never changing the warp.</p>
+    <p>Everything is exchanged as a <strong>StatementSet</strong>: one file holding agents, nodes, node definitions, statements and propositions for each predicate group, synthesis assessments, study results and documents. Objects refer to each other by id.</p>
+  </section>
+
+  <section id="layers">
+    <h2>Statement → proposition → assessment</h2>
+    <div class="flow">
+      <div class="box hl"><b>Statements</b>Recorded by annotators. Who said what, from which source, with what hedging and evidence.</div>
+      <div class="arrow">→</div>
+      <div class="box gen"><b>Propositions</b>Derived by a script: statements that say the same thing share one.</div>
+      <div class="arrow">←</div>
+      <div class="box hl"><b>Evidence lines</b>One argument for or against a proposition, from one kind of evidence.</div>
+      <div class="arrow">→</div>
+      <div class="box"><b>Synthesis assessment</b>EcoWeaver's own statement about a proposition, citing other statements as evidence.</div>
+    </div>
+    <div class="legend"><span><i class="hl"></i>written by people</span><span><i class="gen"></i>derived automatically</span><span><i></i>written by a synthesis pipeline or team</span></div>
+    <p>SEPIO distinguishes two modes of statement, and WARP uses both:</p>
+    <ul>
+      <li><strong>Assertion Mode</strong>: the statement puts a proposition forward as true. Every annotated statement (<code>CausalStatement</code>, <code>InteractionStatement</code>) is in this mode, and leaves SEPIO's <code>direction</code>, <code>strength</code> and <code>score</code> empty.</li>
+      <li><strong>Proposition Assessment Mode</strong>: the statement says how well the evidence supports a proposition. <code>SynthesisAssessment</code> is in this mode, and must fill <code>direction</code> and <code>strength</code>.</li>
+    </ul>
+  </section>
+
+  <section id="nodes">
+    <h2>Nodes and node templates</h2>
+    <p>A <strong>node</strong> is what a statement is about: one end of the subject → predicate → object link. Nodes are recorded as CAMO <code>CausalNode</code>s (despite the name, interaction statements use them too), with a name, an entity type and an entity term.</p>
+    <h3>A node is a variable, not a change</h3>
+    <p>Nodes carry no direction of change. "Increased", "decreased" and "removed" are not part of the node; the predicate carries the sign. So "planting bloodroot <em>prevents</em> garlic mustard population growth rate" rather than "...<em>causes decreased</em> garlic mustard". That lets statements finding increases and decreases meet on the same node.</p>
+    <h3>Node templates</h3>
+    <p>A <strong>node template</strong> is a fillable shape. Filling one gives the node a precise, machine-readable meaning (an OWL class), a generated label and a definition, all built from ontology terms. Templates are about shape, not topic: <code>population_of_taxon</code> serves deer, garlic mustard and bees alike.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Template</th><th>Shape</th><th>Blanks filled from</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr><td><code>population_of_taxon</code></td><td>⟨taxon⟩ population</td><td>taxon: NCBITaxon</td><td>Odocoileus virginianus population</td></tr>
+        <tr><td><code>quality_of_process_of_population</code></td><td>⟨quality⟩ of ⟨process⟩ of ⟨taxon⟩ population</td><td>quality: PATO; process: PCO, ECOCORE, GO, ENVO; taxon: NCBITaxon</td><td>rate of population growth of Alliaria petiolata population</td></tr>
+        <tr><td><code>intervention_involving_taxon</code></td><td>⟨action⟩ of ⟨taxon⟩</td><td>action: ELMO; taxon: NCBITaxon</td><td>planting of Sanguinaria canadensis</td></tr>
+      </tbody>
+    </table></div>
+    <p>Each template also has a logical definition. In words, the garlic mustard node is:</p>
+    <p class="callout note">a <strong>rate</strong> that is a <em>characteristic of</em> some (<strong>population growth</strong> that <em>has participant</em> some (<strong>population of organisms</strong> that <em>has member</em> some <strong>Alliaria petiolata</strong>))</p>
+    <p>Because these are OWL definitions, a reasoner can tell that two nodes built from the same template and terms are the same thing, and that a node about a species sits under a node about its genus.</p>
+    <p>A node can be recorded without a template filling; it just won't have a logical definition yet. CAMO nodes record taxa as Wikidata QIDs in <code>entity_term</code>, while template fillings use NCBITaxon IDs. Both are kept, and are to be crosswalked with SSSOM.</p>
+  </section>
+
+  <section id="groups">
+    <h2>Predicate groups</h2>
+    <p>A <strong>predicate group</strong> is one kind of statement. Each brings its own predicate list, its own predicate qualifiers, a statement class and a proposition class. Everything else (scope, hedging conventions, CARE, evidence lines, assessments, proposition derivation) is shared. Two groups exist today.</p>
+    <h3>Causal (from CAMO)</h3>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Predicate</th><th>Meaning</th><th>Rendered as</th></tr></thead>
+      <tbody>
+        <tr><td><code>causes</code></td><td>Direct positive causation: C produces E.</td><td>{subject} causes {object}</td></tr>
+        <tr><td><code>contributes_to</code></td><td>C is one of several contributing factors to E.</td><td>{subject} contributes to {object}</td></tr>
+        <tr><td><code>enables</code></td><td>C facilitates or promotes E but is not sufficient.</td><td>{subject} enables {object}</td></tr>
+        <tr><td><code>prevents</code></td><td>C inhibits, blocks or reduces E.</td><td>{subject} prevents {object}</td></tr>
+        <tr><td><code>disrupts</code></td><td>C degrades, suppresses or disrupts E.</td><td>{subject} disrupts {object}</td></tr>
+        <tr><td><code>regulates</code></td><td>C modulates E; the sign depends on node state changes.</td><td>{subject} regulates {object}</td></tr>
+        <tr><td><code>mediates</code></td><td>M is on the causal pathway between C and E.</td><td>{subject} mediates the effect on {object}</td></tr>
+        <tr><td><code>moderates</code></td><td>Z modifies the strength or direction of C → E.</td><td>{subject} moderates the relationship with {object}</td></tr>
+        <tr><td><code>associated_with</code></td><td>Association without causal commitment, no statistic reported. Parent of <code>correlated_with</code>.</td><td>{subject} is associated with {object}</td></tr>
+        <tr><td><code>correlated_with</code></td><td>A reported statistical correlation, no causal commitment.</td><td>{subject} is correlated with {object}</td></tr>
+        <tr><td><code>precedes</code></td><td>Temporal precedence without causal commitment (Biolink).</td><td>{subject} precedes {object}</td></tr>
+      </tbody>
+    </table></div>
+    <h3>Interaction (from RO)</h3>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Predicate</th><th>RO term</th><th>Rendered as</th></tr></thead>
+      <tbody>
+        <tr><td><code>biotically_interacts_with</code></td><td>RO:0002437</td><td>{subject} interacts with {object}</td></tr>
+        <tr><td><code>eats</code></td><td>RO:0002470</td><td>{subject} eats {object}</td></tr>
+        <tr><td><code>pollinates</code></td><td>RO:0002455</td><td>{subject} pollinates {object}</td></tr>
+        <tr><td><code>parasite_of</code></td><td>RO:0002444</td><td>{subject} is a parasite of {object}</td></tr>
+      </tbody>
+    </table></div>
+    <p>Interaction statements relate population nodes and qualify the predicate with <code>effect_on_subject</code> and <code>effect_on_object</code> (<code>positive</code>, <code>negative</code>, <code>neutral</code>, <code>not_reported</code>): −/+ for predation, +/+ for mutualism, and so on.</p>
+    <p>Planned groups (occurrence, composition, TEK statements via IUS) will slot in the same way.</p>
+  </section>
+
+  <section id="statement">
+    <h2>Anatomy of a statement</h2>
+    <p>Every annotated statement, in any group, shares these fields (from <code>EcoStatement</code> and SEPIO <code>Statement</code>):</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Field</th><th>Holds</th></tr></thead>
+      <tbody>
+        <tr><td><code>id</code></td><td>Identifier, e.g. <code>warp:statement/murphy2005-c1</code>.</td></tr>
+        <tr><td><code>subject</code>, <code>predicate</code>, <code>object</code></td><td>Node id, predicate from the group's list, node id. Required.</td></tr>
+        <tr><td><code>negated</code></td><td>True if the statement says the relationship does <em>not</em> hold. Defaults to false.</td></tr>
+        <tr><td><code>scope</code></td><td>Semantic unit type (<a href="#scope">below</a>). Recommended; needed for grouping.</td></tr>
+        <tr><td><code>statementText</code></td><td>A normalized rendering of the statement.</td></tr>
+        <tr><td><code>original_text</code></td><td>The statement as worded in its source: verbatim sentence, notebook line, transcript passage.</td></tr>
+        <tr><td><code>source_spans</code></td><td>Text spans (with character offsets and document section) grounding the statement.</td></tr>
+        <tr><td><code>reportedIn</code></td><td>Document ids: the source.</td></tr>
+        <tr><td><code>dateAuthored</code></td><td>When the statement was made (by its author, not the annotator).</td></tr>
+        <tr><td><code>contributions</code></td><td>Who made the statement: at least one contribution with role <code>author</code>.</td></tr>
+        <tr><td><code>recordMetadata</code></td><td>Who recorded it in EcoWeaver, and when (role <code>annotator</code>, <code>dateRecordCreated</code>).</td></tr>
+        <tr><td><code>care</code></td><td>Consent, access and knowledge-holder metadata (<a href="#people">below</a>).</td></tr>
+        <tr><td><code>hasEvidenceLines</code></td><td>The statement's own evidence lines (<a href="#evidence">below</a>).</td></tr>
+        <tr><td><code>proposition</code></td><td><strong>Derived.</strong> Filled by the derivation script, never by annotators.</td></tr>
+      </tbody>
+    </table></div>
+    <h3>Extra fields on causal statements</h3>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Field</th><th>Holds</th></tr></thead>
+      <tbody>
+        <tr><td><code>causal_language</code></td><td>Statement-level hedging, from CAMO (adapted from Yu et al. 2019): <code>direct_causal</code>, <code>uncertain_causal</code>, <code>associational</code>, <code>no_relationship</code>. Captures the text's commitment, not the strength of the evidence.</td></tr>
+        <tr><td><code>predicate_qualifiers</code></td><td>What kind of causal relation is asserted (<a href="#qualifiers">below</a>).</td></tr>
+        <tr><td><code>comparator</code></td><td>What the effect was assessed relative to, one entry per comparison arm: <code>untreated_control</code>, <code>reference_undisturbed</code>, <code>pre_treatment_baseline</code>, <code>alternative_treatment</code>, <code>passive_management_arm</code>, <code>spatial_or_temporal_control</code>, <code>not_reported</code>, <code>not_applicable</code>.</td></tr>
+        <tr><td><code>context</code></td><td>Conditions under which the statement holds: scope conditions, geographic, temporal and ecosystem scope.</td></tr>
+        <tr><td><code>ecosystem_context</code></td><td>An IUCN Global Ecosystem Typology functional group, grounded in ELMO.</td></tr>
+        <tr><td><code>temporal_extent</code></td><td>The timescale of the effect itself: duration, lag, observation grain and seasons.</td></tr>
+        <tr><td><code>camo_edge_id</code></td><td>The CAMO edge this statement was migrated from, if any.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout warn">
+      <strong class="t">Negation and hedging must agree</strong>
+      On a causal statement, <code>negated</code> is true <em>exactly</em> when <code>causal_language</code> is <code>no_relationship</code>. The checks reject a statement where the two disagree.
+    </div>
+    <p>Hedging belongs to the statement (it's how cautiously <em>this author</em> spoke). Scope belongs to the proposition (it's part of <em>what</em> is said), and is copied onto the statement so propositions can be derived.</p>
+  </section>
+
+  <section id="qualifiers">
+    <h2>Causal features (predicate qualifiers)</h2>
+    <p>An RDF predicate is a single term, so finer distinctions about the causal relation go in <code>predicate_qualifiers</code>, following the Biolink pattern. These are CAMO's philosophical-account and causal-feature layers, grouped together. Most take a <strong>feature assertion</strong> value: <code>explicitly_asserted</code>, <code>implicitly_assumed</code>, <code>explicitly_denied</code> or <code>not_addressed</code>.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Qualifier</th><th>Question</th><th>Values</th></tr></thead>
+      <tbody>
+        <tr><td><code>philosophical_accounts</code></td><td>Which account of causation does the claim invoke? (Illari &amp; Russo)</td><td class="wrap"><code>counterfactual</code>, <code>probabilistic</code>, <code>interventionist</code>, <code>transmission</code>, <code>mechanistic</code>, <code>regularity</code>, <code>inus_component</code>, <code>agency</code> (several allowed)</td></tr>
+        <tr><td><code>necessity</code>, <code>sufficiency</code></td><td>Is C claimed necessary / sufficient for E?</td><td>feature assertion</td></tr>
+        <tr><td><code>causal_direction</code></td><td>Is the direction C → E asserted, and on what grounds?</td><td class="wrap">status: <code>asserted</code>, <code>uncertain</code>, <code>bidirectional</code>, <code>not_addressed</code>; evidence: <code>experimental</code>, <code>temporal_precedence</code>, <code>theoretical</code>, <code>natural_experiment</code>, <code>structural_model</code></td></tr>
+        <tr><td><code>temporal_ordering</code></td><td>Is C claimed to precede E?</td><td>feature assertion</td></tr>
+        <tr><td><code>mediation</code></td><td>Is a mediating pathway identified?</td><td>status, mediator node ids, pathway description</td></tr>
+        <tr><td><code>moderation</code></td><td>Does something modify the effect?</td><td>status, moderator node ids, interaction type</td></tr>
+        <tr><td><code>effect_strength</code></td><td>How big is the effect?</td><td class="wrap">status, reported value ("60% reduction"), numeric value, qualitative (<code>strong</code>…<code>negligible</code>), dose-response</td></tr>
+        <tr><td><code>specificity</code>, <code>stability</code>, <code>proportionality</code></td><td>Specific cause? Stable across contexts? Proportional?</td><td>feature assertion</td></tr>
+        <tr><td><code>determinism</code></td><td>Is the process framed as deterministic?</td><td class="wrap"><code>deterministic_process</code>, <code>indeterministic_process</code>, <code>epistemic_probability_only</code>, <code>ambiguous</code>, <code>not_addressed</code></td></tr>
+        <tr><td><code>proximate_distal</code></td><td>Immediate trigger or root cause?</td><td class="wrap"><code>proximate</code>, <code>distal</code>, <code>both_specified</code>, <code>not_addressed</code></td></tr>
+        <tr><td><code>contributing_sole</code></td><td>Sole cause or one of several?</td><td class="wrap"><code>sole_cause</code>, <code>contributing_cause</code>, <code>not_addressed</code></td></tr>
+        <tr><td><code>reversibility</code></td><td>Does removing C undo E?</td><td class="wrap"><code>reversible</code>, <code>irreversible</code>, <code>partially_reversible</code>, <code>hysteresis</code>, <code>not_addressed</code></td></tr>
+      </tbody>
+    </table></div>
+    <p>Qualifiers are <strong>not</strong> part of a proposition's identity. If two papers disagree about reversibility, that shows up as variation across statements of one proposition, not as two propositions.</p>
+  </section>
+
+  <section id="two-directions">
+    <h2>Two kinds of "direction" and "strength"</h2>
+    <p>SEPIO and CAMO both use the words <em>direction</em> and <em>strength</em>, for different things. WARP keeps them apart by name:</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th></th><th>Evidential (SEPIO)</th><th>Causal (CAMO)</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Direction</strong></td><td><code>direction</code> / <code>directionOfEvidenceProvided</code>: does this support, dispute, or stay neutral toward a proposition?</td><td><code>predicate_qualifiers.causal_direction</code>: does C act on E, E on C, or both?</td></tr>
+        <tr><td><strong>Strength</strong></td><td><code>strength</code> / <code>strengthOfEvidenceProvided</code>: how strongly does the evidence bear on the proposition?</td><td><code>predicate_qualifiers.effect_strength</code>: how large is the effect?</td></tr>
+        <tr><td><strong>Where</strong></td><td>Evidence lines and synthesis assessments only</td><td>Annotated causal statements</td></tr>
+      </tbody>
+    </table></div>
+    <p>A large effect measured in a weak study is <code>effect_strength: strong</code> with <code>strengthOfEvidenceProvided: weak</code>.</p>
+  </section>
+
+  <section id="scope">
+    <h2>Scope</h2>
+    <p>Scope says what a statement is about, following Vogt's semantic unit types for statement units. (The definitions below are working glosses still to be checked against Vogt's own.)</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Value</th><th>About</th><th>Rendered prefix</th></tr></thead>
+      <tbody>
+        <tr><td><code>assertional</code></td><td>Particular things: this plot, this population, this burn. Field observations and case reports are usually assertional.</td><td>"In a particular case, …"</td></tr>
+        <tr><td><code>contingent</code></td><td>Some, but not necessarily all, instances of a type: something that can or sometimes does happen.</td><td>"Sometimes, …"</td></tr>
+        <tr><td><code>prototypical</code></td><td>What typically holds for instances of a type, allowing exceptions. The usual scope of an ecological generalization.</td><td>"Typically, …"</td></tr>
+        <tr><td><code>universal</code></td><td>All instances of a type, without exception.</td><td>"Always, …"</td></tr>
+        <tr><td><code>unclear</code></td><td>Cannot be determined from the source. Blocks grouping until resolved.</td><td>(not grouped)</td></tr>
+      </tbody>
+    </table></div>
+    <p>Scope replaces CAMO's <code>token_or_type</code>. When migrating, <code>token</code> → <code>assertional</code> and <code>type</code> → <code>prototypical</code> by default, and each is flagged for a human to check: most ecological generalizations hold typically, not universally.</p>
+  </section>
+
+  <section id="identity">
+    <h2>Propositions and identity</h2>
+    <p>Nobody writes propositions by hand (except open questions). A script groups statements under identity rule <strong><code>warp-prop-identity/3</code></strong>:</p>
+    <div class="callout note">
+      Two statements share a proposition when <strong>group, subject node, predicate, object node, negated and scope</strong> all match exactly.
+    </div>
+    <p>Everything else stays on the statement and is aggregated, not used for identity: hedging, causal features, comparator, context, evidence.</p>
+    <h3>Same or different?</h3>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Statement A</th><th>Statement B</th><th>Same proposition?</th></tr></thead>
+      <tbody>
+        <tr><td>Planting bloodroot <em>prevents</em> GM growth rate, typical (paper 1, "reduces")</td><td>Same, typical (paper 2, "may reduce")</td><td><strong>Yes.</strong> Hedging differs, but it's not identity.</td></tr>
+        <tr><td>…typical</td><td>…one plot (assertional)</td><td><strong>No.</strong> Scope differs.</td></tr>
+        <tr><td>…prevents…</td><td>…does <em>not</em> prevent… (negated)</td><td><strong>No.</strong> They are opposite propositions; a synthesis weighs both.</td></tr>
+        <tr><td>…in temperate deciduous forest</td><td>…in oldfields</td><td><strong>Yes</strong>, under rule 3. Context isn't identity (yet; <a href="#open">see open decisions</a>).</td></tr>
+        <tr><td>Causal: deer <em>prevents</em> X</td><td>Interaction: deer <em>eats</em> X</td><td><strong>No.</strong> Different group and predicate.</td></tr>
+      </tbody>
+    </table></div>
+    <h3>What a derived proposition looks like</h3>
+<pre>- id: warp:prop/aea4ac8269ae                 <span class="c"># hash of the identity key: stable across runs</span>
+  type: CausalProposition
+  subject: node:planting_of_sanguinaria_canadensis
+  predicate: prevents
+  object: node:rate_of_population_growth_of_alliaria_petiolata
+  negated: false
+  scope: assertional
+  propositionText: In a particular case, planting of Sanguinaria canadensis prevents ...
+  derived_from_statements: [warp:statement/notebook-c1]
+  status: asserted
+  identity_key: causal|node:planting_of_...|prevents|node:rate_of_...|affirmed|assertional
+  identity_rule_version: warp-prop-identity/3</pre>
+    <h3>Open questions</h3>
+    <p>A proposition written by people with <code>status: open_question</code> represents a question nobody has answered: an empty cell in an evidence gap map, or a practitioner's question in TREK. It keeps its chosen id. When a statement matches, it becomes <code>asserted</code>, its text is replaced by the rendered fact, and the original question is kept in <code>description</code>. If those statements go away, it reverts to <code>open_question</code>. It's never deleted by re-derivation.</p>
+    <h3>When the rule changes</h3>
+    <p>The identity rule is a modelling decision. Changing it regroups statements, so every proposition records the rule version that made it, and derived proposition ids change with each version (open-question ids don't). Version 1 had no group; version 2 added it; version 3 changed the non-negated key word from "asserted" to "affirmed" to avoid clashing with the proposition status.</p>
+  </section>
+
+  <section id="evidence">
+    <h2>Evidence lines</h2>
+    <p>An <strong>evidence line</strong> (<code>EcoEvidenceLine</code>) is one argument for or against a proposition, built from evidence items of one kind. A statement with an experiment and a supporting model has two evidence lines.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Field</th><th>Holds</th></tr></thead>
+      <tbody>
+        <tr><td><code>evidence_type</code></td><td>Kind of study or reasoning. Required. (Replaces SEPIO's generic <code>subtype</code>, which stays empty.)</td></tr>
+        <tr><td><code>evidence_object</code></td><td>Does the evidence bear on <code>correlation</code> (difference-making), <code>mechanism</code> (production), or <code>both</code>? (The Russo–Williamson distinction.)</td></tr>
+        <tr><td><code>directionOfEvidenceProvided</code></td><td><code>supports</code>, <code>disputes</code> or <code>neutral</code>. Required.</td></tr>
+        <tr><td><code>strengthOfEvidenceProvided</code></td><td><code>strong</code>, <code>moderate</code>, <code>weak</code> or <code>not_assessed</code>.</td></tr>
+        <tr><td><code>evidence_item_refs</code></td><td>Ids of the evidence: study results, documents, or other statements. By reference, not copied in.</td></tr>
+        <tr><td><code>targetProposition</code></td><td>The proposition argued about. On a statement's own lines this is <strong>derived</strong> (it's the statement's proposition).</td></tr>
+        <tr><td><code>contributions</code></td><td>Who judged direction and strength (role <code>evidence_assessor</code>). If absent, the judgement is attributed to the statement's annotator, or the assessment's author.</td></tr>
+      </tbody>
+    </table></div>
+    <h3>Evidence types</h3>
+    <p>From CAMO. The Evidence and Conclusion Ontology (ECO) has no terms for most ecological study designs, so most are only broadly mapped to ECO for now; a joint term request is being prepared.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Value</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td><code>randomized_experiment</code></td><td>Randomized controlled trial or field experiment</td></tr>
+        <tr><td><code>natural_experiment</code></td><td>Natural experiment or exogenous shock</td></tr>
+        <tr><td><code>quasi_experiment</code></td><td>BACI, difference-in-differences, etc.</td></tr>
+        <tr><td><code>observational_longitudinal</code></td><td>Cohort, panel or monitoring over time</td></tr>
+        <tr><td><code>observational_cross_sectional</code></td><td>Cross-sectional study or survey</td></tr>
+        <tr><td><code>mechanistic_study</code></td><td>Study of mechanism (pathway dissection, process tracing)</td></tr>
+        <tr><td><code>structural_equation_model</code></td><td>SEM or path analysis</td></tr>
+        <tr><td><code>meta_analysis</code>, <code>systematic_review</code></td><td>Syntheses of multiple studies</td></tr>
+        <tr><td><code>modeling_simulation</code></td><td>Computational model, simulation, theoretical prediction</td></tr>
+        <tr><td><code>expert_judgment</code></td><td>Expert elicitation, Delphi, professional opinion</td></tr>
+        <tr><td><code>case_study</code></td><td>Single case or natural history observation</td></tr>
+        <tr><td><code>theoretical</code></td><td>Deduction from theory without empirical test</td></tr>
+        <tr><td><code>practitioner_experience</code></td><td>Practitioner or land manager field experience</td></tr>
+        <tr><td><code>indigenous_knowledge</code></td><td>Traditional ecological knowledge or Indigenous knowledge systems</td></tr>
+      </tbody>
+    </table></div>
+    <h3>Study results</h3>
+    <p>For evidence from data, the recommended level of detail is an <code>EcoStudyResult</code>: a summary of one study arm or plot group about one node (mean, variability, n), traceable to its source dataset. Evidence lines point at these by id.</p>
+  </section>
+
+  <section id="assessment">
+    <h2>Synthesis assessments</h2>
+    <p>A <code>SynthesisAssessment</code> is a statement too, made by EcoWeaver's synthesis pipeline or a review team, in Proposition Assessment Mode. Unlike annotated statements, it targets a <em>chosen</em> proposition, and must give:</p>
+    <ul>
+      <li><code>direction</code>: supports, disputes or neutral;</li>
+      <li><code>strength</code>: a GRADE-style certainty grade, which controls how the finding is worded downstream;</li>
+      <li>optionally <code>evidence_balance</code>: <code>supportive</code>, <code>mixed</code>, <code>conflicting</code>, <code>insufficient</code>, <code>no_evidence</code>, <code>not_assessed</code>.</li>
+    </ul>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Certainty grade</th><th>Rendered as</th></tr></thead>
+      <tbody>
+        <tr><td><code>high</code></td><td>X increases Y</td></tr>
+        <tr><td><code>moderate</code></td><td>X probably increases Y</td></tr>
+        <tr><td><code>low</code></td><td>X may increase Y</td></tr>
+        <tr><td><code>very_low</code></td><td>X might increase Y</td></tr>
+        <tr><td><code>not_assessed</code></td><td>(not formally assessed)</td></tr>
+      </tbody>
+    </table></div>
+    <p>Its evidence lines cite <strong>other people's statements</strong> as evidence items.</p>
+    <h3>How a case report supports a generalization</h3>
+    <p>In the worked example, the assessment targets the <em>prototypical</em> proposition "typically, planting bloodroot prevents garlic mustard population growth". It has two evidence lines: the randomized experiment (moderate, citing the published statement) and practitioner experience (weak, citing the notebook statement). The notebook statement has its own <em>assertional</em> proposition, but enters here as evidence for the general one. Overall: supports, low certainty, supportive balance.</p>
+  </section>
+
+  <section id="people">
+    <h2>Agents, roles and CARE</h2>
+    <h3>Agents</h3>
+    <p>Every person, organization, community or piece of software is an <code>EcoAgent</code> with an id (an ORCID or ROR id where one exists and the agent agrees, otherwise a local <code>warp:agent/…</code> id, which may be a pseudonym) and an <code>agent_kind</code>:</p>
+    <p><code>researcher</code> · <code>practitioner</code> · <code>indigenous_knowledge_holder</code> · <code>community_member</code> · <code>organization</code> · <code>synthesis_pipeline</code></p>
+    <h3>Contributions and roles</h3>
+    <p>Credit is given through contributions, each naming an agent and a role. Each role has one proper place, and the checks enforce it:</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Role</th><th>Meaning</th><th>Goes on</th></tr></thead>
+      <tbody>
+        <tr><td><code>author</code></td><td>Made the statement or assessment</td><td>the statement's <code>contributions</code></td></tr>
+        <tr><td><code>evidence_assessor</code></td><td>Judged an evidence line's direction and strength</td><td>the evidence line's <code>contributions</code></td></tr>
+        <tr><td><code>annotator</code></td><td>Recorded it in EcoWeaver: provenance of the record, not the knowledge</td><td>the statement's <code>recordMetadata.contributions</code></td></tr>
+        <tr><td><code>reviewer</code></td><td>Checked someone else's annotation or assessment</td><td>any</td></tr>
+      </tbody>
+    </table></div>
+    <h3>CARE metadata</h3>
+    <div class="callout care">
+      <p>Practitioner and Indigenous knowledge appear in two roles: as <strong>statements in their own right</strong>, with the knowledge holder as author, and as <strong>evidence</strong> for other statements. Recording them only as evidence would make knowledge holders sources for other people's claims, never people making their own.</p>
+      <p>A statement authored by an <code>indigenous_knowledge_holder</code> or <code>community_member</code> <strong>must</strong> carry <code>care</code> metadata, or the checks refuse it.</p>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>CARE field</th><th>Holds</th></tr></thead>
+      <tbody>
+        <tr><td><code>knowledge_holders</code></td><td>Agent ids of those recognised as holding the knowledge. Often the author, but not always: knowledge relayed by a community member may be held by an elder or the community.</td></tr>
+        <tr><td><code>community</code></td><td>Community or nation with authority over the knowledge.</td></tr>
+        <tr><td><code>consent_reference</code></td><td>Pointer to the consent or agreement it was recorded under.</td></tr>
+        <tr><td><code>access_level</code></td><td>Required: <code>open</code>, <code>attribution_required</code>, <code>community_restricted</code>, <code>restricted</code>.</td></tr>
+        <tr><td><code>local_contexts_labels</code></td><td>Local Contexts TK/BC label or notice URIs.</td></tr>
+        <tr><td><code>protocols</code></td><td>Community protocols governing use, in the community's words.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section id="suggest">
+    <h2>Writing a precise suggestion</h2>
+    <p>The <a href="basic.html#template">contributor template</a> is always fine. If you'd rather be exact, paste a statement in WARP's own format into the issue. Leave out <code>proposition</code> and <code>targetProposition</code> (they're derived), and don't invent node ids: describe new nodes in words, or propose a template filling.</p>
+<pre>causal_statements:
+  - id: warp:statement/&lt;short-id&gt;
+    type: CausalStatement
+    subject: node:planting_of_sanguinaria_canadensis       <span class="c"># existing node id, or describe it</span>
+    predicate: prevents
+    object: node:rate_of_population_growth_of_alliaria_petiolata
+    negated: false                                         <span class="c"># true iff causal_language is no_relationship</span>
+    scope: prototypical
+    causal_language: direct_causal
+    statementText: Planting bloodroot reduces the population growth rate of garlic mustard.
+    original_text: "&lt;verbatim sentence&gt;"
+    reportedIn: [&lt;DOI or citation&gt;]
+    contributions:
+      - {role: author, contributor: &lt;who made the statement&gt;}
+    comparator:
+      - {status: explicitly_asserted, comparator_type: untreated_control}
+    predicate_qualifiers:
+      philosophical_accounts: [interventionist]
+      causal_direction: {status: asserted, evidence_for_direction: experimental}
+    hasEvidenceLines:
+      - evidence_type: randomized_experiment
+        evidence_object: correlation
+        directionOfEvidenceProvided: supports
+        strengthOfEvidenceProvided: not_assessed</pre>
+    <p>To propose a new node with a template filling:</p>
+<pre>node_definitions:
+  - node: node:&lt;proposed_id&gt;
+    template: quality_of_process_of_population
+    fillers:
+      - {var: quality, value: "PATO:0000161", label: rate}
+      - {var: process, value: "PCO:0000011", label: population growth}
+      - {var: taxon,   value: "NCBITaxon:126270", label: Alliaria petiolata}</pre>
+    <p>Look terms up in <a href="https://www.ebi.ac.uk/ols4/">OLS</a>. Each template restricts which ontologies may fill each blank (see the <a href="#nodes">template table</a>), e.g. taxa must be NCBITaxon, not Wikidata.</p>
+  </section>
+
+  <section id="example">
+    <h2>Reading the worked example</h2>
+    <p>The repository's <code>examples/</code> folder walks through one case in three files:</p>
+    <div class="flow">
+      <div class="box hl"><b>bloodroot_statements.yaml</b>What annotators produce: 3 agents, 4 nodes with template fillings, a published causal statement (typical), a practitioner's causal statement (one plot), a practitioner's negated interaction statement ("deer generally don't browse garlic mustard"), and one open question.</div>
+      <div class="arrow">→</div>
+      <div class="box gen"><b>bloodroot_statements.derived.yaml</b>After derivation: the open question is now asserted by the published statement; the notebook statement gets its own assertional proposition; the interaction statement gets one interaction proposition.</div>
+      <div class="arrow">→</div>
+      <div class="box"><b>bloodroot_assessment.yaml</b>A synthesis assessment of the general proposition, with an experimental and a practitioner evidence line.</div>
+    </div>
+    <p>Placeholders are marked <code>TODO</code>: the citation, verbatim quotes, numbers, Wikidata QIDs and the ELMO planting term.</p>
+  </section>
+
+  <section id="camo">
+    <h2>Coming from CAMO</h2>
+    <p>Most of a CAMO <code>CausalEdge</code> becomes the predicate layer of a <code>CausalStatement</code>. Hedging and scope belong to the speaker, and evidence type belongs to the evidence. Annotators moving over should read <a href="camo.html">WARP for CAMO annotators</a>, which covers the changed habits and a full worked translation.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>CAMO <code>CausalEdge</code> field</th><th>In WARP</th></tr></thead>
+      <tbody>
+        <tr><td><code>subject</code>, <code>predicate</code>, <code>object</code>, <code>negated</code></td><td><code>CausalStatement</code>, same names</td></tr>
+        <tr><td class="wrap">accounts and causal features (<code>necessity</code>, <code>sufficiency</code>, <code>mediation</code>, …)</td><td><code>predicate_qualifiers</code>, same names</td></tr>
+        <tr><td><code>direction</code>, <code>strength</code></td><td><code>predicate_qualifiers.causal_direction</code>, <code>.effect_strength</code> (renamed)</td></tr>
+        <tr><td><code>causal_language</code></td><td><code>causal_language</code> (statement-level hedging)</td></tr>
+        <tr><td><code>token_or_type</code></td><td><code>scope</code> (token → assertional, type → prototypical; check by hand)</td></tr>
+        <tr><td><code>context_dependence</code></td><td><code>context</code></td></tr>
+        <tr><td><code>comparator</code>, <code>ecosystem_context</code>, <code>temporal_extent</code></td><td>same names</td></tr>
+        <tr><td><code>original_sentence</code>, <code>source_spans</code>, <code>source_document</code></td><td><code>original_text</code>, <code>source_spans</code>, <code>reportedIn</code></td></tr>
+        <tr><td><code>evidential_basis.evidence_types</code> / <code>evidence_objects</code></td><td>evidence lines' <code>evidence_type</code> / <code>evidence_object</code> (one line per type)</td></tr>
+        <tr><td><code>certainty_grade</code></td><td><code>SynthesisAssessment.strength</code> (article-level placement is an open decision)</td></tr>
+        <tr><td><code>annotator</code>, <code>annotation_timestamp</code></td><td><code>recordMetadata</code>: annotator contribution and <code>dateRecordCreated</code></td></tr>
+        <tr><td><code>annotation_confidence</code>, <code>annotation_notes</code></td><td>not yet mapped</td></tr>
+        <tr><td><code>fcm_weight</code>, <code>fcm_weight_source</code></td><td>not in WARP: rendering metadata, derived downstream</td></tr>
+        <tr><td><code>EvidenceBaseAssessmentEdge</code></td><td><code>SynthesisAssessment</code>; included edges → evidence item refs</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section id="open">
+    <h2>Open decisions you can weigh in on</h2>
+    <p>WARP is a draft. These are live questions; issues with views or real examples are welcome.</p>
+    <ul>
+      <li><strong>Identity.</strong> Should any context (ecosystem type, comparator) be part of a proposition's identity? It would make propositions narrower and evidence gap maps sparser.</li>
+      <li><strong>Scope for annotators.</strong> Is the four-way scope choice teachable, or should annotation tools ask "about one place and time, or in general?" and map the answer?</li>
+      <li><strong>Where certainty lives.</strong> Should a paper-level certainty grade go on its evidence lines' strength, or only on synthesis assessments?</li>
+      <li><strong>Manual vs automatic.</strong> Recording whether a statement was curated by a person or extracted by a pipeline (ECO manual/automatic assertion), and what a human-reviewed extraction counts as.</li>
+      <li><strong>Study quality.</strong> Choosing an appraisal scheme, recorded separately from evidence strength.</li>
+      <li><strong>Agent identity.</strong> When practitioners and knowledge holders get an ORCID versus a pseudonymous id, and who decides.</li>
+      <li><strong>Template ontology.</strong> Whether a rate is a PATO quality of a process or (per BFO 2020) a process profile.</li>
+      <li><strong>Evidence counting.</strong> Whether syntheses count studies, statements or study arms, and how evidence types are weighted.</li>
+    </ul>
+  </section>
+</main>
+</div>
+<footer>WARP 0.5.0 · <a href="camo.html">CAMO annotators</a> · Advanced guide · <a href="basic.html">Contributor</a> · <a href="mechanic.html">Mechanic</a></footer>
+</body>
+</html>

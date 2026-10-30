@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WARP for CAMO Annotators</title>
+<meta name="description" content="For annotators who know the Causal Mosaic (CAMO): what stays the same in WARP, what moves, what's new, and what to do differently, with a CAMO edge translated field by field.">
+<link rel="stylesheet" href="warp-docs.css">
+</head>
+<body>
+<header class="topbar"><div class="topbar-inner">
+  <a class="brand" href="index.html"><span>WARP</span> docs</a>
+  <nav class="levels" aria-label="Documentation level">
+    <a class="l-basic" href="basic.html">Contributor</a>
+    <a class="l-camo" href="camo.html" aria-current="page">CAMO annotators</a>
+    <a class="l-advanced" href="advanced.html">Advanced</a>
+    <a class="l-mechanic" href="mechanic.html">Mechanic</a>
+  </nav>
+</div></header>
+
+<div class="layout">
+<nav class="toc" aria-label="On this page">
+  <h2>On this page</h2>
+  <ol>
+    <li><a href="#short">The short version</a></li>
+    <li><a href="#why">Why the edge was split up</a></li>
+    <li><a href="#same">What stays the same</a></li>
+    <li><a href="#side">One edge, side by side</a></li>
+    <li><a href="#fields">Field-by-field map</a></li>
+    <li><a href="#scope">token_or_type becomes scope</a></li>
+    <li><a href="#nodes">Nodes: drop the state qualifier</a></li>
+    <li><a href="#evidence">evidential_basis becomes evidence lines</a></li>
+    <li><a href="#people">Annotator vs author</a></li>
+    <li><a href="#propositions">Edges you don't write: propositions</a></li>
+    <li><a href="#assessment">The assessment edge</a></li>
+    <li><a href="#new">Entirely new things</a></li>
+    <li><a href="#gaps">Not mapped yet</a></li>
+    <li><a href="#habits">Habits to change</a></li>
+    <li><a href="#words">Vocabulary</a></li>
+  </ol>
+</nav>
+
+<main>
+  <span class="eyebrow camo">For CAMO annotators</span>
+  <h1>WARP for people who know CAMO</h1>
+  <p class="lede">If you've been annotating <code>CausalEdge</code>s, most of what you know carries straight over: the same nodes, predicates, causal features, comparators and evidence types. What changes is <em>where</em> things sit. This page shows what moved, what's new, and which habits to change.</p>
+
+  <div class="callout note">
+    <strong class="t">Data model, not the form</strong>
+    This page is about how WARP stores an annotation. How Loom will present it (for example, keeping the familiar CAMO edge form and writing WARP statements behind it) hasn't been decided yet. Whatever the form looks like, the decisions described here are the ones you'll be making.
+  </div>
+
+  <section id="short">
+    <h2>The short version</h2>
+    <div class="table-wrap"><table>
+      <thead><tr><th>In CAMO you…</th><th>In WARP you…</th></tr></thead>
+      <tbody>
+        <tr><td>annotate a <code>CausalEdge</code> in a <code>CausalGraph</code></td><td>annotate a <code>CausalStatement</code> in a <code>StatementSet</code></td></tr>
+        <tr><td>put every causal feature directly on the edge</td><td>put them in one block, <code>predicate_qualifiers</code></td></tr>
+        <tr><td>choose <code>token_or_type</code></td><td>choose <code>scope</code> from four values plus <code>unclear</code>, and it matters more</td></tr>
+        <tr><td>may give nodes a state qualifier ("increased…")</td><td>name the variable; the predicate carries the sign</td></tr>
+        <tr><td>list <code>evidence_types</code> and <code>evidence_objects</code></td><td>write one <strong>evidence line</strong> per evidence type, each with its object, direction and strength</td></tr>
+        <tr><td>are the edge's <code>annotator</code></td><td>are the <strong>annotator</strong>; the source's authors are the <strong>author</strong></td></tr>
+        <tr><td>(no equivalent)</td><td>get a <strong>proposition</strong> filled in automatically, grouping your statement with matching ones</td></tr>
+        <tr><td>see <code>EvidenceBaseAssessmentEdge</code> for syntheses</td><td>see <code>SynthesisAssessment</code>, which cites statements as evidence</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section id="why">
+    <h2>Why the edge was split up</h2>
+    <p>A CAMO edge mixes four kinds of information that belong to different things:</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Information</th><th>Belongs to</th><th>CAMO examples</th><th>WARP home</th></tr></thead>
+      <tbody>
+        <tr><td>What relation is claimed</td><td>the relation itself</td><td>predicate, necessity, reversibility, mediation…</td><td><code>predicate</code> + <code>predicate_qualifiers</code></td></tr>
+        <tr><td>How it was said</td><td>the speaker</td><td><code>causal_language</code>, <code>original_sentence</code></td><td>the statement</td></tr>
+        <tr><td>What it's about</td><td>the idea</td><td><code>token_or_type</code></td><td><code>scope</code>, part of the proposition</td></tr>
+        <tr><td>What backs it</td><td>the evidence</td><td><code>evidential_basis</code>, <code>certainty_grade</code></td><td>evidence lines and assessments</td></tr>
+      </tbody>
+    </table></div>
+    <p>Separating them buys three things CAMO can't do on its own: grouping edges from different papers that make the same claim (propositions), citing one person's statement as evidence for another's (evidence lines), and recognising practitioners and Indigenous knowledge holders as people who make statements rather than only as evidence. WARP gets the statement/proposition/evidence frame from SEPIO, and keeps CAMO for everything causal.</p>
+  </section>
+
+  <section id="same">
+    <h2>What stays the same</h2>
+    <p>WARP imports CAMO unchanged. Everything below uses CAMO's own enums and classes, with the same values you already know:</p>
+    <ul>
+      <li><strong>Nodes</strong> are still <code>CausalNode</code>s: <code>name</code>, <code>entity_type</code>, <code>entity_term</code>, <code>measured_attribute</code>, <code>applied_to</code>, <code>source_spans</code>. (Interaction statements use them too, despite the name.)</li>
+      <li><strong>Predicates</strong>: <code>CausalPredicateEnum</code>, all eleven, same meanings and Rosetta templates.</li>
+      <li><strong>Causal language</strong>: <code>direct_causal</code>, <code>uncertain_causal</code>, <code>associational</code>, <code>no_relationship</code>.</li>
+      <li><strong>Negation</strong>: same rule. <code>negated: true</code> if and only if <code>causal_language: no_relationship</code>, and you still never encode a null result with an "unchanged" node. The WARP checks enforce this and reject edges that break it.</li>
+      <li><strong>Philosophical accounts and the causal features</strong>: same names, same values, same <code>FeatureAssertionEnum</code> (<code>explicitly_asserted</code>, <code>implicitly_assumed</code>, <code>explicitly_denied</code>, <code>not_addressed</code>).</li>
+      <li><strong>Structured annotations</strong>: <code>DirectionAnnotation</code>, <code>MediationAnnotation</code>, <code>ModerationAnnotation</code>, <code>StrengthAnnotation</code>, <code>ComparatorAnnotation</code> (still one per arm), <code>ContextAnnotation</code>, <code>TemporalExtent</code>, <code>TextSpan</code>.</li>
+      <li><strong>Ecosystem context</strong>: IUCN GET functional groups via ELMO.</li>
+      <li><strong>Evidence types and objects</strong>: <code>EvidenceTypeEnum</code> and <code>EvidenceObjectEnum</code>, same values.</li>
+      <li><strong>Certainty grades and evidence balance</strong>: <code>CertaintyGradeEnum</code>, <code>EvidenceBalanceEnum</code>.</li>
+    </ul>
+  </section>
+
+  <section id="side">
+    <h2>One edge, side by side</h2>
+    <p>The worked example's published finding (placeholders marked <code>TODO</code>), as you'd annotate it in CAMO, then as WARP records it.</p>
+    <h3>CAMO</h3>
+<pre>edges:
+  - id: edge_murphy2005_1
+    source_document: doc_murphy2005
+    subject: node:planting_of_sanguinaria_canadensis
+    predicate: prevents
+    object: node:rate_of_population_growth_of_alliaria_petiolata
+    causal_language: direct_causal
+    original_sentence: "TODO: verbatim sentence"
+    token_or_type: type
+    philosophical_accounts: [interventionist]
+    direction: {status: asserted, evidence_for_direction: experimental}
+    reversibility: not_addressed
+    comparator:
+      - {status: explicitly_asserted, comparator_type: untreated_control}
+    evidential_basis:
+      evidence_types: [randomized_experiment]
+      evidence_objects: [correlation]
+    annotator: orcid:0000-0000-0000-0000
+    annotation_timestamp: 2026-10-10T14:00:00Z</pre>
+    <h3>WARP</h3>
+<pre>causal_statements:
+  - id: warp:statement/murphy2005-c1
+    type: CausalStatement
+    subject: node:planting_of_sanguinaria_canadensis              <span class="c"># same</span>
+    predicate: prevents                                           <span class="c"># same</span>
+    object: node:rate_of_population_growth_of_alliaria_petiolata  <span class="c"># same</span>
+    causal_language: direct_causal                                <span class="c"># same</span>
+    original_text: "TODO: verbatim sentence"                      <span class="c"># was original_sentence</span>
+    statementText: Planting bloodroot reduces the population growth rate of garlic mustard.  <span class="c"># new</span>
+    scope: prototypical                                           <span class="c"># was token_or_type: type</span>
+    reportedIn: [warp:doc/murphy2005]                             <span class="c"># was source_document</span>
+    dateAuthored: "2005"                                          <span class="c"># new: when the authors said it</span>
+    contributions:                                                <span class="c"># new: who SAID it</span>
+      - {id: warp:contrib/murphy2005-c1-author, type: EcoContribution,
+         role: author, contributor: warp:agent/murphy2005-authors}
+    recordMetadata:                                               <span class="c"># was annotator + annotation_timestamp</span>
+      dateRecordCreated: "2026-10-10T14:00:00Z"
+      contributions:
+        - {id: warp:contrib/murphy2005-c1-annotation, type: EcoContribution,
+           role: annotator, contributor: "orcid:0000-0000-0000-0000"}
+    comparator:                                                   <span class="c"># same</span>
+      - {status: explicitly_asserted, comparator_type: untreated_control}
+    predicate_qualifiers:                                         <span class="c"># features move in here</span>
+      philosophical_accounts: [interventionist]
+      causal_direction: {status: asserted, evidence_for_direction: experimental}  <span class="c"># was direction</span>
+      reversibility: not_addressed
+    hasEvidenceLines:                                             <span class="c"># was evidential_basis</span>
+      - id: warp:el/murphy2005-c1-1
+        type: EcoEvidenceLine
+        evidence_type: randomized_experiment
+        evidence_object: correlation
+        directionOfEvidenceProvided: supports                     <span class="c"># new judgement</span>
+        strengthOfEvidenceProvided: not_assessed                  <span class="c"># new judgement</span>
+        evidence_item_refs: [warp:result/murphy2005-planted, warp:result/murphy2005-control]
+    <span class="c"># proposition: filled in by the derivation script, never by you</span></pre>
+    <p>The statement is longer mainly because of provenance: who made it and who recorded it are now two separate, credited things. The causal content is identical.</p>
+  </section>
+
+  <section id="fields">
+    <h2>Field-by-field map</h2>
+    <div class="table-wrap"><table>
+      <thead><tr><th>CAMO <code>CausalEdge</code></th><th>WARP <code>CausalStatement</code></th><th>Note</th></tr></thead>
+      <tbody>
+        <tr><td><code>id</code></td><td><code>id</code></td><td>Now an identifier (<code>warp:statement/…</code>). Keep the CAMO id in <code>camo_edge_id</code> when migrating.</td></tr>
+        <tr><td><code>subject</code>, <code>predicate</code>, <code>object</code>, <code>negated</code></td><td>same</td><td></td></tr>
+        <tr><td><code>causal_language</code></td><td>same</td><td>Required in CAMO, <strong>optional</strong> in WARP. Fill it anyway.</td></tr>
+        <tr><td><code>original_sentence</code></td><td><code>original_text</code></td><td>Renamed: sources can be notebook lines or transcripts, not only sentences.</td></tr>
+        <tr><td><code>source_spans</code></td><td>same</td><td></td></tr>
+        <tr><td><code>source_document</code></td><td><code>reportedIn</code></td><td>A list of <code>EcoDocument</code> ids. See <a href="#gaps">not mapped yet</a> for study metadata.</td></tr>
+        <tr><td><code>token_or_type</code></td><td><code>scope</code></td><td><a href="#scope">Four-way choice</a>.</td></tr>
+        <tr><td><code>philosophical_accounts</code></td><td><code>predicate_qualifiers.philosophical_accounts</code></td><td>Required in CAMO, <strong>optional</strong> in WARP. Fill it anyway.</td></tr>
+        <tr><td class="wrap"><code>necessity</code>, <code>sufficiency</code>, <code>temporal_ordering</code>, <code>mediation</code>, <code>moderation</code>, <code>specificity</code>, <code>stability</code>, <code>determinism</code>, <code>proximate_distal</code>, <code>contributing_sole</code>, <code>reversibility</code>, <code>proportionality</code></td><td><code>predicate_qualifiers.&lt;same name&gt;</code></td><td>Same values.</td></tr>
+        <tr><td><code>direction</code></td><td><code>predicate_qualifiers.causal_direction</code></td><td>Renamed: WARP's <code>direction</code> means support/dispute (<a href="#words">vocabulary</a>).</td></tr>
+        <tr><td><code>strength</code></td><td><code>predicate_qualifiers.effect_strength</code></td><td>Renamed for the same reason.</td></tr>
+        <tr><td><code>context_dependence</code></td><td><code>context</code></td><td>Same <code>ContextAnnotation</code>.</td></tr>
+        <tr><td><code>comparator</code>, <code>ecosystem_context</code>, <code>temporal_extent</code></td><td>same</td><td></td></tr>
+        <tr><td><code>evidential_basis</code></td><td><code>hasEvidenceLines</code></td><td><a href="#evidence">One line per evidence type</a>.</td></tr>
+        <tr><td><code>certainty_grade</code></td><td>(see note)</td><td>Undecided at article level; on syntheses it's <code>SynthesisAssessment.strength</code>.</td></tr>
+        <tr><td><code>annotator</code>, <code>annotation_timestamp</code></td><td><code>recordMetadata</code></td><td>Annotator contribution + <code>dateRecordCreated</code>.</td></tr>
+        <tr><td><code>annotation_confidence</code>, <code>annotation_notes</code></td><td>-</td><td>Not mapped yet.</td></tr>
+        <tr><td><code>fcm_weight</code>, <code>fcm_weight_source</code></td><td>-</td><td>Not annotated: computed downstream for rendering.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section id="scope">
+    <h2><code>token_or_type</code> becomes <code>scope</code></h2>
+    <p>This is the biggest change to your day-to-day decisions. <code>type</code> is split into three, and the choice now <strong>decides which other edges yours is grouped with</strong>. A statement with scope missing or <code>unclear</code> isn't grouped at all until someone resolves it.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>You'd have chosen</th><th>Now ask</th><th>Scope</th></tr></thead>
+      <tbody>
+        <tr><td><code>token</code></td><td>About this plot, this population, this burn?</td><td><code>assertional</code></td></tr>
+        <tr><td rowspan="3"><code>type</code></td><td>Holds usually, with exceptions? (The default: most ecological generalizations.)</td><td><code>prototypical</code></td></tr>
+        <tr><td>Can or sometimes does happen ("may", "can", "in some cases")?</td><td><code>contingent</code></td></tr>
+        <tr><td>Holds without exception? (Rare: needs the source to say so.)</td><td><code>universal</code></td></tr>
+        <tr><td><code>ambiguous</code>, <code>not_addressed</code></td><td>Really can't tell?</td><td><code>unclear</code></td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout warn">
+      <strong class="t">Don't confuse "can" with hedging</strong>
+      "Bloodroot <em>may</em> reduce garlic mustard" is usually <em>hedging</em> (<code>causal_language: uncertain_causal</code>) about a typical effect, so <code>prototypical</code>. "Bloodroot <em>can</em> reduce garlic mustard (under some conditions)" is a claim about <em>some</em> cases, so <code>contingent</code>. Hedging is how sure the author is; scope is how many cases they mean.
+    </div>
+    <p>Existing CAMO edges are migrated as <code>token → assertional</code>, <code>type → prototypical</code>, and flagged for a human to check. You're the right person to check them.</p>
+  </section>
+
+  <section id="nodes">
+    <h2>Nodes: drop the state qualifier</h2>
+    <p>The <code>CausalNode</code> record is unchanged, but WARP's convention is that <strong>a node is a variable, not a change</strong>. In the worked example the effect node is "Population growth rate of <em>Alliaria petiolata</em>" with no <code>state_or_change_qualifier</code>, and the predicate <code>prevents</code> carries the sign.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>CAMO habit</th><th>WARP</th></tr></thead>
+      <tbody>
+        <tr><td>planting → <code>causes</code> → <em>decreased</em> GM growth rate</td><td>planting → <code>prevents</code> → GM growth rate</td></tr>
+        <tr><td>burning → <code>causes</code> → <em>increased</em> forb cover</td><td>burning → <code>causes</code> → forb cover</td></tr>
+      </tbody>
+    </table></div>
+    <p><strong>Why it matters more now:</strong> propositions are grouped by exact node id. "Increased X" and "decreased X" as separate nodes would put a positive finding and a negative finding in different propositions, so a synthesis would never see them disagree. With one node, they meet.</p>
+    <h3>Node templates</h3>
+    <p>New in WARP: a node can also have a <strong>node definition</strong> saying which template it fills and with which ontology terms. That turns it into an OWL class with a generated label. Three templates exist (<code>population_of_taxon</code>, <code>quality_of_process_of_population</code>, <code>intervention_involving_taxon</code>).</p>
+<pre>node_definitions:
+  - node: node:rate_of_population_growth_of_alliaria_petiolata
+    template: quality_of_process_of_population
+    fillers:
+      - {var: quality, value: "PATO:0000161", label: rate}
+      - {var: process, value: "PCO:0000011", label: population growth}
+      - {var: taxon,   value: "NCBITaxon:126270", label: Alliaria petiolata}</pre>
+    <p>Note the taxon: <strong>NCBITaxon</strong> in the template filling, while <code>entity_term</code> keeps the Wikidata QID as in CAMO. Both are kept; a crosswalk between them is planned. The template's <code>camo_entity_type</code> must match the node's <code>entity_type</code>, or the node expansion fails.</p>
+  </section>
+
+  <section id="evidence">
+    <h2><code>evidential_basis</code> becomes evidence lines</h2>
+    <p>In CAMO, <code>evidence_types</code> and <code>evidence_objects</code> are two independent lists. In WARP each evidence type gets its own <strong>evidence line</strong>, and each line has exactly one type and one object. So you now decide which object goes with which type.</p>
+<pre><span class="c"># CAMO</span>
+evidential_basis:
+  evidence_types: [randomized_experiment, mechanistic_study]
+  evidence_objects: [correlation, mechanism]
+
+<span class="c"># WARP</span>
+hasEvidenceLines:
+  - {evidence_type: randomized_experiment, evidence_object: correlation,
+     directionOfEvidenceProvided: supports, strengthOfEvidenceProvided: moderate, …}
+  - {evidence_type: mechanistic_study, evidence_object: mechanism,
+     directionOfEvidenceProvided: supports, strengthOfEvidenceProvided: weak, …}</pre>
+    <p>Each line also asks for things CAMO didn't ask per article:</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Field</th><th>What you decide</th></tr></thead>
+      <tbody>
+        <tr><td><code>directionOfEvidenceProvided</code> (required)</td><td>Does this evidence <code>support</code>, <code>dispute</code> or stay <code>neutral</code> toward the statement? For a paper's own evidence for its own claim, nearly always <code>supports</code>.</td></tr>
+        <tr><td><code>strengthOfEvidenceProvided</code></td><td><code>strong</code>, <code>moderate</code>, <code>weak</code> or <code>not_assessed</code>. Use <code>not_assessed</code> if you haven't been asked to judge it.</td></tr>
+        <tr><td><code>evidence_item_refs</code></td><td>Ids of what the evidence is: study results, the document, other statements.</td></tr>
+        <tr><td><code>contributions</code> (optional)</td><td>Who judged direction and strength, with role <code>evidence_assessor</code>. Leave it out and the judgement is attributed to you as the annotator.</td></tr>
+      </tbody>
+    </table></div>
+    <p>You never fill <code>targetProposition</code> on your statement's evidence lines: like the proposition, it's derived.</p>
+  </section>
+
+  <section id="people">
+    <h2>Annotator vs author</h2>
+    <p>CAMO has one person on an edge: you, the <code>annotator</code>. WARP separates the person who <strong>made</strong> the statement from the person who <strong>recorded</strong> it.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Role</th><th>Who</th><th>Where it goes</th></tr></thead>
+      <tbody>
+        <tr><td><code>author</code></td><td>The paper's authors, the practitioner, the knowledge holder</td><td>the statement's <code>contributions</code></td></tr>
+        <tr><td><code>annotator</code></td><td>You</td><td><code>recordMetadata.contributions</code></td></tr>
+        <tr><td><code>evidence_assessor</code></td><td>Whoever judged an evidence line (you, by default)</td><td>the evidence line's <code>contributions</code></td></tr>
+        <tr><td><code>reviewer</code></td><td>Someone checking your work</td><td>wherever they reviewed</td></tr>
+      </tbody>
+    </table></div>
+    <p>Everyone (authors, you, the synthesis pipeline) is an <code>EcoAgent</code> in the set's <code>agents</code> list, with an <code>agent_kind</code>: <code>researcher</code>, <code>practitioner</code>, <code>indigenous_knowledge_holder</code>, <code>community_member</code>, <code>organization</code>, <code>synthesis_pipeline</code>. Contributions point at agents by id. The checks reject a role in the wrong place (e.g. <code>author</code> inside <code>recordMetadata</code>), and warn if a statement has no author or no annotator.</p>
+  </section>
+
+  <section id="propositions">
+    <h2>Edges you don't write: propositions</h2>
+    <p>CAMO has no object for "the claim that planting bloodroot prevents garlic mustard growth" independent of any paper. WARP does: the <strong>proposition</strong>. A script groups statements into propositions when these match exactly:</p>
+    <div class="callout note">group · subject node · predicate · object node · negated · scope</div>
+    <p>Everything else (causal language, features, comparator, context, evidence) stays on the statement and is compared across statements, not used for grouping. You never write the <code>proposition</code> field.</p>
+    <p>What this means for annotation:</p>
+    <ul>
+      <li><strong>Consistent node ids matter.</strong> Reusing the existing node is what lets your statement join the others. A near-duplicate node silently splits the proposition.</li>
+      <li><strong>Scope matters.</strong> It's one of the six grouping fields.</li>
+      <li><strong>Features don't split.</strong> If you mark reversibility differently from another annotator on another paper, both statements still share a proposition; the disagreement shows up as variation within it.</li>
+    </ul>
+  </section>
+
+  <section id="assessment">
+    <h2>The assessment edge</h2>
+    <p>CAMO's <code>EvidenceBaseAssessmentEdge</code> is replaced by <code>SynthesisAssessment</code>. It's a statement made by the synthesis pipeline or a review team about a proposition, and its evidence lines cite <strong>statements</strong> (your annotations) as evidence items.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>CAMO assessment edge</th><th>WARP</th></tr></thead>
+      <tbody>
+        <tr><td><code>subject</code>, <code>predicate</code>, <code>object</code></td><td><code>proposition</code> (the assessment targets a proposition, which has them)</td></tr>
+        <tr><td><code>included_edge_ids</code></td><td>evidence lines' <code>evidence_item_refs</code></td></tr>
+        <tr><td><code>aggregate_certainty_grade</code></td><td><code>strength</code> (required, <code>CertaintyGradeEnum</code>)</td></tr>
+        <tr><td><code>evidence_balance</code></td><td><code>evidence_balance</code></td></tr>
+        <tr><td>(implicit)</td><td><code>direction</code> (required): supports, disputes or neutral</td></tr>
+        <tr><td><code>assessed_by</code>, <code>assessment_timestamp</code></td><td>an author contribution with a date</td></tr>
+        <tr><td class="wrap">counts, Russo–Williamson and Bradford Hill fields, effect-size summaries, refresh tracking, FCM weight</td><td>not mapped yet</td></tr>
+      </tbody>
+    </table></div>
+    <p>One new pattern: a <strong>token-level statement can be evidence for a type-level proposition</strong>. A practitioner's one-plot observation has its own assertional proposition, and a synthesis of the prototypical proposition can cite it as a (weak) evidence line. CAMO had no clean way to say this.</p>
+  </section>
+
+  <section id="new">
+    <h2>Entirely new things</h2>
+    <dl class="gloss">
+      <dt><code>statementText</code></dt><dd>A normalized rendering of the claim, alongside the verbatim <code>original_text</code>.</dd>
+      <dt><code>dateAuthored</code></dt><dd>When the author made the statement (publication year), distinct from when you recorded it.</dd>
+      <dt>Open questions</dt><dd>Propositions written before any statement exists, e.g. an empty evidence gap map cell. Your statement may turn one into an asserted proposition automatically.</dd>
+      <dt>Interaction statements</dt><dd>A second statement group for biotic interactions (<code>eats</code>, <code>pollinates</code>, <code>parasite_of</code>, <code>biotically_interacts_with</code>, from RO), using population nodes and the sign of the effect on each partner. Use these for "deer eat X" rather than forcing it into a causal predicate.</dd>
+      <dt><code>care</code></dt><dd>Consent, community, access level and Local Contexts labels. Required when a statement's author is an Indigenous knowledge holder or community member.</dd>
+      <dt>Practitioner statements</dt><dd>Field notebooks, interviews and practitioner reports can be annotated as statements with the practitioner as author, not only as evidence for published claims.</dd>
+      <dt><code>EcoStudyResult</code></dt><dd>A summary of one study arm (mean, SD, n) about one node, which evidence lines can point at.</dd>
+    </dl>
+  </section>
+
+  <section id="gaps">
+    <h2>Not mapped yet</h2>
+    <p>Things you record in CAMO that have no WARP home yet. Keep recording them in CAMO for now, and tell the schema maintainers if you rely on them.</p>
+    <ul>
+      <li><strong>Study metadata on <code>SourceDocument</code></strong>: study coordinates, country and province, study period and duration, study design, sample size, sampling effort. WARP's <code>EcoDocument</code> is a plain SEPIO document (title, DOI and so on).</li>
+      <li><strong><code>annotation_confidence</code></strong> and <strong><code>annotation_notes</code></strong>.</li>
+      <li><strong>Article-level <code>certainty_grade</code></strong>: whether it becomes evidence-line strength or exists only on syntheses is undecided.</li>
+      <li><strong>Most aggregate fields</strong> of the assessment edge.</li>
+    </ul>
+  </section>
+
+  <section id="habits">
+    <h2>Habits to change</h2>
+    <ul class="checklist">
+      <li>Name the <strong>variable</strong> on nodes, with no state qualifier; let the predicate carry the sign.</li>
+      <li><strong>Reuse existing node ids</strong> rather than making a near-duplicate.</li>
+      <li>Choose <strong>scope</strong> carefully: <code>type</code> is now <code>prototypical</code>, <code>contingent</code> or <code>universal</code>. Default to <code>prototypical</code>; reserve <code>unclear</code> for genuinely unclear sources.</li>
+      <li>Keep <strong>hedging</strong> (causal language) and <strong>scope</strong> separate.</li>
+      <li>Record the <strong>author</strong> as well as yourself.</li>
+      <li>Write <strong>one evidence line per evidence type</strong>, pairing each with its object, and give it a direction (and a strength, or <code>not_assessed</code>).</li>
+      <li>Keep filling <code>causal_language</code> and <code>philosophical_accounts</code>, though WARP doesn't force you to.</li>
+      <li>Never fill <code>proposition</code> or <code>targetProposition</code>.</li>
+      <li>Biotic interactions go in <strong>interaction statements</strong>.</li>
+      <li>Statements by Indigenous knowledge holders or community members need <strong><code>care</code></strong>.</li>
+    </ul>
+  </section>
+
+  <section id="words">
+    <h2>Vocabulary</h2>
+    <p>Two words collide between CAMO and SEPIO, and WARP uses both sources:</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Word</th><th>CAMO meaning</th><th>WARP name for it</th><th>WARP's own meaning of the word</th></tr></thead>
+      <tbody>
+        <tr><td><strong>direction</strong></td><td>Which way causation runs</td><td><code>causal_direction</code></td><td>Whether evidence supports, disputes or is neutral toward a proposition</td></tr>
+        <tr><td><strong>strength</strong></td><td>Effect size or magnitude</td><td><code>effect_strength</code></td><td>How strongly evidence bears on a proposition (on evidence lines); the certainty grade (on assessments)</td></tr>
+        <tr><td><strong>claim</strong></td><td>What an edge asserts</td><td>statement</td><td>WARP says "statement" (SEPIO's term). <code>ClaimStrengthEnum</code> keeps its CAMO name for now.</td></tr>
+        <tr><td><strong>graph</strong></td><td><code>CausalGraph</code></td><td><code>StatementSet</code></td><td>One file of statements and everything they refer to</td></tr>
+      </tbody>
+    </table></div>
+    <p>A large effect measured in a weak study: <code>effect_strength</code> qualitative <code>strong</code>, evidence line <code>strengthOfEvidenceProvided: weak</code>.</p>
+    <p>For the rest of the model, see the <a href="advanced.html">advanced guide</a>.</p>
+  </section>
+</main>
+</div>
+<footer>WARP 0.5.0 · For CAMO annotators · <a href="basic.html">Contributor</a> · <a href="advanced.html">Advanced</a> · <a href="mechanic.html">Mechanic</a></footer>
+</body>
+</html>

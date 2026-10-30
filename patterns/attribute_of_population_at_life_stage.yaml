@@ -1,0 +1,36 @@
+# GENERATED from templates/node_templates.yaml by scripts/gen_dosdp.py. Do not edit.
+pattern_name: attribute_of_population_at_life_stage
+pattern_iri: https://w3id.org/ecoweaver/patterns/attribute_of_population_at_life_stage.yaml
+description: 'As attribute_of_population, restricted to members at one life stage. Seedling survival and sapling growth are different nodes. Members are organisms whose existence starts and ends during the stage, the usual OBO way of naming a stage-specific organism. Example: survival of Picea glauca at seedling stage.'
+status: development
+classes:
+  occurrent: BFO:0000003
+  cellular organisms: NCBITaxon:131567
+  quality: PATO:0000001
+  population of organisms: PCO:0000001
+relations:
+  characteristic of: RO:0000052
+  has member: RO:0002351
+  existence starts and ends during: RO:0002491
+vars:
+  attribute: '''quality'''
+  taxon: '''cellular organisms'''
+  life_stage: '''occurrent'''
+name:
+  text: '%s of %s population at %s'
+  vars:
+  - attribute
+  - taxon
+  - life_stage
+def:
+  text: The %s of a population of organisms whose members are %s at the %s.
+  vars:
+  - attribute
+  - taxon
+  - life_stage
+equivalentTo:
+  text: '%s and (''characteristic of'' some (''population of organisms'' and (''has member'' some (%s and (''existence starts and ends during'' some %s)))))'
+  vars:
+  - attribute
+  - taxon
+  - life_stage

@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Suggesting WARP Statements</title>
+<meta name="description" content="How to suggest an ecological statement or open question for WARP in a GitHub issue, with no schema knowledge needed.">
+<link rel="stylesheet" href="warp-docs.css">
+</head>
+<body>
+<header class="topbar"><div class="topbar-inner">
+  <a class="brand" href="index.html"><span>WARP</span> docs</a>
+  <nav class="levels" aria-label="Documentation level">
+    <a class="l-basic" href="basic.html" aria-current="page">Contributor</a>
+    <a class="l-camo" href="camo.html">CAMO annotators</a>
+    <a class="l-advanced" href="advanced.html">Advanced</a>
+    <a class="l-mechanic" href="mechanic.html">Mechanic</a>
+  </nav>
+</div></header>
+
+<div class="layout">
+<nav class="toc" aria-label="On this page">
+  <h2>On this page</h2>
+  <ol>
+    <li><a href="#what">What WARP records</a></li>
+    <li><a href="#words">Five words to know</a></li>
+    <li><a href="#before">Before you file</a></li>
+    <li><a href="#template">The issue template</a></li>
+    <li><a href="#things">Naming the two things</a></li>
+    <li><a href="#relationship">Picking the relationship</a></li>
+    <li><a href="#scope">Picking the scope</a></li>
+    <li><a href="#backing">What backs it up</a></li>
+    <li><a href="#question">Suggesting a question</a></li>
+    <li><a href="#knowledge">Your own and community knowledge</a></li>
+    <li><a href="#example">A filled-in example</a></li>
+    <li><a href="#next">What happens next</a></li>
+    <li><a href="#glossary">Glossary</a></li>
+  </ol>
+</nav>
+
+<main>
+  <span class="eyebrow basic">Contributor guide</span>
+  <h1>Suggesting a statement or a question</h1>
+  <p class="lede">You know something about how an ecosystem works, from a paper, a report, your own field notes or your community's knowledge, and you'd like it in EcoWeaver. This page tells you what to write in an issue. You don't need to know anything about schemas, files or code.</p>
+
+  <section id="what">
+    <h2>What WARP records</h2>
+    <p>WARP is the structure EcoWeaver uses to store knowledge about ecological relationships. It never stores a bare fact. It stores a <strong>statement</strong>: someone, somewhere, said something, and had a reason for saying it. Every statement has three parts:</p>
+    <div class="triad">
+      <div><b>Who said it</b>a research team, a land manager, a knowledge holder, you</div>
+      <div><b>What they said</b>one thing affects or interacts with another</div>
+      <div><b>What backs it</b>an experiment, years of observation, a single season's notes</div>
+    </div>
+    <p>Keeping these together is what lets EcoWeaver later say things like "three experiments and two practitioners' observations support this, and one survey disputes it", without losing track of whose knowledge is whose.</p>
+  </section>
+
+  <section id="words">
+    <h2>Five words to know</h2>
+    <dl class="gloss">
+      <dt>Statement</dt>
+      <dd>One person's or group's claim, from one source. "Murphy and colleagues reported that planting bloodroot reduced garlic mustard growth." <strong>This is what you suggest.</strong></dd>
+      <dt>Proposition</dt>
+      <dd>The idea a statement puts forward, separate from who said it: "planting bloodroot reduces garlic mustard growth". Many statements can share one proposition. <strong>You never need to write these:</strong> EcoWeaver groups matching statements automatically.</dd>
+      <dt>Open question</dt>
+      <dd>A proposition nobody has made a statement about yet. "Does planting bloodroot suppress garlic mustard?" <strong>You can suggest these too.</strong></dd>
+      <dt>Scope</dt>
+      <dd>How broadly a statement is meant: about one particular place and time, or about what usually happens. It matters a lot; see <a href="#scope">picking the scope</a>.</dd>
+      <dt>Evidence</dt>
+      <dd>What the statement rests on: an experiment, a survey, a practitioner's experience, Indigenous knowledge, a model.</dd>
+    </dl>
+  </section>
+
+  <section id="before">
+    <h2>Before you file</h2>
+    <ul class="checklist">
+      <li><strong>Is it one relationship?</strong> "A affects B" is one statement. "A affects B, which affects C" is two. A paper with five findings is five statements; list them in one issue if you like, numbered.</li>
+      <li><strong>Can you point to where it comes from?</strong> A citation or DOI, a report, a dataset, or "my own field notes, spring 2025". Your own observation is a perfectly good source.</li>
+      <li><strong>Is it yours, or are you allowed to share it?</strong> GitHub issues are public. Read <a href="#knowledge">your own and community knowledge</a> before posting anything a community holds.</li>
+      <li><strong>Is it about ecology?</strong> WARP handles cause-and-effect statements ("planting X reduces Y") and interactions between organisms ("deer eat X"). Other kinds of statement are planned; if yours doesn't fit, file it anyway and say so.</li>
+    </ul>
+  </section>
+
+  <section id="template">
+    <h2>The issue template</h2>
+    <p>Copy this into a new issue and fill in what you can. <strong>Only the first five lines are essential.</strong> Leave anything you're unsure of blank or write "not sure": a maintainer will ask or work it out.</p>
+<pre><span class="k">Title:</span> Statement: &lt;the statement in a few words&gt;
+
+<span class="k">The statement, in your words:</span>
+<span class="k">Exact wording from the source</span> (copy it, in quotes):
+<span class="k">Source:</span>                       <span class="c">citation, DOI, link, or "my field notes, &lt;date&gt;"</span>
+<span class="k">Who said it:</span>                  <span class="c">the authors, an organization, a practitioner, me</span>
+<span class="k">How broadly is it meant?</span>      <span class="c">one case / sometimes / typically / always / not sure</span>
+
+<span class="k">First thing (the cause or actor):</span>
+<span class="k">Relationship:</span>                 <span class="c">pick from the lists below</span>
+<span class="k">Second thing (what's affected):</span>
+<span class="k">Does it say this does NOT happen?</span>  <span class="c">yes / no</span>
+<span class="k">How confidently is it worded?</span>     <span class="c">says it causes / hedged ("may", "likely") / only an association / says there's no link</span>
+
+<span class="k">What backs it up:</span>             <span class="c">experiment, long-term monitoring, one-off survey, case study,
+                              practitioner experience, Indigenous knowledge, model, review, expert opinion</span>
+<span class="k">Where / when it applies:</span>      <span class="c">optional: place, ecosystem type, season, soil, time period</span>
+<span class="k">Compared with what?</span>          <span class="c">optional: untreated plots, before the treatment, a reference site</span>
+<span class="k">Can this be shared openly?</span>    <span class="c">yes / with attribution / ask me first</span>
+</pre>
+    <h3>Why each line is there</h3>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Line</th><th>Why we ask</th></tr></thead>
+      <tbody>
+        <tr><td>Your words <em>and</em> the exact wording</td><td>We keep both. The exact wording lets anyone check that the statement wasn't stretched beyond what the source said.</td></tr>
+        <tr><td>Source</td><td>Every statement must be traceable. "My notebook" is fine.</td></tr>
+        <tr><td>Who said it</td><td>WARP credits the person or group who <em>made</em> the statement, separately from whoever typed it into EcoWeaver. If it's your observation, you're the author.</td></tr>
+        <tr><td>How broadly</td><td>Statements about one plot and statements about what generally happens are kept apart. See <a href="#scope">scope</a>.</td></tr>
+        <tr><td>First thing, relationship, second thing</td><td>The core of the statement. See <a href="#things">naming the things</a> and <a href="#relationship">relationships</a>.</td></tr>
+        <tr><td>Does NOT happen</td><td>"Deer don't eat garlic mustard" and "no effect was found" are real, useful results. WARP records them as statements, not as missing data.</td></tr>
+        <tr><td>How confidently worded</td><td>"Bloodroot reduces garlic mustard" and "bloodroot may be associated with less garlic mustard" say different things. We record the hedging the source used.</td></tr>
+        <tr><td>What backs it up</td><td>Lets a synthesis weigh an experiment differently from a single observation, while still counting both.</td></tr>
+        <tr><td>Where / compared with what</td><td>Many ecological effects only hold in some conditions, and every effect is relative to something.</td></tr>
+        <tr><td>Can it be shared</td><td>WARP records consent and sharing permissions with every statement that needs them.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section id="things">
+    <h2>Naming the two things</h2>
+    <p>Each statement links two things: the cause or actor, and what's affected. In WARP these are called <strong>nodes</strong>. One tip makes a big difference:</p>
+    <div class="callout note">
+      <strong class="t">Name the thing, not the change.</strong>
+      Write "garlic mustard population growth rate", not "decreased garlic mustard". Let the <em>relationship</em> carry the direction ("prevents", "causes"). That way a study finding an increase and a study finding a decrease meet on the same thing and can be compared.
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Instead of</th><th>Write</th></tr></thead>
+      <tbody>
+        <tr><td>"bloodroot planting causes <em>less</em> garlic mustard"</td><td>planting bloodroot → <strong>prevents</strong> → garlic mustard population growth rate</td></tr>
+        <tr><td>"burning <em>increases</em> native forb cover"</td><td>prescribed burning → <strong>causes</strong> → native forb cover</td></tr>
+        <tr><td>"deer"</td><td>white-tailed deer population (if the statement is about the animals)</td></tr>
+      </tbody>
+    </table></div>
+    <p>Use scientific names if you know them (<em>Alliaria petiolata</em>, garlic mustard). Common names are fine too. Say what was measured if the source says: abundance, cover, growth rate, survival.</p>
+  </section>
+
+  <section id="relationship">
+    <h2>Picking the relationship</h2>
+    <p>Pick the closest word. If none fits, describe the relationship in plain words and we'll match it.</p>
+    <h3>Cause and effect</h3>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Relationship</th><th>Use it when the source says…</th></tr></thead>
+      <tbody>
+        <tr><td><strong>causes</strong></td><td>A produces or increases B.</td></tr>
+        <tr><td><strong>contributes to</strong></td><td>A is one of several factors behind B.</td></tr>
+        <tr><td><strong>enables</strong></td><td>A makes B possible or easier, but isn't enough on its own.</td></tr>
+        <tr><td><strong>prevents</strong></td><td>A reduces, blocks or inhibits B.</td></tr>
+        <tr><td><strong>disrupts</strong></td><td>A degrades or suppresses B.</td></tr>
+        <tr><td><strong>regulates</strong></td><td>A changes B, but the direction depends on circumstances.</td></tr>
+        <tr><td><strong>mediates</strong></td><td>A is a step on the pathway by which something else affects B.</td></tr>
+        <tr><td><strong>moderates</strong></td><td>A changes how strongly something else affects B.</td></tr>
+        <tr><td><strong>associated with</strong></td><td>A and B go together, with no claim that one causes the other.</td></tr>
+        <tr><td><strong>correlated with</strong></td><td>As above, and a correlation statistic is reported.</td></tr>
+        <tr><td><strong>precedes</strong></td><td>A comes before B in time, with no causal claim.</td></tr>
+      </tbody>
+    </table></div>
+    <h3>Interactions between organisms</h3>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Relationship</th><th>Use it when…</th></tr></thead>
+      <tbody>
+        <tr><td><strong>eats</strong></td><td>Members of A eat B (grazing, browsing, predation).</td></tr>
+        <tr><td><strong>pollinates</strong></td><td>A pollinates B.</td></tr>
+        <tr><td><strong>is a parasite of</strong></td><td>A is a parasite of B.</td></tr>
+        <tr><td><strong>interacts with</strong></td><td>A and B interact, and none of the above is more specific.</td></tr>
+      </tbody>
+    </table></div>
+    <p>For interactions, it also helps to say whether each side benefits, is harmed, or is unaffected, if the source says.</p>
+  </section>
+
+  <section id="scope">
+    <h2>Picking the scope</h2>
+    <p>This is the one question we'll most often come back to you about, so it's worth a minute. Ask yourself: <strong>is the source talking about one particular situation, or about what happens in general?</strong></p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Scope</th><th>The statement is about…</th><th>Sounds like</th></tr></thead>
+      <tbody>
+        <tr><td><strong>One case</strong></td><td>a particular place, population or event</td><td>"On the plot by the path, garlic mustard declined after we planted bloodroot."</td></tr>
+        <tr><td><strong>Sometimes</strong></td><td>something that can or does happen in some cases</td><td>"Bloodroot can suppress garlic mustard."</td></tr>
+        <tr><td><strong>Typically</strong></td><td>what usually holds, allowing exceptions</td><td>"Planting bloodroot reduces garlic mustard growth." Most general ecological findings are this.</td></tr>
+        <tr><td><strong>Always</strong></td><td>every case, no exceptions</td><td>"Garlic mustard always…" (rare in ecology)</td></tr>
+        <tr><td><strong>Not sure</strong></td><td>you can't tell from the source</td><td>Say so. That's useful information too.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout note">
+      <strong class="t">Why it matters</strong>
+      A single-plot observation and a general claim are kept as different propositions, even when they're about the same two things. The one-plot observation isn't thrown away: it becomes <em>evidence for</em> the general claim. That's how a field note can support a generalization without being mistaken for one. Statements whose scope stays unclear can't be grouped with others until someone decides.
+    </div>
+  </section>
+
+  <section id="backing">
+    <h2>What backs it up</h2>
+    <p>Say what kind of study or knowledge the statement rests on. Pick the closest:</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Kind</th><th>Examples</th></tr></thead>
+      <tbody>
+        <tr><td>Randomized experiment</td><td>treatments randomly assigned to plots, in the field or lab</td></tr>
+        <tr><td>Natural experiment</td><td>a wildfire, flood or policy boundary that created a comparison</td></tr>
+        <tr><td>Quasi-experiment</td><td>before-after-control-impact (BACI) designs</td></tr>
+        <tr><td>Observation over time</td><td>monitoring plots, repeated surveys</td></tr>
+        <tr><td>Observation at one time</td><td>a single survey comparing sites</td></tr>
+        <tr><td>Mechanism study</td><td>work on <em>how</em> the effect happens</td></tr>
+        <tr><td>Case study</td><td>one site or project described in detail</td></tr>
+        <tr><td>Practitioner experience</td><td>a land manager's or restoration practitioner's own observations</td></tr>
+        <tr><td>Indigenous knowledge</td><td>traditional ecological knowledge, shared with consent</td></tr>
+        <tr><td>Model or simulation</td><td>computational models, theory-based predictions</td></tr>
+        <tr><td>Review or meta-analysis</td><td>a synthesis of many studies</td></tr>
+        <tr><td>Expert opinion</td><td>expert elicitation, Delphi surveys</td></tr>
+      </tbody>
+    </table></div>
+    <p>If the source reports numbers (means, sample sizes, effect sizes), mention where to find them. You don't need to copy them out.</p>
+  </section>
+
+  <section id="question">
+    <h2>Suggesting an open question</h2>
+    <p>You can suggest a question nobody has answered yet: something a practitioner wants to know, or a gap you've noticed. It's stored as an <strong>open question</strong>, keeps its place, and is automatically marked as answered once statements about it arrive. It goes back to being open if those statements are later removed.</p>
+<pre><span class="k">Title:</span> Question: &lt;the question in a few words&gt;
+
+<span class="k">The question:</span>                 <span class="c">e.g. "Does planting bloodroot typically suppress garlic mustard?"</span>
+<span class="k">First thing:</span>
+<span class="k">Relationship:</span>
+<span class="k">Second thing:</span>
+<span class="k">How broadly?</span>                 <span class="c">usually "typically"</span>
+<span class="k">Why it matters / who's asking:</span> <span class="c">optional</span>
+</pre>
+  </section>
+
+  <section id="knowledge">
+    <h2>Your own and community knowledge</h2>
+    <p>WARP treats practitioners and Indigenous knowledge holders as <strong>people making statements in their own right</strong>, not only as sources for other people's statements. If you've seen something in your own practice, you are the author of that statement, and it's recorded that way.</p>
+    <div class="callout care">
+      <strong class="t">Indigenous and community knowledge: please don't post it in a public issue unless it's yours to share openly.</strong>
+      GitHub issues are public and permanent. WARP records who holds a piece of knowledge, the community with authority over it, the consent it was shared under, and how it may be shared (open, with attribution, within the community only, or not beyond its original context). A statement from a knowledge holder or community member can't enter EcoWeaver without that information. If any of it applies, open an issue that only says you'd like to contribute community knowledge, and a maintainer will arrange a private route.
+    </div>
+    <p>You can stay pseudonymous. Tell us how you'd like to be credited: a name, an ORCID, or a pseudonym.</p>
+  </section>
+
+  <section id="example">
+    <h2>A filled-in example</h2>
+    <p>A practitioner noticed something on their site and files it:</p>
+<pre><span class="k">Title:</span> Statement: bloodroot planting and garlic mustard by the path
+
+<span class="k">The statement, in your words:</span> After bloodroot was planted by the path, there was less
+  garlic mustard the following year.
+<span class="k">Exact wording from the source:</span> "Planted bloodroot by the path last year and noticed
+  there was not as much garlic mustard this year"
+<span class="k">Source:</span>                       my field notebook
+<span class="k">Who said it:</span>                  me (credit me as "practitioner-1")
+<span class="k">How broadly is it meant?</span>      one case (one plot, one year)
+
+<span class="k">First thing:</span>                  planting bloodroot (Sanguinaria canadensis)
+<span class="k">Relationship:</span>                 prevents
+<span class="k">Second thing:</span>                 garlic mustard (Alliaria petiolata) population growth
+<span class="k">Does it say this does NOT happen?</span>  no
+<span class="k">How confidently is it worded?</span>     only an association: I noticed it, didn't test it
+
+<span class="k">What backs it up:</span>             practitioner experience
+<span class="k">Where / when it applies:</span>      the plot beside the path
+<span class="k">Compared with what?</span>          the same spot the year before
+<span class="k">Can this be shared openly?</span>    with attribution
+</pre>
+    <p>A maintainer turns this into a WARP statement. Because it's about one plot, it gets its own one-case proposition. When EcoWeaver later assesses the general idea "planting bloodroot <em>typically</em> suppresses garlic mustard", this observation is counted as weak, supporting evidence alongside any experiments.</p>
+  </section>
+
+  <section id="next">
+    <h2>What happens next</h2>
+    <ol>
+      <li><strong>A maintainer records it.</strong> They'll match your two things to EcoWeaver's existing nodes (or create new ones), and may ask about scope, wording or sharing.</li>
+      <li><strong>It's checked.</strong> Automatic checks make sure every reference resolves, the right people are credited, and community knowledge carries its consent and sharing information.</li>
+      <li><strong>It's grouped.</strong> If other statements say the same thing (same two things, same relationship, same yes/no, same scope), they're grouped under one shared proposition. If yours matches an open question, the question is marked as asserted.</li>
+      <li><strong>It may feed a synthesis.</strong> EcoWeaver's syntheses weigh all the statements about a proposition and grade how certain the evidence is.</li>
+    </ol>
+    <p>Curious how any of that works? The <a href="advanced.html">advanced guide</a> explains it all, still without code.</p>
+  </section>
+
+  <section id="glossary">
+    <h2>Glossary</h2>
+    <dl class="gloss">
+      <dt>Node</dt><dd>One of the two "things" in a statement: a population, a management action, a measurable quantity.</dd>
+      <dt>Predicate</dt><dd>The relationship word: causes, prevents, eats.</dd>
+      <dt>Negated</dt><dd>A statement that something does <em>not</em> happen.</dd>
+      <dt>Hedging</dt><dd>How cautiously the source words it: "reduces" versus "may be associated with".</dd>
+      <dt>Evidence line</dt><dd>One argument for or against a proposition, built from evidence of one kind.</dd>
+      <dt>Synthesis assessment</dt><dd>EcoWeaver's own statement about how well the evidence supports a proposition, with a certainty grade (high, moderate, low, very low).</dd>
+      <dt>CARE</dt><dd>Principles for Indigenous data governance (Collective benefit, Authority to control, Responsibility, Ethics). WARP stores consent and sharing information in this spirit.</dd>
+    </dl>
+  </section>
+</main>
+</div>
+<footer>WARP 0.5.0 · <a href="camo.html">CAMO annotators</a> · Contributor guide · <a href="advanced.html">Advanced</a> · <a href="mechanic.html">Mechanic</a></footer>
+</body>
+</html>

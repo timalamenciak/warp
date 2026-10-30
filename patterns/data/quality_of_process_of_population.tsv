@@ -1,0 +1,2 @@
+defined_class	defined_class_label	quality	quality_label	process	process_label	taxon	taxon_label
+node:rate_of_population_growth_of_alliaria_petiolata	rate of population growth of Alliaria petiolata population	PATO:0000161	rate	PCO:0000011	population growth	NCBITaxon:126270	Alliaria petiolata

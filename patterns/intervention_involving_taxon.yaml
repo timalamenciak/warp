@@ -1,0 +1,28 @@
+# GENERATED from templates/node_templates.yaml by scripts/gen_dosdp.py. Do not edit.
+pattern_name: intervention_involving_taxon
+pattern_iri: https://w3id.org/ecoweaver/patterns/intervention_involving_taxon.yaml
+description: A management action in which organisms of a taxon take part, e.g. planting, seeding, removal, biocontrol release. The action comes from ELMO's conservation action terms.
+status: development
+classes:
+  process: BFO:0000015
+  cellular organisms: NCBITaxon:131567
+relations:
+  has participant: RO:0000057
+vars:
+  action: '''process'''
+  taxon: '''cellular organisms'''
+name:
+  text: '%s of %s'
+  vars:
+  - action
+  - taxon
+def:
+  text: A %s process in which organisms of %s participate.
+  vars:
+  - action
+  - taxon
+equivalentTo:
+  text: '%s and (''has participant'' some %s)'
+  vars:
+  - action
+  - taxon

@@ -1,0 +1,4 @@
+linkml>=1.9
+PyYAML>=6
+rdflib>=7
+dosdp>=0.1.9

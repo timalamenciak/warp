@@ -1,0 +1,24 @@
+# GENERATED from templates/node_templates.yaml by scripts/gen_dosdp.py. Do not edit.
+pattern_name: population_of_taxon
+pattern_iri: https://w3id.org/ecoweaver/patterns/population_of_taxon.yaml
+description: A population whose members belong to one taxon. Use for nodes that are populations themselves (e.g. in biotic interaction statements), not for a measured property of a population (use quality_of_process_of_population or a quality-of-population template for that).
+status: development
+classes:
+  cellular organisms: NCBITaxon:131567
+  population of organisms: PCO:0000001
+relations:
+  has member: RO:0002351
+vars:
+  taxon: '''cellular organisms'''
+name:
+  text: '%s population'
+  vars:
+  - taxon
+def:
+  text: A population of organisms whose members are %s.
+  vars:
+  - taxon
+equivalentTo:
+  text: '''population of organisms'' and (''has member'' some %s)'
+  vars:
+  - taxon

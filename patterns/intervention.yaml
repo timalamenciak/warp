@@ -1,0 +1,28 @@
+# GENERATED from templates/node_templates.yaml by scripts/gen_dosdp.py. Do not edit.
+pattern_name: intervention
+pattern_iri: https://w3id.org/ecoweaver/patterns/intervention.yaml
+description: 'A deliberate management action and what it acts on. Examples: managed realignment of a salt marsh; liming of a lake. Parameters (level, method, timing) are in node identity and have their own templates, each a subclass of this one by reasoning, so 7.5 and 15 deer km-2 are separate nodes that both roll up to deer density reduction. Same logical shape as intervention_involving_taxon, with a wider target range. Int or Dist: when one action is studied in both framings, prefer one node and record the Int/Dist role on the statement.'
+status: development
+classes:
+  process: BFO:0000015
+  material entity: BFO:0000040
+relations:
+  has participant: RO:0000057
+vars:
+  action: '''process'''
+  target: '''material entity'''
+name:
+  text: '%s of %s'
+  vars:
+  - action
+  - target
+def:
+  text: A %s process acting on %s.
+  vars:
+  - action
+  - target
+equivalentTo:
+  text: '%s and (''has participant'' some %s)'
+  vars:
+  - action
+  - target

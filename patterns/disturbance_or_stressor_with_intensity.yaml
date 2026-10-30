@@ -1,0 +1,34 @@
+# GENERATED from templates/node_templates.yaml by scripts/gen_dosdp.py. Do not edit.
+pattern_name: disturbance_or_stressor_with_intensity
+pattern_iri: https://w3id.org/ecoweaver/patterns/disturbance_or_stressor_with_intensity.yaml
+description: As disturbance_or_stressor, with an intensity in node identity (severe drought; Cu and Ni at a stated concentration). Numeric intensities are minted under node:, as for intervention levels.
+status: development
+classes:
+  process: BFO:0000015
+  environmental system: ENVO:01000254
+  quality: PATO:0000001
+relations:
+  occurs in: BFO:0000066
+  has characteristic: RO:0000053
+vars:
+  process: '''process'''
+  system: '''environmental system'''
+  intensity: '''quality'''
+name:
+  text: '%s %s in %s'
+  vars:
+  - intensity
+  - process
+  - system
+def:
+  text: A %s process occurring in %s, with intensity %s.
+  vars:
+  - process
+  - system
+  - intensity
+equivalentTo:
+  text: '%s and (''occurs in'' some %s) and (''has characteristic'' some %s)'
+  vars:
+  - process
+  - system
+  - intensity

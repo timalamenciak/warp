@@ -1,0 +1,208 @@
+## =============================================================================
+## WARP node templates (EcoWeaver)
+## =============================================================================
+## A LinkML schema for DEFINING node templates: fillable shapes such as
+## "<quality> of <process> of a population of <taxon>". Templates are written
+## as data conforming to this schema (templates/node_templates.yaml) and are
+## turned into:
+##   - DOSDP pattern files      by scripts/gen_dosdp.py   (for ODK / dosdp-tools)
+##   - OWL class definitions    by scripts/expand_nodes.py (Turtle, via rdflib)
+##
+## A template's logical definition is a nested class expression: an
+## intersection of a genus (a fixed class or a variable) with existential
+## restrictions, each of whose fillers is again a class expression. That is
+## enough for EL-style definitions, which is what DOSDP patterns normally use.
+## =============================================================================
+
+id: https://w3id.org/ecoweaver/templates
+name: ecoweaver-templates
+title: WARP node templates
+license: CC0
+version: 0.1.0
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ewt: https://w3id.org/ecoweaver/templates/
+
+default_prefix: ewt
+default_range: string
+
+imports:
+  - linkml:types
+
+classes:
+
+  NodeTemplateCollection:
+    description: "A file of node templates and the labels of the terms they use."
+    tree_root: true
+    attributes:
+      templates:
+        description: "The node templates."
+        range: NodeTemplate
+        multivalued: true
+        inlined_as_list: true
+        required: true
+      prefixes:
+        description: >-
+          CURIE prefix expansions used by templates and fillers. Written to
+          patterns/prefixes.yaml for dosdp-tools and used for Turtle output.
+        range: PrefixDeclaration
+        multivalued: true
+        inlined_as_list: true
+        required: true
+      terms:
+        description: >-
+          Labels for every fixed class and relation the templates use. DOSDP
+          writes logical definitions in Manchester syntax using quoted labels,
+          so every CURIE that appears in a template needs a label here.
+        range: Term
+        multivalued: true
+        inlined_as_list: true
+        required: true
+
+  NodeTemplate:
+    description: >-
+      A fillable shape for nodes. Each filled template defines one OWL class,
+      e.g. 'rate of population growth of a population of Alliaria petiolata'.
+    attributes:
+      id:
+        identifier: true
+        description: >-
+          Template name in snake_case. Becomes the DOSDP pattern_name and the
+          pattern file name.
+        pattern: "^[a-z][a-z0-9_]*$"
+        required: true
+      title:
+        description: "Short human-readable name."
+        required: true
+      description:
+        description: "When to use this template, and when not to."
+        required: true
+      camo_entity_type:
+        description: >-
+          The CAMO EntityTypeEnum value that nodes made from this template
+          should carry (taxon, environmental_variable, environmental_process,
+          management_intervention).
+        required: true
+      vars:
+        description: "The slots an annotator or curator fills."
+        range: TemplateVar
+        multivalued: true
+        inlined_as_list: true
+        required: true
+      name:
+        description: >-
+          Label template using {var} placeholders, e.g.
+          "{quality} of {process} of {taxon} population". Filled with the
+          labels of the filler terms.
+        required: true
+      definition:
+        description: "Textual definition template, same placeholder syntax."
+        required: true
+      equivalent_to:
+        description: "The logical definition, as a nested class expression."
+        range: ClassExpression
+        inlined: true
+        required: true
+      examples:
+        description: "Example fillings, as var=CURIE strings, for documentation."
+        multivalued: true
+      status:
+        description: "Lifecycle status of the template."
+        range: TemplateStatusEnum
+        ifabsent: string(draft)
+
+  TemplateVar:
+    description: "A variable in a template: one slot to fill with an ontology class."
+    attributes:
+      name:
+        identifier: true
+        description: "Variable name, used as {name} in name and definition templates."
+        pattern: "^[a-z][a-z0-9_]*$"
+        required: true
+      range:
+        description: >-
+          Root class every filler must fall under (e.g. PATO:0000001 quality,
+          NCBITaxon:1 root). Becomes the DOSDP var range. Must have a label in
+          the collection's terms.
+        range: uriorcurie
+        required: true
+      allowed_prefixes:
+        description: >-
+          CURIE prefixes a filler may use (e.g. [NCBITaxon]). Checked by
+          scripts/expand_nodes.py. Subclass checks against 'range' need the
+          ontology itself and are left to the ODK/ROBOT pipeline.
+        multivalued: true
+        required: true
+      description:
+        description: "Guidance for whoever fills the variable."
+
+  ClassExpression:
+    description: >-
+      An intersection: a genus (a fixed class, or a variable) AND zero or more
+      existential restrictions. Give exactly one of genus or var.
+    attributes:
+      genus:
+        description: "A fixed class, as a CURIE."
+        range: uriorcurie
+      var:
+        description: "The name of a template variable standing in for the genus."
+      restrictions:
+        description: "Existential restrictions (property some filler) intersected with the genus."
+        range: Restriction
+        multivalued: true
+        inlined_as_list: true
+
+  Restriction:
+    description: "property some filler"
+    attributes:
+      property:
+        description: "An object property, as a CURIE (usually RO)."
+        range: uriorcurie
+        required: true
+      filler:
+        description: "The class expression the restriction points to."
+        range: ClassExpression
+        inlined: true
+        required: true
+
+  PrefixDeclaration:
+    description: "A CURIE prefix and the IRI it expands to."
+    attributes:
+      prefix:
+        identifier: true
+        description: "The CURIE prefix, e.g. RO."
+      expansion:
+        range: uri
+        required: true
+        description: "The IRI the prefix expands to."
+
+  Term:
+    description: "A label for a CURIE used in templates."
+    attributes:
+      id:
+        identifier: true
+        range: uriorcurie
+      label:
+        required: true
+        description: "The term's label in its source ontology."
+      kind:
+        range: TermKindEnum
+        required: true
+        description: "Whether the term is a class or an object property."
+
+enums:
+
+  TermKindEnum:
+    description: "Kinds of OWL entity a template term can be."
+    permissible_values:
+      class:
+      object_property:
+
+  TemplateStatusEnum:
+    description: "Lifecycle status of a template."
+    permissible_values:
+      draft:
+      testing:
+      released:
+      deprecated:

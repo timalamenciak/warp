@@ -1,0 +1,288 @@
+# Kramer et al. 1995 as WARP RDF/OWL.
+#
+#   "The tidal enhancement project therefore resulted in a larval reduction of
+#    approximately 98.7%."  (Results, p. 392)
+#
+# Same content as kramer1995_statements.derived.yaml (which validates against
+# the profile), written out by hand because linkml-convert cannot yet compile
+# the schema. Property IRIs follow project/warp.owl.ttl: warp: for profile
+# slots, sepio: for slots inherited from SEPIO, causal_mosaic: for CAMO
+# annotation fields. The sepio: namespace is upstream's placeholder.
+
+@prefix warp:          <https://w3id.org/ecoweaver/warp/> .
+@prefix sepio:         <https://example.org/sepio-model/> .
+@prefix camo:          <https://w3id.org/camo/> .
+@prefix causal_mosaic: <https://w3id.org/causal-mosaic/> .
+@prefix node:          <https://w3id.org/causal-mosaic/node/> .
+@prefix orcid:         <https://orcid.org/> .
+@prefix ELMO:          <https://w3id.org/elmo/elmo_> .
+@prefix ENVO:          <http://purl.obolibrary.org/obo/ENVO_> .
+@prefix NCBITaxon:     <http://purl.obolibrary.org/obo/NCBITaxon_> .
+@prefix PATO:          <http://purl.obolibrary.org/obo/PATO_> .
+@prefix PCO:           <http://purl.obolibrary.org/obo/PCO_> .
+@prefix RO:            <http://purl.obolibrary.org/obo/RO_> .
+@prefix UBERON:        <http://purl.obolibrary.org/obo/UBERON_> .
+@prefix obo:           <http://purl.obolibrary.org/obo/> .
+@prefix dcterms:       <http://purl.org/dc/terms/> .
+@prefix owl:           <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs:          <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:           <http://www.w3.org/2001/XMLSchema#> .
+
+
+# =============================================================================
+# 1. Nodes: what the statement is about, as OWL classes
+#    (output of scripts/expand_nodes.py)
+# =============================================================================
+
+# Subject: tidal restoration of a marsh.
+node:tidal_restoration_of_marsh a owl:Class ;
+    rdfs:label "tidal restoration of marsh" ;
+    obo:IAO_0000115 "A tidal restoration process acting on marsh." ;
+    dcterms:conformsTo <https://w3id.org/ecoweaver/patterns/intervention.yaml> ;
+    owl:equivalentClass [ a owl:Class ;
+        owl:intersectionOf ( ELMO:TODO_tidal_restoration      # TODO: ELMO action term
+                             [ a owl:Restriction ;
+                               owl:onProperty RO:0000057 ;     # has participant
+                               owl:someValuesFrom ENVO:00000035 ] ) ] .   # marsh
+
+# Object: density of Aedes (Ochlerotatus) dorsalis larvae.
+node:volumetric_density_of_ochlerotatus_dorsalis_population_at_larval_stage a owl:Class ;
+    rdfs:label "volumetric density of Ochlerotatus dorsalis population at larval stage" ;
+    obo:IAO_0000115 "The volumetric density of a population of organisms whose members are Ochlerotatus dorsalis at the larval stage." ;
+    dcterms:conformsTo <https://w3id.org/ecoweaver/patterns/attribute_of_population_at_life_stage.yaml> ;
+    owl:equivalentClass [ a owl:Class ;
+        owl:intersectionOf ( PATO:0001353                       # volumetric density
+            [ a owl:Restriction ;
+              owl:onProperty RO:0000052 ;                       # characteristic of
+              owl:someValuesFrom [ a owl:Class ;
+                  owl:intersectionOf ( PCO:0000001              # population of organisms
+                      [ a owl:Restriction ;
+                        owl:onProperty RO:0002351 ;             # has member
+                        owl:someValuesFrom [ a owl:Class ;
+                            owl:intersectionOf ( NCBITaxon:663928   # Ochlerotatus dorsalis
+                                [ a owl:Restriction ;
+                                  owl:onProperty RO:0002491 ;   # existence starts and ends during
+                                  owl:someValuesFrom UBERON:0000069 ] ) ] ] ) ] ] ) ] .  # larval stage (TODO: IDOMAL:0001251 4th instar)
+
+
+# =============================================================================
+# 2. Proposition: the possible fact, independent of who asserts it
+#    DERIVED by scripts/derive_propositions.py, never annotated
+# =============================================================================
+
+<https://w3id.org/ecoweaver/warp/prop/9f0b068ca33b> a warp:CausalProposition ;
+    sepio:subject   node:tidal_restoration_of_marsh ;
+    sepio:predicate camo:prevents ;
+    sepio:object    node:volumetric_density_of_ochlerotatus_dorsalis_population_at_larval_stage ;
+    warp:negated    false ;
+    warp:scope      "assertional" ;          # about this marsh, not marshes in general
+    warp:status     "asserted" ;
+    sepio:propositionText "In a particular case, tidal restoration of marsh prevents larval density of Aedes (Ochlerotatus) dorsalis." ;
+    warp:derived_from_statements <https://w3id.org/ecoweaver/warp/statement/kramer1995-c1> ;
+    warp:identity_key "causal|node:tidal_restoration_of_marsh|prevents|node:volumetric_density_of_ochlerotatus_dorsalis_population_at_larval_stage|affirmed|assertional" ;
+    warp:identity_rule_version "warp-prop-identity/3" .
+
+# The general proposition: same subject, predicate and object, different
+# scope, so a different proposition. Raised as a question; no statement
+# asserts it yet. Assessed in section 7.
+<https://w3id.org/ecoweaver/warp/prop/question-tidal-restoration-aedes-dorsalis> a warp:CausalProposition ;
+    sepio:subject   node:tidal_restoration_of_marsh ;
+    sepio:predicate camo:prevents ;
+    sepio:object    node:volumetric_density_of_ochlerotatus_dorsalis_population_at_larval_stage ;
+    warp:scope      "prototypical" ;         # what typically holds, allowing exceptions
+    warp:status     "open_question" ;
+    warp:raised_as_question true ;
+    sepio:propositionText "Does restoring tidal action to a marsh typically reduce Aedes dorsalis larval density?" ;
+    warp:identity_key "causal|node:tidal_restoration_of_marsh|prevents|node:volumetric_density_of_ochlerotatus_dorsalis_population_at_larval_stage|affirmed|prototypical" ;
+    warp:identity_rule_version "warp-prop-identity/3" .
+
+
+# =============================================================================
+# 3. Statement: the authors put the proposition forward (SEPIO Assertion Mode)
+# =============================================================================
+
+<https://w3id.org/ecoweaver/warp/statement/kramer1995-c1> a warp:CausalStatement ;
+    sepio:subject   node:tidal_restoration_of_marsh ;
+    sepio:predicate camo:prevents ;
+    sepio:object    node:volumetric_density_of_ochlerotatus_dorsalis_population_at_larval_stage ;
+    warp:proposition <https://w3id.org/ecoweaver/warp/prop/9f0b068ca33b> ;   # derived
+    warp:scope "assertional" ;
+    warp:negated false ;
+    warp:causal_language "direct_causal" ;    # "resulted in": unhedged
+    sepio:statementText "Restoring full tidal action to the project marsh reduced Aedes dorsalis larval density by about 98.7%." ;
+    warp:original_text "The tidal enhancement project therefore resulted in a larval reduction of approximately 98.7%." ;
+    warp:source_spans [
+        causal_mosaic:text "The tidal enhancement project therefore resulted in a larval reduction of approximately 98.7%." ;
+        causal_mosaic:section "results" ] ;
+    sepio:dateAuthored "1995" ;
+    sepio:reportedIn <https://w3id.org/ecoweaver/warp/doc/kramer1995> ;
+
+    # Who said it, and who recorded it.
+    sepio:contributions [ a warp:EcoContribution ;
+        warp:role "author" ;
+        warp:contributor <https://w3id.org/ecoweaver/warp/agent/kramer1995-authors> ] ;
+    warp:recordMetadata [ a warp:EcoRecordMetadata ;
+        sepio:dateRecordCreated "2026-10-27T12:00:00Z"^^xsd:dateTime ;
+        sepio:contributions [ a warp:EcoContribution ;
+            warp:role "annotator" ;
+            warp:contributor orcid:0000-0000-0000-0000 ] ] ;
+
+    # Relative to what: the same site before, and untreated marshes nearby.
+    warp:comparator
+        [ causal_mosaic:status "explicitly_asserted" ;
+          causal_mosaic:comparator_type "pre_treatment_baseline" ;
+          causal_mosaic:comparator_description "Same site and monitoring stations in 1991, before tidal enhancement." ] ,
+        [ causal_mosaic:status "explicitly_asserted" ;
+          causal_mosaic:comparator_type "spatial_or_temporal_control" ;
+          causal_mosaic:comparator_description "Surrounding marshlands (2.1 and 3.8 larvae/dip in 1991 and 1992), used to rule out a regional decline." ] ;
+
+    # Where and when it is said to hold.
+    warp:context [
+        causal_mosaic:status "explicitly_asserted" ;
+        causal_mosaic:geographic_scope "28-ha brackish marsh on U.S. Navy property, north central Contra Costa County, California (San Francisco Bay Estuary)" ;
+        causal_mosaic:temporal_scope "1991 (before) vs 1992 (first season after completion)" ;
+        causal_mosaic:ecosystem_scope "coastal_saltmarshes_and_reedbeds" ] ;
+    warp:ecosystem_context "coastal_saltmarshes_and_reedbeds" ;
+    warp:temporal_extent [
+        causal_mosaic:duration_text "One mosquito season (May-October 1992) after the 6-week project ended in late 1991." ;
+        causal_mosaic:observation_grain "Five 400 ml dips per inundated monitoring station after each high tide cycle" ;
+        causal_mosaic:observation_seasons "May-October" ] ;
+
+    # What kind of causal relation: the predicate layer.
+    warp:predicate_qualifiers [
+        warp:philosophical_accounts "interventionist" ;
+        warp:causal_direction [
+            causal_mosaic:status "asserted" ;
+            causal_mosaic:evidence_for_direction "experimental" ] ;
+        warp:effect_strength [
+            causal_mosaic:status "explicitly_asserted" ;
+            causal_mosaic:quantitative_value "approximately 98.7% reduction in seasonal mean 4th-instar larvae per dip (3.6 to 0.05)" ;
+            causal_mosaic:quantitative_numeric 98.7 ;
+            causal_mosaic:qualitative_descriptor "strong" ] ;
+        warp:mediation [
+            causal_mosaic:status "implicitly_assumed" ;
+            causal_mosaic:pathway_description "Discussion offers, hedged: less standing water, more predator circulation, or disrupted conditioning of eggs." ] ;
+        warp:reversibility "not_addressed" ] ;
+
+    sepio:hasEvidenceLines
+        <https://w3id.org/ecoweaver/warp/el/kramer1995-c1-1> ,
+        <https://w3id.org/ecoweaver/warp/el/kramer1995-c1-2> .
+
+
+# =============================================================================
+# 4. Evidence lines: what backs the statement, and how well
+# =============================================================================
+
+# Line 1: before-after at the site, with surrounding marshes as control
+# (a single, unreplicated before-after-control-impact design).
+<https://w3id.org/ecoweaver/warp/el/kramer1995-c1-1> a warp:EcoEvidenceLine ;
+    sepio:targetProposition <https://w3id.org/ecoweaver/warp/prop/9f0b068ca33b> ;   # derived
+    warp:evidence_type   "quasi_experiment" ;
+    warp:evidence_object "correlation" ;
+    sepio:directionOfEvidenceProvided "supports" ;
+    sepio:strengthOfEvidenceProvided  "moderate" ;
+    warp:evidence_item_refs
+        <https://w3id.org/ecoweaver/warp/result/kramer1995-site-1991> ,
+        <https://w3id.org/ecoweaver/warp/result/kramer1995-site-1992> ,
+        <https://w3id.org/ecoweaver/warp/result/kramer1995-reference-1991> ,
+        <https://w3id.org/ecoweaver/warp/result/kramer1995-reference-1992> ;
+    sepio:contributions [ a warp:EcoContribution ;
+        warp:role "evidence_assessor" ;
+        warp:contributor orcid:0000-0000-0000-0000 ] .
+
+# Line 2: the district's operations. Larvicide applications at the site fell
+# from about 6 to 0 per year (Abstract, Discussion).
+<https://w3id.org/ecoweaver/warp/el/kramer1995-c1-2> a warp:EcoEvidenceLine ;
+    sepio:targetProposition <https://w3id.org/ecoweaver/warp/prop/9f0b068ca33b> ;
+    warp:evidence_type   "practitioner_experience" ;
+    warp:evidence_object "correlation" ;
+    sepio:directionOfEvidenceProvided "supports" ;
+    sepio:strengthOfEvidenceProvided  "weak" ;
+    warp:evidence_item_refs <https://w3id.org/ecoweaver/warp/doc/kramer1995> ;
+    sepio:contributions [ a warp:EcoContribution ;
+        warp:role "evidence_assessor" ;
+        warp:contributor orcid:0000-0000-0000-0000 ] .
+
+
+# =============================================================================
+# 5. Evidence items: seasonal (May-October) means of 4th-instar larvae per dip
+# =============================================================================
+
+<https://w3id.org/ecoweaver/warp/result/kramer1995-site-1991> a warp:EcoStudyResult ;
+    sepio:description "Project site before tidal enhancement (1991)." ;
+    warp:focus node:volumetric_density_of_ochlerotatus_dorsalis_population_at_larval_stage ;
+    warp:dataItems
+        [ sepio:subtype [ sepio:label "mean" ] ; sepio:value "3.6" ; sepio:unit [ sepio:label "larvae per dip" ] ] ,
+        [ sepio:subtype [ sepio:label "range" ] ; sepio:value "0.0-52.8" ] ,
+        [ sepio:subtype [ sepio:label "number of monitoring stations" ] ; sepio:value "64" ] ,
+        [ sepio:subtype [ sepio:label "number of high tide cycles" ] ; sepio:value "7" ] .
+
+<https://w3id.org/ecoweaver/warp/result/kramer1995-site-1992> a warp:EcoStudyResult ;
+    sepio:description "Project site one season after tidal enhancement (1992)." ;
+    warp:focus node:volumetric_density_of_ochlerotatus_dorsalis_population_at_larval_stage ;
+    warp:dataItems
+        [ sepio:subtype [ sepio:label "mean" ] ; sepio:value "0.05" ; sepio:unit [ sepio:label "larvae per dip" ] ] ,
+        [ sepio:subtype [ sepio:label "range" ] ; sepio:value "0.0-2.1" ] ,
+        [ sepio:subtype [ sepio:label "number of monitoring stations" ] ; sepio:value "59" ] ,
+        [ sepio:subtype [ sepio:label "number of stations with larvae" ] ; sepio:value "3" ] ,
+        [ sepio:subtype [ sepio:label "number of high tide cycles" ] ; sepio:value "5" ] .
+
+<https://w3id.org/ecoweaver/warp/result/kramer1995-reference-1991> a warp:EcoStudyResult ;
+    sepio:description "Surrounding marshes, not enhanced (1991)." ;
+    warp:focus node:volumetric_density_of_ochlerotatus_dorsalis_population_at_larval_stage ;
+    warp:dataItems [ sepio:subtype [ sepio:label "mean" ] ; sepio:value "2.1" ; sepio:unit [ sepio:label "larvae per dip" ] ] .
+
+<https://w3id.org/ecoweaver/warp/result/kramer1995-reference-1992> a warp:EcoStudyResult ;
+    sepio:description "Surrounding marshes, not enhanced (1992)." ;
+    warp:focus node:volumetric_density_of_ochlerotatus_dorsalis_population_at_larval_stage ;
+    warp:dataItems [ sepio:subtype [ sepio:label "mean" ] ; sepio:value "3.8" ; sepio:unit [ sepio:label "larvae per dip" ] ] .
+
+
+# =============================================================================
+# 6. Agents and source
+# =============================================================================
+
+<https://w3id.org/ecoweaver/warp/agent/kramer1995-authors> a warp:EcoAgent ;
+    sepio:label "Kramer, Collins, Malamud-Roam and Beesley (Contra Costa Mosquito and Vector Control District)" ;
+    warp:agent_kind "researcher" .
+
+orcid:0000-0000-0000-0000 a warp:EcoAgent ;
+    sepio:label "TODO: annotator" ;
+    warp:agent_kind "researcher" .
+
+<https://w3id.org/ecoweaver/warp/doc/kramer1995> a warp:EcoDocument ;
+    sepio:title "Reduction of Aedes dorsalis by enhancing tidal action in a northern California marsh" ;
+    sepio:description "Journal of the American Mosquito Control Association 11(4):389-395, 1995." .
+
+<https://w3id.org/ecoweaver/warp/agent/ecoweaver-synthesis> a warp:EcoAgent ;
+    sepio:label "EcoWeaver synthesis pipeline" ;
+    warp:agent_kind "synthesis_pipeline" .
+
+
+# =============================================================================
+# 7. Synthesis assessment: a statement about the evidence for the general
+#    proposition (SEPIO Proposition Assessment Mode). The site-level
+#    statement is its evidence: the case-report pattern.
+#    Grades are illustrative (kramer1995_assessment.yaml).
+# =============================================================================
+
+<https://w3id.org/ecoweaver/warp/assessment/tidal-restoration-aedes-dorsalis-1> a warp:SynthesisAssessment ;
+    warp:proposition <https://w3id.org/ecoweaver/warp/prop/question-tidal-restoration-aedes-dorsalis> ;   # chosen, not derived
+    warp:scope "prototypical" ;
+    sepio:statementText "Restoring tidal action may reduce Aedes dorsalis larval density in marshes generally; the only evidence is one unreplicated site." ;
+    sepio:contributions [ a warp:EcoContribution ;
+        warp:role "author" ;
+        warp:contributor <https://w3id.org/ecoweaver/warp/agent/ecoweaver-synthesis> ;
+        sepio:date "2026-10-27" ] ;
+    warp:direction "supports" ;
+    warp:strength "very_low" ;              # CAMO certainty grade: "X might reduce Y"
+    warp:evidence_balance "insufficient" ;
+    sepio:hasEvidenceLines <https://w3id.org/ecoweaver/warp/el/tidal-aedes-1-case> .
+
+<https://w3id.org/ecoweaver/warp/el/tidal-aedes-1-case> a warp:EcoEvidenceLine ;
+    sepio:targetProposition <https://w3id.org/ecoweaver/warp/prop/question-tidal-restoration-aedes-dorsalis> ;
+    warp:evidence_type   "quasi_experiment" ;
+    warp:evidence_object "correlation" ;
+    sepio:directionOfEvidenceProvided "supports" ;
+    sepio:strengthOfEvidenceProvided  "weak" ;   # a large effect at one site is weak support for a typical effect
+    warp:evidence_item_refs <https://w3id.org/ecoweaver/warp/statement/kramer1995-c1> .

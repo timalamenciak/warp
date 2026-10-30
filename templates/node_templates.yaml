@@ -1,0 +1,714 @@
+# EcoWeaver node templates.
+#
+# Each template is a fillable shape for CAMO nodes. Validate with:
+#   linkml-validate -s src/warp/schema/warp_templates.yaml \
+#     -C NodeTemplateCollection templates/node_templates.yaml
+# Generate DOSDP patterns with:  make patterns
+#
+# How to add a template: docs/node-templates.md
+
+prefixes:
+  - {prefix: BFO, expansion: "http://purl.obolibrary.org/obo/BFO_"}
+  - {prefix: RO, expansion: "http://purl.obolibrary.org/obo/RO_"}
+  - {prefix: PATO, expansion: "http://purl.obolibrary.org/obo/PATO_"}
+  - {prefix: PCO, expansion: "http://purl.obolibrary.org/obo/PCO_"}
+  - {prefix: ECOCORE, expansion: "http://purl.obolibrary.org/obo/ECOCORE_"}
+  - {prefix: GO, expansion: "http://purl.obolibrary.org/obo/GO_"}
+  - {prefix: ENVO, expansion: "http://purl.obolibrary.org/obo/ENVO_"}
+  - {prefix: NCBITaxon, expansion: "http://purl.obolibrary.org/obo/NCBITaxon_"}
+  - {prefix: ELMO, expansion: "https://w3id.org/elmo/elmo_"}
+  - {prefix: OBA, expansion: "http://purl.obolibrary.org/obo/OBA_"}
+  - {prefix: UBERON, expansion: "http://purl.obolibrary.org/obo/UBERON_"}
+  - {prefix: PO, expansion: "http://purl.obolibrary.org/obo/PO_"}
+  - {prefix: TO, expansion: "http://purl.obolibrary.org/obo/TO_"}
+  - {prefix: FLOPO, expansion: "http://purl.obolibrary.org/obo/FLOPO_"}
+  - {prefix: CHEBI, expansion: "http://purl.obolibrary.org/obo/CHEBI_"}
+  - {prefix: node, expansion: "https://w3id.org/causal-mosaic/node/"}
+
+# Every fixed class and relation used below needs a label: DOSDP writes
+# logical definitions with quoted labels. IDs and labels checked against OLS
+# on 2026-10-10 (note RO:0000052 is now labelled 'characteristic of').
+# Terms added for the Part A node shapes checked on 2026-10-12.
+terms:
+  - {id: "BFO:0000003", label: occurrent, kind: class}
+  - {id: "BFO:0000015", label: process, kind: class}
+  - {id: "BFO:0000040", label: material entity, kind: class}
+  - {id: "ENVO:01000254", label: environmental system, kind: class}
+  - {id: "PCO:0000000", label: collection of organisms, kind: class}
+  - {id: "PATO:0000001", label: quality, kind: class}
+  - {id: "PCO:0000001", label: population of organisms, kind: class}
+  - {id: "NCBITaxon:131567", label: cellular organisms, kind: class}
+  - {id: "RO:0000052", label: characteristic of, kind: object_property}
+  - {id: "RO:0000057", label: has participant, kind: object_property}
+  - {id: "RO:0002351", label: has member, kind: object_property}
+  - {id: "RO:0000053", label: has characteristic, kind: object_property}
+  - {id: "RO:0002491", label: existence starts and ends during, kind: object_property}
+  - {id: "RO:0001025", label: located in, kind: object_property}
+  - {id: "RO:0002233", label: has input, kind: object_property}
+  - {id: "RO:0002092", label: happens during, kind: object_property}
+  - {id: "RO:0002573", label: has modifier, kind: object_property}
+  - {id: "BFO:0000050", label: part of, kind: object_property}
+  - {id: "BFO:0000066", label: occurs in, kind: object_property}
+
+templates:
+
+  # ---------------------------------------------------------------------------
+  - id: population_of_taxon
+    title: Population of a taxon
+    status: draft
+    description: >-
+      A population whose members belong to one taxon. Use for nodes that are
+      populations themselves (e.g. in biotic interaction statements), not for a
+      measured property of a population (use quality_of_process_of_population
+      or a quality-of-population template for that).
+    camo_entity_type: taxon
+    vars:
+      - name: taxon
+        range: "NCBITaxon:131567"
+        allowed_prefixes: [NCBITaxon]
+        description: >-
+          The taxon whose members make up the population. NCBITaxon for OWL
+          output; keep the Wikidata QID on the CAMO node's entity_term and
+          crosswalk the two with SSSOM.
+    name: "{taxon} population"
+    definition: "A population of organisms whose members are {taxon}."
+    equivalent_to:
+      genus: "PCO:0000001"
+      restrictions:
+        - property: "RO:0002351"
+          filler: {var: taxon}
+    examples:
+      - "taxon=NCBITaxon:126270"
+
+  # ---------------------------------------------------------------------------
+  - id: quality_of_process_of_population
+    title: Quality of a process of a population of a taxon
+    status: draft
+    description: >-
+      A measurable characteristic (rate, magnitude, duration) of a process a
+      population takes part in. The garlic mustard case: rate of population
+      growth of an Alliaria petiolata population. Carries no direction of
+      change: the node is the variable, and the statement's predicate supplies the
+      sign. BFO note: BFO 2020 treats characteristics of processes as process
+      profiles, not qualities; PATO-quality-of-process is common OBO practice
+      but should be reviewed.
+    camo_entity_type: taxon
+    vars:
+      - name: quality
+        range: "PATO:0000001"
+        allowed_prefixes: [PATO]
+        description: "Usually PATO:0000161 rate; also magnitude or duration terms."
+      - name: process
+        range: "BFO:0000015"
+        allowed_prefixes: [PCO, ECOCORE, GO, ENVO]
+        description: >-
+          A population-level process, e.g. PCO:0000011 population growth.
+          Avoid organism-level GO processes unless that is what was measured.
+      - name: taxon
+        range: "NCBITaxon:131567"
+        allowed_prefixes: [NCBITaxon]
+        description: "The taxon whose population takes part in the process."
+    name: "{quality} of {process} of {taxon} population"
+    definition: >-
+      The {quality} of a {process} process whose participant is a population
+      of {taxon}.
+    equivalent_to:
+      var: quality
+      restrictions:
+        - property: "RO:0000052"
+          filler:
+            var: process
+            restrictions:
+              - property: "RO:0000057"
+                filler:
+                  genus: "PCO:0000001"
+                  restrictions:
+                    - property: "RO:0002351"
+                      filler: {var: taxon}
+    examples:
+      - "quality=PATO:0000161 process=PCO:0000011 taxon=NCBITaxon:126270"
+
+  # ---------------------------------------------------------------------------
+  - id: intervention_involving_taxon
+    title: Management intervention involving a taxon
+    status: draft
+    description: >-
+      A management action in which organisms of a taxon take part, e.g.
+      planting, seeding, removal, biocontrol release. The action comes from
+      ELMO's conservation action terms.
+    camo_entity_type: management_intervention
+    vars:
+      - name: action
+        range: "BFO:0000015"
+        allowed_prefixes: [ELMO]
+        description: "An ELMO conservation action term."
+      - name: taxon
+        range: "NCBITaxon:131567"
+        allowed_prefixes: [NCBITaxon]
+        description: "The taxon planted, seeded, removed or released."
+    name: "{action} of {taxon}"
+    definition: "A {action} process in which organisms of {taxon} participate."
+    equivalent_to:
+      var: action
+      restrictions:
+        - property: "RO:0000057"
+          filler: {var: taxon}
+    examples:
+      - "action=ELMO:TODO_planting taxon=NCBITaxon:3472"
+
+  # ===========================================================================
+  # Part A node shapes. Optional fillers (life stage, layer, intensity, value,
+  # Int parameters) get their own template: the generator has no optional
+  # vars, and a separate template makes the more specific node a subclass of
+  # the general one by reasoning (seedling survival of Picea glauca is
+  # inferred under survival of Picea glauca).
+  # ===========================================================================
+
+  # --- A1. Pop ---------------------------------------------------------------
+  - id: attribute_of_population
+    title: Attribute of a population of a taxon (Pop)
+    status: draft
+    description: >-
+      An attribute of a population of one taxon: cover, density, biomass,
+      survival, growth, relative abundance, body-part length. Examples: cover
+      of Sphagnum papillosum; mucro length of Bosmina. Use
+      attribute_of_population_at_life_stage when a life stage is reported:
+      life stage is in node identity. For a rate of a population process
+      (population growth rate) quality_of_process_of_population also applies.
+      Relative abundance needs its reference assemblage, recorded as an
+      attribute_of_assemblage membership definition, not in this node.
+      Routing rule: a quantity measured on the taxon is Pop; a quantity
+      measured on the whole system is rate_of_ecosystem_process, even if the
+      paper attributes most of it to this taxon.
+    camo_entity_type: taxon
+    vars:
+      - name: attribute
+        range: "PATO:0000001"
+        allowed_prefixes: [PATO, OBA]
+        description: "The measured attribute. OBA attributes sit under PATO quality."
+      - name: taxon
+        range: "NCBITaxon:131567"
+        allowed_prefixes: [NCBITaxon]
+        description: "The taxon whose population bears the attribute."
+    name: "{attribute} of {taxon} population"
+    definition: "The {attribute} of a population of organisms whose members are {taxon}."
+    equivalent_to:
+      var: attribute
+      restrictions:
+        - property: "RO:0000052"
+          filler:
+            genus: "PCO:0000001"
+            restrictions:
+              - property: "RO:0002351"
+                filler: {var: taxon}
+    examples:
+      - "attribute=PATO:<cover> taxon=NCBITaxon:<Sphagnum papillosum>"
+
+  - id: attribute_of_population_at_life_stage
+    title: Attribute of a population of a taxon at a life stage (Pop)
+    status: draft
+    description: >-
+      As attribute_of_population, restricted to members at one life stage.
+      Seedling survival and sapling growth are different nodes. Members are
+      organisms whose existence starts and ends during the stage, the usual
+      OBO way of naming a stage-specific organism. Example: survival of Picea
+      glauca at seedling stage.
+    camo_entity_type: taxon
+    vars:
+      - name: attribute
+        range: "PATO:0000001"
+        allowed_prefixes: [PATO, OBA]
+      - name: taxon
+        range: "NCBITaxon:131567"
+        allowed_prefixes: [NCBITaxon]
+      - name: life_stage
+        range: "BFO:0000003"
+        allowed_prefixes: [PO, UBERON]
+        description: "PO development stage for plants, UBERON life cycle stage for animals."
+    name: "{attribute} of {taxon} population at {life_stage}"
+    definition: >-
+      The {attribute} of a population of organisms whose members are {taxon}
+      at the {life_stage}.
+    equivalent_to:
+      var: attribute
+      restrictions:
+        - property: "RO:0000052"
+          filler:
+            genus: "PCO:0000001"
+            restrictions:
+              - property: "RO:0002351"
+                filler:
+                  var: taxon
+                  restrictions:
+                    - property: "RO:0002491"
+                      filler: {var: life_stage}
+    examples:
+      - "attribute=PATO:<survival> taxon=NCBITaxon:<Picea glauca> life_stage=PO:<seedling development stage>"
+
+  # --- A2. Asm ---------------------------------------------------------------
+  - id: attribute_of_assemblage
+    title: Attribute of an assemblage (Asm)
+    status: draft
+    description: >-
+      An aggregate attribute of a defined set of organisms: richness,
+      diversity, composition, total abundance, functional trait composition.
+      The metric is part of the attribute (observed richness, rarefied
+      richness, Shannon diversity, community-weighted mean), so different
+      metrics are different nodes. Membership is a single class: an NCBITaxon
+      for a taxonomic assemblage (subfossil Cladocera), or a membership class
+      defined separately under node: for anything else (herbaceous plants,
+      Gram-negative bacteria by PLFA). The genus is PCO collection of
+      organisms, not ecological community, because membership is set by
+      definition, not by interaction.
+    camo_entity_type: environmental_variable
+    vars:
+      - name: attribute
+        range: "PATO:0000001"
+        allowed_prefixes: [PATO, OBA, node]
+        description: "Attribute including its metric. Mint under node: if no ontology term exists."
+      - name: membership
+        range: "BFO:0000040"
+        allowed_prefixes: [NCBITaxon, node]
+        description: "The class every member falls under (the membership definition)."
+    name: "{attribute} of {membership} assemblage"
+    definition: "The {attribute} of a collection of organisms whose members are {membership}."
+    equivalent_to:
+      var: attribute
+      restrictions:
+        - property: "RO:0000052"
+          filler:
+            genus: "PCO:0000000"
+            restrictions:
+              - property: "RO:0002351"
+                filler: {var: membership}
+    examples:
+      - "attribute=node:<rarefied taxon richness> membership=NCBITaxon:<Cladocera>"
+
+  # --- A3. Env ---------------------------------------------------------------
+  - id: attribute_of_environmental_material
+    title: Attribute of an environmental material or feature (Env)
+    status: draft
+    description: >-
+      An attribute of an abiotic material or physical feature. Examples: pH
+      of forest floor; water table depth; bankfull width of riffle.
+      Hydrological regime attributes (minimum flow, recession rate) belong
+      here, with the river or reach as the feature. Use
+      attribute_of_environmental_material_in_layer when a layer or depth is
+      reported: it is in node identity.
+    camo_entity_type: environmental_variable
+    vars:
+      - name: attribute
+        range: "PATO:0000001"
+        allowed_prefixes: [PATO, ENVO, node]
+      - name: material
+        range: "BFO:0000040"
+        allowed_prefixes: [ENVO]
+        description: "ENVO material (sediment, soil) or feature (riffle, water table)."
+    name: "{attribute} of {material}"
+    definition: "The {attribute} of {material}."
+    equivalent_to:
+      var: attribute
+      restrictions:
+        - property: "RO:0000052"
+          filler: {var: material}
+    examples:
+      - "attribute=PATO:<acidity> material=ENVO:<forest floor>"
+
+  - id: attribute_of_environmental_material_in_layer
+    title: Attribute of an environmental material in a layer (Env)
+    status: draft
+    description: >-
+      As attribute_of_environmental_material, restricted to the part of the
+      material within a layer or depth. Use an ENVO horizon where one fits.
+      A numeric depth interval (0-10 cm) has no ontology class: mint one
+      under node: and make it a subclass of the matching ENVO layer.
+    camo_entity_type: environmental_variable
+    vars:
+      - name: attribute
+        range: "PATO:0000001"
+        allowed_prefixes: [PATO, ENVO, node]
+      - name: material
+        range: "BFO:0000040"
+        allowed_prefixes: [ENVO]
+      - name: layer
+        range: "BFO:0000040"
+        allowed_prefixes: [ENVO, node]
+        description: "Soil horizon, sediment layer, or a minted depth-interval class."
+    name: "{attribute} of {material} in {layer}"
+    definition: "The {attribute} of {material} that is part of {layer}."
+    equivalent_to:
+      var: attribute
+      restrictions:
+        - property: "RO:0000052"
+          filler:
+            var: material
+            restrictions:
+              - property: "BFO:0000050"
+                filler: {var: layer}
+    examples:
+      - "attribute=PATO:<density> material=ENVO:<marsh sediment> layer=node:<0-30 cm sediment layer>"
+
+  # --- A4. Proc --------------------------------------------------------------
+  - id: rate_of_ecosystem_process
+    title: Rate of an ecosystem process (Proc)
+    status: draft
+    description: >-
+      The rate or magnitude of a process measured at system level: the net of
+      all organisms and abiotic fluxes together, even where one taxon
+      dominates. Examples: net ecosystem production of a regenerating
+      aspen-dominated stand; carbon accumulation in salt marsh sediment;
+      evapotranspiration; nitrification. If the paper attributes the flux to
+      one taxon, that is a separate Causal proposition, not a different node.
+      The quality is a variable (usually PATO rate) so rate and total
+      magnitude stay distinct; same BFO caveat as
+      quality_of_process_of_population.
+    camo_entity_type: environmental_process
+    vars:
+      - name: quality
+        range: "PATO:0000001"
+        allowed_prefixes: [PATO]
+        description: "Usually PATO:0000161 rate."
+      - name: process
+        range: "BFO:0000015"
+        allowed_prefixes: [ENVO, GO, ECOCORE, PCO]
+      - name: system
+        range: "ENVO:01000254"
+        allowed_prefixes: [ENVO]
+        description: "The system the process is measured over (stand, marsh, catchment)."
+    name: "{quality} of {process} in {system}"
+    definition: "The {quality} of {process} occurring in {system}, measured at system level."
+    equivalent_to:
+      var: quality
+      restrictions:
+        - property: "RO:0000052"
+          filler:
+            var: process
+            restrictions:
+              - property: "BFO:0000066"
+                filler: {var: system}
+    examples:
+      - "quality=PATO:0000161 process=ENVO:<carbon accumulation> system=ENVO:<salt marsh>"
+
+  # --- A5. Int ---------------------------------------------------------------
+  - id: intervention
+    title: Management intervention (Int)
+    status: draft
+    description: >-
+      A deliberate management action and what it acts on. Examples: managed
+      realignment of a salt marsh; liming of a lake. Parameters (level,
+      method, timing) are in node identity and have their own templates,
+      each a subclass of this one by reasoning, so 7.5 and 15 deer km-2 are
+      separate nodes that both roll up to deer density reduction. Same
+      logical shape as intervention_involving_taxon, with a wider target
+      range. Int or Dist: when one action is studied in both framings, prefer
+      one node and record the Int/Dist role on the statement.
+    camo_entity_type: management_intervention
+    vars:
+      - name: action
+        range: "BFO:0000015"
+        allowed_prefixes: [ELMO]
+      - name: target
+        range: "BFO:0000040"
+        allowed_prefixes: [NCBITaxon, ENVO, node]
+        description: "The taxon, environment or system acted on."
+    name: "{action} of {target}"
+    definition: "A {action} process acting on {target}."
+    equivalent_to:
+      var: action
+      restrictions:
+        - property: "RO:0000057"
+          filler: {var: target}
+    examples:
+      - "action=ELMO:<liming> target=ENVO:<lake>"
+
+  - id: intervention_with_level
+    title: Management intervention at a level (Int)
+    status: draft
+    description: >-
+      An intervention with a level: deer density reduction to 7.5 km-2;
+      environmental flow with increased minimum flow. A numeric level has no
+      ontology class: mint it under node: (deer density of 7.5 per km2) as a
+      subclass of the attribute it sets. The level is attached with has
+      characteristic; review whether it should instead characterize the
+      target's resulting state.
+    camo_entity_type: management_intervention
+    vars:
+      - name: action
+        range: "BFO:0000015"
+        allowed_prefixes: [ELMO]
+      - name: target
+        range: "BFO:0000040"
+        allowed_prefixes: [NCBITaxon, ENVO, node]
+      - name: level
+        range: "PATO:0000001"
+        allowed_prefixes: [PATO, OBA, node]
+    name: "{action} of {target} to {level}"
+    definition: "A {action} process acting on {target}, with level {level}."
+    equivalent_to:
+      var: action
+      restrictions:
+        - property: "RO:0000057"
+          filler: {var: target}
+        - property: "RO:0000053"
+          filler: {var: level}
+    examples:
+      - "action=ELMO:<population reduction> target=NCBITaxon:9874 level=node:<deer density of 7.5 per km2>"
+
+  - id: intervention_with_method
+    title: Management intervention by a method (Int)
+    status: draft
+    description: >-
+      An intervention with the material or agent it applies: straw mulch
+      application; prescribed burn with large slash piles; seeding with a
+      named seed mix. A seed mix is the one place an assemblage is
+      enumerated: mint the mix under node: as a class whose members are the
+      listed species, because the list defines the treatment.
+    camo_entity_type: management_intervention
+    vars:
+      - name: action
+        range: "BFO:0000015"
+        allowed_prefixes: [ELMO]
+      - name: target
+        range: "BFO:0000040"
+        allowed_prefixes: [NCBITaxon, ENVO, node]
+      - name: method
+        range: "BFO:0000040"
+        allowed_prefixes: [ENVO, CHEBI, NCBITaxon, node]
+        description: "The material, agent or seed mix applied (an input of the action)."
+    name: "{action} of {target} with {method}"
+    definition: "A {action} process acting on {target} that has {method} as input."
+    equivalent_to:
+      var: action
+      restrictions:
+        - property: "RO:0000057"
+          filler: {var: target}
+        - property: "RO:0002233"
+          filler: {var: method}
+    examples:
+      - "action=ELMO:<mulching> target=ENVO:<soil> method=ENVO:<straw>"
+
+  - id: intervention_with_timing
+    title: Management intervention at a time (Int)
+    status: draft
+    description: >-
+      An intervention restricted to a season or phase (spring burn, dormant
+      season cutting). Timing is an occurrent the action happens during.
+    camo_entity_type: management_intervention
+    vars:
+      - name: action
+        range: "BFO:0000015"
+        allowed_prefixes: [ELMO]
+      - name: target
+        range: "BFO:0000040"
+        allowed_prefixes: [NCBITaxon, ENVO, node]
+      - name: timing
+        range: "BFO:0000003"
+        allowed_prefixes: [ENVO, PO, node]
+    name: "{action} of {target} during {timing}"
+    definition: "A {action} process acting on {target} that happens during {timing}."
+    equivalent_to:
+      var: action
+      restrictions:
+        - property: "RO:0000057"
+          filler: {var: target}
+        - property: "RO:0002092"
+          filler: {var: timing}
+    examples:
+      - "action=ELMO:<prescribed burning> target=ENVO:<grassland> timing=node:<spring>"
+
+  # --- A6. Dist --------------------------------------------------------------
+  - id: disturbance_or_stressor
+    title: Disturbance or stressor (Dist)
+    status: draft
+    description: >-
+      An event or condition not deliberately applied for restoration:
+      acidification, drought, spring flooding, metal contamination, damming.
+      Int or Dist is decided by the study's question. Where the same action
+      (ELMO harvesting) appears in both framings, prefer one node and record
+      the role on the statement, so the two framings do not split into two
+      propositions.
+    camo_entity_type: environmental_process
+    vars:
+      - name: process
+        range: "BFO:0000015"
+        allowed_prefixes: [ENVO, ECOCORE, GO, ELMO]
+      - name: system
+        range: "ENVO:01000254"
+        allowed_prefixes: [ENVO]
+    name: "{process} in {system}"
+    definition: "A {process} process occurring in {system}."
+    equivalent_to:
+      var: process
+      restrictions:
+        - property: "BFO:0000066"
+          filler: {var: system}
+    examples:
+      - "process=ENVO:<acidification> system=ENVO:<lake>"
+
+  - id: disturbance_or_stressor_with_intensity
+    title: Disturbance or stressor at an intensity (Dist)
+    status: draft
+    description: >-
+      As disturbance_or_stressor, with an intensity in node identity (severe
+      drought; Cu and Ni at a stated concentration). Numeric intensities are
+      minted under node:, as for intervention levels.
+    camo_entity_type: environmental_process
+    vars:
+      - name: process
+        range: "BFO:0000015"
+        allowed_prefixes: [ENVO, ECOCORE, GO, ELMO]
+      - name: system
+        range: "ENVO:01000254"
+        allowed_prefixes: [ENVO]
+      - name: intensity
+        range: "PATO:0000001"
+        allowed_prefixes: [PATO, node]
+    name: "{intensity} {process} in {system}"
+    definition: "A {process} process occurring in {system}, with intensity {intensity}."
+    equivalent_to:
+      var: process
+      restrictions:
+        - property: "BFO:0000066"
+          filler: {var: system}
+        - property: "RO:0000053"
+          filler: {var: intensity}
+    examples:
+      - "process=ENVO:<drought> system=ENVO:<forest> intensity=PATO:<severe intensity>"
+
+  # --- A7. Tax ---------------------------------------------------------------
+  - id: taxon
+    title: Taxon (Tax)
+    status: draft
+    description: >-
+      A bare taxon, used only by term-level groups. The node is equivalent to
+      the NCBITaxon class; the template exists so every node gets a node: IRI
+      and a label by the same route. Quantification is not in the node: how
+      many members a proposition covers is set by scope, and a site goes on
+      the statement.
+    camo_entity_type: taxon
+    vars:
+      - name: taxon
+        range: "NCBITaxon:131567"
+        allowed_prefixes: [NCBITaxon]
+    name: "{taxon}"
+    definition: "An organism of {taxon}."
+    equivalent_to: {var: taxon}
+    examples:
+      - "taxon=NCBITaxon:<Clinostomus elongatus>"
+
+  - id: taxon_at_life_stage
+    title: Taxon at a life stage (Tax)
+    status: draft
+    description: >-
+      Organisms of a taxon at one life stage: redside dace eggs. Same stage
+      relation as attribute_of_population_at_life_stage.
+    camo_entity_type: taxon
+    vars:
+      - name: taxon
+        range: "NCBITaxon:131567"
+        allowed_prefixes: [NCBITaxon]
+      - name: life_stage
+        range: "BFO:0000003"
+        allowed_prefixes: [PO, UBERON]
+    name: "{taxon} at {life_stage}"
+    definition: "An organism of {taxon} whose existence starts and ends during the {life_stage}."
+    equivalent_to:
+      var: taxon
+      restrictions:
+        - property: "RO:0002491"
+          filler: {var: life_stage}
+    examples:
+      - "taxon=NCBITaxon:<Clinostomus elongatus> life_stage=UBERON:<embryo stage>"
+
+  # --- A8. Hab ---------------------------------------------------------------
+  - id: environment_type
+    title: Environment type (Hab)
+    status: draft
+    description: >-
+      A kind of environment, habitat or substrate: fen; rotten wood; pool
+      margin. Equivalent to the ENVO class; see taxon for why a template
+      exists. Use environment_type_in_setting for a refined environment
+      (substrate in a microsite). CAMO has no habitat entity type;
+      environmental_variable is the closest.
+    camo_entity_type: environmental_variable
+    vars:
+      - name: environment
+        range: "BFO:0000040"
+        allowed_prefixes: [ENVO]
+    name: "{environment}"
+    definition: "A {environment}."
+    equivalent_to: {var: environment}
+    examples:
+      - "environment=ENVO:<fen>"
+
+  - id: environment_type_in_setting
+    title: Environment type in a setting (Hab)
+    status: draft
+    description: >-
+      An environment or substrate located in a wider setting: rotten wood in a
+      shaded cool dry-forest patch. A setting with no ENVO class is minted
+      under node:.
+    camo_entity_type: environmental_variable
+    vars:
+      - name: environment
+        range: "BFO:0000040"
+        allowed_prefixes: [ENVO]
+      - name: setting
+        range: "BFO:0000040"
+        allowed_prefixes: [ENVO, node]
+    name: "{environment} in {setting}"
+    definition: "A {environment} located in a {setting}."
+    equivalent_to:
+      var: environment
+      restrictions:
+        - property: "RO:0001025"
+          filler: {var: setting}
+    examples:
+      - "environment=ENVO:<rotten wood> setting=node:<shaded cool dry-forest patch>"
+
+  # --- A9. Trt ---------------------------------------------------------------
+  - id: trait
+    title: Trait (Trt)
+    status: draft
+    description: >-
+      A trait, without the taxon (the taxon is the subject of the statement):
+      low palatability; wind-dispersed seeds. Equivalent to the TO, FLOPO or
+      PATO class; FLOPO terms already carry their value. Use trait_with_value
+      when the trait and its value are separate terms. CAMO has no trait
+      entity type; environmental_variable is the closest.
+    camo_entity_type: environmental_variable
+    vars:
+      - name: trait
+        range: "PATO:0000001"
+        allowed_prefixes: [TO, FLOPO, PATO, OBA]
+    name: "{trait}"
+    definition: "The trait {trait}."
+    equivalent_to: {var: trait}
+    examples:
+      - "trait=TO:<seed dispersal by wind>"
+
+  - id: trait_with_value
+    title: Trait with a categorical value (Trt)
+    status: draft
+    description: >-
+      A trait refined by a categorical PATO value: rhizomatous vegetative
+      spread; non-adhesive eggs. Uses RO has modifier (attribute to
+      attribute), so the valued trait is a subclass of the bare trait. Numeric
+      values need a data property, which the generator does not support.
+    camo_entity_type: environmental_variable
+    vars:
+      - name: trait
+        range: "PATO:0000001"
+        allowed_prefixes: [TO, FLOPO, PATO, OBA]
+      - name: value
+        range: "PATO:0000001"
+        allowed_prefixes: [PATO]
+    name: "{value} {trait}"
+    definition: "The trait {trait} with value {value}."
+    equivalent_to:
+      var: trait
+      restrictions:
+        - property: "RO:0002573"
+          filler: {var: value}
+    examples:
+      - "trait=TO:<vegetative spread> value=PATO:<rhizomatous>"

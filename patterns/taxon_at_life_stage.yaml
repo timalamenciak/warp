@@ -1,0 +1,28 @@
+# GENERATED from templates/node_templates.yaml by scripts/gen_dosdp.py. Do not edit.
+pattern_name: taxon_at_life_stage
+pattern_iri: https://w3id.org/ecoweaver/patterns/taxon_at_life_stage.yaml
+description: 'Organisms of a taxon at one life stage: redside dace eggs. Same stage relation as attribute_of_population_at_life_stage.'
+status: development
+classes:
+  occurrent: BFO:0000003
+  cellular organisms: NCBITaxon:131567
+relations:
+  existence starts and ends during: RO:0002491
+vars:
+  taxon: '''cellular organisms'''
+  life_stage: '''occurrent'''
+name:
+  text: '%s at %s'
+  vars:
+  - taxon
+  - life_stage
+def:
+  text: An organism of %s whose existence starts and ends during the %s.
+  vars:
+  - taxon
+  - life_stage
+equivalentTo:
+  text: '%s and (''existence starts and ends during'' some %s)'
+  vars:
+  - taxon
+  - life_stage

@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WARP Documentation</title>
+<meta name="description" content="Documentation for WARP (Weaving Assertions, Reasons and Provenance), EcoWeaver's schema for sourced, scoped ecological statements, at three levels of depth.">
+<link rel="stylesheet" href="warp-docs.css">
+</head>
+<body>
+<header class="topbar"><div class="topbar-inner">
+  <a class="brand" href="index.html"><span>WARP</span> docs</a>
+  <nav class="levels" aria-label="Documentation level">
+    <a class="l-basic" href="basic.html">Contributor</a>
+    <a class="l-camo" href="camo.html">CAMO annotators</a>
+    <a class="l-advanced" href="advanced.html">Advanced</a>
+    <a class="l-mechanic" href="mechanic.html">Mechanic</a>
+  </nav>
+</div></header>
+
+<div class="single">
+<main>
+  <h1>WARP: Weaving Assertions, Reasons and Provenance</h1>
+  <p class="lede">WARP is EcoWeaver's schema for recording <strong>who said what</strong> about an ecological relationship, <strong>how broadly</strong> they meant it, and <strong>what backs it up</strong>. These pages explain it at three depths, plus a bridge for CAMO annotators. Pick the one that matches what you want to do.</p>
+
+  <div class="cards">
+    <a class="card basic" href="basic.html">
+      <span class="eyebrow basic">Contributor</span>
+      <h3>I want to suggest a statement or a question</h3>
+      <p>You've read a paper, seen something in the field, or hold knowledge about how an ecosystem works, and you want it in EcoWeaver. No schema, no code: what to write in an issue, and why we ask for it.</p>
+      <p class="go">Suggesting a statement →</p>
+    </a>
+    <a class="card camo" href="camo.html">
+      <span class="eyebrow camo">CAMO annotators</span>
+      <h3>I annotate with the Causal Mosaic</h3>
+      <p>You know <code>CausalEdge</code> well. What carries over unchanged, what moves (scope, evidence lines, author vs annotator), what's new, and the habits to change, with one edge translated field by field.</p>
+      <p class="go">From CAMO to WARP →</p>
+    </a>
+    <a class="card advanced" href="advanced.html">
+      <span class="eyebrow advanced">Advanced user</span>
+      <h3>I want to understand how WARP models knowledge</h3>
+      <p>Statements, propositions, scope, node templates, causal features, evidence lines and synthesis assessments, explained in full. You can write suggestions in WARP's own format, but you won't build the database.</p>
+      <p class="go">How WARP works →</p>
+    </a>
+    <a class="card mechanic" href="mechanic.html">
+      <span class="eyebrow mechanic">Mechanic</span>
+      <h3>I maintain the schema and build the database</h3>
+      <p>The LinkML profile, vendored upstreams, the predicate-group registry, the proposition derivation algorithm, node templates to DOSDP and OWL, the checks, and the whole build.</p>
+      <p class="go">Schema internals and build →</p>
+    </a>
+  </div>
+
+  <h2>The idea in one paragraph</h2>
+  <p>A <strong>statement</strong> is who said it, plus <em>subject → predicate → object</em>, plus what backs it. People record statements. Statements that say the same thing are grouped automatically into a shared <strong>proposition</strong>. Evidence for and against a proposition is organized into <strong>evidence lines</strong>, and a <strong>synthesis assessment</strong> is itself a statement, made by EcoWeaver, whose evidence is other people's statements.</p>
+
+  <div class="callout note">
+    <strong class="t">Why "WARP"?</strong>
+    On a loom, the warp is the set of threads held fixed under tension; everything else is woven across it. WARP is that fixed structure for EcoWeaver: statements, propositions, evidence and scope stay the same, while node templates and predicate groups are the weft that changes with each kind of statement.
+  </div>
+
+  <p class="muted"><small>Describes WARP 0.5.0 (draft), proposition identity rule <code>warp-prop-identity/3</code>. The bloodroot and garlic mustard example used throughout is illustrative: its citation, quotes and numbers are placeholders.</small></p>
+</main>
+</div>
+<footer>WARP 0.5.0 · CC0 · Source of truth: <code>src/warp/schema/warp.yaml</code> and the repository README</footer>
+</body>
+</html>

@@ -1,0 +1,28 @@
+# GENERATED from templates/node_templates.yaml by scripts/gen_dosdp.py. Do not edit.
+pattern_name: attribute_of_environmental_material
+pattern_iri: https://w3id.org/ecoweaver/patterns/attribute_of_environmental_material.yaml
+description: 'An attribute of an abiotic material or physical feature. Examples: pH of forest floor; water table depth; bankfull width of riffle. Hydrological regime attributes (minimum flow, recession rate) belong here, with the river or reach as the feature. Use attribute_of_environmental_material_in_layer when a layer or depth is reported: it is in node identity.'
+status: development
+classes:
+  material entity: BFO:0000040
+  quality: PATO:0000001
+relations:
+  characteristic of: RO:0000052
+vars:
+  attribute: '''quality'''
+  material: '''material entity'''
+name:
+  text: '%s of %s'
+  vars:
+  - attribute
+  - material
+def:
+  text: The %s of %s.
+  vars:
+  - attribute
+  - material
+equivalentTo:
+  text: '%s and (''characteristic of'' some %s)'
+  vars:
+  - attribute
+  - material

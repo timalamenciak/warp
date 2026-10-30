@@ -1,0 +1,33 @@
+# GENERATED from templates/node_templates.yaml by scripts/gen_dosdp.py. Do not edit.
+pattern_name: intervention_with_method
+pattern_iri: https://w3id.org/ecoweaver/patterns/intervention_with_method.yaml
+description: 'An intervention with the material or agent it applies: straw mulch application; prescribed burn with large slash piles; seeding with a named seed mix. A seed mix is the one place an assemblage is enumerated: mint the mix under node: as a class whose members are the listed species, because the list defines the treatment.'
+status: development
+classes:
+  process: BFO:0000015
+  material entity: BFO:0000040
+relations:
+  has participant: RO:0000057
+  has input: RO:0002233
+vars:
+  action: '''process'''
+  target: '''material entity'''
+  method: '''material entity'''
+name:
+  text: '%s of %s with %s'
+  vars:
+  - action
+  - target
+  - method
+def:
+  text: A %s process acting on %s that has %s as input.
+  vars:
+  - action
+  - target
+  - method
+equivalentTo:
+  text: '%s and (''has participant'' some %s) and (''has input'' some %s)'
+  vars:
+  - action
+  - target
+  - method

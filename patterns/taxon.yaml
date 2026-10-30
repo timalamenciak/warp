@@ -1,0 +1,21 @@
+# GENERATED from templates/node_templates.yaml by scripts/gen_dosdp.py. Do not edit.
+pattern_name: taxon
+pattern_iri: https://w3id.org/ecoweaver/patterns/taxon.yaml
+description: 'A bare taxon, used only by term-level groups. The node is equivalent to the NCBITaxon class; the template exists so every node gets a node: IRI and a label by the same route. Quantification is not in the node: how many members a proposition covers is set by scope, and a site goes on the statement.'
+status: development
+classes:
+  cellular organisms: NCBITaxon:131567
+vars:
+  taxon: '''cellular organisms'''
+name:
+  text: '%s'
+  vars:
+  - taxon
+def:
+  text: An organism of %s.
+  vars:
+  - taxon
+equivalentTo:
+  text: '%s'
+  vars:
+  - taxon

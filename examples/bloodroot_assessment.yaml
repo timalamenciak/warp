@@ -1,0 +1,50 @@
+# Worked example, step 3: a synthesis assessment (SEPIO Proposition Assessment
+# Mode) over the statements in bloodroot_statements.derived.yaml.
+#
+# It assesses the PROTOTYPICAL proposition ("typically, planting bloodroot
+# prevents garlic mustard population growth"). The notebook statement has its own,
+# ASSERTIONAL proposition (one plot, one year), and enters here as evidence for
+# the general proposition. That is the case-report pattern: a statement about a
+# particular case supports a statement about the type.
+#
+# ILLUSTRATIVE ONLY: grades are placeholders, not a real synthesis.
+
+id: warp:statementset/bloodroot-assessment
+profile_version: 0.5.0
+
+agents:
+  - id: warp:agent/ecoweaver-synthesis
+    type: EcoAgent
+    name: EcoWeaver synthesis pipeline
+    subtype: software
+    agent_kind: synthesis_pipeline
+
+assessments:
+  - id: warp:assessment/bloodroot-gm-1
+    type: SynthesisAssessment
+    proposition: warp:prop/question-bloodroot-garlic-mustard
+    statementText: The evidence that planting bloodroot typically suppresses garlic mustard population growth is supportive but of low certainty.
+    # The pipeline is the author; with no evidence_assessor contributions on
+    # the lines below, it is also taken to have judged them.
+    contributions:
+      - {id: warp:contrib/bloodroot-gm-1-author, type: EcoContribution, role: author, contributor: warp:agent/ecoweaver-synthesis, date: "2026-10-11"}
+    direction: supports
+    strength: low
+    evidence_balance: supportive
+    hasEvidenceLines:
+      - id: warp:el/bloodroot-gm-1-experimental
+        type: EcoEvidenceLine
+        targetProposition: warp:prop/question-bloodroot-garlic-mustard
+        evidence_type: randomized_experiment
+        evidence_object: correlation
+        directionOfEvidenceProvided: supports
+        strengthOfEvidenceProvided: moderate
+        evidence_item_refs: [warp:statement/murphy2005-c1]
+      - id: warp:el/bloodroot-gm-1-practice
+        type: EcoEvidenceLine
+        targetProposition: warp:prop/question-bloodroot-garlic-mustard
+        evidence_type: practitioner_experience
+        evidence_object: correlation
+        directionOfEvidenceProvided: supports
+        strengthOfEvidenceProvided: weak
+        evidence_item_refs: [warp:statement/notebook-c1]

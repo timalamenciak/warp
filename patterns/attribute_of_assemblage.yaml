@@ -1,0 +1,30 @@
+# GENERATED from templates/node_templates.yaml by scripts/gen_dosdp.py. Do not edit.
+pattern_name: attribute_of_assemblage
+pattern_iri: https://w3id.org/ecoweaver/patterns/attribute_of_assemblage.yaml
+description: 'An aggregate attribute of a defined set of organisms: richness, diversity, composition, total abundance, functional trait composition. The metric is part of the attribute (observed richness, rarefied richness, Shannon diversity, community-weighted mean), so different metrics are different nodes. Membership is a single class: an NCBITaxon for a taxonomic assemblage (subfossil Cladocera), or a membership class defined separately under node: for anything else (herbaceous plants, Gram-negative bacteria by PLFA). The genus is PCO collection of organisms, not ecological community, because membership is set by definition, not by interaction.'
+status: development
+classes:
+  material entity: BFO:0000040
+  quality: PATO:0000001
+  collection of organisms: PCO:0000000
+relations:
+  characteristic of: RO:0000052
+  has member: RO:0002351
+vars:
+  attribute: '''quality'''
+  membership: '''material entity'''
+name:
+  text: '%s of %s assemblage'
+  vars:
+  - attribute
+  - membership
+def:
+  text: The %s of a collection of organisms whose members are %s.
+  vars:
+  - attribute
+  - membership
+equivalentTo:
+  text: '%s and (''characteristic of'' some (''collection of organisms'' and (''has member'' some %s)))'
+  vars:
+  - attribute
+  - membership

@@ -1,0 +1,834 @@
+## =============================================================================
+## WARP: Weaving Assertions, Reasons and Provenance
+## EcoWeaver's SEPIO profile for sourced, scoped statements and their evidence
+## =============================================================================
+## This schema IMPORTS the SEPIO Core Information Model and the Causal Mosaic
+## (CAMO) schema unchanged (see upstream/) and adds EcoWeaver-specific classes
+## by subclassing (is_a) and narrowing (slot_usage). Nothing in upstream/ is
+## edited, so either upstream can be re-vendored without merge conflicts.
+##
+## The division of labour:
+##   1. Node shapes        -> node templates (templates/node_templates.yaml,
+##                            schema warp_templates.yaml) compiled to DOSDP and
+##                            OWL; CAMO CausalNode is the annotation record
+##   2. Predicate groups   -> one per kind of statement: causal (CAMO predicates +
+##                            CausalPredicateQualifiers) and interaction (RO).
+##                            Groups are registered with warp_* annotations on
+##                            their EcoStatement subclass; see docs/predicate-groups.md
+##   3. Overall shape      -> SEPIO Statement / Proposition / EvidenceLine [upstream]
+##   4. Scope              -> semantic unit types (SemanticUnitScopeEnum)   [here]
+##   5. Evidential basis   -> EcoEvidenceLine (incl. practitioner and
+##                            Indigenous knowledge as evidence types)      [here]
+##
+## Annotators make Statements. Propositions are DERIVED from statements by
+## scripts/derive_propositions.py under a versioned identity rule.
+##
+## Following SEPIO's advice for profiles, generic Coding fields are specialized
+## as named, enum-typed attributes (evidence_type for EvidenceLine.subtype,
+## role for Contribution.activityType); the generic field is then left empty.
+## Constraints the schema cannot express (Assertion Mode, negation, references
+## resolving) are checked by scripts/check_statements.py.
+## =============================================================================
+
+id: https://w3id.org/ecoweaver/warp
+name: warp
+title: "WARP: Weaving Assertions, Reasons and Provenance"
+description: >-
+  WARP (Weaving Assertions, Reasons and Provenance) is EcoWeaver's profile of
+  the SEPIO Core Information Model for recording
+  sourced, scoped statements about ecological relationships, their evidence, and
+  syntheses across statements. Causal statements reuse the Causal Mosaic (CAMO) node
+  shapes, predicates and causal features.
+license: CC0
+version: 0.5.0
+status: Draft
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  warp: https://w3id.org/ecoweaver/warp/
+  camo: https://w3id.org/camo/
+  causal_mosaic: https://w3id.org/causal-mosaic/
+  node: https://w3id.org/causal-mosaic/node/
+  IAO: http://purl.obolibrary.org/obo/IAO_
+  RO: http://purl.obolibrary.org/obo/RO_
+  ECO: http://purl.obolibrary.org/obo/ECO_
+  BFO: http://purl.obolibrary.org/obo/BFO_
+  PATO: http://purl.obolibrary.org/obo/PATO_
+  wd: http://www.wikidata.org/entity/
+  orcid: https://orcid.org/
+  doi: https://doi.org/
+
+default_prefix: warp
+default_range: string
+
+imports:
+  - linkml:types
+  - upstream/sepio_classes      # SEPIO Core IM, sepio-framework/sepio-linkml (pinned, see README)
+  - upstream/causalmosaic       # CAMO 0.8.x, timalamenciak/causalmosaic (pinned, see README)
+
+
+## =============================================================================
+## ENUMERATIONS
+## =============================================================================
+
+enums:
+
+  SemanticUnitScopeEnum:
+    description: >-
+      The scope of what a statement asserts, following Vogt's semantic unit types
+      for statement units. Scope is part of a proposition's identity: "X reduced
+      Y on this plot" and "X typically reduces Y" are different propositions.
+      Definitions below are working glosses and must be checked against Vogt's
+      own definitions before release.
+    comments:
+      - >-
+        Replaces CAMO's token_or_type. Migration default: token -> assertional;
+        type -> prototypical (most ecological generalizations hold typically,
+        with exceptions, rather than universally); ambiguous/not_addressed ->
+        unclear.
+    permissible_values:
+      assertional:
+        description: >-
+          About particular things: this plot, this population, this burn.
+          Field observations and case reports are usually assertional.
+      contingent:
+        description: >-
+          About some, but not necessarily all, instances of a type: something
+          that can or does sometimes happen.
+      prototypical:
+        description: >-
+          About what typically holds for instances of a type, allowing
+          exceptions. The usual scope of an ecological generalization.
+      universal:
+        description: >-
+          About all instances of a type, without exception.
+      unclear:
+        description: >-
+          The scope cannot be determined from the source. Informative: it
+          blocks aggregation into scoped propositions until resolved.
+
+  EvidenceDirectionEnum:
+    description: >-
+      SEPIO direction: whether a statement (in Proposition Assessment Mode) or an evidence line
+      supports, disputes, or is neutral toward a proposition. NOT causal
+      direction, which is CausalPredicateQualifiers.causal_direction.
+    permissible_values:
+      supports:
+      disputes:
+      neutral:
+
+  EvidenceStrengthEnum:
+    description: >-
+      Qualitative strength of the support an evidence line provides toward its
+      target proposition, in the indicated direction.
+    permissible_values:
+      strong:
+      moderate:
+      weak:
+      not_assessed:
+
+  InteractionPredicateEnum:
+    description: >-
+      Predicates for biotic interaction statements, from the Relation Ontology
+      (IDs and labels checked against OLS 2026-10-10). Annotations follow the
+      CAMO convention so rendering code can treat every group alike.
+    permissible_values:
+      biotically_interacts_with:
+        meaning: RO:0002437
+        annotations:
+          rosetta_template: "{subject} interacts with {object}"
+      eats:
+        meaning: RO:0002470
+        annotations:
+          rosetta_template: "{subject} eats {object}"
+      pollinates:
+        meaning: RO:0002455
+        annotations:
+          rosetta_template: "{subject} pollinates {object}"
+      parasite_of:
+        meaning: RO:0002444
+        annotations:
+          rosetta_template: "{subject} is a parasite of {object}"
+
+  InteractionEffectEnum:
+    description: "Sign of an interaction's effect on one partner."
+    permissible_values:
+      positive:
+      negative:
+      neutral:
+      not_reported:
+
+  PropositionStatusEnum:
+    description: "Whether anyone has asserted the proposition yet."
+    permissible_values:
+      asserted:
+        description: "At least one statement puts this proposition forward."
+      open_question:
+        description: >-
+          Created directly, with no statements yet: an empty evidence gap map
+          cell, or a practitioner's question.
+
+  AgentKindEnum:
+    description: >-
+      The kind of knowledge an agent brings. Lets practitioners and Indigenous
+      knowledge holders make statements in their own right, not only be
+      sources of evidence for other people's statements. A different axis
+      from SEPIO Agent.subtype (person, organization, software).
+    permissible_values:
+      researcher:
+      practitioner:
+      indigenous_knowledge_holder:
+      community_member:
+      organization:
+      synthesis_pipeline:
+        description: "An EcoWeaver or other automated synthesis process."
+
+  ContributionRoleEnum:
+    description: >-
+      What an agent did toward a statement, evidence line or record.
+      Specializes SEPIO Contribution.activityType.
+    comments:
+      - "TODO: map values to Contribution Role Ontology (CRO) terms."
+    permissible_values:
+      author:
+        description: >-
+          Made the statement: put the proposition forward (Assertion Mode) or
+          assessed it (Proposition Assessment Mode). Use on Statement.contributions.
+      evidence_assessor:
+        description: >-
+          Judged the direction and strength of an evidence line. Use on
+          EvidenceLine.contributions.
+      annotator:
+        description: >-
+          Recorded the statement in EcoWeaver from its source. Use on
+          recordMetadata.contributions: it is provenance of the record, not
+          of the knowledge.
+      reviewer:
+        description: "Checked an annotation or assessment made by someone else."
+
+  AccessLevelEnum:
+    description: "How a statement and its content may be shared and reused."
+    permissible_values:
+      open:
+      attribution_required:
+      community_restricted:
+        description: "Shareable only within, or with the permission of, the knowledge holders' community."
+      restricted:
+        description: "Not to be shared beyond the original context."
+
+
+## =============================================================================
+## SLOTS shared across classes
+## =============================================================================
+
+slots:
+  scope:
+    description: >-
+      Semantic unit type of what is stated or proposed. Part of a
+      proposition's identity; copied onto statements so propositions can be
+      derived from them.
+    range: SemanticUnitScopeEnum
+
+
+## =============================================================================
+## CLASSES
+## =============================================================================
+
+classes:
+
+  # ---------------------------------------------------------------------------
+  # Container
+  # ---------------------------------------------------------------------------
+
+  StatementSet:
+    description: >-
+      A set of statements with the nodes, propositions, evidence and sources they
+      refer to. The unit of exchange (one file, one export).
+    tree_root: true
+    attributes:
+      id:
+        identifier: true
+        required: true
+      profile_version:
+        description: "Version of this profile the set conforms to."
+        ifabsent: string(0.5.0)
+      agents:
+        description: >-
+          People, organizations, communities and software that make, record
+          or assess statements. Referred to by id from contributions and CARE
+          metadata.
+        range: EcoAgent
+        multivalued: true
+        inlined_as_list: true
+      nodes:
+        description: "CAMO node shapes referred to by statements and propositions."
+        range: CausalNode
+        multivalued: true
+        inlined_as_list: true
+      node_definitions:
+        description: >-
+          Logical definitions of nodes: which node template each node fills,
+          and with what. Expanded to OWL and DOSDP fill tables by
+          scripts/expand_nodes.py. See docs/node-templates.md.
+        range: NodeDefinition
+        multivalued: true
+        inlined_as_list: true
+
+      # One statements list and one propositions list per predicate group.
+      # See docs/predicate-groups.md to add a group.
+      causal_statements:
+        description: "Causal statements as annotated (one per source assertion)."
+        range: CausalStatement
+        multivalued: true
+        inlined_as_list: true
+      causal_propositions:
+        description: >-
+          Causal propositions: derived by scripts/derive_propositions.py, or
+          written by people as open questions.
+        range: CausalProposition
+        multivalued: true
+        inlined_as_list: true
+      interaction_statements:
+        description: "Biotic interaction statements as annotated."
+        range: InteractionStatement
+        multivalued: true
+        inlined_as_list: true
+      interaction_propositions:
+        description: "Biotic interaction propositions (derived or open questions)."
+        range: InteractionProposition
+        multivalued: true
+        inlined_as_list: true
+
+      assessments:
+        description: "Synthesis assessments over propositions."
+        range: SynthesisAssessment
+        multivalued: true
+        inlined_as_list: true
+      study_results:
+        description: "Summarized study arms or plot groups used as evidence items."
+        range: EcoStudyResult
+        multivalued: true
+        inlined_as_list: true
+      documents:
+        description: "Sources referenced by statements and evidence lines."
+        range: EcoDocument
+        multivalued: true
+        inlined_as_list: true
+
+  # ---------------------------------------------------------------------------
+  # Statements (SEPIO Statement)
+  # ---------------------------------------------------------------------------
+
+  EcoStatement:
+    is_a: Statement
+    abstract: true
+    class_uri: warp:EcoStatement
+    description: >-
+      A SEPIO Statement about an ecological relationship: a claim of purported
+      truth made by a particular agent on a particular occasion. Annotated
+      statements (CausalStatement, InteractionStatement) are in SEPIO
+      Assertion Mode: they put a proposition forward as true and leave
+      direction, strength and score empty. SynthesisAssessment is the
+      Proposition Assessment Mode subclass.
+    broad_mappings:
+      - IAO:0000030  # information content entity
+    comments:
+      - >-
+        Subject, predicate, object and negated are recorded on the statement
+        as annotated, and normalized into a separate Proposition by
+        scripts/derive_propositions.py. SEPIO allows either pattern; WARP
+        uses both, with the Proposition authoritative for identity.
+      - >-
+        TODO: add exact_mappings to the SEPIO OWL term for 'statement' once
+        its IRI is confirmed; the upstream LinkML schema has no mappings yet.
+      - >-
+        Hedging (how cautiously something is said) belongs to the statement.
+        Scope (what it is said about) belongs to the proposition, and is
+        copied here so propositions can be derived from statements.
+    slots:
+      - scope
+    slot_usage:
+      scope:
+        recommended: true
+      id:
+        identifier: true
+      proposition:
+        range: EcoProposition
+        inlined: false
+        description: >-
+          The proposition this statement puts forward. DERIVED: filled by
+          scripts/derive_propositions.py, never by annotators. Exception:
+          SynthesisAssessment, which targets a chosen proposition.
+        annotations:
+          loom_role: calculated
+      direction:
+        range: EvidenceDirectionEnum
+      hasEvidenceLines:
+        range: EcoEvidenceLine
+        inlined_as_list: true
+      contributions:
+        description: >-
+          Who made the statement: at least one contribution with role author.
+          Who recorded it goes in recordMetadata, not here.
+        range: EcoContribution
+        inlined_as_list: true
+        recommended: true
+      recordMetadata:
+        description: >-
+          Provenance of this record: who annotated it in EcoWeaver and when
+          (role annotator, dateRecordCreated).
+        range: EcoRecordMetadata
+        inlined: true
+    attributes:
+      original_text:
+        description: >-
+          The statement as worded in its source (verbatim sentence, notebook line,
+          transcript passage). Distinct from statementText, which is the
+          normalized rendering.
+      source_spans:
+        description: "Text spans grounding the statement in its source document."
+        range: TextSpan           # CAMO
+        multivalued: true
+        inlined_as_list: true
+      care:
+        description: >-
+          Consent, access and governance metadata. Required for statements
+          whose author is an Indigenous knowledge holder or community member
+          (checked by scripts/check_statements.py).
+        range: CareMetadata
+        inlined: true
+
+  CausalStatement:
+    is_a: EcoStatement
+    class_uri: warp:CausalStatement
+    description: >-
+      A statement that one ecological state, change or process makes a causal
+      (or associational) difference to another. Subject and object are CAMO
+      node shapes; the predicate is a CAMO predicate, refined by the causal
+      features in predicate_qualifiers.
+    annotations:
+      # Predicate group registry, read by scripts/derive_propositions.py.
+      warp_group: causal
+      warp_statements_slot: causal_statements
+      warp_propositions_slot: causal_propositions
+      warp_proposition_class: CausalProposition
+    slot_usage:
+      subject:
+        range: CausalNode
+        required: true
+      predicate:
+        range: CausalPredicateEnum
+        required: true
+      object:
+        range: CausalNode
+        required: true
+    attributes:
+      negated:
+        description: >-
+          True if the statement asserts that the relationship does NOT hold (a null
+          result). Same convention as CAMO: negated is true iff causal_language
+          is no_relationship.
+        range: boolean
+        ifabsent: "false"
+      causal_language:
+        description: "How strongly the causal wording commits (statement-level hedging)."
+        range: ClaimStrengthEnum   # CAMO
+      predicate_qualifiers:
+        description: "What kind of causal relation is asserted."
+        range: CausalPredicateQualifiers
+        inlined: true
+      comparator:
+        description: "What the effect was assessed relative to."
+        range: ComparatorAnnotation   # CAMO
+        multivalued: true
+        inlined_as_list: true
+      context:
+        description: "Conditions under which the statement is said to hold (scope conditions)."
+        range: ContextAnnotation   # CAMO
+        inlined: true
+      ecosystem_context:
+        range: EcosystemFunctionalGroupEnum   # CAMO
+      temporal_extent:
+        range: TemporalExtent   # CAMO
+        inlined: true
+      camo_edge_id:
+        description: "Identifier of the CAMO CausalEdge this statement was migrated or projected from."
+
+  CausalPredicateQualifiers:
+    description: >-
+      The predicate layer of a causal statement: the philosophical account invoked
+      and the causal features of the asserted relation. A simple predicate
+      (camo:prevents) plus these qualifiers, following the Biolink pattern,
+      because an RDF predicate is a single IRI. Fields mirror CAMO CausalEdge
+      Layers 2-3; 'direction' and 'strength' are renamed to avoid colliding
+      with SEPIO's evidential direction and strength.
+    attributes:
+      philosophical_accounts:
+        range: PhilosophicalAccountEnum   # CAMO
+        multivalued: true
+      necessity:
+        range: FeatureAssertionEnum
+      sufficiency:
+        range: FeatureAssertionEnum
+      causal_direction:
+        description: "CAMO 'direction' (renamed)."
+        range: DirectionAnnotation
+        inlined: true
+      temporal_ordering:
+        range: FeatureAssertionEnum
+      mediation:
+        range: MediationAnnotation
+        inlined: true
+      moderation:
+        range: ModerationAnnotation
+        inlined: true
+      effect_strength:
+        description: "CAMO 'strength' (renamed)."
+        range: StrengthAnnotation
+        inlined: true
+      specificity:
+        range: FeatureAssertionEnum
+      stability:
+        range: FeatureAssertionEnum
+      determinism:
+        range: DeterminismEnum
+      proximate_distal:
+        range: ProximateDistalEnum
+      contributing_sole:
+        range: ContributingSoleEnum
+      reversibility:
+        range: ReversibilityEnum
+      proportionality:
+        range: FeatureAssertionEnum
+
+  SynthesisAssessment:
+    is_a: EcoStatement
+    class_uri: warp:SynthesisAssessment
+    description: >-
+      A statement in SEPIO Proposition Assessment Mode, about the state of the
+      evidence for a proposition across many statements. Usually made by a
+      synthesis pipeline or review team. Replaces CAMO EvidenceBaseAssessmentEdge.
+    slot_usage:
+      proposition:
+        required: true
+        description: "The proposition being assessed (chosen, not derived)."
+      direction:
+        required: true
+      strength:
+        range: CertaintyGradeEnum   # CAMO
+        required: true
+    attributes:
+      evidence_balance:
+        range: EvidenceBalanceEnum   # CAMO
+
+  CareMetadata:
+    description: >-
+      Governance metadata in the spirit of the CARE principles: who holds the
+      knowledge, under what consent, and how it may be shared.
+    attributes:
+      knowledge_holders:
+        description: >-
+          People or groups recognised as holding this knowledge, by agent id.
+          Often the statement's author, but not always: knowledge relayed by
+          a community member may be held by an elder or by the community.
+        range: EcoAgent
+        multivalued: true
+        inlined: false
+      community:
+        description: "Community or nation with authority over the knowledge."
+      consent_reference:
+        description: "Pointer to the consent or agreement under which the statement was recorded."
+      access_level:
+        description: "How the statement may be shared and reused."
+        range: AccessLevelEnum
+        required: true
+      local_contexts_labels:
+        description: "Local Contexts TK/BC label or notice URIs, where applied."
+        range: uri
+        multivalued: true
+      protocols:
+        description: "Community protocols governing use, in the community's words."
+
+  # ---------------------------------------------------------------------------
+  # Propositions (derived)
+  # ---------------------------------------------------------------------------
+
+  EcoProposition:
+    is_a: Proposition
+    abstract: true
+    class_uri: warp:EcoProposition
+    description: >-
+      The possible fact a statement puts forward, independent of who asserts it.
+      Derived by grouping statements under a versioned identity rule, or written
+      by people as an open question. Each predicate group has a concrete
+      subclass that constrains subject, predicate and object.
+    comments:
+      - "TODO: exact_mappings to the SEPIO OWL term for 'proposition'."
+    slots:
+      - scope
+    slot_usage:
+      scope:
+        required: true
+      id:
+        identifier: true
+    attributes:
+      status:
+        range: PropositionStatusEnum
+        required: true
+      raised_as_question:
+        description: >-
+          True if people created this proposition as an open question before
+          any statement asserted it. Such propositions keep their id and are never
+          deleted by re-derivation; they revert to open_question if their
+          statements are removed.
+        range: boolean
+      identity_key:
+        description: "The normalized key that defines this proposition under the identity rule."
+      identity_rule_version:
+        description: >-
+          Which identity rule produced this grouping. Changing the rule
+          regroups statements, so it must be recorded.
+      derived_from_statements:
+        description: "Statements grouped under this proposition."
+        range: EcoStatement
+        multivalued: true
+        inlined: false
+
+  CausalProposition:
+    is_a: EcoProposition
+    class_uri: warp:CausalProposition
+    description: "A proposition put forward by causal statements."
+    slot_usage:
+      subject:
+        range: CausalNode
+      predicate:
+        range: CausalPredicateEnum
+      object:
+        range: CausalNode
+
+  # ---------------------------------------------------------------------------
+  # Predicate group: biotic interactions (worked example of adding a group,
+  # see docs/predicate-groups.md)
+  # ---------------------------------------------------------------------------
+
+  InteractionStatement:
+    is_a: EcoStatement
+    class_uri: warp:InteractionStatement
+    description: >-
+      A statement that organisms of one population interact with organisms of
+      another in a particular way: eating, pollinating, parasitizing. Subject
+      and object are population nodes (template population_of_taxon).
+    annotations:
+      warp_group: interaction
+      warp_statements_slot: interaction_statements
+      warp_propositions_slot: interaction_propositions
+      warp_proposition_class: InteractionProposition
+    slot_usage:
+      subject:
+        range: CausalNode
+        required: true
+      predicate:
+        range: InteractionPredicateEnum
+        required: true
+      object:
+        range: CausalNode
+        required: true
+    attributes:
+      negated:
+        description: "True if the statement asserts the interaction does NOT occur."
+        range: boolean
+        ifabsent: "false"
+      predicate_qualifiers:
+        description: "How the interaction affects each partner."
+        range: InteractionQualifiers
+        inlined: true
+
+  InteractionQualifiers:
+    description: >-
+      The predicate layer of an interaction statement: the sign of the effect on
+      each partner (+/- for predation, +/+ for mutualism, and so on).
+    attributes:
+      effect_on_subject:
+        description: "Effect of the interaction on the subject population."
+        range: InteractionEffectEnum
+      effect_on_object:
+        description: "Effect of the interaction on the object population."
+        range: InteractionEffectEnum
+
+  InteractionProposition:
+    is_a: EcoProposition
+    class_uri: warp:InteractionProposition
+    description: "A proposition put forward by biotic interaction statements."
+    slot_usage:
+      subject:
+        range: CausalNode
+      predicate:
+        range: InteractionPredicateEnum
+      object:
+        range: CausalNode
+
+  # ---------------------------------------------------------------------------
+  # Node definitions: a CAMO node filled from a node template
+  # ---------------------------------------------------------------------------
+
+  NodeDefinition:
+    description: >-
+      Says which node template a node fills and with which terms. The CAMO
+      node stays the annotation record; this is its logical definition.
+    attributes:
+      node:
+        description: "The CAMO node being defined."
+        range: CausalNode
+        identifier: true
+        required: true
+      template:
+        description: "Id of a template in templates/node_templates.yaml."
+        required: true
+      fillers:
+        description: "One filler per template variable."
+        range: TemplateFiller
+        multivalued: true
+        inlined_as_list: true
+        required: true
+
+  TemplateFiller:
+    description: "The term filling one template variable."
+    attributes:
+      var:
+        description: "Template variable name."
+        required: true
+      value:
+        description: "The filling term, as a CURIE."
+        range: uriorcurie
+        required: true
+      label:
+        description: >-
+          The term's label, used to build the node's generated label. Optional;
+          the CURIE is used if missing.
+
+  # ---------------------------------------------------------------------------
+  # Evidence
+  # ---------------------------------------------------------------------------
+
+  EcoEvidenceLine:
+    is_a: EvidenceLine
+    class_uri: warp:EcoEvidenceLine
+    description: >-
+      One argument for or against a proposition, built from evidence items.
+      The evidential basis lives here: study design, evidence object, and
+      non-academic evidence such as practitioner experience and Indigenous
+      knowledge. Direction and strength are a judgement: record who made it
+      as a contribution with role evidence_assessor. Without one, the
+      judgement is attributed to the annotator of the statement that holds
+      the line (or, for a SynthesisAssessment, to its author).
+    slot_usage:
+      id:
+        identifier: true
+      targetProposition:
+        range: EcoProposition
+        inlined: false
+      directionOfEvidenceProvided:
+        range: EvidenceDirectionEnum
+        required: true
+      strengthOfEvidenceProvided:
+        range: EvidenceStrengthEnum
+      contributions:
+        range: EcoContribution
+        inlined_as_list: true
+    attributes:
+      evidence_type:
+        description: >-
+          Kind of study or reasoning (CAMO; ECO parents given as broad
+          mappings there). Specializes SEPIO EvidenceLine.subtype, which is
+          left empty.
+        range: EvidenceTypeEnum   # CAMO
+        required: true
+      evidence_object:
+        description: >-
+          Whether the evidence bears on correlation (difference-making),
+          mechanism (production), or both (Russo-Williamson). EcoWeaver
+          extension to SEPIO; candidate for an upstream contribution.
+        range: EvidenceObjectEnum   # CAMO
+      evidence_item_refs:
+        description: >-
+          Evidence items referenced by identifier: other statements, study
+          results, documents, dataset records. Use instead of SEPIO's
+          hasEvidenceItems, which inlines whole objects. Each must resolve to
+          an id in the files checked together (scripts/check_statements.py).
+        range: uriorcurie
+        multivalued: true
+
+  # ---------------------------------------------------------------------------
+  # Agents and contributions (SEPIO provenance)
+  # ---------------------------------------------------------------------------
+
+  EcoAgent:
+    is_a: Agent
+    class_uri: warp:EcoAgent
+    description: >-
+      A person, organization, community or software agent. Use an ORCID or
+      ROR id where one exists and the agent agrees; otherwise a local id
+      (warp:agent/...), which may be a pseudonym.
+    slot_usage:
+      id:
+        identifier: true
+    attributes:
+      agent_kind:
+        description: "The kind of knowledge the agent brings."
+        range: AgentKindEnum
+
+  EcoContribution:
+    is_a: Contribution
+    class_uri: warp:EcoContribution
+    description: >-
+      One agent's part in making a statement, judging an evidence line, or
+      recording either. The role says which.
+    slot_usage:
+      contributor:
+        range: EcoAgent
+        inlined: false
+        required: true
+    attributes:
+      role:
+        description: >-
+          What the agent did. Specializes SEPIO Contribution.activityType,
+          which is left empty.
+        range: ContributionRoleEnum
+        required: true
+
+  EcoRecordMetadata:
+    is_a: RecordMetadata
+    class_uri: warp:EcoRecordMetadata
+    description: >-
+      Provenance of a WARP record (not of the knowledge it holds): who
+      annotated it and when.
+    slot_usage:
+      contributions:
+        range: EcoContribution
+        inlined_as_list: true
+
+  EcoStudyResult:
+    is_a: StudyResult
+    class_uri: warp:EcoStudyResult
+    description: >-
+      A summary of data from one study arm or plot group about one focus
+      variable (mean, variability, n), traceable to source records. The
+      recommended level of detail for evidence from datasets.
+    slot_usage:
+      id:
+        identifier: true
+      focus:
+        range: CausalNode
+        description: "The CAMO node (variable) the data are about."
+      dataItems:
+        inlined_as_list: true
+      sourceDataSet:
+        inlined_as_list: true
+
+  EcoDocument:
+    is_a: Document
+    class_uri: warp:EcoDocument
+    description: "A source: publication, report, field notebook, transcript, dataset landing page."
+    slot_usage:
+      id:
+        identifier: true
