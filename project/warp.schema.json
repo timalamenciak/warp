@@ -1259,7 +1259,7 @@
                             "type": "null"
                         }
                     ],
-                    "description": "Conditions under which the statement is said to hold (scope conditions)."
+                    "description": "Conditions under which the statement is said to hold (scope conditions), as the source gives them. Shared by every predicate group."
                 },
                 "contributions": {
                     "description": "Who made the statement: at least one contribution with role author. Who recorded it goes in recordMetadata, not here.",
@@ -1300,7 +1300,8 @@
                     "description": "A term indicating whether the Statement supports, disputes, or remains neutral w.r.t. the validity of the Proposition it evaluates."
                 },
                 "ecosystem_context": {
-                    "$ref": "#/$defs/EcosystemFunctionalGroupEnum"
+                    "$ref": "#/$defs/EcosystemFunctionalGroupEnum",
+                    "description": "The KIND of ecosystem the statement is about, as one of CAMO's IUCN Global Ecosystem Typology functional groups (warm_temperate_forests, coastal_saltmarshes_and_reedbeds). Not a place: \"Florida\" or \"the Mediterranean coast of Israel\" go in `place`. Every 0.4 proposal example confused the two (R19)."
                 },
                 "extensions": {
                     "description": "A list of extensions to the Entity, that allow for capture of information not directly supported by elements defined in the model.",
@@ -1394,6 +1395,10 @@
                         "null"
                     ]
                 },
+                "modality": {
+                    "$ref": "#/$defs/ModalityEnum",
+                    "description": "Whether the statement reports (observed), infers (inferred) or forecasts (anticipated). Different from hedging, which is causal_language: hedging is how sure the speaker sounds, modality is what kind of statement it is. A proposition projects to OWL only when every statement grouped under it is observed (decision D15)."
+                },
                 "negated": {
                     "description": "True if the statement asserts that the relationship does NOT hold (a null result). Same convention as CAMO: negated is true iff causal_language is no_relationship.",
                     "type": [
@@ -1409,6 +1414,16 @@
                     "description": "The statement as worded in its source (verbatim sentence, notebook line, transcript passage). Distinct from statementText, which is the normalized rendering.",
                     "type": [
                         "string",
+                        "null"
+                    ]
+                },
+                "place": {
+                    "description": "The REGION the statement is about, as an IRI from a registered place scheme: an ISO 3166-2 code for a province or state (ISO3166-2:CA-SK); a Wikidata item for a municipality, park, lake or territory (wd:Q...); a GeoNames or Getty TGN entry where Wikidata has none; an ENVO ecoregion individual; or, failing all of these, a locally minted place: concept with a TODO to replace it. Never a bare name, never a coordinate pair standing in for an area. Not the kind of ecosystem, which is ecosystem_context. Part of the identity key for tolerance and cost statements (decision D18). How to find an IRI: docs/values.md.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
                         "null"
                     ]
                 },
@@ -1506,6 +1521,16 @@
                         "null"
                     ]
                 },
+                "specified_in": {
+                    "description": "Plan documents that specify what was, or is to be, done: a recovery strategy, a restoration plan, a work order. Referenced by id, not inlined. Used by strategies and implementation statements.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
                 "statementText": {
                     "description": "A natural-language expression of what a Statement asserts to be true.",
                     "type": [
@@ -1563,7 +1588,8 @@
                         {
                             "type": "null"
                         }
-                    ]
+                    ],
+                    "description": "The temporal window over which the stated effect or condition was observed (CAMO TemporalExtent). Not a calendar period: dated periods use Period (start and end as ISO 8601 strings)."
                 },
                 "type": {
                     "description": "The name of the class that is instantiated by a data object representing the Entity.",
@@ -1946,6 +1972,46 @@
             ],
             "title": "CoordinateLocationBasisEnum",
             "type": "string"
+        },
+        "Count": {
+            "additionalProperties": false,
+            "description": "A number of things, where a unit would be wrong: 46 protected areas, 12 culverts. `entity` is a CURIE for the kind of thing counted.",
+            "properties": {
+                "entity": {
+                    "description": "The kind of thing counted, as a CURIE (a node, an ENVO term, or a TODO: placeholder).",
+                    "type": "string"
+                },
+                "value": {
+                    "minimum": 0,
+                    "type": "integer"
+                }
+            },
+            "required": [
+                "value",
+                "entity"
+            ],
+            "title": "Count",
+            "type": "object"
+        },
+        "CurvePoint": {
+            "additionalProperties": false,
+            "description": "One breakpoint of a habitat suitability response curve: the value of the variable (in the unit of the statement's range) and the suitability there, between 0 and 1.",
+            "properties": {
+                "suitability": {
+                    "maximum": 1,
+                    "minimum": 0,
+                    "type": "number"
+                },
+                "x": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "x",
+                "suitability"
+            ],
+            "title": "CurvePoint",
+            "type": "object"
         },
         "DataItem": {
             "additionalProperties": false,
@@ -3206,8 +3272,8 @@
                     "description": "Whether the evidence bears on correlation (difference-making), mechanism (production), or both (Russo-Williamson). EcoWeaver extension to SEPIO; candidate for an upstream contribution."
                 },
                 "evidence_type": {
-                    "$ref": "#/$defs/EvidenceTypeEnum",
-                    "description": "Kind of study or reasoning (CAMO; ECO parents given as broad mappings there). Specializes SEPIO EvidenceLine.subtype, which is left empty."
+                    "$ref": "#/$defs/WarpEvidenceTypeEnum",
+                    "description": "Kind of study or reasoning (CAMO's values, ECO parents as broad mappings, plus not_stated). Specializes SEPIO EvidenceLine.subtype, which is left empty. Use CAMO's expert_judgment for expert opinion (decision D2), and not_stated when the source gives no basis at all."
                 },
                 "extensions": {
                     "description": "A list of extensions to the Entity, that allow for capture of information not directly supported by elements defined in the model.",
@@ -3592,6 +3658,17 @@
                     ],
                     "description": "Consent, access and governance metadata. Required for statements whose author is an Indigenous knowledge holder or community member (checked by scripts/check_statements.py)."
                 },
+                "context": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ContextAnnotation"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "Conditions under which the statement is said to hold (scope conditions), as the source gives them. Shared by every predicate group."
+                },
                 "contributions": {
                     "description": "Who made the statement: at least one contribution with role author. Who recorded it goes in recordMetadata, not here.",
                     "items": {
@@ -3629,6 +3706,10 @@
                 "direction": {
                     "$ref": "#/$defs/EvidenceDirectionEnum",
                     "description": "A term indicating whether the Statement supports, disputes, or remains neutral w.r.t. the validity of the Proposition it evaluates."
+                },
+                "ecosystem_context": {
+                    "$ref": "#/$defs/EcosystemFunctionalGroupEnum",
+                    "description": "The KIND of ecosystem the statement is about, as one of CAMO's IUCN Global Ecosystem Typology functional groups (warm_temperate_forests, coastal_saltmarshes_and_reedbeds). Not a place: \"Florida\" or \"the Mediterranean coast of Israel\" go in `place`. Every 0.4 proposal example confused the two (R19)."
                 },
                 "extensions": {
                     "description": "A list of extensions to the Entity, that allow for capture of information not directly supported by elements defined in the model.",
@@ -3722,6 +3803,10 @@
                         "null"
                     ]
                 },
+                "modality": {
+                    "$ref": "#/$defs/ModalityEnum",
+                    "description": "Whether the statement reports (observed), infers (inferred) or forecasts (anticipated). Different from hedging, which is causal_language: hedging is how sure the speaker sounds, modality is what kind of statement it is. A proposition projects to OWL only when every statement grouped under it is observed (decision D15)."
+                },
                 "object": {
                     "description": "An Entity or concept that is related to the subject of a Statement via its predicate.",
                     "type": [
@@ -3733,6 +3818,16 @@
                     "description": "The statement as worded in its source (verbatim sentence, notebook line, transcript passage). Distinct from statementText, which is the normalized rendering.",
                     "type": [
                         "string",
+                        "null"
+                    ]
+                },
+                "place": {
+                    "description": "The REGION the statement is about, as an IRI from a registered place scheme: an ISO 3166-2 code for a province or state (ISO3166-2:CA-SK); a Wikidata item for a municipality, park, lake or territory (wd:Q...); a GeoNames or Getty TGN entry where Wikidata has none; an ENVO ecoregion individual; or, failing all of these, a locally minted place: concept with a TODO to replace it. Never a bare name, never a coordinate pair standing in for an area. Not the kind of ecosystem, which is ecosystem_context. Part of the identity key for tolerance and cost statements (decision D18). How to find an IRI: docs/values.md.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
                         "null"
                     ]
                 },
@@ -3826,6 +3921,16 @@
                         "null"
                     ]
                 },
+                "specified_in": {
+                    "description": "Plan documents that specify what was, or is to be, done: a recovery strategy, a restoration plan, a work order. Referenced by id, not inlined. Used by strategies and implementation statements.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
                 "statementText": {
                     "description": "A natural-language expression of what a Statement asserts to be true.",
                     "type": [
@@ -3877,6 +3982,17 @@
                         "array",
                         "null"
                     ]
+                },
+                "temporal_extent": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/TemporalExtent"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "The temporal window over which the stated effect or condition was observed (CAMO TemporalExtent). Not a calendar period: dated periods use Period (start and end as ISO 8601 strings)."
                 },
                 "type": {
                     "description": "The name of the class that is instantiated by a data object representing the Entity.",
@@ -4076,6 +4192,13 @@
                     },
                     "type": [
                         "array",
+                        "null"
+                    ]
+                },
+                "stated_goal": {
+                    "description": "The aim of the work as the source states it (\"to restore native vegetation\", \"to reduce larval density\"), recorded without judging whether it was met. Shared by every predicate group. Aims belong to the evidence layer: never put them on nodes (what counts as success is contested) or on statements.",
+                    "type": [
+                        "string",
                         "null"
                     ]
                 },
@@ -5494,6 +5617,17 @@
                     ],
                     "description": "Consent, access and governance metadata. Required for statements whose author is an Indigenous knowledge holder or community member (checked by scripts/check_statements.py)."
                 },
+                "context": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ContextAnnotation"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "Conditions under which the statement is said to hold (scope conditions), as the source gives them. Shared by every predicate group."
+                },
                 "contributions": {
                     "description": "Who made the statement: at least one contribution with role author. Who recorded it goes in recordMetadata, not here.",
                     "items": {
@@ -5531,6 +5665,10 @@
                 "direction": {
                     "$ref": "#/$defs/EvidenceDirectionEnum",
                     "description": "A term indicating whether the Statement supports, disputes, or remains neutral w.r.t. the validity of the Proposition it evaluates."
+                },
+                "ecosystem_context": {
+                    "$ref": "#/$defs/EcosystemFunctionalGroupEnum",
+                    "description": "The KIND of ecosystem the statement is about, as one of CAMO's IUCN Global Ecosystem Typology functional groups (warm_temperate_forests, coastal_saltmarshes_and_reedbeds). Not a place: \"Florida\" or \"the Mediterranean coast of Israel\" go in `place`. Every 0.4 proposal example confused the two (R19)."
                 },
                 "extensions": {
                     "description": "A list of extensions to the Entity, that allow for capture of information not directly supported by elements defined in the model.",
@@ -5624,6 +5762,10 @@
                         "null"
                     ]
                 },
+                "modality": {
+                    "$ref": "#/$defs/ModalityEnum",
+                    "description": "Whether the statement reports (observed), infers (inferred) or forecasts (anticipated). Different from hedging, which is causal_language: hedging is how sure the speaker sounds, modality is what kind of statement it is. A proposition projects to OWL only when every statement grouped under it is observed (decision D15)."
+                },
                 "negated": {
                     "description": "True if the statement asserts the interaction does NOT occur.",
                     "type": [
@@ -5639,6 +5781,16 @@
                     "description": "The statement as worded in its source (verbatim sentence, notebook line, transcript passage). Distinct from statementText, which is the normalized rendering.",
                     "type": [
                         "string",
+                        "null"
+                    ]
+                },
+                "place": {
+                    "description": "The REGION the statement is about, as an IRI from a registered place scheme: an ISO 3166-2 code for a province or state (ISO3166-2:CA-SK); a Wikidata item for a municipality, park, lake or territory (wd:Q...); a GeoNames or Getty TGN entry where Wikidata has none; an ENVO ecoregion individual; or, failing all of these, a locally minted place: concept with a TODO to replace it. Never a bare name, never a coordinate pair standing in for an area. Not the kind of ecosystem, which is ecosystem_context. Part of the identity key for tolerance and cost statements (decision D18). How to find an IRI: docs/values.md.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
                         "null"
                     ]
                 },
@@ -5736,6 +5888,16 @@
                         "null"
                     ]
                 },
+                "specified_in": {
+                    "description": "Plan documents that specify what was, or is to be, done: a recovery strategy, a restoration plan, a work order. Referenced by id, not inlined. Used by strategies and implementation statements.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
                 "statementText": {
                     "description": "A natural-language expression of what a Statement asserts to be true.",
                     "type": [
@@ -5784,6 +5946,17 @@
                         "array",
                         "null"
                     ]
+                },
+                "temporal_extent": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/TemporalExtent"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "The temporal window over which the stated effect or condition was observed (CAMO TemporalExtent). Not a calendar period: dated periods use Period (start and end as ISO 8601 strings)."
                 },
                 "type": {
                     "description": "The name of the class that is instantiated by a data object representing the Entity.",
@@ -6045,6 +6218,16 @@
             "title": "Method",
             "type": "object"
         },
+        "ModalityEnum": {
+            "description": "Whether a statement reports, infers or forecasts. Not hedging: hedging (causal_language) is how sure the speaker sounds; modality is what kind of statement it is. \"Stocking will reduce abundance\" may be said confidently and is still anticipated.",
+            "enum": [
+                "observed",
+                "inferred",
+                "anticipated"
+            ],
+            "title": "ModalityEnum",
+            "type": "string"
+        },
         "ModerationAnnotation": {
             "additionalProperties": false,
             "description": "Whether effect modification by a third variable is noted.",
@@ -6287,6 +6470,30 @@
             "title": "ParameterOptionCatalog",
             "type": "object"
         },
+        "Period": {
+            "additionalProperties": false,
+            "description": "A calendar period. CAMO's TemporalExtent has no start or end, so this is a separate class (R2). Start and end are ISO 8601 strings at whatever granularity the source gives: a year (2023), a year and month (2024-05) or a full date (2026-03-31). An absent end means open or ongoing. Exporters write normalized xsd:dateTime bounds beside the verbatim strings; xsd:date, xsd:gYear and xsd:duration never reach a generated file, because they are not in the OWL 2 datatype map (decision D19). Overlap is computed on the bounds (scripts/warp_time.py), never by comparing strings.",
+            "properties": {
+                "end": {
+                    "description": "ISO 8601 year, year-month or date. Absent if open or ongoing.",
+                    "pattern": "^[0-9]{4}(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[01]))?)?$",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "start": {
+                    "description": "ISO 8601 year, year-month or date.",
+                    "pattern": "^[0-9]{4}(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[01]))?)?$",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "start"
+            ],
+            "title": "Period",
+            "type": "object"
+        },
         "PhilosophicalAccountEnum": {
             "description": "The philosophical account of causation invoked by a causal claim, per Illari and Russo's (2014) mosaic. Each account offers a different lens on what it means for C to cause E.",
             "enum": [
@@ -6456,6 +6663,70 @@
             "title": "QualifierFamilyEnum",
             "type": "string"
         },
+        "Quantity": {
+            "additionalProperties": false,
+            "description": "A number with a unit. Where a proposal sketch says QuantityValue, it means this (R1). A count of things (46 protected areas) is a Count, not a Quantity: \"protected area\" is not a unit.",
+            "properties": {
+                "unit": {
+                    "description": "The unit, as a CURIE: UO (numeric IDs: UO:0000008, never UO:hectare), QUDT (unit:), a scale scheme (scale:) when the number is a position on a source's scale, or a TODO: placeholder.",
+                    "type": "string"
+                },
+                "value": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "value",
+                "unit"
+            ],
+            "title": "Quantity",
+            "type": "object"
+        },
+        "QuantityRange": {
+            "additionalProperties": false,
+            "anyOf": [
+                {
+                    "properties": {
+                        "min": {}
+                    },
+                    "required": [
+                        "min"
+                    ]
+                },
+                {
+                    "properties": {
+                        "max": {}
+                    },
+                    "required": [
+                        "max"
+                    ]
+                }
+            ],
+            "description": "An interval with a unit. Either end may be absent (one-sided ranges: \"tolerates pH above 5.5\"), but not both. When both are present, min is at most max (checked by scripts/check_values.py).",
+            "properties": {
+                "max": {
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                },
+                "min": {
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                },
+                "unit": {
+                    "description": "As for Quantity.unit.",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "unit"
+            ],
+            "title": "QuantityRange",
+            "type": "object"
+        },
         "RecordMetadata": {
             "additionalProperties": false,
             "description": "A reusable structure that encapsulates provenance metadata about a serialized data record or object in a particular dataset (as opposed to provenance of the real world entity this record or object represents).",
@@ -6516,6 +6787,35 @@
             ],
             "title": "ReversibilityEnum",
             "type": "string"
+        },
+        "ScaledValue": {
+            "additionalProperties": false,
+            "description": "A value on a source's own ordinal or categorical scale: DFO's High / Medium / Low priority, a USDA tolerance rating, a wetland indicator status. `value` is the source's wording, verbatim. `scale` is the IRI of a SKOS scheme in vocab/scales.yaml (scale:dfo-recovery-priority, never the bare token), and `concept` the IRI of the value inside it, so \"medium\" can be compared with \"high\" without a script knowing the order (decision D18). A practitioner's \"wet\" is on no scale: it has a value and nothing else.",
+            "properties": {
+                "concept": {
+                    "description": "IRI of the value inside the scheme. Optional only while a scheme is still unregistered.",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "scale": {
+                    "description": "IRI of the scale's SKOS concept scheme (vocab/scales.yaml).",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "value": {
+                    "description": "The source's own wording, verbatim.",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "value"
+            ],
+            "title": "ScaledValue",
+            "type": "object"
         },
         "SemanticUnitScopeEnum": {
             "description": "The scope of what a statement asserts, following Vogt's semantic unit types for statement units. Scope is part of a proposition's identity: \"X reduced Y on this plot\" and \"X typically reduces Y\" are different propositions. Definitions below are working glosses and must be checked against Vogt's own definitions before release.",
@@ -7594,6 +7894,17 @@
                     ],
                     "description": "Consent, access and governance metadata. Required for statements whose author is an Indigenous knowledge holder or community member (checked by scripts/check_statements.py)."
                 },
+                "context": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ContextAnnotation"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "Conditions under which the statement is said to hold (scope conditions), as the source gives them. Shared by every predicate group."
+                },
                 "contributions": {
                     "description": "Who made the statement: at least one contribution with role author. Who recorded it goes in recordMetadata, not here.",
                     "items": {
@@ -7631,6 +7942,10 @@
                 "direction": {
                     "$ref": "#/$defs/EvidenceDirectionEnum",
                     "description": "A term indicating whether the Statement supports, disputes, or remains neutral w.r.t. the validity of the Proposition it evaluates."
+                },
+                "ecosystem_context": {
+                    "$ref": "#/$defs/EcosystemFunctionalGroupEnum",
+                    "description": "The KIND of ecosystem the statement is about, as one of CAMO's IUCN Global Ecosystem Typology functional groups (warm_temperate_forests, coastal_saltmarshes_and_reedbeds). Not a place: \"Florida\" or \"the Mediterranean coast of Israel\" go in `place`. Every 0.4 proposal example confused the two (R19)."
                 },
                 "evidence_balance": {
                     "$ref": "#/$defs/EvidenceBalanceEnum"
@@ -7727,6 +8042,10 @@
                         "null"
                     ]
                 },
+                "modality": {
+                    "$ref": "#/$defs/ModalityEnum",
+                    "description": "Whether the statement reports (observed), infers (inferred) or forecasts (anticipated). Different from hedging, which is causal_language: hedging is how sure the speaker sounds, modality is what kind of statement it is. A proposition projects to OWL only when every statement grouped under it is observed (decision D15)."
+                },
                 "object": {
                     "description": "An Entity or concept that is related to the subject of a Statement via its predicate.",
                     "type": [
@@ -7738,6 +8057,16 @@
                     "description": "The statement as worded in its source (verbatim sentence, notebook line, transcript passage). Distinct from statementText, which is the normalized rendering.",
                     "type": [
                         "string",
+                        "null"
+                    ]
+                },
+                "place": {
+                    "description": "The REGION the statement is about, as an IRI from a registered place scheme: an ISO 3166-2 code for a province or state (ISO3166-2:CA-SK); a Wikidata item for a municipality, park, lake or territory (wd:Q...); a GeoNames or Getty TGN entry where Wikidata has none; an ENVO ecoregion individual; or, failing all of these, a locally minted place: concept with a TODO to replace it. Never a bare name, never a coordinate pair standing in for an area. Not the kind of ecosystem, which is ecosystem_context. Part of the identity key for tolerance and cost statements (decision D18). How to find an IRI: docs/values.md.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
                         "null"
                     ]
                 },
@@ -7828,6 +8157,16 @@
                         "null"
                     ]
                 },
+                "specified_in": {
+                    "description": "Plan documents that specify what was, or is to be, done: a recovery strategy, a restoration plan, a work order. Referenced by id, not inlined. Used by strategies and implementation statements.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
                 "statementText": {
                     "description": "A natural-language expression of what a Statement asserts to be true.",
                     "type": [
@@ -7876,6 +8215,17 @@
                         "array",
                         "null"
                     ]
+                },
+                "temporal_extent": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/TemporalExtent"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "The temporal window over which the stated effect or condition was observed (CAMO TemporalExtent). Not a calendar period: dated periods use Period (start and end as ISO 8601 strings)."
                 },
                 "type": {
                     "description": "The name of the class that is instantiated by a data object representing the Entity.",
@@ -8040,6 +8390,29 @@
                 "categorical"
             ],
             "title": "ValueTypeEnum",
+            "type": "string"
+        },
+        "WarpEvidenceTypeEnum": {
+            "description": "Kind of study or reasoning behind an evidence line. Every value of CAMO's EvidenceTypeEnum, with the same descriptions and mappings, plus not_stated. Kept as a profile enum (decision D3) so CAMO is not edited; tests/test_evidence_types.py fails if CAMO gains a value this enum lacks, so re-vendoring cannot silently drop one.",
+            "enum": [
+                "randomized_experiment",
+                "natural_experiment",
+                "quasi_experiment",
+                "observational_longitudinal",
+                "observational_cross_sectional",
+                "mechanistic_study",
+                "structural_equation_model",
+                "meta_analysis",
+                "systematic_review",
+                "modeling_simulation",
+                "expert_judgment",
+                "case_study",
+                "theoretical",
+                "indigenous_knowledge",
+                "practitioner_experience",
+                "not_stated"
+            ],
+            "title": "WarpEvidenceTypeEnum",
             "type": "string"
         }
     },

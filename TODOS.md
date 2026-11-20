@@ -277,7 +277,8 @@ evidence. Revisit if finer terms would change any output.
 - [ ] Rename `ClaimStrengthEnum` (e.g. `CausalLanguageEnum`), so WARP uses
       SEPIO's "statement" vocabulary without a leftover "claim".
 - [ ] Add a planting / seeding action term to ELMO; replace
-      `ELMO:TODO_planting` in the example and templates.
+      `TODO:planting` in the example and templates (and
+      `TODO:tidal_restoration` in the Kramer example).
 
 ---
 
@@ -384,3 +385,42 @@ example; a real database needs statements from many sources grouped together.
 - [ ] **Windows.** `make` is not in Git Bash. Rtools' GNU make works
       (`/c/rtools45/usr/bin`, noted in `CLAUDE.md`); document it for
       contributors in `mechanic.html`, or add a small Python task runner.
+
+---
+
+## 8. The 0.4 proposal round (releases 0.6.0 and 0.7.0)
+
+Open questions and placeholders left by the build in `warp-0.4-dev-guide.md`,
+grouped by proposal. Question numbers refer to each proposal's "Open
+questions" in `warp-proposals-0.4.html`.
+
+### 8.1 Placeholders to fill (Q12)
+
+Nothing below sits under a real ontology's prefix; `check_values.py` would
+refuse it if it did. Replace each everywhere at once, so one quantity keeps
+one IRI.
+
+| Placeholder | What it stands for | Where |
+|---|---|---|
+| `TODO:planting` | ELMO planting action | bloodroot example, templates |
+| `TODO:tidal_restoration` | ELMO tidal restoration action | Kramer example |
+| `TODO:unit_hectare` | hectare (UO term, else QUDT `unit:HA`) | `docs/values.md`; used from Phase 6 on |
+| `TODO:unit_person_day` | person-day of labour | `docs/values.md`; cost examples |
+| `TODO:unit_pH` | pH (UO) | `docs/values.md`; tolerance examples |
+| `TODO:unit_centimetre` | centimetre (UO) | `docs/values.md`; depth intervals |
+
+### 8.2 Shared foundations
+
+- [ ] **`not_stated` upstream (D3, Q10).** Propose `not_stated` to CAMO's
+      `EvidenceTypeEnum`, and look for a home in an evidence ontology (ECO
+      has none; see section 2). Then drop the value from
+      `WarpEvidenceTypeEnum` or map it.
+- [ ] **Scales.** Check each scale in `vocab/scales.yaml` against its source
+      (wording, order, completeness). Decide the EIVE binning, or drop the
+      EIVE concepts and keep only the scheme.
+- [ ] **Ecoregion scheme for `place`.** ENVO's ecoregion individuals are
+      allowed; decide whether RESOLVE or another scheme with stable IRIs
+      should be registered too.
+- [ ] **Indigenous territories as places.** Agree with knowledge holders how
+      a territory is named in `place` (whose IRI, and whether a broader place
+      should be used when a boundary is sensitive).

@@ -42,7 +42,7 @@ node_definitions:
   - node: node:tidal_restoration_of_marsh
     template: intervention
     fillers:
-      - {var: action, value: "ELMO:TODO_tidal_restoration", label: tidal restoration}   # TODO: ELMO action term
+      - {var: action, value: "TODO:tidal_restoration", label: tidal restoration}   # TODO: ELMO tidal restoration action term
       - {var: target, value: "ENVO:00000035", label: marsh}
   # Taxon and stage IDs checked via OLS on 2026-10-27. NCBI files Aedes
   # dorsalis under its synonym Ochlerotatus dorsalis.

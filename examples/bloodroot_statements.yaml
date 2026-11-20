@@ -62,7 +62,7 @@ node_definitions:
   - node: node:planting_of_sanguinaria_canadensis
     template: intervention_involving_taxon
     fillers:
-      - {var: action, value: "ELMO:TODO_planting", label: planting}   # TODO: ELMO action term
+      - {var: action, value: "TODO:planting", label: planting}   # TODO: ELMO planting action term
       - {var: taxon, value: "NCBITaxon:3472", label: Sanguinaria canadensis}
   - node: node:population_of_odocoileus_virginianus
     template: population_of_taxon

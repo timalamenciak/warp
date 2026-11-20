@@ -24,6 +24,9 @@ prefixes:
   - {prefix: FLOPO, expansion: "http://purl.obolibrary.org/obo/FLOPO_"}
   - {prefix: CHEBI, expansion: "http://purl.obolibrary.org/obo/CHEBI_"}
   - {prefix: node, expansion: "https://w3id.org/causal-mosaic/node/"}
+  # Placeholder terms (decision D20). Any variable may be filled with a TODO:
+  # term while the real one is unverified; expand_nodes.py allows it everywhere.
+  - {prefix: TODO, expansion: "https://w3id.org/ecoweaver/warp/TODO/"}
 
 # Every fixed class and relation used below needs a label: DOSDP writes
 # logical definitions with quoted labels. IDs and labels checked against OLS
@@ -154,7 +157,7 @@ templates:
         - property: "RO:0000057"
           filler: {var: taxon}
     examples:
-      - "action=ELMO:TODO_planting taxon=NCBITaxon:3472"
+      - "action=TODO:planting taxon=NCBITaxon:3472"
 
   # ===========================================================================
   # Part A node shapes. Optional fillers (life stage, layer, intensity, value,

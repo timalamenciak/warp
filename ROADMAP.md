@@ -383,7 +383,7 @@ Tasks:
       (labels drift; RO:0000052 already did).
 - [ ] Cache ontology versions in CI and record the versions used in
       the output.
-- [ ] Replace `ELMO:TODO_planting` (TODOS §3) or allowlist it until ELMO
+- [ ] Replace `TODO:planting` (was `ELMO:TODO_planting`) (TODOS §3) or allowlist it until ELMO
       has the term.
 
 Done when: filling `taxon` with a PATO term or an obsolete NCBITaxon id

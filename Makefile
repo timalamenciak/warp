@@ -5,14 +5,23 @@ PY        ?= python
 # Optional: path to dosdp-tools (https://github.com/INCATools/dosdp-tools/releases)
 DOSDP_TOOLS ?= dosdp-tools
 
+# Generators print to stdout; on Windows that is not UTF-8 unless told.
+export PYTHONIOENCODING := utf-8
+export PYTHONUTF8 := 1
+
 # Annotated statement sets (inputs). Each gets a derived file next to it.
 STATEMENTS  := examples/bloodroot_statements.yaml examples/kramer1995_statements.yaml
 DERIVED     := $(STATEMENTS:.yaml=.derived.yaml)
 ASSESSMENTS := examples/bloodroot_assessment.yaml examples/kramer1995_assessment.yaml
 
-.PHONY: all templates patterns nodes derive validate check lint gen test owl-dosdp clean
+# Enum values are OWL individuals unless an enum says otherwise with
+# `implements:` (predicate enums say owl:ObjectProperty). The flag covers the
+# enums imported from CAMO, which the profile cannot annotate (D14, R14).
+OWLGEN_FLAGS := --default-permissible-value-type owl:NamedIndividual
 
-all: patterns nodes derive validate check gen test
+.PHONY: all templates patterns vocab nodes derive validate check lint gen test owl-dosdp clean
+
+all: patterns vocab nodes derive validate check gen test
 
 # --- Node templates ----------------------------------------------------------
 
@@ -26,6 +35,10 @@ patterns: templates
 	for f in patterns/*.yaml; do \
 	  [ $$f = patterns/prefixes.yaml ] || $(PY) -m dosdp validate -i $$f || exit 1; \
 	done
+
+# Source scales (and, later, criteria concepts) as SKOS.
+vocab:
+	$(PY) scripts/gen_vocab.py vocab/scales.yaml --out project/scales.ttl
 
 # Expand node definitions: OWL (Turtle) + DOSDP fill tables.
 nodes: templates
@@ -54,8 +67,10 @@ validate: derive
 
 # What the schema cannot express: Assertion Mode, negation, contribution roles,
 # CARE, and references resolving across files. Pass files that cite each other together.
+# Identifiers, units, places, scales and dates: scripts/check_values.py.
 check: derive
 	$(PY) scripts/check_statements.py $(DERIVED) $(ASSESSMENTS)
+	$(PY) scripts/check_values.py $(STATEMENTS) $(DERIVED) $(ASSESSMENTS)
 
 # Warnings about camelCase slot names come from upstream SEPIO and are expected.
 lint:
@@ -65,7 +80,7 @@ lint:
 gen:
 	mkdir -p project
 	gen-json-schema $(SCHEMA) > project/warp.schema.json
-	gen-owl $(SCHEMA) > project/warp.owl.ttl
+	gen-owl $(OWLGEN_FLAGS) $(SCHEMA) > project/warp.owl.ttl
 
 # pytest suite under tests/.
 test:

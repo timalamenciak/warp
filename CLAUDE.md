@@ -129,6 +129,18 @@ pipeline, as claimant of `SynthesisAssessment`s, is the agent
   Ecosystem Typology functional groups (110 values). A kind of ecosystem, not
   a place: places go in `place`.
 
+### Shared helpers (0.6.0)
+
+- `scripts/warp_schema.py`: cached SchemaView, the prefix map of the profile
+  and its imports, CURIE expansion, and `walk()`, which yields every slot
+  value of a StatementSet with its class and induced slot. Use it for any
+  new schema-driven check rather than hard-coding slot names.
+- `scripts/warp_time.py`: ISO 8601 strings to half-open `xsd:dateTime`
+  bounds, and period overlap. Never compare date strings.
+- `scripts/check_values.py`: CURIEs, units, places, scales and dates. Slots
+  restrict their prefixes with a `warp_allowed_prefixes` annotation.
+- `scripts/gen_vocab.py`: `vocab/scales.yaml` to SKOS.
+
 ### Templates to OWL and DOSDP
 
 - `scripts/templates_lib.py` loads `templates/node_templates.yaml` and checks

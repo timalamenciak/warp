@@ -37,6 +37,8 @@ from templates_lib import (
 OBO = Namespace("http://purl.obolibrary.org/obo/")
 DEFINITION = OBO.IAO_0000115
 PATTERN_BASE = "https://w3id.org/ecoweaver/patterns/"
+PLACEHOLDER_PREFIX = "TODO"
+NODES_ONTOLOGY = URIRef("https://w3id.org/ecoweaver/warp/nodes")
 
 
 def check_definition(defn, template):
@@ -58,7 +60,9 @@ def check_definition(defn, template):
             problems.append(f"{node}: var '{name}' filled {len(fs)} times")
         prefix = fs[0]["value"].split(":", 1)[0]
         allowed = declared[name]["allowed_prefixes"]
-        if prefix not in allowed:
+        # TODO: is the placeholder prefix (decision D20). It fills any variable
+        # while the real term is unverified, and never passes as a real term.
+        if prefix not in allowed and prefix != PLACEHOLDER_PREFIX:
             problems.append(f"{node}: var '{name}' = {fs[0]['value']} must use one of {allowed}")
     return problems
 
@@ -108,6 +112,10 @@ def main(argv=None):
     for prefix, iri in prefixes.items():
         g.bind(prefix, iri)
     g.bind("obo", OBO)
+    # An ontology header: ROBOT needs one, and the logical-layer files
+    # (axioms.ttl, sites.ttl, projects.ttl) import this IRI.
+    g.add((NODES_ONTOLOGY, RDF.type, OWL.Ontology))
+    g.add((NODES_ONTOLOGY, RDFS.label, Literal("WARP node classes")))
     g.add((DEFINITION, RDF.type, OWL.AnnotationProperty))
     g.add((DCTERMS.conformsTo, RDF.type, OWL.AnnotationProperty))
     rows = defaultdict(dict)   # template -> {node: row}; deduplicates across files

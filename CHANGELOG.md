@@ -31,6 +31,78 @@ existing predicate groups.
 - `.gitignore` for Python caches.
 - No derived proposition ID changed.
 
+### Phase 1: shared foundations
+
+- **Value classes** in the profile: `Quantity {value, unit}`,
+  `QuantityRange {min, max, unit}` (either end optional, not both; `min <= max`
+  checked), `ScaledValue {value, scale, concept}`, `CurvePoint {x, suitability}`
+  (suitability in [0, 1]), `Count {value, entity}` and `Period {start, end}`.
+  `Period` is new rather than a reuse of `temporal_extent`, because CAMO's
+  `TemporalExtent` has no start or end (R2).
+- **Shared statement slots.** `context`, `ecosystem_context` and
+  `temporal_extent` were inline attributes on `CausalStatement`; they are now
+  top-level slots on `EcoStatement`, so every group has them. Validation of
+  causal statements is unchanged. New shared slots: `modality`, `place` and
+  `specified_in` (plan documents, by reference).
+- **`modality`** (`ModalityEnum`: observed, inferred, anticipated): whether a
+  statement reports, infers or forecasts. Distinct from hedging
+  (`causal_language`).
+- **`place`** (decision D18): the region a statement is about, as an IRI from
+  ISO 3166-2, Wikidata, GeoNames, Getty TGN, an ENVO ecoregion or a local
+  `place:` concept. `ecosystem_context` keeps CAMO's functional-group range;
+  both slots now say which is which. How to find a place IRI:
+  `docs/values.md`.
+- **`WarpEvidenceTypeEnum`** (decisions D2, D3): every CAMO evidence type, with
+  the same descriptions and mappings, plus `not_stated` (the source gives no
+  basis). It is the range of `EcoEvidenceLine.evidence_type`. A test fails if
+  CAMO gains a value the profile enum lacks.
+- **`stated_goal`** on `EcoStudyResult`: the aim as the source states it.
+- **Scales as SKOS** (decision D18). `vocab/scales.yaml` registers DFO recovery
+  priority and timing of influence, ECCC recovery priority, EIVE 1.0 reaction
+  (binned; the binning is WARP's and marked TODO), USDA texture class, USDA
+  tolerance rating and wetland indicator status; `practitioner-free` is listed
+  as *not* a scale. New `scripts/gen_vocab.py` and `make vocab` write
+  `project/scales.ttl`: one `skos:ConceptScheme` per scale, one `skos:Concept`
+  per value, each with `warp:ordinal`.
+- **Prefixes** (decision D20): `stmt`, `prop`, `doc`, `org`, `person`, `site`,
+  `proj`, `comp`, `crit`, `concept`, `scale`, `place`, `TODO`, plus `UO`, QUDT
+  `unit`, `ISO3166-2`, `geonames`, `tgn` and the ontologies node fillers use.
+  `prop:`, `stmt:` and `doc:` expand to the paths already used under `warp:`,
+  so no existing IRI changes.
+- **Placeholders moved to `TODO:`.** `ELMO:TODO_planting` →
+  `TODO:planting` and `ELMO:TODO_tidal_restoration` →
+  `TODO:tidal_restoration`, in templates, examples and
+  `examples/kramer1995.ttl` (R21). `expand_nodes.py` accepts a `TODO:` filler
+  for any template variable.
+- **`scripts/check_values.py`**, run by `make check`: undeclared prefixes,
+  bare tokens in CURIE slots, placeholders under real prefixes, non-numeric
+  OBO IDs, per-slot allowed prefixes (`warp_allowed_prefixes` annotation:
+  units, places, scales), `QuantityRange` order, `ScaledValue` scale and
+  concept registration, and ISO 8601 periods. Schema-driven through the new
+  `scripts/warp_schema.py`.
+- **Dates** (decision D19): new `scripts/warp_time.py` turns ISO 8601 years,
+  year-months and dates into half-open `xsd:dateTime` bounds and tests period
+  overlap on them. No slot uses LinkML `date` or `datetime` except SEPIO's
+  `dateRecordCreated`.
+- **OWL entity types** (R13, R14). Every profile enum now says what its values
+  are with `implements:` — `owl:ObjectProperty` for predicate enums,
+  `owl:NamedIndividual` for the rest — and `gen-owl` runs with
+  `--default-permissible-value-type owl:NamedIndividual` for the CAMO enums
+  the profile cannot annotate. `RO:0002470` and the other interaction
+  predicates are now object properties, not classes. CAMO's causal predicate
+  values are individuals until Phase 2.5 retypes them.
+  `subject`, `predicate` and `object` are marked `owl:AnnotationProperty` on
+  statements and propositions (decision D12).
+- `project/nodes.ttl` now has an `owl:Ontology` header
+  (`https://w3id.org/ecoweaver/warp/nodes`).
+- Generators run with UTF-8 output (`PYTHONIOENCODING`), so
+  `project/warp.owl.ttl` is UTF-8 on Windows too.
+- New guide **`docs/values.md`**: units, counts, scales, places (including how
+  to find a Wikidata or gazetteer IRI for a place) and dates.
+- Tests: evidence-type mirroring, date bounds and overlap, scale vocabulary,
+  value checks, shared slots and value classes, no predicate IRI emitted as an
+  `owl:Class`, and the examples' proposition IDs (unchanged).
+
 ## 0.5.0
 
 Provenance the SEPIO way, and checks for what the schema cannot say. New

@@ -52,7 +52,7 @@ node_definitions:
   template: intervention_involving_taxon
   fillers:
   - var: action
-    value: ELMO:TODO_planting
+    value: TODO:planting
     label: planting
   - var: taxon
     value: NCBITaxon:3472

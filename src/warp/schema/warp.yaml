@@ -57,6 +57,42 @@ prefixes:
   wd: http://www.wikidata.org/entity/
   orcid: https://orcid.org/
   doi: https://doi.org/
+  # Ontologies used by node template fillers and examples.
+  ENVO: http://purl.obolibrary.org/obo/ENVO_
+  NCBITaxon: http://purl.obolibrary.org/obo/NCBITaxon_
+  OBI: http://purl.obolibrary.org/obo/OBI_
+  PCO: http://purl.obolibrary.org/obo/PCO_
+  UBERON: http://purl.obolibrary.org/obo/UBERON_
+  PO: http://purl.obolibrary.org/obo/PO_
+  GO: http://purl.obolibrary.org/obo/GO_
+  CHEBI: http://purl.obolibrary.org/obo/CHEBI_
+  ELMO: https://w3id.org/elmo/elmo_
+  # Units (decision D18): UO first, QUDT where UO has no term.
+  UO: http://purl.obolibrary.org/obo/UO_
+  unit: http://qudt.org/vocab/unit/
+  # Places (decision D18, Q2). See docs/values.md for which to use when.
+  ISO3166-2: "https://www.iso.org/obp/ui/#iso:code:3166:"
+  geonames: https://sws.geonames.org/
+  tgn: http://vocab.getty.edu/tgn/
+  # WARP's own IRI spaces (decisions D11, D20). The first four are aliases of
+  # paths already used under warp:, so warp:prop/x and prop:x are one IRI.
+  prop: https://w3id.org/ecoweaver/warp/prop/
+  stmt: https://w3id.org/ecoweaver/warp/statement/
+  doc: https://w3id.org/ecoweaver/warp/doc/
+  org: https://w3id.org/ecoweaver/warp/agent/org/
+  person: https://w3id.org/ecoweaver/warp/agent/person/
+  site: https://w3id.org/ecoweaver/warp/site/
+  proj: https://w3id.org/ecoweaver/warp/project/
+  comp: https://w3id.org/ecoweaver/warp/component/
+  crit: https://w3id.org/ecoweaver/warp/criteria/
+  concept: https://w3id.org/ecoweaver/warp/concept/
+  scale: https://w3id.org/ecoweaver/warp/scale/
+  place: https://w3id.org/ecoweaver/warp/place/
+  # Placeholders for terms not yet verified (decision D20). TODO:planting can
+  # never be mistaken for an ELMO term; ELMO:TODO_planting could.
+  TODO: https://w3id.org/ecoweaver/warp/TODO/
+  skos: http://www.w3.org/2004/02/skos/core#
+  owl: http://www.w3.org/2002/07/owl#
 
 default_prefix: warp
 default_range: string
@@ -74,6 +110,7 @@ imports:
 enums:
 
   SemanticUnitScopeEnum:
+    implements: [owl:NamedIndividual]
     description: >-
       The scope of what a statement asserts, following Vogt's semantic unit types
       for statement units. Scope is part of a proposition's identity: "X reduced
@@ -108,6 +145,7 @@ enums:
           blocks aggregation into scoped propositions until resolved.
 
   EvidenceDirectionEnum:
+    implements: [owl:NamedIndividual]
     description: >-
       SEPIO direction: whether a statement (in Proposition Assessment Mode) or an evidence line
       supports, disputes, or is neutral toward a proposition. NOT causal
@@ -118,6 +156,7 @@ enums:
       neutral:
 
   EvidenceStrengthEnum:
+    implements: [owl:NamedIndividual]
     description: >-
       Qualitative strength of the support an evidence line provides toward its
       target proposition, in the indicated direction.
@@ -128,6 +167,7 @@ enums:
       not_assessed:
 
   InteractionPredicateEnum:
+    implements: [owl:ObjectProperty]
     description: >-
       Predicates for biotic interaction statements, from the Relation Ontology
       (IDs and labels checked against OLS 2026-10-10). Annotations follow the
@@ -151,6 +191,7 @@ enums:
           rosetta_template: "{subject} is a parasite of {object}"
 
   InteractionEffectEnum:
+    implements: [owl:NamedIndividual]
     description: "Sign of an interaction's effect on one partner."
     permissible_values:
       positive:
@@ -159,6 +200,7 @@ enums:
       not_reported:
 
   PropositionStatusEnum:
+    implements: [owl:NamedIndividual]
     description: "Whether anyone has asserted the proposition yet."
     permissible_values:
       asserted:
@@ -169,6 +211,7 @@ enums:
           cell, or a practitioner's question.
 
   AgentKindEnum:
+    implements: [owl:NamedIndividual]
     description: >-
       The kind of knowledge an agent brings. Lets practitioners and Indigenous
       knowledge holders make statements in their own right, not only be
@@ -184,6 +227,7 @@ enums:
         description: "An EcoWeaver or other automated synthesis process."
 
   ContributionRoleEnum:
+    implements: [owl:NamedIndividual]
     description: >-
       What an agent did toward a statement, evidence line or record.
       Specializes SEPIO Contribution.activityType.
@@ -207,6 +251,7 @@ enums:
         description: "Checked an annotation or assessment made by someone else."
 
   AccessLevelEnum:
+    implements: [owl:NamedIndividual]
     description: "How a statement and its content may be shared and reused."
     permissible_values:
       open:
@@ -215,6 +260,86 @@ enums:
         description: "Shareable only within, or with the permission of, the knowledge holders' community."
       restricted:
         description: "Not to be shared beyond the original context."
+
+
+  ModalityEnum:
+    implements: [owl:NamedIndividual]
+    description: >-
+      Whether a statement reports, infers or forecasts. Not hedging: hedging
+      (causal_language) is how sure the speaker sounds; modality is what kind
+      of statement it is. "Stocking will reduce abundance" may be said
+      confidently and is still anticipated.
+    permissible_values:
+      observed:
+        description: >-
+          Reports what was seen or measured: a field result, an experiment,
+          a practitioner's observation.
+      inferred:
+        description: >-
+          Concluded from other statements or from theory rather than observed
+          directly: a mechanism argued from physiology, a generalization drawn
+          from several cases.
+      anticipated:
+        description: >-
+          A forecast or prediction about what will happen: "if sportfish are
+          stocked, abundance will decrease". Never projected to OWL.
+
+  WarpEvidenceTypeEnum:
+    implements: [owl:NamedIndividual]
+    description: >-
+      Kind of study or reasoning behind an evidence line. Every value of
+      CAMO's EvidenceTypeEnum, with the same descriptions and mappings, plus
+      not_stated. Kept as a profile enum (decision D3) so CAMO is not edited;
+      tests/test_evidence_types.py fails if CAMO gains a value this enum
+      lacks, so re-vendoring cannot silently drop one.
+    comments:
+      - "TODO: propose not_stated to CAMO (and to an evidence ontology); see TODOS.md."
+    permissible_values:
+      randomized_experiment:
+        description: "Randomized controlled trial or field experiment."
+        broad_mappings: [ECO:0000006]  # experimental evidence
+      natural_experiment:
+        description: "Natural experiment or exogenous shock."
+      quasi_experiment:
+        description: "Quasi-experimental design (BACI, difference-in-differences, etc.)."
+        broad_mappings: [ECO:0000006]  # experimental evidence
+      observational_longitudinal:
+        description: "Longitudinal observational study (cohort, panel)."
+      observational_cross_sectional:
+        description: "Cross-sectional observational study or survey."
+      mechanistic_study:
+        description: "Laboratory or field study of mechanism (pathway dissection, process tracing)."
+      structural_equation_model:
+        description: "Structural equation model or path analysis quantifying covariation patterns."
+      meta_analysis:
+        description: "Quantitative synthesis of multiple studies."
+        broad_mappings: [ECO:0000212]  # combinatorial evidence
+      systematic_review:
+        description: "Systematic review (qualitative or quantitative)."
+        broad_mappings: [ECO:0000212]  # combinatorial evidence
+      modeling_simulation:
+        description: "Computational model, simulation, or theoretical prediction."
+        broad_mappings: [ECO:0007672]  # computational evidence
+      expert_judgment:
+        description: "Expert elicitation, Delphi method, or professional opinion."
+        broad_mappings: [ECO:0006151]  # documented statement evidence
+      case_study:
+        description: "Single case study or natural history observation."
+      theoretical:
+        description: "Deduction from theory without empirical test."
+        broad_mappings: [ECO:0000361]  # inferential evidence
+      indigenous_knowledge:
+        description: "Traditional ecological knowledge or Indigenous knowledge systems."
+      practitioner_experience:
+        description: "Practitioner or land manager field experience."
+        broad_mappings: [ECO:0006151]  # documented statement evidence
+      not_stated:
+        description: >-
+          The source asserts without giving any basis. Distinct from
+          expert_judgment (a basis was given: someone's expertise) and from
+          leaving evidence lines empty (which may only mean the annotator did
+          not record one). A sentinel: it records an absence, so it has no
+          meaning and is never exported to RDF (decision D14).
 
 
 ## =============================================================================
@@ -228,6 +353,64 @@ slots:
       proposition's identity; copied onto statements so propositions can be
       derived from them.
     range: SemanticUnitScopeEnum
+
+  modality:
+    description: >-
+      Whether the statement reports (observed), infers (inferred) or
+      forecasts (anticipated). Different from hedging, which is
+      causal_language: hedging is how sure the speaker sounds, modality is
+      what kind of statement it is. A proposition projects to OWL only when
+      every statement grouped under it is observed (decision D15).
+    range: ModalityEnum
+
+  context:
+    description: >-
+      Conditions under which the statement is said to hold (scope
+      conditions), as the source gives them. Shared by every predicate group.
+    range: ContextAnnotation   # CAMO
+    inlined: true
+
+  ecosystem_context:
+    description: >-
+      The KIND of ecosystem the statement is about, as one of CAMO's IUCN
+      Global Ecosystem Typology functional groups (warm_temperate_forests,
+      coastal_saltmarshes_and_reedbeds). Not a place: "Florida" or "the
+      Mediterranean coast of Israel" go in `place`. Every 0.4 proposal example
+      confused the two (R19).
+    range: EcosystemFunctionalGroupEnum   # CAMO
+
+  place:
+    description: >-
+      The REGION the statement is about, as an IRI from a registered place
+      scheme: an ISO 3166-2 code for a province or state (ISO3166-2:CA-SK);
+      a Wikidata item for a municipality, park, lake or territory (wd:Q...);
+      a GeoNames or Getty TGN entry where Wikidata has none; an ENVO
+      ecoregion individual; or, failing all of these, a locally minted
+      place: concept with a TODO to replace it. Never a bare name, never a
+      coordinate pair standing in for an area. Not the kind of ecosystem,
+      which is ecosystem_context. Part of the identity key for tolerance and
+      cost statements (decision D18). How to find an IRI: docs/values.md.
+    range: uriorcurie
+    multivalued: true
+    annotations:
+      warp_allowed_prefixes: "ISO3166-2 wd geonames tgn ENVO place TODO"
+
+  temporal_extent:
+    description: >-
+      The temporal window over which the stated effect or condition was
+      observed (CAMO TemporalExtent). Not a calendar period: dated periods use
+      Period (start and end as ISO 8601 strings).
+    range: TemporalExtent   # CAMO
+    inlined: true
+
+  specified_in:
+    description: >-
+      Plan documents that specify what was, or is to be, done: a recovery
+      strategy, a restoration plan, a work order. Referenced by id, not
+      inlined. Used by strategies and implementation statements.
+    range: EcoDocument
+    multivalued: true
+    inlined: false
 
 
 ## =============================================================================
@@ -347,11 +530,26 @@ classes:
         copied here so propositions can be derived from statements.
     slots:
       - scope
+      - modality
+      - context
+      - ecosystem_context
+      - place
+      - temporal_extent
+      - specified_in
     slot_usage:
       scope:
         recommended: true
       id:
         identifier: true
+      # Subject, predicate and object point at node CLASSES (and enum values).
+      # Declared annotation properties, so a statement can reference a class
+      # IRI without punning it as an individual (decision D12).
+      subject:
+        implements: [owl:AnnotationProperty]
+      predicate:
+        implements: [owl:AnnotationProperty]
+      object:
+        implements: [owl:AnnotationProperty]
       proposition:
         range: EcoProposition
         inlined: false
@@ -442,15 +640,8 @@ classes:
         range: ComparatorAnnotation   # CAMO
         multivalued: true
         inlined_as_list: true
-      context:
-        description: "Conditions under which the statement is said to hold (scope conditions)."
-        range: ContextAnnotation   # CAMO
-        inlined: true
-      ecosystem_context:
-        range: EcosystemFunctionalGroupEnum   # CAMO
-      temporal_extent:
-        range: TemporalExtent   # CAMO
-        inlined: true
+      # context, ecosystem_context and temporal_extent were inline attributes
+      # here until 0.6.0; they are now shared slots on EcoStatement.
       camo_edge_id:
         description: "Identifier of the CAMO CausalEdge this statement was migrated or projected from."
 
@@ -571,6 +762,12 @@ classes:
         required: true
       id:
         identifier: true
+      subject:
+        implements: [owl:AnnotationProperty]
+      predicate:
+        implements: [owl:AnnotationProperty]
+      object:
+        implements: [owl:AnnotationProperty]
     attributes:
       status:
         range: PropositionStatusEnum
@@ -738,10 +935,11 @@ classes:
     attributes:
       evidence_type:
         description: >-
-          Kind of study or reasoning (CAMO; ECO parents given as broad
-          mappings there). Specializes SEPIO EvidenceLine.subtype, which is
-          left empty.
-        range: EvidenceTypeEnum   # CAMO
+          Kind of study or reasoning (CAMO's values, ECO parents as broad
+          mappings, plus not_stated). Specializes SEPIO EvidenceLine.subtype,
+          which is left empty. Use CAMO's expert_judgment for expert opinion
+          (decision D2), and not_stated when the source gives no basis at all.
+        range: WarpEvidenceTypeEnum
         required: true
       evidence_object:
         description: >-
@@ -824,6 +1022,14 @@ classes:
         inlined_as_list: true
       sourceDataSet:
         inlined_as_list: true
+    attributes:
+      stated_goal:
+        description: >-
+          The aim of the work as the source states it ("to restore native
+          vegetation", "to reduce larval density"), recorded without judging
+          whether it was met. Shared by every predicate group. Aims belong to
+          the evidence layer: never put them on nodes (what counts as success
+          is contested) or on statements.
 
   EcoDocument:
     is_a: Document
@@ -832,3 +1038,134 @@ classes:
     slot_usage:
       id:
         identifier: true
+
+  # ---------------------------------------------------------------------------
+  # Value types shared by several predicate groups (0.6.0, Phase 1)
+  # Units are verified UO CURIEs, QUDT where UO has no term, or TODO:
+  # placeholders: never bare tokens (decision D18, docs/values.md).
+  # ---------------------------------------------------------------------------
+
+  Quantity:
+    class_uri: warp:Quantity
+    description: >-
+      A number with a unit. Where a proposal sketch says QuantityValue, it
+      means this (R1). A count of things (46 protected areas) is a Count, not
+      a Quantity: "protected area" is not a unit.
+    attributes:
+      value:
+        range: float
+        required: true
+      unit:
+        description: >-
+          The unit, as a CURIE: UO (numeric IDs: UO:0000008, never
+          UO:hectare), QUDT (unit:), a scale scheme (scale:) when the number
+          is a position on a source's scale, or a TODO: placeholder.
+        range: uriorcurie
+        required: true
+        annotations:
+          warp_allowed_prefixes: "UO unit scale TODO"
+
+  QuantityRange:
+    class_uri: warp:QuantityRange
+    description: >-
+      An interval with a unit. Either end may be absent (one-sided ranges:
+      "tolerates pH above 5.5"), but not both. When both are present, min is
+      at most max (checked by scripts/check_values.py).
+    attributes:
+      min:
+        range: float
+      max:
+        range: float
+      unit:
+        description: "As for Quantity.unit."
+        range: uriorcurie
+        required: true
+        annotations:
+          warp_allowed_prefixes: "UO unit scale TODO"
+    any_of:
+      - slot_conditions:
+          min:
+            required: true
+      - slot_conditions:
+          max:
+            required: true
+
+  ScaledValue:
+    class_uri: warp:ScaledValue
+    description: >-
+      A value on a source's own ordinal or categorical scale: DFO's
+      High / Medium / Low priority, a USDA tolerance rating, a wetland
+      indicator status. `value` is the source's wording, verbatim. `scale` is
+      the IRI of a SKOS scheme in vocab/scales.yaml (scale:dfo-recovery-priority,
+      never the bare token), and `concept` the IRI of the value inside it, so
+      "medium" can be compared with "high" without a script knowing the
+      order (decision D18). A practitioner's "wet" is on no scale: it has a
+      value and nothing else.
+    attributes:
+      value:
+        description: "The source's own wording, verbatim."
+        required: true
+      scale:
+        description: "IRI of the scale's SKOS concept scheme (vocab/scales.yaml)."
+        range: uriorcurie
+        annotations:
+          warp_allowed_prefixes: "scale TODO"
+      concept:
+        description: >-
+          IRI of the value inside the scheme. Optional only while a scheme is
+          still unregistered.
+        range: uriorcurie
+        annotations:
+          warp_allowed_prefixes: "scale TODO"
+
+  CurvePoint:
+    class_uri: warp:CurvePoint
+    description: >-
+      One breakpoint of a habitat suitability response curve: the value of
+      the variable (in the unit of the statement's range) and the suitability
+      there, between 0 and 1.
+    attributes:
+      x:
+        range: float
+        required: true
+      suitability:
+        range: float
+        required: true
+        minimum_value: 0
+        maximum_value: 1
+
+  Count:
+    class_uri: warp:Count
+    description: >-
+      A number of things, where a unit would be wrong: 46 protected areas,
+      12 culverts. `entity` is a CURIE for the kind of thing counted.
+    attributes:
+      value:
+        range: integer
+        required: true
+        minimum_value: 0
+      entity:
+        description: "The kind of thing counted, as a CURIE (a node, an ENVO term, or a TODO: placeholder)."
+        range: uriorcurie
+        required: true
+
+  Period:
+    class_uri: warp:Period
+    description: >-
+      A calendar period. CAMO's TemporalExtent has no start or end, so this is
+      a separate class (R2). Start and end are ISO 8601 strings at whatever
+      granularity the source gives: a year (2023), a year and month (2024-05)
+      or a full date (2026-03-31). An absent end means open or ongoing.
+      Exporters write normalized xsd:dateTime bounds beside the verbatim
+      strings; xsd:date, xsd:gYear and xsd:duration never reach a generated
+      file, because they are not in the OWL 2 datatype map (decision D19).
+      Overlap is computed on the bounds (scripts/warp_time.py), never by
+      comparing strings.
+    attributes:
+      start:
+        description: "ISO 8601 year, year-month or date."
+        required: true
+        pattern: "^[0-9]{4}(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[01]))?)?$"
+      end:
+        description: "ISO 8601 year, year-month or date. Absent if open or ongoing."
+        pattern: "^[0-9]{4}(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[01]))?)?$"

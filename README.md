@@ -15,6 +15,8 @@ and numbers are placeholders.
   shape in LinkML and get DOSDP patterns and OWL classes from it.
 - [Adding a predicate group](docs/predicate-groups.md): add a new kind of
   statement (its predicates, qualifiers, statement and proposition classes).
+- [Units, counts, scales, places and dates](docs/values.md): which IRI to
+  use for a unit, a source's scale or a place, and how dates are written.
 - [WARP in RDF and OWL](docs/rdf-owl.md): what each generated file may be read
   as, which IRI denotes what, and the gate a statement passes before a reasoner
   is allowed to use it. Draft, written against the 0.4 work.
@@ -104,17 +106,19 @@ data means.
 | Profile class | Builds on | Changes |
 |---|---|---|
 | `EcoStatement` (abstract) | SEPIO `Statement` | Annotated statements are in SEPIO Assertion Mode (no `direction` / `strength`). IDs become identifiers; `direction` constrained to supports / disputes / neutral; adds `scope`, `original_text`, `source_spans`, `care`. Who made it: `contributions` (role author); who recorded it: `recordMetadata`. `proposition` is marked as derived. |
-| `CausalStatement` | `EcoStatement` | Subject and object must be CAMO nodes; predicate must be a CAMO predicate. Adds `negated`, `causal_language`, `predicate_qualifiers`, `comparator`, `context`, `ecosystem_context`, `temporal_extent`, `camo_edge_id`. |
+| `CausalStatement` | `EcoStatement` | Subject and object must be CAMO nodes; predicate must be a CAMO predicate. Adds `negated`, `causal_language`, `predicate_qualifiers`, `comparator`, `camo_edge_id`. |
+| Shared statement slots | `EcoStatement` | `modality` (observed / inferred / anticipated), `context`, `ecosystem_context` (CAMO functional group), `place` (a region, as an IRI), `temporal_extent`, `specified_in` (plan documents). See [docs/values.md](docs/values.md). |
+| `Quantity`, `QuantityRange`, `ScaledValue`, `CurvePoint`, `Count`, `Period` | (new) | Shared value types. Units are CURIEs; scales are SKOS schemes in `vocab/scales.yaml`; dates are ISO 8601 strings. |
 | `CausalPredicateQualifiers` | (new) | CAMO's philosophical accounts and causal features, grouped. CAMO's `direction` → `causal_direction` and `strength` → `effect_strength`, so they cannot be confused with SEPIO's evidential direction and strength. |
 | `EcoProposition` (abstract) | SEPIO `Proposition` | Adds `scope`, `status` (asserted / open question), `raised_as_question`, `identity_key`, `identity_rule_version`, `derived_from_statements`. |
 | `CausalProposition` | `EcoProposition` | Subject, predicate and object constrained as for `CausalStatement`. |
 | `InteractionStatement`, `InteractionQualifiers`, `InteractionProposition` | `EcoStatement`, (new), `EcoProposition` | The biotic interaction group: RO predicates (eats, pollinates, parasite of, biotically interacts with) and the sign of the effect on each partner. |
 | `NodeDefinition`, `TemplateFiller` | (new) | Which node template a CAMO node fills, and with which terms. |
-| `EcoEvidenceLine` | SEPIO `EvidenceLine` | Direction and strength constrained to enums; who judged them is a contribution (role evidence_assessor). Adds `evidence_type` (CAMO; specializes `subtype`), `evidence_object` (Russo-Williamson: correlation, mechanism, both), and `evidence_item_refs` (by ID instead of SEPIO's inlined objects). |
+| `EcoEvidenceLine` | SEPIO `EvidenceLine` | Direction and strength constrained to enums; who judged them is a contribution (role evidence_assessor). Adds `evidence_type` (`WarpEvidenceTypeEnum`: CAMO's values plus `not_stated`; specializes `subtype`), `evidence_object` (Russo-Williamson: correlation, mechanism, both), and `evidence_item_refs` (by ID instead of SEPIO's inlined objects). |
 | `SynthesisAssessment` | `EcoStatement` | SEPIO Proposition Assessment Mode: `proposition`, `direction` and `strength` (CAMO certainty grade) required. Adds `evidence_balance`. Replaces CAMO `EvidenceBaseAssessmentEdge`. |
 | `EcoAgent`, `EcoContribution`, `EcoRecordMetadata` | SEPIO `Agent`, `Contribution`, `RecordMetadata` | Agents get identifiers and an `agent_kind` (researcher, practitioner, Indigenous knowledge holder, …). Contributions reference agents by id and carry a `role` (author, evidence_assessor, annotator, reviewer; specializes `activityType`). |
 | `CareMetadata` | (new) | Knowledge holders (agent ids), community, consent, access level, Local Contexts labels, protocols. |
-| `EcoStudyResult`, `EcoDocument` | SEPIO `StudyResult`, `Document` | IDs become identifiers so evidence lines can point at them. |
+| `EcoStudyResult`, `EcoDocument` | SEPIO `StudyResult`, `Document` | IDs become identifiers so evidence lines can point at them. `EcoStudyResult` adds `stated_goal`, the aim as the source states it. |
 
 ## 5. Where CAMO's edge fields go
 
@@ -253,7 +257,7 @@ EL with ROBOT), and `patterns/data/*.tsv`, the same fillings as DOSDP input.
   practitioner experience, Indigenous knowledge): a joint ECO term request.
 - CAMO node `entity_term`s in the example are free text (`TODO` Wikidata
   QIDs); their template fillings use verified NCBITaxon IDs. The planting
-  action is a placeholder (`ELMO:TODO_planting`).
+  action is a placeholder (`TODO:planting`).
 
 ## 10. Next: the annotation workflow
 
@@ -288,11 +292,18 @@ patterns/                     GENERATED DOSDP patterns, prefixes, fill tables
 scripts/
   derive_propositions.py      proposition derivation, all groups (identity rule v3)
   check_statements.py         checks the schema cannot express
+  check_values.py             CURIEs, units, places, scales, dates
+  gen_vocab.py                vocab/*.yaml → SKOS (project/scales.ttl)
+  warp_schema.py              schema-driven helpers (prefixes, walking records)
+  warp_time.py                ISO 8601 dates → xsd:dateTime bounds, overlap
   gen_dosdp.py                templates → DOSDP patterns
   expand_nodes.py             node definitions → OWL + DOSDP fill tables
   templates_lib.py            shared template code
   update_upstream.sh          re-vendor upstream at pinned commits
+vocab/
+  scales.yaml                 source scales (edit this) → SKOS
 docs/                         how-to guides
+tests/                        pytest suite (make test)
 examples/                     worked example
 project/                      GENERATED JSON Schema, OWL, node classes
 ```

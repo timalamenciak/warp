@@ -1,8 +1,10 @@
-@prefix ELMO: <https://w3id.org/elmo/elmo_> .
+@prefix ENVO: <http://purl.obolibrary.org/obo/ENVO_> .
 @prefix NCBITaxon: <http://purl.obolibrary.org/obo/NCBITaxon_> .
 @prefix PATO: <http://purl.obolibrary.org/obo/PATO_> .
 @prefix PCO: <http://purl.obolibrary.org/obo/PCO_> .
 @prefix RO: <http://purl.obolibrary.org/obo/RO_> .
+@prefix TODO: <https://w3id.org/ecoweaver/warp/TODO/> .
+@prefix UBERON: <http://purl.obolibrary.org/obo/UBERON_> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix node: <https://w3id.org/causal-mosaic/node/> .
 @prefix obo: <http://purl.obolibrary.org/obo/> .
@@ -19,7 +21,7 @@ node:planting_of_sanguinaria_canadensis a owl:Class ;
     obo:IAO_0000115 "A planting process in which organisms of Sanguinaria canadensis participate." ;
     dcterms:conformsTo <https://w3id.org/ecoweaver/patterns/intervention_involving_taxon.yaml> ;
     owl:equivalentClass [ a owl:Class ;
-            owl:intersectionOf ( ELMO:TODO_planting [ a owl:Restriction ;
+            owl:intersectionOf ( TODO:planting [ a owl:Restriction ;
                         owl:onProperty RO:0000057 ;
                         owl:someValuesFrom NCBITaxon:3472 ] ) ] .
 
@@ -56,19 +58,58 @@ node:rate_of_population_growth_of_alliaria_petiolata a owl:Class ;
                                                                 owl:onProperty RO:0002351 ;
                                                                 owl:someValuesFrom NCBITaxon:126270 ] ) ] ] ) ] ] ) ] .
 
+node:tidal_restoration_of_marsh a owl:Class ;
+    rdfs:label "tidal restoration of marsh" ;
+    obo:IAO_0000115 "A tidal restoration process acting on marsh." ;
+    dcterms:conformsTo <https://w3id.org/ecoweaver/patterns/intervention.yaml> ;
+    owl:equivalentClass [ a owl:Class ;
+            owl:intersectionOf ( TODO:tidal_restoration [ a owl:Restriction ;
+                        owl:onProperty RO:0000057 ;
+                        owl:someValuesFrom ENVO:00000035 ] ) ] .
+
+node:volumetric_density_of_ochlerotatus_dorsalis_population_at_larval_stage a owl:Class ;
+    rdfs:label "volumetric density of Ochlerotatus dorsalis population at larval stage" ;
+    obo:IAO_0000115 "The volumetric density of a population of organisms whose members are Ochlerotatus dorsalis at the larval stage." ;
+    dcterms:conformsTo <https://w3id.org/ecoweaver/patterns/attribute_of_population_at_life_stage.yaml> ;
+    owl:equivalentClass [ a owl:Class ;
+            owl:intersectionOf ( PATO:0001353 [ a owl:Restriction ;
+                        owl:onProperty RO:0000052 ;
+                        owl:someValuesFrom [ a owl:Class ;
+                                owl:intersectionOf ( PCO:0000001 [ a owl:Restriction ;
+                                            owl:onProperty RO:0002351 ;
+                                            owl:someValuesFrom [ a owl:Class ;
+                                                    owl:intersectionOf ( NCBITaxon:663928 [ a owl:Restriction ;
+                                                                owl:onProperty RO:0002491 ;
+                                                                owl:someValuesFrom UBERON:0000069 ] ) ] ] ) ] ] ) ] .
+
+<https://w3id.org/ecoweaver/warp/nodes> a owl:Ontology ;
+    rdfs:label "WARP node classes" .
+
+ENVO:00000035 a owl:Class .
+
 NCBITaxon:3472 a owl:Class .
+
+NCBITaxon:663928 a owl:Class .
 
 NCBITaxon:9874 a owl:Class .
 
 PATO:0000161 a owl:Class .
 
+PATO:0001353 a owl:Class .
+
 PCO:0000011 a owl:Class .
 
-RO:0000052 a owl:ObjectProperty .
+RO:0002491 a owl:ObjectProperty .
 
-ELMO:TODO_planting a owl:Class .
+UBERON:0000069 a owl:Class .
+
+TODO:planting a owl:Class .
+
+TODO:tidal_restoration a owl:Class .
 
 NCBITaxon:126270 a owl:Class .
+
+RO:0000052 a owl:ObjectProperty .
 
 RO:0000057 a owl:ObjectProperty .
 

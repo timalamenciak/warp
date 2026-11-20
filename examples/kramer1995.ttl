@@ -15,7 +15,7 @@
 @prefix causal_mosaic: <https://w3id.org/causal-mosaic/> .
 @prefix node:          <https://w3id.org/causal-mosaic/node/> .
 @prefix orcid:         <https://orcid.org/> .
-@prefix ELMO:          <https://w3id.org/elmo/elmo_> .
+@prefix TODO:          <https://w3id.org/ecoweaver/warp/TODO/> .
 @prefix ENVO:          <http://purl.obolibrary.org/obo/ENVO_> .
 @prefix NCBITaxon:     <http://purl.obolibrary.org/obo/NCBITaxon_> .
 @prefix PATO:          <http://purl.obolibrary.org/obo/PATO_> .
@@ -40,7 +40,7 @@ node:tidal_restoration_of_marsh a owl:Class ;
     obo:IAO_0000115 "A tidal restoration process acting on marsh." ;
     dcterms:conformsTo <https://w3id.org/ecoweaver/patterns/intervention.yaml> ;
     owl:equivalentClass [ a owl:Class ;
-        owl:intersectionOf ( ELMO:TODO_tidal_restoration      # TODO: ELMO action term
+        owl:intersectionOf ( TODO:tidal_restoration           # TODO: ELMO action term
                              [ a owl:Restriction ;
                                owl:onProperty RO:0000057 ;     # has participant
                                owl:someValuesFrom ENVO:00000035 ] ) ] .   # marsh

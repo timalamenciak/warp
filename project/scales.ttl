@@ -1,0 +1,304 @@
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix scale: <https://w3id.org/ecoweaver/warp/scale/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix warp: <https://w3id.org/ecoweaver/warp/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+warp:ordinal a owl:AnnotationProperty ;
+    rdfs:label "ordinal" ;
+    skos:definition "1-based position of a concept in its scheme, ascending in what the scheme's skos:scopeNote says the order measures." .
+
+warp:scales a owl:Ontology ;
+    rdfs:label "WARP source scales" ;
+    owl:versionInfo "warp-scales/1" .
+
+<https://w3id.org/ecoweaver/warp/scale/dfo-recovery-priority/high> a skos:Concept ;
+    skos:inScheme scale:dfo-recovery-priority ;
+    skos:notation "high" ;
+    skos:prefLabel "High"@en ;
+    warp:ordinal 3 .
+
+<https://w3id.org/ecoweaver/warp/scale/dfo-recovery-priority/low> a skos:Concept ;
+    skos:inScheme scale:dfo-recovery-priority ;
+    skos:notation "low" ;
+    skos:prefLabel "Low"@en ;
+    warp:ordinal 1 .
+
+<https://w3id.org/ecoweaver/warp/scale/dfo-recovery-priority/medium> a skos:Concept ;
+    skos:inScheme scale:dfo-recovery-priority ;
+    skos:notation "medium" ;
+    skos:prefLabel "Medium"@en ;
+    warp:ordinal 2 .
+
+<https://w3id.org/ecoweaver/warp/scale/dfo-timing-of-influence/future> a skos:Concept ;
+    skos:inScheme scale:dfo-timing-of-influence ;
+    skos:notation "future" ;
+    skos:prefLabel "Future"@en ;
+    warp:ordinal 1 .
+
+<https://w3id.org/ecoweaver/warp/scale/dfo-timing-of-influence/immediate> a skos:Concept ;
+    skos:inScheme scale:dfo-timing-of-influence ;
+    skos:notation "immediate" ;
+    skos:prefLabel "Immediate"@en ;
+    warp:ordinal 3 .
+
+<https://w3id.org/ecoweaver/warp/scale/dfo-timing-of-influence/medium> a skos:Concept ;
+    skos:inScheme scale:dfo-timing-of-influence ;
+    skos:notation "medium" ;
+    skos:prefLabel "Medium"@en ;
+    warp:ordinal 2 .
+
+<https://w3id.org/ecoweaver/warp/scale/eccc-recovery-priority/beneficial> a skos:Concept ;
+    skos:inScheme scale:eccc-recovery-priority ;
+    skos:notation "beneficial" ;
+    skos:prefLabel "Beneficial"@en ;
+    warp:ordinal 1 .
+
+<https://w3id.org/ecoweaver/warp/scale/eccc-recovery-priority/necessary> a skos:Concept ;
+    skos:inScheme scale:eccc-recovery-priority ;
+    skos:notation "necessary" ;
+    skos:prefLabel "Necessary"@en ;
+    warp:ordinal 2 .
+
+<https://w3id.org/ecoweaver/warp/scale/eccc-recovery-priority/urgent> a skos:Concept ;
+    skos:inScheme scale:eccc-recovery-priority ;
+    skos:notation "urgent" ;
+    skos:prefLabel "Urgent"@en ;
+    warp:ordinal 3 .
+
+<https://w3id.org/ecoweaver/warp/scale/eive-1.0-reaction/0-2> a skos:Concept ;
+    skos:inScheme scale:eive-1.0-reaction ;
+    skos:notation "0-2" ;
+    skos:prefLabel "0 to 2"@en ;
+    warp:ordinal 1 .
+
+<https://w3id.org/ecoweaver/warp/scale/eive-1.0-reaction/2-4> a skos:Concept ;
+    skos:inScheme scale:eive-1.0-reaction ;
+    skos:notation "2-4" ;
+    skos:prefLabel "2 to 4"@en ;
+    warp:ordinal 2 .
+
+<https://w3id.org/ecoweaver/warp/scale/eive-1.0-reaction/4-6> a skos:Concept ;
+    skos:inScheme scale:eive-1.0-reaction ;
+    skos:notation "4-6" ;
+    skos:prefLabel "4 to 6"@en ;
+    warp:ordinal 3 .
+
+<https://w3id.org/ecoweaver/warp/scale/eive-1.0-reaction/6-8> a skos:Concept ;
+    skos:inScheme scale:eive-1.0-reaction ;
+    skos:notation "6-8" ;
+    skos:prefLabel "6 to 8"@en ;
+    warp:ordinal 4 .
+
+<https://w3id.org/ecoweaver/warp/scale/eive-1.0-reaction/8-10> a skos:Concept ;
+    skos:inScheme scale:eive-1.0-reaction ;
+    skos:notation "8-10" ;
+    skos:prefLabel "8 to 10"@en ;
+    warp:ordinal 5 .
+
+<https://w3id.org/ecoweaver/warp/scale/usda-texture-class/clay> a skos:Concept ;
+    skos:inScheme scale:usda-texture-class ;
+    skos:notation "clay" ;
+    skos:prefLabel "clay"@en ;
+    warp:ordinal 12 .
+
+<https://w3id.org/ecoweaver/warp/scale/usda-texture-class/clay-loam> a skos:Concept ;
+    skos:inScheme scale:usda-texture-class ;
+    skos:notation "clay-loam" ;
+    skos:prefLabel "clay loam"@en ;
+    warp:ordinal 8 .
+
+<https://w3id.org/ecoweaver/warp/scale/usda-texture-class/loam> a skos:Concept ;
+    skos:inScheme scale:usda-texture-class ;
+    skos:notation "loam" ;
+    skos:prefLabel "loam"@en ;
+    warp:ordinal 4 .
+
+<https://w3id.org/ecoweaver/warp/scale/usda-texture-class/loamy-sand> a skos:Concept ;
+    skos:inScheme scale:usda-texture-class ;
+    skos:notation "loamy-sand" ;
+    skos:prefLabel "loamy sand"@en ;
+    warp:ordinal 2 .
+
+<https://w3id.org/ecoweaver/warp/scale/usda-texture-class/sand> a skos:Concept ;
+    skos:inScheme scale:usda-texture-class ;
+    skos:notation "sand" ;
+    skos:prefLabel "sand"@en ;
+    warp:ordinal 1 .
+
+<https://w3id.org/ecoweaver/warp/scale/usda-texture-class/sandy-clay> a skos:Concept ;
+    skos:inScheme scale:usda-texture-class ;
+    skos:notation "sandy-clay" ;
+    skos:prefLabel "sandy clay"@en ;
+    warp:ordinal 10 .
+
+<https://w3id.org/ecoweaver/warp/scale/usda-texture-class/sandy-clay-loam> a skos:Concept ;
+    skos:inScheme scale:usda-texture-class ;
+    skos:notation "sandy-clay-loam" ;
+    skos:prefLabel "sandy clay loam"@en ;
+    warp:ordinal 7 .
+
+<https://w3id.org/ecoweaver/warp/scale/usda-texture-class/sandy-loam> a skos:Concept ;
+    skos:inScheme scale:usda-texture-class ;
+    skos:notation "sandy-loam" ;
+    skos:prefLabel "sandy loam"@en ;
+    warp:ordinal 3 .
+
+<https://w3id.org/ecoweaver/warp/scale/usda-texture-class/silt> a skos:Concept ;
+    skos:inScheme scale:usda-texture-class ;
+    skos:notation "silt" ;
+    skos:prefLabel "silt"@en ;
+    warp:ordinal 6 .
+
+<https://w3id.org/ecoweaver/warp/scale/usda-texture-class/silt-loam> a skos:Concept ;
+    skos:inScheme scale:usda-texture-class ;
+    skos:notation "silt-loam" ;
+    skos:prefLabel "silt loam"@en ;
+    warp:ordinal 5 .
+
+<https://w3id.org/ecoweaver/warp/scale/usda-texture-class/silty-clay> a skos:Concept ;
+    skos:inScheme scale:usda-texture-class ;
+    skos:notation "silty-clay" ;
+    skos:prefLabel "silty clay"@en ;
+    warp:ordinal 11 .
+
+<https://w3id.org/ecoweaver/warp/scale/usda-texture-class/silty-clay-loam> a skos:Concept ;
+    skos:inScheme scale:usda-texture-class ;
+    skos:notation "silty-clay-loam" ;
+    skos:prefLabel "silty clay loam"@en ;
+    warp:ordinal 9 .
+
+<https://w3id.org/ecoweaver/warp/scale/usda-tolerance-rating/high> a skos:Concept ;
+    skos:inScheme scale:usda-tolerance-rating ;
+    skos:notation "high" ;
+    skos:prefLabel "High"@en ;
+    warp:ordinal 4 .
+
+<https://w3id.org/ecoweaver/warp/scale/usda-tolerance-rating/low> a skos:Concept ;
+    skos:inScheme scale:usda-tolerance-rating ;
+    skos:notation "low" ;
+    skos:prefLabel "Low"@en ;
+    warp:ordinal 2 .
+
+<https://w3id.org/ecoweaver/warp/scale/usda-tolerance-rating/medium> a skos:Concept ;
+    skos:inScheme scale:usda-tolerance-rating ;
+    skos:notation "medium" ;
+    skos:prefLabel "Medium"@en ;
+    warp:ordinal 3 .
+
+<https://w3id.org/ecoweaver/warp/scale/usda-tolerance-rating/none> a skos:Concept ;
+    skos:inScheme scale:usda-tolerance-rating ;
+    skos:notation "none" ;
+    skos:prefLabel "None"@en ;
+    warp:ordinal 1 .
+
+<https://w3id.org/ecoweaver/warp/scale/wetland-indicator-status/FAC> a skos:Concept ;
+    skos:inScheme scale:wetland-indicator-status ;
+    skos:notation "FAC" ;
+    skos:prefLabel "Facultative (FAC)"@en ;
+    warp:ordinal 3 .
+
+<https://w3id.org/ecoweaver/warp/scale/wetland-indicator-status/FACU> a skos:Concept ;
+    skos:inScheme scale:wetland-indicator-status ;
+    skos:notation "FACU" ;
+    skos:prefLabel "Facultative upland (FACU)"@en ;
+    warp:ordinal 2 .
+
+<https://w3id.org/ecoweaver/warp/scale/wetland-indicator-status/FACW> a skos:Concept ;
+    skos:inScheme scale:wetland-indicator-status ;
+    skos:notation "FACW" ;
+    skos:prefLabel "Facultative wetland (FACW)"@en ;
+    warp:ordinal 4 .
+
+<https://w3id.org/ecoweaver/warp/scale/wetland-indicator-status/OBL> a skos:Concept ;
+    skos:inScheme scale:wetland-indicator-status ;
+    skos:notation "OBL" ;
+    skos:prefLabel "Obligate wetland (OBL)"@en ;
+    warp:ordinal 5 .
+
+<https://w3id.org/ecoweaver/warp/scale/wetland-indicator-status/UPL> a skos:Concept ;
+    skos:inScheme scale:wetland-indicator-status ;
+    skos:notation "UPL" ;
+    skos:prefLabel "Obligate upland (UPL)"@en ;
+    warp:ordinal 1 .
+
+scale:dfo-recovery-priority a skos:ConceptScheme ;
+    dcterms:source "Fisheries and Oceans Canada (recovery strategies under SARA)" ;
+    skos:hasTopConcept <https://w3id.org/ecoweaver/warp/scale/dfo-recovery-priority/high>,
+        <https://w3id.org/ecoweaver/warp/scale/dfo-recovery-priority/low>,
+        <https://w3id.org/ecoweaver/warp/scale/dfo-recovery-priority/medium> ;
+    skos:notation "dfo-recovery-priority" ;
+    skos:prefLabel "DFO recovery approach priority"@en ;
+    skos:scopeNote "Ordinal order: priority, lowest first"@en .
+
+scale:dfo-timing-of-influence a skos:ConceptScheme ;
+    dcterms:source "Fisheries and Oceans Canada (recovery strategies under SARA)" ;
+    skos:hasTopConcept <https://w3id.org/ecoweaver/warp/scale/dfo-timing-of-influence/future>,
+        <https://w3id.org/ecoweaver/warp/scale/dfo-timing-of-influence/immediate>,
+        <https://w3id.org/ecoweaver/warp/scale/dfo-timing-of-influence/medium> ;
+    skos:notation "dfo-timing-of-influence" ;
+    skos:prefLabel "DFO timing of influence of a recovery approach"@en ;
+    skos:scopeNote "Ordinal order: how soon the approach takes effect, latest first"@en .
+
+scale:eccc-recovery-priority a skos:ConceptScheme ;
+    dcterms:source "Environment and Climate Change Canada (recovery strategies under SARA)" ;
+    skos:hasTopConcept <https://w3id.org/ecoweaver/warp/scale/eccc-recovery-priority/beneficial>,
+        <https://w3id.org/ecoweaver/warp/scale/eccc-recovery-priority/necessary>,
+        <https://w3id.org/ecoweaver/warp/scale/eccc-recovery-priority/urgent> ;
+    skos:notation "eccc-recovery-priority" ;
+    skos:prefLabel "ECCC recovery measure priority"@en ;
+    skos:scopeNote "Ordinal order: priority, lowest first"@en .
+
+scale:usda-tolerance-rating a skos:ConceptScheme ;
+    dcterms:source "USDA NRCS PLANTS database" ;
+    skos:hasTopConcept <https://w3id.org/ecoweaver/warp/scale/usda-tolerance-rating/high>,
+        <https://w3id.org/ecoweaver/warp/scale/usda-tolerance-rating/low>,
+        <https://w3id.org/ecoweaver/warp/scale/usda-tolerance-rating/medium>,
+        <https://w3id.org/ecoweaver/warp/scale/usda-tolerance-rating/none> ;
+    skos:notation "usda-tolerance-rating" ;
+    skos:prefLabel "USDA PLANTS tolerance rating"@en ;
+    skos:scopeNote "Ordinal order: tolerance, least tolerant first"@en .
+
+scale:eive-1.0-reaction a skos:ConceptScheme ;
+    dcterms:source "Dengler et al. 2023, Ecological Indicator Values for Europe (EIVE) 1.0" ;
+    rdfs:comment "EIVE values are continuous on 0-10. These five bins of width 2 are WARP's, not EIVE's, so that a value can be compared with others; the verbatim value stays in ScaledValue.value. TODO: confirm the binning (or drop the concepts and keep only the scheme) before release."@en ;
+    skos:hasTopConcept <https://w3id.org/ecoweaver/warp/scale/eive-1.0-reaction/0-2>,
+        <https://w3id.org/ecoweaver/warp/scale/eive-1.0-reaction/2-4>,
+        <https://w3id.org/ecoweaver/warp/scale/eive-1.0-reaction/4-6>,
+        <https://w3id.org/ecoweaver/warp/scale/eive-1.0-reaction/6-8>,
+        <https://w3id.org/ecoweaver/warp/scale/eive-1.0-reaction/8-10> ;
+    skos:notation "eive-1.0-reaction" ;
+    skos:prefLabel "EIVE 1.0 reaction (soil pH) indicator value, binned"@en ;
+    skos:scopeNote "Ordinal order: position on the reaction gradient, most acid first"@en .
+
+scale:wetland-indicator-status a skos:ConceptScheme ;
+    dcterms:source "US National Wetland Plant List (US Army Corps of Engineers)" ;
+    skos:hasTopConcept <https://w3id.org/ecoweaver/warp/scale/wetland-indicator-status/FAC>,
+        <https://w3id.org/ecoweaver/warp/scale/wetland-indicator-status/FACU>,
+        <https://w3id.org/ecoweaver/warp/scale/wetland-indicator-status/FACW>,
+        <https://w3id.org/ecoweaver/warp/scale/wetland-indicator-status/OBL>,
+        <https://w3id.org/ecoweaver/warp/scale/wetland-indicator-status/UPL> ;
+    skos:notation "wetland-indicator-status" ;
+    skos:prefLabel "Wetland indicator status"@en ;
+    skos:scopeNote "Ordinal order: affinity for wetlands, lowest first"@en .
+
+scale:usda-texture-class a skos:ConceptScheme ;
+    dcterms:source "USDA Natural Resources Conservation Service" ;
+    skos:hasTopConcept <https://w3id.org/ecoweaver/warp/scale/usda-texture-class/clay>,
+        <https://w3id.org/ecoweaver/warp/scale/usda-texture-class/clay-loam>,
+        <https://w3id.org/ecoweaver/warp/scale/usda-texture-class/loam>,
+        <https://w3id.org/ecoweaver/warp/scale/usda-texture-class/loamy-sand>,
+        <https://w3id.org/ecoweaver/warp/scale/usda-texture-class/sand>,
+        <https://w3id.org/ecoweaver/warp/scale/usda-texture-class/sandy-clay>,
+        <https://w3id.org/ecoweaver/warp/scale/usda-texture-class/sandy-clay-loam>,
+        <https://w3id.org/ecoweaver/warp/scale/usda-texture-class/sandy-loam>,
+        <https://w3id.org/ecoweaver/warp/scale/usda-texture-class/silt>,
+        <https://w3id.org/ecoweaver/warp/scale/usda-texture-class/silt-loam>,
+        <https://w3id.org/ecoweaver/warp/scale/usda-texture-class/silty-clay>,
+        <https://w3id.org/ecoweaver/warp/scale/usda-texture-class/silty-clay-loam> ;
+    skos:notation "usda-texture-class" ;
+    skos:prefLabel "USDA soil texture class"@en ;
+    skos:scopeNote "Ordinal order: approximate fineness, coarsest first (texture classes are not strictly ordinal)"@en .
+

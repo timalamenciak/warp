@@ -27,7 +27,7 @@ node_definitions:
   template: intervention
   fillers:
   - var: action
-    value: ELMO:TODO_tidal_restoration
+    value: TODO:tidal_restoration
     label: tidal restoration
   - var: target
     value: ENVO:00000035
