@@ -147,15 +147,17 @@ the evidence.
 
 Annotators never write propositions. `scripts/derive_propositions.py` groups
 statements and writes them for every predicate group, under **identity rule
-`warp-prop-identity/3`**:
+`warp-prop-identity/4`**:
 
 > Two statements share a proposition when **group, subject node, predicate,
-> object node, negated and scope** all match.
+> object node, negated and scope** all match, plus any **identity extras** the
+> group declares (none for causal and interaction).
 
 (Version 1, in 0.1.0, had no group field; version 2 wrote "asserted" into
-the key for non-negated statements, the same word as the proposition status,
-and version 3, in 0.5.0, writes "affirmed". Derived proposition ids changed
-with each version; open-question ids are kept.)
+the key for non-negated statements, the same word as the proposition status;
+version 3, in 0.5.0, writes "affirmed"; version 4, in 0.6.0, adds per-group
+extras and leaves every existing key, and so every existing ID, as it was.
+Open-question ids are always kept.)
 
 Everything else (hedging, causal features, comparator, context, evidence)
 stays on the statement and is aggregated, not used for identity. Proposition IDs
@@ -290,7 +292,8 @@ templates/
   node_templates.yaml         node templates (edit this)
 patterns/                     GENERATED DOSDP patterns, prefixes, fill tables
 scripts/
-  derive_propositions.py      proposition derivation, all groups (identity rule v3)
+  derive_propositions.py      proposition derivation, all groups (identity rule v4)
+  check_refs.py               every reference resolves (schema-driven)
   check_statements.py         checks the schema cannot express
   check_values.py             CURIEs, units, places, scales, dates
   gen_vocab.py                vocab/*.yaml → SKOS (project/scales.ttl)

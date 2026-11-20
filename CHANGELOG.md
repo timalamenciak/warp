@@ -103,6 +103,38 @@ existing predicate groups.
   value checks, shared slots and value classes, no predicate IRI emitted as an
   `owl:Class`, and the examples' proposition IDs (unchanged).
 
+### Phase 2: identity engine and reference checker
+
+- **Identity rule `warp-prop-identity/4`.** Groups can extend the
+  proposition identity key without group-specific code, through two new
+  registry annotations: `warp_identity_extras` (ordered slot paths, dotted
+  paths reach into inlined objects) and `warp_identity_rule` (a rule name
+  that overrides the shared one). A third, `warp_derived_by`, hands a group to
+  its own derivation script. Documented in `docs/predicate-groups.md`.
+- Extras are canonical JSON in the key (sorted object keys; lists sorted
+  unless `list_elements_ordered`); a missing extra is an explicit `null`, so
+  the statement still groups, and the derivation report counts it as
+  "grouped with missing key fields". The null is never written to a slot.
+  Derivation copies each extra onto the proposition. Proposition text
+  templates may use an extra by name (`{guidance}`).
+- **Why rule 4 and not rule 3.** The dev guide calls this rule v3 because it
+  was written against 0.3.0; the code was already at v3 in 0.5.0. The rule
+  version is recorded on each proposition and is **not** hashed into its ID
+  (decision D4, Q11), and causal and interaction declare no extras (decision
+  D1), so **no proposition ID changed**. The derived files changed only in
+  `identity_rule_version` (`warp-prop-identity/3` → `/4`).
+- **`scripts/check_refs.py`**, run by `make validate`: every value of a slot
+  whose range is a class and that is not inlined must resolve to a record in
+  the files given. Schema-driven through `warp_schema.walk()`, so later
+  groups are checked as soon as their slots exist.
+- `check_statements.py` now covers every registered group, including any
+  derived by another script.
+- Tests: key building with and without extras, missing extras, structured
+  extras in a different key order, list ordering, extras read from
+  annotations, idempotent re-derivation, unchanged example IDs, and
+  dangling references caught (subject, nested contributor, node definition,
+  `specified_in`).
+
 ## 0.5.0
 
 Provenance the SEPIO way, and checks for what the schema cannot say. New

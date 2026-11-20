@@ -130,6 +130,34 @@ so no script needs editing.
 `CausalNode` is CAMO's node record. It is the annotation record for every
 group's nodes; what kind of thing a node is comes from its node template.
 
+Three more annotations are optional:
+
+| Annotation | Value | Use |
+|---|---|---|
+| `warp_identity_extras` | space-separated slot paths, in order | Fields added to this group's proposition identity key (see "Identity" below). Dotted paths reach into inlined objects: `predicate_qualifiers.guidance`. |
+| `warp_identity_rule` | a rule name | Recorded on the group's propositions instead of the shared `warp-prop-identity/4`, when the group's identity is its own rule (the criteria group uses `warp-criteria-identity/1`). |
+| `warp_derived_by` | a script file name | The script that derives this group's propositions, when it is not `derive_propositions.py` (the implementation group's projects come from `derive_projects.py`). `derive_propositions.py` then leaves the group alone; the checks still cover it. |
+
+For example, a group whose guidance must split propositions:
+
+```yaml
+    annotations:
+      warp_group: recommendation
+      warp_statements_slot: recommendation_statements
+      warp_propositions_slot: recommendation_propositions
+      warp_proposition_class: RecommendationProposition
+      warp_identity_extras: predicate_qualifiers.guidance
+```
+
+The proposition class must be able to hold every extra at the same path
+(here, `predicate_qualifiers` with a `guidance` field): derivation copies each
+extra's value from the statements onto the proposition, and open questions
+written by people give their extras at the same paths.
+
+Group-level fields every statement shares (`modality`, `context`,
+`ecosystem_context`, `place`, `temporal_extent`, `specified_in`) are already
+on `EcoStatement`; do not redeclare them.
+
 Add statement-level fields a group needs beyond the shared ones (CAMO's
 `causal_language` and `comparator` are examples), but check first whether
 `scope`, `original_text`, `care` or evidence lines already cover it.
@@ -177,8 +205,8 @@ make all         # derives propositions for every group, validates, generates
 `derive_propositions.py` reports each group it found:
 
 ```
-causal: 2 proposition(s) under warp-prop-identity/3
-interaction: 1 proposition(s) under warp-prop-identity/3
+causal: 2 proposition(s) under warp-prop-identity/4
+interaction: 1 proposition(s) under warp-prop-identity/4
 ```
 
 If your group is missing, the registry annotations are incomplete or the
@@ -193,22 +221,57 @@ Then:
 
 ## Identity: what makes two statements the same proposition
 
-All groups share identity rule `warp-prop-identity/3`: two statements share a
+All groups share identity rule `warp-prop-identity/4`: two statements share a
 proposition when **group, subject, predicate, object, negated and scope**
-match. Predicate qualifiers do not count, so disagreements about, say,
-reversibility show up as variation across statements of one proposition rather
-than as separate propositions.
+match, **plus the group's identity extras**, in the order the group declares
+them. Predicate qualifiers not named as extras do not count, so disagreements
+about, say, reversibility show up as variation across statements of one
+proposition rather than as separate propositions.
 
-If a group genuinely needs a different identity rule (for example, if an
-interaction's life stage should split propositions), that is a change to
-`derive_propositions.py`: make it, bump `RULE_VERSION`, and expect existing
-proposition ids for that group to change.
+| Group | Identity extras |
+|---|---|
+| causal | none |
+| interaction | none |
+
+(Later groups add theirs; the register in [rdf-owl.md](rdf-owl.md) lists every
+group.)
+
+How the key is built (`scripts/derive_propositions.py`):
+
+- The six shared fields are joined with `|`, exactly as under rule 3, so a
+  group with **no extras keeps every proposition ID it had** (the ID is a hash
+  of the key; the rule version is recorded on the proposition, never hashed).
+- Each extra is appended as `path=<canonical JSON>`. Objects are written with
+  sorted keys and lists sorted, unless the slot is `list_elements_ordered`, so
+  the same content always gives the same key.
+- A **missing extra** is the JSON `null`. The statement still groups with
+  others whose value is missing too, and the derivation report counts it
+  under "grouped with missing key fields". The null lives only inside the key
+  string; it is never written to a slot or exported.
+- A missing or `unclear` **scope** still blocks grouping: the statement is
+  left ungrouped and reported.
+
+Adding an extra to an existing group changes that group's keys and therefore
+its proposition IDs. Do it in its own commit, say which IDs moved in
+`CHANGELOG.md`, and update `tests/test_derived_ids.py`.
+
+If a group's identity cannot be written as an identity key at all (the
+implementation group links statements by shared external IDs or overlapping
+periods), give it its own derivation script and name it in
+`warp_derived_by`.
+
+## References
+
+`scripts/check_refs.py` (run by `make validate`) checks that every reference
+resolves: any slot whose range is a class and that is not inlined, so a new
+group's references are checked as soon as its slots exist. Pass a statement
+set together with its derived file and with anything that cites it.
 
 ## Checklist
 
 - [ ] Predicate enum with `meaning` and `rosetta_template` for every value
 - [ ] Qualifier class, no slot names that collide with SEPIO
-- [ ] Statement class: `is_a: EcoStatement`, four registry annotations, subject / predicate / object constrained
+- [ ] Statement class: `is_a: EcoStatement`, four registry annotations (plus `warp_identity_extras` if the group's identity needs more than the shared fields), subject / predicate / object constrained
 - [ ] Proposition class: `is_a: EcoProposition`, same constraints
 - [ ] Two StatementSet lists, named as in the annotations
 - [ ] Node templates exist for the subjects and objects

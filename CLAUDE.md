@@ -84,6 +84,9 @@ annotations, read by `load_groups()` in `scripts/derive_propositions.py`:
 | `warp_statements_slot` | `StatementSet` list holding the group's statements |
 | `warp_propositions_slot` | `StatementSet` list holding its propositions |
 | `warp_proposition_class` | the group's proposition class |
+| `warp_identity_extras` | optional: ordered slot paths added to the identity key |
+| `warp_identity_rule` | optional: rule name recorded instead of the shared one |
+| `warp_derived_by` | optional: the script that derives the group, if not `derive_propositions.py` |
 
 The predicate enum is found as the induced range of `predicate` on the
 statement class; `rosetta_template` annotations on its values render
@@ -91,8 +94,11 @@ proposition text.
 
 ### Proposition identity and IDs
 
-Rule `warp-prop-identity/3` (constant `RULE_VERSION`). The key is
-`"|".join([group, subject, predicate, object, "negated"|"affirmed", scope])`.
+Rule `warp-prop-identity/4` (constant `RULE_VERSION`; rule 3 until 0.6.0).
+The key is `"|".join([group, subject, predicate, object,
+"negated"|"affirmed", scope])`, followed by `path=<canonical JSON>` for each
+of the group's `warp_identity_extras` (missing extras are `null`). Causal and
+interaction declare no extras, so their keys are what they were under rule 3.
 The proposition ID is `"warp:prop/" + sha1(key)[:12]`. **The rule version is
 not part of the hash** (it is recorded on the proposition as
 `identity_rule_version`), so a rule change that leaves a group's key string

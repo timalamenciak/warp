@@ -152,7 +152,7 @@ def main(argv=None):
     parser.add_argument("--schema", type=Path, default=DEFAULT_SCHEMA)
     args = parser.parse_args(argv)
 
-    groups = load_groups(args.schema)
+    groups = load_groups(args.schema, all_groups=True)
     sets = [(f, yaml.safe_load(f.read_text(encoding="utf-8")) or {}) for f in args.files]
 
     known, agents, dupes = set(), {}, []

@@ -62,8 +62,10 @@ derive:
 	  $(PY) scripts/derive_propositions.py $$f $${f%.yaml}.derived.yaml || exit 1; \
 	done
 
+# Shapes and enums (LinkML), then every reference resolving (check_refs.py).
 validate: derive
 	linkml-validate -s $(SCHEMA) -C StatementSet $(STATEMENTS) $(DERIVED) $(ASSESSMENTS)
+	$(PY) scripts/check_refs.py $(STATEMENTS) $(DERIVED) $(ASSESSMENTS)
 
 # What the schema cannot express: Assertion Mode, negation, contribution roles,
 # CARE, and references resolving across files. Pass files that cite each other together.
