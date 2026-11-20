@@ -26,6 +26,13 @@ Turtle directly, or dosdp-tools reads the patterns and fill tables
 (`make owl-dosdp`). The two routes were checked against each other with
 `robot diff`: the logical axioms are identical.
 
+`project/nodes.ttl` is one of several generated files, and the only one that
+says what a node *means*. What the others may be read as, and why a statement
+about a node almost never becomes an axiom in them, is in
+[rdf-owl.md](rdf-owl.md). The rule that matters here: a `node:` IRI is an OWL
+class everywhere it appears, and particulars — sites, projects — are
+individuals under their own prefixes, never classes.
+
 ---
 
 ## 1. Design the shape first
@@ -138,6 +145,14 @@ restrictions), which is what OBO DOSDP patterns normally use and what keeps
 the output in OWL 2 EL. Unions, negation, `subClassOf`-only patterns, data
 properties and list variables are not supported by the generator; if you need
 them, extend `scripts/templates_lib.py` and `scripts/gen_dosdp.py` together.
+
+A shape whose part count varies — a management strategy, which is a bundle of
+however many action nodes — cannot be a template at all, for want of list
+variables, so its OWL is generated directly from its definitions and is
+`rdfs:subClassOf`, not `owl:equivalentClass`. The reason is in
+[rdf-owl.md §8](rdf-owl.md#8-adding-a-group): its identity key is ordered while
+its part axioms are not, so equivalence would tell a reasoner that two
+strategies the identity rule just held apart are the same class.
 
 ## 4. Generate and check
 

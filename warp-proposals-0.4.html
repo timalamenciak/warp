@@ -1,0 +1,1813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>WARP 0.4 proposals: consolidated guidance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,500;7..72,650&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* One reading column with a sticky contents rail on wide screens. Group colours follow the proposal series. */
+:root {
+  --bg: #f6f8f8; --surface: #ffffff; --fg: #1c2629; --muted: #56666b; --rule: #d5dee0;
+  --accent: #23477a;
+  --causal: #6a4a8c; --interaction: #2f6f5e; --rec: #23477a; --tol: #8a5a2b; --cost: #5c6a17;
+  --impl: #1f6b5e; --crit: #7a3b4f; --node: #2e5f73; --weft: #a8741a;
+  --code-bg: #eef2f3; --tint: #e9eef0;
+  --f-display: "Literata", Georgia, "Times New Roman", serif;
+  --f-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #121a1d; --surface: #182327; --fg: #e3eaec; --muted: #9aabb0; --rule: #2c3a3f;
+    --accent: #8fb0e6; --causal: #c3a4e6; --interaction: #7fc9b3; --rec: #8fb0e6; --tol: #e0a96f;
+    --cost: #c3cf78; --impl: #7fd0bf; --crit: #e39bb2; --node: #84c0d6; --weft: #e3b25c;
+    --code-bg: #1d2a2e; --tint: #1c262a; color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 16px; }
+body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--f-body); font-size: 16px; line-height: 1.6; }
+.layout { max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 48px;
+  padding: 40px max(16px, env(safe-area-inset-right, 0px)) 80px max(16px, env(safe-area-inset-left, 0px)); }
+nav.toc { position: sticky; top: 16px; align-self: start; max-height: calc(100vh - 32px); overflow-y: auto; font-size: 14px; }
+nav.toc .eyebrow { margin-bottom: 10px; }
+nav.toc ol { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 4px; }
+nav.toc ol ol { padding-left: 14px; margin: 4px 0 6px; gap: 2px; font-size: 13.5px; }
+nav.toc a { color: var(--fg); text-decoration: none; display: block; padding: 2px 0; }
+nav.toc a:hover { color: var(--accent); }
+nav.toc .sw { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 7px; vertical-align: 1px; }
+main { display: flex; flex-direction: column; gap: 64px; min-width: 0; }
+@media (max-width: 960px) {
+  .layout { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+  nav.toc { position: static; max-height: none; border: 1px solid var(--rule); border-radius: 4px; background: var(--surface); padding: 16px; }
+}
+.prose { max-width: 70ch; display: flex; flex-direction: column; gap: 14px; }
+header.top { display: flex; flex-direction: column; gap: 14px; border-bottom: 1px solid var(--rule); padding-bottom: 32px; }
+.eyebrow { font-family: var(--f-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+h1, h2, h3, h4 { font-family: var(--f-display); text-wrap: balance; margin: 0; line-height: 1.2; }
+h1 { font-size: clamp(30px, 5vw, 42px); font-weight: 650; }
+h2 { font-size: 28px; font-weight: 650; }
+h3 { font-size: 20px; font-weight: 650; margin-top: 12px; }
+h4 { font-size: 16.5px; font-weight: 650; }
+p { margin: 0; }
+section.part { display: flex; flex-direction: column; gap: 18px; border-top: 4px solid var(--c, var(--rule)); padding-top: 24px; }
+.sub { display: flex; flex-direction: column; gap: 14px; }
+.lede { font-size: 18.5px; max-width: 66ch; }
+.meta { font-size: 14px; color: var(--muted); max-width: 70ch; }
+code, pre { font-family: var(--f-mono); font-size: 13.5px; }
+:not(pre) > code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; overflow-wrap: anywhere; }
+pre { background: var(--code-bg); border: 1px solid var(--rule); border-radius: 4px; padding: 16px 18px; margin: 0; overflow-x: auto; line-height: 1.55; }
+.c { color: var(--muted); }
+ul, ol { margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 8px; }
+.tablewrap { overflow-x: auto; border: 1px solid var(--rule); border-radius: 4px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 14.5px; min-width: 640px; }
+th, td { text-align: left; vertical-align: top; padding: 10px 14px; border-bottom: 1px solid var(--rule); }
+tr:last-child td { border-bottom: none; }
+th { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 600; background: var(--code-bg); }
+td:first-child { white-space: nowrap; }
+td.wrap, th.wrap { white-space: normal; }
+tr.band td { background: var(--tint); font-family: var(--f-mono); font-size: 12px; letter-spacing: .05em; text-transform: uppercase; color: var(--c, var(--muted)); padding-block: 7px; }
+.chip { display: inline-block; font-family: var(--f-mono); font-size: 12px; padding: 1px 8px; border-radius: 99px; border: 1px solid currentColor; white-space: nowrap; }
+.g-causal { color: var(--causal); } .g-inter { color: var(--interaction); } .g-rec { color: var(--rec); }
+.g-tol { color: var(--tol); } .g-cost { color: var(--cost); } .g-impl { color: var(--impl); } .g-crit { color: var(--crit); } .g-node { color: var(--node); }
+.key { color: var(--weft); }
+.flag { font-family: var(--f-mono); font-size: 11.5px; color: var(--weft); white-space: nowrap; }
+.test { background: var(--tint); border-left: 3px solid var(--c, var(--accent)); border-radius: 4px; padding: 18px 22px; display: flex; flex-direction: column; gap: 8px; max-width: 70ch; }
+.test .q { font-family: var(--f-display); font-size: 20px; font-weight: 500; line-height: 1.35; }
+.note { border: 1px dashed var(--weft); border-radius: 4px; padding: 14px 18px; max-width: 70ch; font-size: 14.5px; display: flex; flex-direction: column; gap: 6px; }
+.note strong:first-child { color: var(--weft); }
+.shape { display: grid; grid-template-columns: minmax(0,1fr) auto minmax(0,1fr); gap: 12px; align-items: center; max-width: 820px; }
+.node { background: var(--surface); border: 1.5px solid var(--rule); border-radius: 4px; padding: 12px 14px; min-width: 0; }
+.node .lbl { font-family: var(--f-mono); font-size: 11.5px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); }
+.node .val { font-size: 15px; margin-top: 4px; }
+.edge { font-family: var(--f-mono); font-size: 14px; color: var(--c, var(--accent)); font-weight: 500; text-align: center; white-space: nowrap; }
+.edge::after { content: "→"; display: block; font-size: 22px; line-height: 1; }
+.below { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; }
+.below .node { border-style: dashed; }
+@media (max-width: 640px) { .shape { grid-template-columns: minmax(0,1fr); } .edge::after { content: "↓"; } .below { grid-template-columns: minmax(0,1fr); } }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+.card { background: var(--surface); border: 1px solid var(--rule); border-top: 3px solid var(--c, var(--rule)); border-radius: 4px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.card .lbl { font-family: var(--f-mono); font-size: 11.5px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); }
+.card .val { font-size: 15px; font-weight: 600; overflow-wrap: anywhere; }
+.card .d { font-size: 14px; color: var(--muted); }
+.figure { display: flex; flex-direction: column; gap: 10px; }
+.figure .frame { background: var(--surface); border: 1px solid var(--rule); border-radius: 4px; padding: 12px; overflow-x: auto; }
+.figure svg { display: block; width: 100%; min-width: 540px; height: auto; }
+.figure .cap { font-size: 14px; color: var(--muted); max-width: 70ch; }
+svg .axis { stroke: var(--muted); stroke-width: 1; fill: none; }
+svg .grid { stroke: var(--rule); stroke-width: 1; fill: none; }
+svg .curve { stroke: var(--tol); stroke-width: 2.5; fill: none; }
+svg .band { fill: var(--tol); opacity: .12; }
+svg .opt { stroke: var(--tol); stroke-width: 1.5; stroke-dasharray: 4 4; fill: none; }
+svg .causalln { stroke: var(--causal); stroke-width: 2; fill: none; }
+svg .wrapbox { fill: none; stroke: var(--node); stroke-width: 2; }
+svg .part { fill: var(--surface); stroke: var(--rule); stroke-width: 1.5; }
+svg .rep { fill: var(--surface); stroke: var(--rule); stroke-width: 1.5; stroke-dasharray: 4 3; }
+svg .site { fill: var(--surface); stroke: var(--impl); stroke-width: 2; }
+svg .derived { fill: var(--surface); stroke: var(--impl); stroke-width: 1.5; stroke-dasharray: 4 3; }
+svg .seq { stroke: var(--muted); stroke-width: 1.5; fill: none; }
+svg .seqi { stroke: var(--impl); stroke-width: 1.5; fill: none; }
+svg .der { stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 2 3; fill: none; }
+svg .ah { fill: var(--muted); } svg .ahi { fill: var(--impl); }
+svg .claim { stroke: var(--weft); stroke-width: 1.5; stroke-dasharray: 5 4; fill: none; }
+svg .t-mono { font-family: var(--f-mono); font-size: 12px; fill: var(--muted); }
+svg .t-lbl { font-family: var(--f-body); font-size: 13px; fill: var(--fg); }
+svg .t-tol { font-family: var(--f-body); font-size: 13px; fill: var(--tol); font-weight: 600; }
+svg .t-causal { font-family: var(--f-body); font-size: 13px; fill: var(--causal); font-weight: 600; }
+svg .t-node { font-family: var(--f-mono); font-size: 11.5px; fill: var(--node); letter-spacing: .06em; }
+svg .t-impl { font-family: var(--f-mono); font-size: 11.5px; fill: var(--impl); letter-spacing: .06em; }
+svg .t-sub { font-family: var(--f-mono); font-size: 11px; fill: var(--muted); }
+svg .t-claim { font-family: var(--f-body); font-size: 12.5px; fill: var(--weft); }
+svg .t-seq { font-family: var(--f-body); font-size: 12.5px; fill: var(--impl); }
+.ex { display: flex; flex-direction: column; gap: 10px; }
+.ex .src { font-size: 14px; color: var(--muted); font-style: italic; max-width: 70ch; }
+.qs { counter-reset: q; list-style: none; padding: 0; gap: 14px; max-width: 70ch; }
+.qs li { counter-increment: q; display: grid; grid-template-columns: 2.4em minmax(0,1fr); }
+.qs li::before { content: "Q" counter(q); font-family: var(--f-mono); font-size: 13px; color: var(--weft); padding-top: 2px; }
+.refs { font-size: 14px; gap: 6px; max-width: 80ch; }
+details { border: 1px solid var(--rule); border-radius: 4px; background: var(--surface); }
+details > summary { cursor: pointer; padding: 10px 14px; font-weight: 600; font-size: 14.5px; }
+details > pre { border: none; border-top: 1px solid var(--rule); border-radius: 0 0 4px 4px; }
+a { color: var(--accent); }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+footer { font-size: 13.5px; color: var(--muted); border-top: 1px solid var(--rule); padding-top: 20px; }
+@media print {
+  nav.toc { display: none; } .layout { grid-template-columns: 1fr; padding: 0; }
+  details { border: none; } details > summary { display: none; } details > pre { display: block; }
+  section.part { break-before: page; }
+}
+</style>
+</head>
+<body>
+<div class="layout">
+
+<nav class="toc" aria-label="Contents">
+  <div class="eyebrow">Contents</div>
+  <ol>
+    <li><a href="#overview">1. Overview</a>
+      <ol>
+        <li><a href="#groups">Seven predicate groups</a></li>
+        <li><a href="#templates">Node templates and records</a></li>
+        <li><a href="#rules">Derivation rules</a></li>
+      </ol>
+    </li>
+    <li><a href="#tests">2. Annotator's tests</a></li>
+    <li><a href="#base"><span class="sw" style="background:var(--muted)"></span>3. Shared base additions</a></li>
+    <li><a href="#graph"><span class="sw" style="background:var(--accent)"></span>4. The graph: RDF and OWL</a>
+      <ol>
+        <li><a href="#layers">Two layers</a></li>
+        <li><a href="#iris">One IRI, one kind of thing</a></li>
+        <li><a href="#gate">The projection gate</a></li>
+        <li><a href="#polarity">Polarity in the predicate</a></li>
+        <li><a href="#addgroup">Adding a group</a></li>
+      </ol>
+    </li>
+    <li><a href="#rec"><span class="sw" style="background:var(--rec)"></span>5. Recommendation group</a></li>
+    <li><a href="#strategy"><span class="sw" style="background:var(--node)"></span>6. Management strategy node</a></li>
+    <li><a href="#tol"><span class="sw" style="background:var(--tol)"></span>7. Tolerance group</a></li>
+    <li><a href="#cost"><span class="sw" style="background:var(--cost)"></span>8. Cost group</a></li>
+    <li><a href="#impl"><span class="sw" style="background:var(--impl)"></span>9. Sites, implementation, definitions</a>
+      <ol>
+        <li><a href="#site">Site</a></li>
+        <li><a href="#implgroup">Implementation group</a></li>
+        <li><a href="#criteria">Criteria sets and group</a></li>
+        <li><a href="#target2">The Target 2 query</a></li>
+      </ol>
+    </li>
+    <li><a href="#later">10. Proposed separately</a></li>
+    <li><a href="#harmonize">11. Harmonization and decisions</a></li>
+    <li><a href="#refs">12. References</a></li>
+  </ol>
+</nav>
+
+<main>
+
+<header class="top">
+  <div class="eyebrow">WARP · consolidated proposals · draft · 20 November 2026 · against WARP 0.3.0</div>
+  <h1>WARP 0.4 proposals: consolidated guidance</h1>
+  <p class="lede">Five draft proposals in one reference: three new predicate groups (recommendation, tolerance, cost), a management strategy node type, and sites, implementation and definitions for restoration reporting. Read with the build plan in <code>docs/dev-guide-0.4.md</code>.</p>
+  <p class="meta">Compiled from the proposal pages of 7 to 11 November 2026. Where the proposals or their schema sketches disagreed, this page uses the harmonized form from the dev guide (see <a href="#harmonize">section 11</a>). Predicate names, qualifier values, example node IDs and all figures are provisional.</p>
+  <p class="meta"><strong>Revised 20 November 2026:</strong> the proposals said what each group records but not what any of it becomes in RDF. <a href="#graph">Section 4</a> is the contract that settles it, and each group now says what it exports and what, if anything, it projects to OWL. Four of the problems it fixes are in 0.3.0 already, and seven groups would have multiplied them.</p>
+</header>
+
+<!-- ============================================================ OVERVIEW -->
+<section class="part" id="overview" style="--c: var(--accent)">
+  <h2>1. Overview</h2>
+  <div class="prose">
+    <p>WARP records sourced, scoped statements: who said it, subject → predicate → object, and what backs it. Statements that say the same thing are grouped into propositions by a script, under a versioned identity rule. Version 0.3.0 has two predicate groups, causal and interaction. These proposals add five more, plus three node templates, so WARP can also hold guidance, environmental tolerances, costs, and records of restoration that actually took place.</p>
+    <p>Each new group answers a question the existing groups cannot hold without losing what makes the statement what it is: the advice in guidance, the range in a tolerance, the context of a cost, the fact that work was done.</p>
+    <p>Every group also says what it becomes in RDF, and whether any of it becomes OWL. <a href="#graph">Section 4</a> is that contract, and it is worth reading before the groups: it settles the IRI spaces, where predicates are declared, where polarity lives, and the gate a claim has to pass before a reasoner is allowed to use it. Four of the groups project nothing to OWL, on purpose.</p>
+  </div>
+
+  <div class="sub" id="groups">
+    <h3>Seven predicate groups</h3>
+    <div class="tablewrap">
+    <table>
+      <thead><tr><th>Group</th><th class="wrap">Says</th><th class="wrap">Example</th><th class="wrap">Judged by</th><th class="wrap">Predicates</th></tr></thead>
+      <tbody>
+        <tr><td><span class="chip g-causal">causal</span></td><td class="wrap">What changes what</td><td class="wrap">Soil compaction decreases seedling survival</td><td class="wrap">Evidence: study design, mechanism, correlation</td><td class="wrap">CAMO predicates</td></tr>
+        <tr><td><span class="chip g-inter">interaction</span></td><td class="wrap">Which organisms act on which</td><td class="wrap">Stocked salmonids prey on Spring Salamander</td><td class="wrap">Evidence: observation, diet studies, experiments</td><td class="wrap">RO predicates</td></tr>
+        <tr><td><span class="chip g-rec">recommendation</span></td><td class="wrap">What to do or avoid, and why</td><td class="wrap">Avoid stocking predacious sportfish, because it decreases Mountain Sucker abundance</td><td class="wrap">Fit to the goal and place; strength of the propositions it cites</td><td class="wrap"><code>suggested_to</code></td></tr>
+        <tr><td><span class="chip g-tol">tolerance</span></td><td class="wrap">Under what conditions an organism lives, and where it does best</td><td class="wrap">Blue grama establishes on soils of pH 6 to 8.5</td><td class="wrap">Occurrence across gradients, growth trials, expert ranking, practitioner experience</td><td class="wrap"><code>tolerates</code>, <code>prefers</code>, <code>intolerant_of</code>, RO has habitat</td></tr>
+        <tr><td><span class="chip g-cost">cost</span></td><td class="wrap">What an action took to carry out, in what context</td><td class="wrap">Cut-and-treat removal of wattle on 600 ha cost NIS 17,600</td><td class="wrap">Completeness against Iacona's five standards; how the figure was obtained</td><td class="wrap"><code>incurs_cost</code>, <code>costs_relative_to</code></td></tr>
+        <tr><td><span class="chip g-impl">implementation</span></td><td class="wrap">That a strategy was carried out at a site</td><td class="wrap">Recontouring and seeding was done on 42 ha of site 0412 from 2024</td><td class="wrap">Who reports it; agreement across reporters</td><td class="wrap"><code>carried_out_at</code></td></tr>
+        <tr><td><span class="chip g-crit">criteria</span></td><td class="wrap">That a site or project meets a named definition</td><td class="wrap">Site 0412 qualifies as degraded under definition A</td><td class="wrap">Assessment method and the evidence against the definition</td><td class="wrap"><code>qualifies_as</code></td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <div class="sub" id="templates">
+    <h3>Node templates and records</h3>
+    <div class="cards">
+      <div class="card" style="--c: var(--node)"><span class="lbl">Node template · type</span><span class="val">management_strategy</span><span class="d">Ordered bundle of action nodes. Identity derived from its parts.</span></div>
+      <div class="card" style="--c: var(--tol)"><span class="lbl">Node template · type</span><span class="val">quality_of_environmental_material</span><span class="d">pH of soil, depth to water table, water temperature. Optional depth and season.</span></div>
+      <div class="card" style="--c: var(--impl)"><span class="lbl">Node template · particular</span><span class="val">site</span><span class="d">One piece of ground: geometry, precision, area, ecosystem type, jurisdiction, tenure, care. An OWL individual under <code>site:</code>, never a class.</span></div>
+      <div class="card" style="--c: var(--impl)"><span class="lbl">Derived · particular</span><span class="val">project</span><span class="d">The work that was done: a process instance of its strategy class, at a site, over a period. An individual under <code>proj:</code>, with a grouping proposition about it.</span></div>
+      <div class="card" style="--c: var(--crit)"><span class="lbl">Information record · not a node</span><span class="val">CriteriaSet</span><span class="d">One body's versioned definition of a concept such as degraded area.</span></div>
+    </div>
+  </div>
+
+  <div class="sub" id="rules">
+    <h3>Derivation rules</h3>
+    <p class="prose">Annotators never write derived records. Every rule is versioned, and every derived record stores the version that made it.</p>
+    <div class="tablewrap">
+    <table>
+      <thead><tr><th>Rule</th><th class="wrap">Derives</th><th class="wrap">Same when</th><th class="wrap">Not in the key (aggregated instead)</th></tr></thead>
+      <tbody>
+        <tr><td><code>warp-prop-identity/3</code></td><td class="wrap">Propositions, all groups</td><td class="wrap">Group, subject, predicate, object, negated and scope match, plus each group's extras: <code>guidance</code> (recommendation); <code>place</code> (tolerance); <code>place</code>, <code>phase</code>, <code>reporting_level</code> (cost)</td><td class="wrap">Hedging, priority, ranges, amounts, scale, year</td></tr>
+        <tr><td><code>warp-strategy-identity/1</code></td><td class="wrap">Canonical strategy nodes</td><td class="wrap">Sorted (step, action) pairs of required components match, after flattening one level of nesting</td><td class="wrap">Lags, repeats, roles, labels, optional parts</td></tr>
+        <tr><td><code>warp-impl-identity/1</code></td><td class="wrap">Projects: the grouping record, and the project individual it is about</td><td class="wrap">A shared external ID (same scheme and value); or the same strategy, the same site and overlapping periods</td><td class="wrap">Status, area treated, implementers</td></tr>
+        <tr><td><code>warp-criteria-identity/1</code></td><td class="wrap">Criteria propositions</td><td class="wrap">Subject (a site or project individual), concept, criteria set and assessed period match</td><td class="wrap">Assessment method, assessor</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ TESTS -->
+<section class="part" id="tests" style="--c: var(--weft)">
+  <h2>2. The annotator's tests</h2>
+  <p class="prose">Every proposal comes with one question that tells an annotator where a sentence belongs. When a sentence passes two tests, record two statements and link them.</p>
+  <div class="test" style="--c: var(--rec)"><div class="eyebrow">Recommendation or causal</div><p class="q">Is the source telling someone what to do, or describing what happens?</p><p>"Do X to achieve Y" is guidance. "The outcome of X is, or was, Y" is causal. When a sentence does both, record both; the guidance cites the causal proposition through <code>justified_by</code>.</p></div>
+  <div class="test" style="--c: var(--node)"><div class="eyebrow">Strategy or part</div><p class="q">Does the source report this for the actions together, or for each one?</p><p>"Recontouring and seeding the site cost $48,000" is about the strategy. "Seeding added $9,000" is about one part. Never divide a strategy-level figure among its parts.</p></div>
+  <div class="test" style="--c: var(--tol)"><div class="eyebrow">Tolerance or causal</div><p class="q">Is the source saying under what conditions the organism can live, or what changes what?</p><p>"Grows on soils of pH 5.5 to 8" is tolerance. "Compaction reduces root penetration" is causal. A tolerance explained by a mechanism links to the causal proposition through <code>explained_by</code>.</p></div>
+  <div class="test" style="--c: var(--cost)"><div class="eyebrow">Cost or causal</div><p class="q">Is the source saying what an action took, or what it did?</p><p>"Treating 600 ha took two seasons and cost NIS 17,600" is cost. "Treatment led to regeneration of native vegetation" is causal. The cost statement points at the causal statements through <code>outcome_reported</code>.</p></div>
+  <div class="test" style="--c: var(--impl)"><div class="eyebrow">Implementation or recommendation</div><p class="q">Does the source say this was done, or that it should be done?</p><p>"We recontoured and seeded 42 ha in 2024" is implementation. "Recontouring is recommended for sites like this" is a recommendation. Scheduled work is implementation with <code>status: planned</code> only if it is committed to a specific site.</p></div>
+  <div class="test" style="--c: var(--crit)"><div class="eyebrow">Criteria</div><p class="q">Is someone applying a named, versioned definition to a site or project?</p><p>"Degraded" with no definition named is context, not a criteria claim. A criteria claim always names its criteria set and the period assessed.</p></div>
+</section>
+
+<!-- ============================================================ BASE -->
+<section class="part" id="base" style="--c: var(--muted)">
+  <h2>3. Shared base additions</h2>
+  <p class="prose">Several proposals need the same pieces. They go into the base profile once rather than into each group.</p>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Addition</th><th class="wrap">Shape</th><th class="wrap">Used by</th></tr></thead>
+    <tbody>
+      <tr><td><code>Quantity</code></td><td class="wrap"><code>{value, unit}</code>, UO units</td><td class="wrap">Tolerance optimum, cost effort and scale, site area, area treated</td></tr>
+      <tr><td><code>QuantityRange</code></td><td class="wrap"><code>{min, max, unit}</code>, either end open</td><td class="wrap">Tolerance ranges, depth intervals</td></tr>
+      <tr><td><code>ScaledValue</code></td><td class="wrap"><code>{value, scale, concept}</code>: the source's wording verbatim, the IRI of its scale, and the IRI of that value inside it</td><td class="wrap">Recommendation priority and timing, tolerance class values</td></tr>
+      <tr><td><code>CurvePoint</code></td><td class="wrap"><code>{x, suitability}</code>, suitability 0–1</td><td class="wrap">HSI response curves</td></tr>
+      <tr><td>Period</td><td class="wrap">The existing <code>temporal_extent</code> type, start and optional end. ISO 8601 strings allowing a year, year-month or full date</td><td class="wrap">Implementation period, assessed period</td></tr>
+      <tr><td>Shared claim slots</td><td class="wrap"><code>context</code>, <code>place</code>, <code>ecosystem_context</code>, <code>temporal_extent</code>, <code>specified_in</code></td><td class="wrap">All new groups</td></tr>
+      <tr><td><code>place</code></td><td class="wrap">The region a claim is about, as an IRI from a registered scheme</td><td class="wrap">Tolerance and cost identity keys, implementation, Target 2 roll-ups. Distinct from <code>ecosystem_context</code>, which is a CAMO functional group: <code>florida-usa</code> is a place, <code>warm_temperate_forests</code> is a functional group</td></tr>
+      <tr><td>Scale vocabularies</td><td class="wrap"><code>vocab/scales.yaml</code> → one SKOS scheme per source scale, values ordered</td><td class="wrap">Every <code>ScaledValue</code>. <code>dfo-recovery-priority</code> and <code>eive-1.0-reaction</code> become IRIs that resolve, so "medium" can be compared with "high"</td></tr>
+      <tr><td>Units</td><td class="wrap">Verified UO CURIEs, QUDT where UO has no term</td><td class="wrap">Every <code>Quantity</code> and <code>QuantityRange</code>. One IRI per quantity: site area and cost scale cannot use two hectares</td></tr>
+      <tr><td><code>modality</code></td><td class="wrap"><code>observed</code> · <code>inferred</code> · <code>anticipated</code> on <code>Claim</code></td><td class="wrap">All groups. Different from hedging: modality is whether a claim reports, infers or forecasts</td></tr>
+      <tr><td><code>not_stated</code></td><td class="wrap">Evidence type: the source asserts without giving any basis</td><td class="wrap">Recommendation, tolerance. Distinct from <code>expert_judgment</code> and from empty evidence lines</td></tr>
+      <tr><td><code>stated_goal</code></td><td class="wrap">Text on <code>EcoStudyResult</code>, as the source states it</td><td class="wrap">All groups. Aims live in the evidence layer, never on nodes or claims</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ============================================================ GRAPH -->
+<section class="part" id="graph" style="--c: var(--accent)">
+  <h2>4. The graph: RDF and OWL</h2>
+  <p class="lede">WARP's output is RDF, and OWL wherever the content allows it. Five groups arriving at once is the moment to say which of them produces what, because a predicate, an enum or an IRI space is cheap to settle now and expensive to revisit seven groups later.</p>
+  <div class="prose">
+    <p>The five proposals say what each group records. None of them says what any of it becomes in RDF, and four of the places where 0.3.0 already produces something that is not OWL 2 would be multiplied by seven: predicate IRIs declared as classes, enum slots declared as object properties but carrying literals, node IRIs used as both class and individual, and polarity kept in a sibling slot where a triple cannot see it. This section is the contract that fixes them. The dev guide carries it as decisions D11 to D20 and builds it in Phase 2.5, before the groups.</p>
+  </div>
+
+  <div class="sub" id="layers">
+    <h3>Two layers</h3>
+    <div class="cards">
+      <div class="card" style="--c: var(--weft)"><span class="lbl">Layer · everything</span><span class="val">Reification</span><span class="d">Every claim, proposition, evidence line, qualifier, amount and component, as RDF individuals. This is where scope, hedging, modality, negation, ranges, amounts, order and provenance live. <strong>Nothing here is asserted as true of the world.</strong></span></div>
+      <div class="card" style="--c: var(--accent)"><span class="lbl">Layer · much less</span><span class="val">Logical</span><span class="d">Node classes, site and project individuals, and the few class axioms projected from propositions that pass the gate. This is what WARP lets a reasoner use, and it is deliberately small.</span></div>
+    </div>
+    <div class="tablewrap">
+    <table>
+      <thead><tr><th>File</th><th>Layer</th><th class="wrap">Holds</th><th>Profile</th></tr></thead>
+      <tbody>
+        <tr><td><code>nodes.ttl</code></td><td>logical</td><td class="wrap">Node classes from templates</td><td>OWL 2 EL</td></tr>
+        <tr><td><code>axioms.ttl</code></td><td>logical</td><td class="wrap">Class axioms from propositions that passed the gate, each annotated with the proposition it came from</td><td>OWL 2 EL</td></tr>
+        <tr><td><code>sites.ttl</code>, <code>projects.ttl</code></td><td>logical</td><td class="wrap">Site and project <strong>individuals</strong>. No geometry, ever</td><td>OWL 2 EL</td></tr>
+        <tr><td><code>statements.ttl</code></td><td>reification</td><td class="wrap">The whole graph of claims and what backs them</td><td>RDF; OWL annotation properties only</td></tr>
+        <tr><td><code>warp.owl.ttl</code></td><td>schema</td><td class="wrap">The profile itself</td><td>OWL 2 DL</td></tr>
+        <tr><td><code>warp-relations.ttl</code></td><td>schema</td><td class="wrap">Every predicate WARP mints, declared once as an object property. Hand-maintained</td><td>OWL 2 DL</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="note"><strong>Why a relations file.</strong><span>Generating OWL from the LinkML schema types every predicate enum value as a class, so <code>project/warp.owl.ttl</code> today contains <code>RO:0002470 a owl:Class</code> — contradicting RO, where "eats" is an object property — while the claim layer uses the same kind of IRI as an individual. Eight new predicates would follow it, plus <code>RO:0002303 has habitat</code>, which the tolerance group wants to use as a real relation. Predicates are declared once, by hand, as object properties; RO and CAMO IRIs are reused and never re-declared.</span></div>
+  </div>
+
+  <div class="sub" id="iris">
+    <h3>One IRI, one kind of thing</h3>
+    <p class="prose">Four IRI spaces, and nothing crosses between them. A <code>node:</code> IRI is a class everywhere it appears; a <code>site:</code> or <code>proj:</code> IRI is an individual everywhere. The prefixes are what let a check catch a mistake, instead of leaving one IRI quietly meaning two things.</p>
+    <div class="tablewrap">
+    <table>
+      <thead><tr><th>Space</th><th>Kind</th><th class="wrap">Holds</th><th class="wrap">Note</th></tr></thead>
+      <tbody>
+        <tr><td><code>node:</code></td><td>OWL class</td><td class="wrap">Actions, outcomes, environmental variables, taxa and populations, strategies</td><td class="wrap">Kinds of thing. Written only by <code>expand_nodes.py</code></td></tr>
+        <tr><td><code>site:</code></td><td>OWL individual</td><td class="wrap">One piece of ground</td><td class="wrap">The first particular in the node layer. <code>ecosystem_type</code> renders as <code>rdf:type</code>, not as a slot pointing at an ENVO class</td></tr>
+        <tr><td><code>proj:</code></td><td>OWL individual</td><td class="wrap">The work that was done: a process instance of its strategy class, at its site, over its period</td><td class="wrap">A project is an occurrent, not a record. This is what makes the strategy class worth having</td></tr>
+        <tr><td><code>warp:prop/</code>, <code>stmt:</code>, <code>crit:</code> and the rest</td><td>RDF individual</td><td class="wrap">The reification layer</td><td class="wrap">Never a class. A claim points at a node class through an <strong>annotation</strong> property, which is how it references a class legally</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <div class="sub" id="gate">
+    <h3>The projection gate</h3>
+    <div class="test" style="--c: var(--accent)">
+      <div class="eyebrow">Before any claim becomes an OWL axiom</div>
+      <p class="q">Is this true of every instance, said plainly, by someone, and supported?</p>
+      <p>A proposition projects only when <strong>all four</strong> hold: <code>scope</code> is <code>universal</code>; <code>negated</code> is false; every claim grouped under it has <code>modality: observed</code>; and a <code>SynthesisAssessment</code> supports it. Everything else stays in the reification layer, where it can still be queried, reported and synthesized.</p>
+      <p>The condition that bites is scope. <code>prototypical</code> — what typically holds, allowing exceptions — is the usual scope of an ecological generalization and the one WARP was built to record. OWL 2 has no way to say "typically": a subclass axiom is exceptionless, so projecting a prototypical claim would state something stronger than its source did. On the examples in this page the gate passes nothing, and that is the right answer.</p>
+    </div>
+    <p class="prose">What never reaches OWL, whatever its scope: guidance, because "you should do X" has no OWL rendering; ranges, optima, curves, amounts and efforts, because they are measurements of populations and episodes, not class axioms; criteria verdicts, because a criteria set is a stated test and not a definition; step order, lags and repeats; and anything negated.</p>
+  </div>
+
+  <div class="sub" id="polarity">
+    <h3>Polarity in the predicate</h3>
+    <p class="prose">"Do prescribed burning" and "avoid prescribed burning" are two propositions, because <code>guidance</code> is in the identity key. With one predicate they are also two <em>identical</em> triples, and the distinction the recommendation group exists to keep is lost the moment anyone reads the relation layer without the qualifiers. So polarity goes in the predicate. The qualifier stays — it is what annotators fill in — and the exporter picks the sub-property from it.</p>
+    <div class="tablewrap">
+    <table>
+      <thead><tr><th>Group</th><th class="wrap">Abstract parent, never asserted</th><th class="wrap">Sub-properties the exporter uses</th><th class="wrap">From</th></tr></thead>
+      <tbody>
+        <tr><td><span class="chip g-rec">recommendation</span></td><td class="wrap"><code>warp:suggested_to</code></td><td class="wrap"><code>recommended_to_achieve</code> · <code>advised_against_for</code> · <code>suggested_for_consideration</code></td><td class="wrap"><code>guidance</code></td></tr>
+        <tr><td><span class="chip g-crit">criteria</span></td><td class="wrap"><code>warp:assessed_against</code></td><td class="wrap"><code>qualifies_as</code> · <code>does_not_qualify_as</code>; a neutral verdict exports no relation triple</td><td class="wrap"><code>direction</code></td></tr>
+        <tr><td><span class="chip g-cost">cost</span></td><td class="wrap"><code>warp:incurs_cost</code></td><td class="wrap"><code>incurs_total_cost</code> · <code>incurs_labour_cost</code> · <code>incurs_capital_equipment_cost</code> · <code>incurs_consumables_cost</code> · <code>incurs_overhead_cost</code></td><td class="wrap">the object category</td></tr>
+        <tr><td><span class="chip g-causal">causal</span> <span class="chip g-inter">interaction</span></td><td class="wrap">—</td><td class="wrap">A negated claim exports its reified record and no relation triple</td><td class="wrap"><code>negated</code></td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="note"><strong>Cost is the same move, for a different reason.</strong><span>"This action <code>incurs_cost</code> <em>total</em>" is not a relation between an action and a category: a cost is three things at once, and the only part of it that is a relation is action-to-amount. Putting the category in the predicate leaves the amount as the object, where it belongs, and means no <code>costcat:</code> IRIs have to be minted for things nothing can say the kind of.</span></div>
+  </div>
+
+  <div class="sub" id="addgroup">
+    <h3>Adding a group</h3>
+    <p class="prose">Five questions, answered in the group's own section and recorded in <code>docs/rdf-owl.md</code>. The seventh group should be no harder than the third.</p>
+    <ol class="prose">
+      <li><strong>Which predicates does it mint?</strong> Declared once in <code>warp-relations.ttl</code>, as object properties, with the proposal's definitions.</li>
+      <li><strong>What kind of thing is each end?</strong> A class, an individual, or a value. Where it varies by predicate — <code>has_habitat</code> takes an ENVO habitat while the other tolerance predicates take a quality node — no LinkML range and no OWL axiom can say so, and a script checks it.</li>
+      <li><strong>Which qualifier carries polarity?</strong> If one does, it becomes sub-properties.</li>
+      <li><strong>What does it export?</strong> Which individuals, with which IRIs, and which values need IRIs of their own because something else will cite them.</li>
+      <li><strong>What does it project?</strong> The default, and the answer for four of the seven groups, is nothing.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============================================================ RECOMMENDATION -->
+<section class="part" id="rec" style="--c: var(--rec)">
+  <div class="eyebrow">Predicate group · proposed 7 November 2026</div>
+  <h2>5. The recommendation group</h2>
+  <p class="lede">Guidance: statements in which a source tells someone to do, avoid or consider an action because of an outcome. One predicate, <code>suggested_to</code>.</p>
+  <p class="meta">Prompted by two SARA recovery strategies: Spring Salamander, Adirondack / Appalachian population (proposed, 2026) and Mountain Sucker, Milk River populations (final, 2026). Their recovery planning tables are guidance, and neither existing group can hold them.</p>
+
+  <div class="sub">
+    <h3>Why a new group</h3>
+    <div class="prose">
+      <p>Recovery strategies, management plans and practitioner guides mix two kinds of statement. Some describe how the world works: sediment fills the spaces between streambed stones, so salamanders lose cover. Others tell the reader what to do: rationalize the sportfish stocking program; prevent baitfish introductions. The first is judged by its evidence. The second is judged by whether it fits the goal and the place, and depends on statements of the first kind.</p>
+      <p>Recording guidance as a hedged causal statement loses the advice, its strength, its priority and who gave it. Recording it as a causal qualifier mixes judgements about what to do into the description of the world. A separate group keeps the two apart and links them.</p>
+    </div>
+  </div>
+
+  <div class="sub">
+    <h3>Shape of a statement</h3>
+    <div class="shape" style="--c: var(--rec)">
+      <div class="node"><div class="lbl">Subject · action or strategy node</div><div class="val">Stocking predacious sportfish in the Milk River drainage</div></div>
+      <div class="edge">suggested_to</div>
+      <div class="node"><div class="lbl">Object · outcome node</div><div class="val">Decrease in abundance of the Mountain Sucker population, Milk River</div></div>
+      <div class="below">
+        <div class="node"><div class="lbl">Guidance</div><div class="val"><code>avoid</code>, with force and priority as the source gives them</div></div>
+        <div class="node"><div class="lbl">Claimant</div><div class="val">Fisheries and Oceans Canada (recovery strategy)</div></div>
+        <div class="node" style="border-color: var(--causal)"><div class="lbl">justified_by</div><div class="val">Causal proposition: stocking decreases Mountain Sucker abundance</div></div>
+      </div>
+    </div>
+    <div class="prose">
+      <p>The subject is the action <strong>as the source names it</strong>; the object is the outcome as the source names it; the advice goes in a qualifier. This avoids double negatives ("avoid stocking" <code>suggested_to</code> "prevent decrease") and avoids minting avoidance nodes that would never match the plain action node. The predicate is read in the passive, so the subject is never the recommender; who made the suggestion is the claimant, as in every other group.</p>
+    </div>
+  </div>
+
+  <div class="sub">
+    <h3>Predicate</h3>
+    <div class="tablewrap">
+    <table>
+      <thead><tr><th>Predicate</th><th class="wrap">Definition (draft)</th><th class="wrap">Domain</th><th class="wrap">Range</th></tr></thead>
+      <tbody>
+        <tr><td><code>warp:suggested_to</code><br><span class="flag">abstract parent</span></td><td class="wrap">The claimant gives guidance about the subject action because of its relation to the object outcome. The <code>guidance</code> qualifier says whether to do, avoid or consider the action. Says nothing about strength, which is held in <code>deontic_force</code>. Never asserted of anything itself.</td><td class="wrap">Action node (ELMO restoration actions; CMP conservation actions; prototype terms in the SKOS file) or strategy node</td><td class="wrap">Outcome node: a change or target state of a node template</td></tr>
+        <tr><td><code>warp:recommended_to_achieve</code></td><td class="wrap">Guidance to do the action, because of the outcome. From <code>guidance: do</code>.</td><td class="wrap" colspan="2">As the parent</td></tr>
+        <tr><td><code>warp:advised_against_for</code></td><td class="wrap">Guidance to avoid the action, because of the outcome. From <code>guidance: avoid</code>.</td><td class="wrap" colspan="2">As the parent</td></tr>
+        <tr><td><code>warp:suggested_for_consideration</code></td><td class="wrap">Guidance to consider the action, because of the outcome. From <code>guidance: consider</code>.</td><td class="wrap" colspan="2">As the parent</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="prose">No RO equivalent: this is not a biological relation, so it is minted in <code>warp:</code>. A search of OBO and IAO for a closer match is still to do.</p>
+    <p class="prose">One predicate for annotators, three for the graph. The <code>guidance</code> qualifier is what gets filled in and what enters the identity key; the exporter picks the sub-property from it, so a reader of the relation layer alone cannot mistake "avoid" for "do" (<a href="#polarity">section 4</a>).</p>
+  </div>
+
+  <div class="sub">
+    <h3>Qualifiers</h3>
+    <div class="tablewrap">
+    <table>
+      <thead><tr><th>Slot</th><th class="wrap">Values</th><th class="wrap">Level</th><th class="wrap">Notes</th></tr></thead>
+      <tbody>
+        <tr><td><code class="key">guidance</code></td><td class="wrap"><code>do</code> · <code>avoid</code> · <code>consider</code></td><td class="wrap">Predicate qualifier, required, <strong class="key">in identity key</strong></td><td class="wrap"><code>consider</code> covers hedged guidance ("may be appropriate where…")</td></tr>
+        <tr><td><code>deontic_force</code></td><td class="wrap"><code>required</code> · <code>recommended</code> · <code>suggested</code> · <code>optional</code></td><td class="wrap">Predicate qualifier</td><td class="wrap"><code>required</code> for legal duties, such as SARA prohibitions</td></tr>
+        <tr><td><code>priority</code></td><td class="wrap"><code>ScaledValue</code></td><td class="wrap">Predicate qualifier</td><td class="wrap">Kept on the source's scale. ECCC: Urgent / Necessary / Beneficial; DFO: High / Medium / Low</td></tr>
+        <tr><td><code>timing_of_influence</code></td><td class="wrap"><code>ScaledValue</code></td><td class="wrap">Predicate qualifier</td><td class="wrap">DFO: Immediate / Medium / Future</td></tr>
+        <tr><td><code>contribution</code></td><td class="wrap"><code>direct</code> · <code>precursor</code></td><td class="wrap">Predicate qualifier</td><td class="wrap">Both strategies define priority partly by this</td></tr>
+        <tr><td><code>justified_by</code></td><td class="wrap">Proposition IDs</td><td class="wrap">Claim</td><td class="wrap">Usually causal propositions. Empty when the source gives no reason</td></tr>
+        <tr><td><code>context</code>, <code>scope</code>, <code>care</code>, <code>modality</code></td><td class="wrap">As in other groups</td><td class="wrap">Claim</td><td class="wrap">Context carries conditions such as "during egg incubation"; care covers guidance drawing on Indigenous knowledge</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <div class="sub">
+    <h3>Proposition identity</h3>
+    <div class="prose">
+      <p>The key adds <code class="key">guidance</code> to the usual fields. Without it, "do prescribed burning, it reduces shrub cover" from a grassland plan and "avoid prescribed burning, it reduces shrub cover" from an agency worried about smoke would derive one proposition, and the guidance would be lost. With it, they become two propositions citing the same causal proposition: agreement about how the world works, disagreement about what to do. When two agencies give the same guidance, their statements derive one proposition with two claimants.</p>
+    </div>
+  </div>
+
+  <div class="sub">
+    <h3>Predictions and unsupported guidance</h3>
+    <div class="prose">
+      <p>A prediction such as "if predacious sportfish are stocked, Mountain Sucker abundance will decrease" describes what happens, so it is a <span class="g-causal">causal</span> statement with <code>modality: anticipated</code>, hedging in <code>causal_language</code>, usually scoped to a particular population and period. The guidance cites it through <code>justified_by</code>. Keeping them apart lets someone accept the prediction and still reject the advice.</p>
+      <p><strong>Annotation rule.</strong> When a guidance sentence states an outcome, record the causal prediction as well. When it gives no outcome or reason, leave <code>justified_by</code> empty. Predictions are never derived automatically from guidance: that would put claims in the source's mouth.</p>
+    </div>
+    <div class="tablewrap">
+    <table>
+      <thead><tr><th>Situation</th><th class="wrap">Example</th><th class="wrap">How it is recorded</th></tr></thead>
+      <tbody>
+        <tr><td>Expert opinion</td><td class="wrap">Mountain Sucker threat ratings: certainty set by expert opinion only</td><td class="wrap">Evidence line, <code>evidence_type: expert_judgment</code></td></tr>
+        <tr><td>Basis not stated</td><td class="wrap">The source asserts the outcome without a reason</td><td class="wrap">Evidence line, <code>evidence_type: not_stated</code>, so a missing basis is not mistaken for an annotator's omission</td></tr>
+        <tr><td>Explicitly unknown</td><td class="wrap">Spring Salamander: the impact of road salt cannot be properly assessed</td><td class="wrap">Open-question proposition, not a prediction</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="prose">
+      <p><strong>Self-supporting guidance.</strong> When guidance cites a prediction whose only support is a <code>not_stated</code> or <code>expert_judgment</code> statement by the same claimant, the guidance supports itself: DFO advises avoiding stocking because DFO predicts harm. This is not an error; in recovery planning it is often the precautionary principle at work. It is flagged so TREK can show it as guidance resting on assertion, which is where effectiveness monitoring adds the most.</p>
+    </div>
+  </div>
+
+  <div class="sub">
+    <h3>Worked examples</h3>
+    <div class="ex">
+      <h4>Avoid: stocking predacious sportfish</h4>
+      <p class="src">Mountain Sucker, Table 4, approach 11: stocking of competitive or predacious sportfish species can negatively impact the population. Priority Medium, timing Medium.</p>
+<pre><span class="c"># causal statement: the description</span>
+causal_claims:
+  - id: stmt:ms-11-causal
+    subject: node:stocking-predacious-sportfish-milk-river
+    predicate: camo:decreases            <span class="c"># placeholder; use the CAMO enum value</span>
+    object: node:abundance-mountain-sucker-milk-river
+    causal_language: hedged              <span class="c"># "can negatively impact"</span>
+    modality: anticipated
+    scope: prototypical
+
+<span class="c"># recommendation statement: the guidance</span>
+recommendation_claims:
+  - id: stmt:ms-11-rec
+    claimant: org:dfo
+    subject: node:stocking-predacious-sportfish-milk-river
+    predicate: warp:suggested_to
+    object: node:decrease-abundance-mountain-sucker-milk-river
+    predicate_qualifiers:
+      guidance: avoid
+      deontic_force: recommended
+      priority:            {value: medium, scale: scale:dfo-recovery-priority,     concept: dfoprio:medium}
+      timing_of_influence: {value: medium, scale: scale:dfo-timing-of-influence, concept: dfotime:medium}
+      contribution: direct
+    justified_by: [prop:stocking-decreases-mountain-sucker]   <span class="c"># derived from stmt:ms-11-causal</span>
+    hasEvidenceLines:
+      - evidence_type: expert_judgment</pre>
+    </div>
+    <div class="ex">
+      <h4>Do: water management and conservation</h4>
+      <p class="src">Mountain Sucker, Table 4, approach 9: water extraction or degradation could reduce habitat quantity and quality. Priority High, timing Immediate.</p>
+<pre>recommendation_claims:
+  - id: stmt:ms-09-rec
+    claimant: org:dfo
+    subject: node:water-conservation-measures-milk-river
+    predicate: warp:suggested_to
+    object: node:maintain-habitat-quantity-mountain-sucker-milk-river
+    predicate_qualifiers:
+      guidance: do
+      deontic_force: recommended
+      priority:            {value: high,      scale: scale:dfo-recovery-priority,     concept: dfoprio:high}
+      timing_of_influence: {value: immediate, scale: scale:dfo-timing-of-influence, concept: dfotime:immediate}
+      contribution: direct
+    justified_by: [prop:water-extraction-decreases-habitat-quantity]</pre>
+    </div>
+    <div class="ex">
+      <h4>Do: removal of an invasive species</h4>
+      <p class="src">Illustrative, not from either strategy.</p>
+<pre>recommendation_claims:
+  - subject: node:intensive-trapping-carcinus-maenas
+    predicate: warp:suggested_to
+    object: node:decrease-abundance-carcinus-maenas
+    predicate_qualifiers: {guidance: do, deontic_force: recommended}
+    justified_by: [prop:trapping-decreases-carcinus-abundance]</pre>
+    </div>
+  </div>
+
+  <details>
+    <summary>Schema sketch (harmonized)</summary>
+<pre>classes:
+  RecommendationClaim:
+    is_a: Claim
+    annotations: {&lt;group registry annotations, as in the repo&gt;}
+    slots: [predicate_qualifiers, justified_by, context]
+    slot_usage:
+      subject:   {range: CausalNode}                 <span class="c"># action or strategy node</span>
+      predicate: {range: RecommendationPredicateEnum}
+      object:    {range: CausalNode}                 <span class="c"># outcome node</span>
+      predicate_qualifiers: {range: RecommendationQualifiers}
+  RecommendationQualifiers:
+    attributes:
+      guidance:            {range: GuidanceEnum, required: true}
+      deontic_force:       {range: DeonticForceEnum}
+      priority:            {range: ScaledValue}
+      timing_of_influence: {range: ScaledValue}
+      contribution:        {range: ContributionEnum}
+  RecommendationProposition:
+    is_a: EcoProposition
+    slot_usage:
+      predicate: {range: RecommendationPredicateEnum}
+
+slots:
+  justified_by: {range: EcoProposition, multivalued: true, inlined: false}
+
+enums:
+  RecommendationPredicateEnum: {permissible_values: {suggested_to: {meaning: warp:suggested_to}}}
+  GuidanceEnum:     {permissible_values: {do: {}, avoid: {}, consider: {}}}
+  DeonticForceEnum: {permissible_values: {required: {}, recommended: {}, suggested: {}, optional: {}}}
+  ContributionEnum: {permissible_values: {direct: {}, precursor: {}}}
+
+<span class="c"># identity extras for this group: [predicate_qualifiers.guidance]</span>
+
+<span class="c"># warp-relations.ttl: the parent is abstract; the exporter asserts a sub-property</span>
+warp:suggested_to                a owl:ObjectProperty .
+warp:recommended_to_achieve      a owl:ObjectProperty ; rdfs:subPropertyOf warp:suggested_to .
+warp:advised_against_for         a owl:ObjectProperty ; rdfs:subPropertyOf warp:suggested_to .
+warp:suggested_for_consideration a owl:ObjectProperty ; rdfs:subPropertyOf warp:suggested_to .</pre>
+  </details>
+
+  <div class="sub">
+    <h3>In the graph</h3>
+    <p class="prose">Exported: one relation triple per claim, using the sub-property for its <code>guidance</code> value, plus the reified claim with its force, priority, timing and contribution. <code>priority</code> and <code>timing_of_influence</code> carry scale and concept IRIs from the DFO and ECCC schemes, not bare tokens.</p>
+    <p class="prose">Projected to OWL: <strong>nothing</strong>, whatever the scope. Guidance is deontic, and "you should do X" has no OWL 2 rendering; a graph that cannot tell advice from description is worse than one that holds only description. The causal prediction a recommendation cites through <code>justified_by</code> may project on its own, if it passes the gate — which keeps exactly the separation this group was created for.</p>
+  </div>
+
+  <div class="sub">
+    <h3>What this makes possible</h3>
+    <ul class="prose">
+      <li><strong>Weakly supported guidance.</strong> Guidance whose <code>justified_by</code> points to a causal proposition with a low synthesis grade, or to nothing.</li>
+      <li><strong>Self-supporting guidance.</strong> Guidance whose only justification is the same claimant's unsupported prediction, where monitoring effort is best spent.</li>
+      <li><strong>Guidance to revisit.</strong> When a causal proposition's assessment changes, flag every recommendation that cites it.</li>
+      <li><strong>Effectiveness monitoring as evidence.</strong> Five-year progress reports produce causal statements that support or dispute the propositions the guidance cites.</li>
+      <li><strong>Agreement and disagreement across plans.</strong> Shared guidance gathers in one proposition; opposite guidance on the same action and outcome sits side by side.</li>
+    </ul>
+  </div>
+
+  <div class="sub">
+    <h3>Open questions</h3>
+    <ol class="qs">
+      <li><span><strong>Claimant for government documents.</strong> The Minister, the recovery team or the department? It matters for CARE metadata where Indigenous knowledge informs the strategy.</span></li>
+      <li><span><strong>Priority scales.</strong> Keep each agency's scale (proposed), or also map to a shared ordinal for querying?</span></li>
+      <li><span><strong>Research actions.</strong> "Clarify life history" aims to close a knowledge gap, so its natural object is an open-question proposition. Allow a proposition as object, or model the gap as a node?</span></li>
+      <li><span><strong>Conditions on guidance.</strong> "Avoid in-stream work during egg incubation": is <code>context</code> enough, or is a structured condition slot needed?</span></li>
+      <li><span><strong>Scope.</strong> Guidance about one named population over the next ten years is about a particular and looks forward. Check with Lars how semantic unit types handle it.</span></li>
+      <li><span><strong>Theories of change.</strong> Map <code>suggested_to</code> chains to CMP Open Standards results chains so practitioners see a familiar structure?</span></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============================================================ STRATEGY -->
+<section class="part" id="strategy" style="--c: var(--node)">
+  <div class="eyebrow">Node type · proposed 8 November 2026</div>
+  <h2>6. The management strategy node</h2>
+  <p class="lede">A node type for a set of management actions carried out together, in a stated order. Statements in any group can point at the strategy as a whole, while its parts stay as separate, reusable action nodes.</p>
+  <p class="meta">Prompted by the cost group. ELMO's actions are atomic and a node carries one <code>entity_term</code>, but sources usually report costs, outcomes and recommendations for the whole bundle. Splitting those statements across parts would invent attributions the source never made.</p>
+
+  <div class="sub">
+    <h3>The problem</h3>
+    <div class="prose">
+      <p>ELMO keeps hand seeding and earthworks as separate terms, which is right for an ontology of actions. Restoration practice combines them: a project report gives one cost for recontouring and seeding; a recovery strategy recommends a package of in-stream works; a field study compares two treatment sequences. Without a strategy node WARP has three poor options: attach the statement to one part (misattribution), copy it to every part (multiplying one cost or effect), or mint a free-text node that matches nothing and loses which actions are involved.</p>
+    </div>
+  </div>
+
+  <div class="figure">
+    <div class="frame">
+      <svg viewBox="0 0 680 250" role="img" aria-labelledby="sf-t sf-d">
+        <title id="sf-t">A management strategy node and its parts</title>
+        <desc id="sf-d">A strategy node wraps three action nodes in order: earthworks recontouring at step 1, hand seeding of a native mix at step 2 two weeks later, and mowing for weed control at step 3, repeated yearly three times. A cost statement and a recommendation statement point at the strategy as a whole.</desc>
+        <text class="t-sub" x="34" y="30">Parts are references to ordinary action nodes; the strategy holds only their order.</text>
+        <rect class="wrapbox" x="20" y="44" width="640" height="130" rx="4"/>
+        <text class="t-node" x="34" y="66">MANAGEMENT_STRATEGY · node:earthworks-seed-mow</text>
+        <rect class="part" x="40" y="84" width="170" height="70" rx="4"/>
+        <text class="t-sub" x="54" y="104">step 1</text>
+        <text class="t-lbl" x="54" y="124">Earthworks,</text>
+        <text class="t-lbl" x="54" y="142">recontouring</text>
+        <rect class="part" x="252" y="84" width="170" height="70" rx="4"/>
+        <text class="t-sub" x="266" y="104">step 2 · lag 2 weeks</text>
+        <text class="t-lbl" x="266" y="124">Hand seeding,</text>
+        <text class="t-lbl" x="266" y="142">native mix A</text>
+        <rect class="rep" x="464" y="84" width="176" height="70" rx="4"/>
+        <text class="t-sub" x="478" y="104">step 3 · yearly × 3</text>
+        <text class="t-lbl" x="478" y="124">Mowing,</text>
+        <text class="t-lbl" x="478" y="142">weed control</text>
+        <path class="seq" d="M212,119 L246,119"/><path class="ah" d="M250,119 L242,114 L242,124 Z"/>
+        <path class="seq" d="M424,119 L458,119"/><path class="ah" d="M462,119 L454,114 L454,124 Z"/>
+        <path class="claim" d="M180,230 L180,178"/>
+        <text class="t-claim" x="34" y="244">cost statement: $48,000 total</text>
+        <path class="claim" d="M500,230 L500,178"/>
+        <text class="t-claim" x="380" y="244">recommendation: do</text>
+      </svg>
+    </div>
+    <p class="cap">Illustrative strategy and figures. Each part is an ordinary action node with its own ELMO term and parameters, such as the seed mix. Two strategies that differ only in seed mix have different seeding components, so they are different strategies.</p>
+  </div>
+
+  <div class="sub">
+    <h3>Plan, strategy, project</h3>
+    <div class="cards">
+      <div class="card"><span class="lbl">Plan</span><span class="val">The document</span><span class="d">A recovery strategy, management plan or prescription (IAO plan specification). Recorded as a source, via <code>specified_in</code>, not as a node.</span></div>
+      <div class="card" style="--c: var(--node)"><span class="lbl">Management strategy</span><span class="val">This node</span><span class="d">A planned process type: these actions, in this order. It says what is done, not what it is for.</span></div>
+      <div class="card" style="--c: var(--impl)"><span class="lbl">Project</span><span class="val">One instance</span><span class="d">The strategy carried out at one site in one period. Derived from implementation claims (section 8).</span></div>
+    </div>
+    <p class="prose">"Strategy" matches the CMP Open Standards, where a strategy is a group of actions aimed at results, and matches how recovery strategies use the word.</p>
+  </div>
+
+  <div class="sub">
+    <h3>Component fields</h3>
+    <div class="tablewrap">
+    <table>
+      <thead><tr><th>Field</th><th class="wrap">Values</th><th class="wrap">Notes</th></tr></thead>
+      <tbody>
+        <tr><td><code>action</code></td><td class="wrap">Action node ID, or another strategy's ID</td><td class="wrap">Required. A reference, never an inline copy. Nesting to one level</td></tr>
+        <tr><td><code>step</code></td><td class="wrap">Integer ≥ 1</td><td class="wrap">Required. Parts that run together share a step number</td></tr>
+        <tr><td><code>lag</code></td><td class="wrap">ISO 8601 duration</td><td class="wrap">Time after the previous step starts ("seed within two weeks")</td></tr>
+        <tr><td><code>repeat</code></td><td class="wrap"><code>{every, times, until}</code></td><td class="wrap">Recurring follow-up; <code>until</code> as text for open-ended repeats</td></tr>
+        <tr><td><code>role</code></td><td class="wrap"><code>site_preparation</code> · <code>establishment</code> · <code>follow_up</code> · <code>maintenance</code> · <code>monitoring</code></td><td class="wrap">Optional. Maps to the cost group's <code>phase</code> (section 11)</td></tr>
+        <tr><td><code>optional</code></td><td class="wrap">Boolean</td><td class="wrap">Parts marked "if needed". Left out of the identity key</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="note"><strong>No objective on the node.</strong><span>What counts as restoration success is contested, and the same actions are aimed at different outcomes by different people. A node with an objective would build one view of success into the graph. Aims stay on statements, where they belong to a claimant, and in <code>stated_goal</code> on the evidence layer.</span></div>
+  </div>
+
+  <div class="sub">
+    <h3>Identity</h3>
+    <div class="prose">
+      <p>Under <code class="key">warp-strategy-identity/1</code>, two strategy definitions are the same node when their required components and step pattern match. The key is the sorted list of (step, action) pairs for non-optional components, hashed, after flattening nested strategies one level. Lags, repeats, roles, labels and optional parts are aggregated, not keyed. Two sources describing earthworks then hand seeding with the same mix meet at one node, whatever they call it; adding mowing makes a different strategy.</p>
+      <p>Annotators give strategies local IDs. Derivation computes the canonical ID and rewrites references, and it runs before proposition derivation, so statements about two descriptions of the same work meet in one proposition.</p>
+      <p>Because parts are references, the graph answers containment questions directly: every strategy that includes hand seeding, strategies that are this one plus one step, strategies that differ only in order. Syntheses can pool evidence for one action across all strategies that contain it, while marking that the effect was measured on a bundle.</p>
+    </div>
+  </div>
+
+  <div class="sub">
+    <h3>How the groups use it</h3>
+    <div class="tablewrap">
+    <table>
+      <thead><tr><th>Group</th><th class="wrap">Strategy as subject</th><th class="wrap">Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Causal</td><td class="wrap">"Recontouring then seeding increased native cover"</td><td class="wrap">The usual case in restoration field studies</td></tr>
+        <tr><td>Recommendation</td><td class="wrap">Do this strategy, because of this outcome</td><td class="wrap">Recovery strategy approaches are often bundles</td></tr>
+        <tr><td>Cost</td><td class="wrap">This strategy incurred this total</td><td class="wrap">The motivating case. A phase-level cost names the parts it covers by role</td></tr>
+        <tr><td>Implementation</td><td class="wrap">This strategy was carried out at this site</td><td class="wrap">Projects are strategies plus site, period and source</td></tr>
+        <tr><td>Decision models</td><td class="wrap">Options in the analysis</td><td class="wrap">Managers choose between strategies</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <div class="sub">
+    <h3>OWL and DOSDP</h3>
+    <div class="prose">
+      <p>The composition renders in OWL 2 EL as <strong>subsumption</strong>, not equivalence: <code>node:S rdfs:subClassOf planned process</code>, and one <code>rdfs:subClassOf has_part some A</code> per required component, with the BFO occurrent part relation. Order, lags, repeats and roles do not render; they stay in the reification layer, where each component gets its own IRI so the order is addressable. No DOSDP pattern: part counts vary, so the OWL is generated directly from the definitions, and this is the first template whose OWL comes from outside the template machinery.</p>
+      <p>Earlier drafts said equivalent class. That would be wrong, and the identity rule is why. The key is the sorted list of <code>(step, action)</code> pairs, so order is part of identity: earthworks-then-seeding and seeding-then-earthworks are two strategy nodes. Their part axioms are identical, because order does not render. Asserted as equivalence, those axioms tell a reasoner the two nodes are the same class — contradicting the rule that just held them apart. Asserted as subsumption they say only what is true: this strategy has these parts.</p>
+      <p>Nothing is lost. Containment was the only thing equivalence was wanted for, and subsumption gives it: the query class <code>has_part some hand_seeding</code> has every strategy containing hand seeding among its subclasses. The part relation is declared once, as transitive, and used only inside <code>some</code>, never in a cardinality restriction, which keeps the output in EL — and transitivity is also what makes the derivation's one-level flattening agree with the OWL, since a nested strategy's parts are parts of the outer strategy either way.</p>
+    </div>
+    <div class="note"><strong>Canonical IDs are content hashes.</strong><span>Change a component and the strategy's class IRI changes. When derivation supersedes an ID the generated output carries <code>owl:deprecated</code> and <code>IAO:0100001 (term replaced by)</code> on the old IRI, because a published OWL class IRI that silently moves is worse than one that is formally retired. Strategy class IRIs are stable only while their parts are.</span></div>
+  </div>
+
+  <div class="sub">
+    <h3>Worked examples</h3>
+    <div class="ex">
+      <h4>A grassland establishment strategy with one total cost</h4>
+<pre>node_definitions:
+  - node: node:earthworks-seed-mow              <span class="c"># local ID; canonical ID derived</span>
+    template: management_strategy
+    specified_in: [doc:project-report-x]
+    components:
+      - {action: node:earthworks-recontouring, step: 1, role: site_preparation}
+      - {action: node:hand-seeding-native-mix-a, step: 2, lag: P2W, role: establishment}
+      - {action: node:mowing-weed-control, step: 3, repeat: {every: P1Y, times: 3}, role: follow_up}
+
+cost_claims:
+  - subject: node:earthworks-seed-mow
+    predicate: warp:incurs_cost
+    object: total                              <span class="c"># a CostCategoryEnum value, not an IRI</span>
+    predicate_qualifiers:
+      amount: {value: 48000, currency: CAD, price_year: 2025}
+      includes_categories: [unknown]
+      scale: [{value: 42, unit: TODO:hectare}]   <span class="c"># placeholder: verify the UO CURIE</span>
+      phase: whole_project
+      reporting_level: intervention</pre>
+    </div>
+    <div class="ex">
+      <h4>Parallel and optional parts</h4>
+      <p class="src">Illustrative: remove fill and plant plugs in the same season; spot-spray if reed canary grass returns.</p>
+<pre>node_definitions:
+  - node: node:fill-removal-plugs-spot-spray
+    template: management_strategy
+    components:
+      - {action: node:fill-removal, step: 1}
+      - {action: node:planting-plugs-sedge-meadow, step: 1}     <span class="c"># same season, shared step</span>
+      - {action: node:spot-herbicide-phalaris, step: 2, optional: true}
+<span class="c"># identity key: [(1, fill-removal), (1, planting-plugs-sedge-meadow)]</span></pre>
+    </div>
+  </div>
+
+  <details>
+    <summary>Schema sketch (harmonized)</summary>
+<pre>classes:
+  StrategyDefinition:
+    is_a: NodeDefinition
+    slot_usage:
+      template: {equals_string: management_strategy}
+    attributes:
+      specified_in: {range: EcoDocument, multivalued: true, inlined: false}
+      components:   {range: StrategyComponent, multivalued: true, inlined_as_list: true,
+                     required: true, minimum_cardinality: 2}
+      identity_key: {range: string}                  <span class="c"># derived</span>
+      identity_rule_version: {range: string}         <span class="c"># warp-strategy-identity/1</span>
+  StrategyComponent:
+    attributes:
+      action:   {range: CausalNode, required: true, inlined: false}
+      step:     {range: integer, required: true, minimum_value: 1}
+      lag:      {range: string, pattern: "^P"}       <span class="c"># ISO 8601 duration</span>
+      repeat:   {range: Recurrence}
+      role:     {range: StrategyRoleEnum}
+      optional: {range: boolean}
+  Recurrence:
+    attributes: {every: {range: string}, times: {range: integer}, until: {range: string}}
+
+enums:
+  StrategyRoleEnum:                                  <span class="c"># each value annotated with its cost phase</span>
+    permissible_values: {site_preparation: {}, establishment: {}, follow_up: {}, maintenance: {}, monitoring: {}}</pre>
+  </details>
+
+  <div class="sub">
+    <h3>Open questions</h3>
+    <ol class="qs">
+      <li><span><strong>Nesting.</strong> Proposed: one level deep, flattened before computing the key so nested and flat descriptions match.</span></li>
+      <li><span><strong>Aims stated in plans.</strong> Proposed: <code>stated_goal</code> in the evidence layer; plans that also advise doing the strategy get a recommendation statement.</span></li>
+      <li><span><strong>Conditional steps.</strong> "Mow until native cover exceeds 50%", "burn or mow": is <code>repeat.until</code> as text enough; are alternatives two strategies or one with an <code>alternatives</code> field?</span></li>
+      <li><span><strong>Extraction.</strong> Can the LLM pass recognise bundles reliably, or should annotators confirm strategy boundaries in Loom?</span></li>
+      <li><span><strong>DOSDP with variable part counts.</strong> Resolved for 0.4: generate OWL directly.</span></li>
+      <li><span><strong>Order in OWL.</strong> Settled for 0.4: order stays in the reification layer, with each component addressable, and the part axioms are <code>subClassOf</code> rather than equivalence. What is left for Lars is whether part-to-part <code>precedes</code> relations are wanted on top of that.</span></li>
+      <li><span><strong>CMP alignment.</strong> Map to Open Standards strategies and activities so Miradi plans can be imported?</span></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============================================================ TOLERANCE -->
+<section class="part" id="tol" style="--c: var(--tol)">
+  <div class="eyebrow">Predicate group · proposed 8 November 2026</div>
+  <h2>7. The tolerance group</h2>
+  <p class="lede">The conditions under which a taxon establishes, persists or performs: the soil pH it tolerates, the moisture regime it prefers, the salinity that excludes it. The building blocks of habitat suitability.</p>
+  <p class="meta">Prompted by a practitioner who builds habitat suitability models from edaphic factors in a graph. WARP can currently reach suitability only indirectly, by treating "suitability of a site for a taxon" as a node.</p>
+
+  <div class="sub">
+    <h3>Why a new group</h3>
+    <div class="prose"><p>A causal statement says a change in one thing brings a change in another. A tolerance statement describes a disposition of the organism: across a range of conditions it can live here and not there, and does best somewhere in between. Forcing tolerance into the causal group goes wrong in three ways:</p></div>
+    <ul class="prose">
+      <li><strong>The shape is wrong.</strong> <code>causal_direction</code> assumes a monotonic relation. Edaphic responses are usually unimodal or threshold-shaped, and the range, which is the content, would end up in free text.</li>
+      <li><strong>The object is a model construct.</strong> "Suitability of site for taxon" cannot be measured; it is the output of a model, so causal edges into it mix evidence with the model's combination rule.</li>
+      <li><strong>The evidence reads as weak.</strong> Tolerance knowledge comes from where species occur, expert ranking or growth trials across a gradient. As causal evidence that looks correlational and low-grade; as tolerance evidence much of it is well supported.</li>
+    </ul>
+  </div>
+
+  <div class="figure">
+    <div class="frame">
+      <svg viewBox="0 0 640 250" role="img" aria-labelledby="tf-t tf-d">
+        <title id="tf-t">A tolerance curve compared with a causal edge</title>
+        <desc id="tf-d">Left: a unimodal response of establishment to soil pH, with a tolerated range from 5.5 to 8 and an optimum near 7. Right: a monotonic causal edge, where more soil compaction means less seedling survival.</desc>
+        <line class="grid" x1="40" y1="30" x2="340" y2="30"/>
+        <line class="grid" x1="40" y1="110" x2="340" y2="110"/>
+        <rect class="band" x="130" y="30" width="150" height="160"/>
+        <path class="curve" d="M40,190 L130,186 C170,170 190,52 220,48 C240,46 255,70 280,140 L300,186 L340,190"/>
+        <line class="opt" x1="220" y1="40" x2="220" y2="190"/>
+        <line class="axis" x1="40" y1="190" x2="340" y2="190"/>
+        <line class="axis" x1="40" y1="30" x2="40" y2="190"/>
+        <text class="t-mono" x="40" y="208" text-anchor="middle">4</text>
+        <text class="t-mono" x="100" y="208" text-anchor="middle">5</text>
+        <text class="t-mono" x="160" y="208" text-anchor="middle">6</text>
+        <text class="t-mono" x="220" y="208" text-anchor="middle">7</text>
+        <text class="t-mono" x="280" y="208" text-anchor="middle">8</text>
+        <text class="t-mono" x="340" y="208" text-anchor="middle">9</text>
+        <text class="t-lbl" x="190" y="232" text-anchor="middle">Soil pH (water)</text>
+        <text class="t-tol" x="205" y="22" text-anchor="middle">tolerates 5.5–8 · prefers ≈ 7</text>
+        <text class="t-lbl" x="14" y="110" text-anchor="middle" transform="rotate(-90 14 110)">Establishment</text>
+        <line class="axis" x1="420" y1="190" x2="620" y2="190"/>
+        <line class="axis" x1="420" y1="30" x2="420" y2="190"/>
+        <path class="causalln" d="M420,50 L620,170"/>
+        <text class="t-lbl" x="520" y="214" text-anchor="middle">Soil compaction</text>
+        <text class="t-causal" x="520" y="22" text-anchor="middle">causal: decreases</text>
+        <text class="t-lbl" x="400" y="110" text-anchor="middle" transform="rotate(-90 400 110)">Seedling survival</text>
+      </svg>
+    </div>
+    <p class="cap">Left: a tolerance statement records a range and an optimum. Right: a causal statement records a direction. Values illustrative.</p>
+  </div>
+
+  <div class="sub">
+    <h3>Shape of a statement</h3>
+    <div class="shape" style="--c: var(--tol)">
+      <div class="node"><div class="lbl">Subject · organism node</div><div class="val">Seedlings of <i>Bouteloua gracilis</i> (taxon, population or life stage)</div></div>
+      <div class="edge">tolerates</div>
+      <div class="node"><div class="lbl">Object · environmental variable</div><div class="val">pH of soil, 0–15 cm</div></div>
+      <div class="below">
+        <div class="node"><div class="lbl">Range</div><div class="val"><code>{min: 6.0, max: 8.5, unit: pH}</code>, optimum if given</div></div>
+        <div class="node"><div class="lbl">Response</div><div class="val">Establishment (what was observed or judged)</div></div>
+        <div class="node"><div class="lbl">Claimant · evidence</div><div class="val">The source, and how it knows: field range, trial, expert ranking</div></div>
+      </div>
+    </div>
+    <p class="prose">The object comes from a new template, <em>quality of an environmental material</em> (PATO quality, ENVO material or medium, optional depth and season), which must also cover water and climate variables. The range belongs on the statement, so every source's range for "soil pH" meets at the same node.</p>
+  </div>
+
+  <div class="sub">
+    <h3>Predicates</h3>
+    <div class="tablewrap">
+    <table>
+      <thead><tr><th>Predicate</th><th class="wrap">Definition (draft)</th><th class="wrap">Object</th><th class="wrap">Typical source</th></tr></thead>
+      <tbody>
+        <tr><td><code>warp:tolerates</code></td><td class="wrap">The organism establishes, persists or reproduces when the variable is within the stated range. One-sided ranges allowed.</td><td class="wrap">Environmental variable</td><td class="wrap">Plant databases (pH min and max), floras, HSI curves</td></tr>
+        <tr><td><code>warp:prefers</code></td><td class="wrap">The organism performs best, or occurs most often, at or around the stated value or class.</td><td class="wrap">Environmental variable</td><td class="wrap">Ellenberg-type and EIVE values, species descriptions</td></tr>
+        <tr><td><code>warp:intolerant_of</code></td><td class="wrap">The organism fails to establish, persist or reproduce when the variable is within the stated range.</td><td class="wrap">Environmental variable</td><td class="wrap">Restoration guides, salinity and flooding ratings</td></tr>
+        <tr><td><code>RO:0002303</code> has habitat</td><td class="wrap">Reused from RO for categorical habitat statements.</td><td class="wrap">ENVO habitat or environment</td><td class="wrap">Floras, field guides, occurrence-derived habitat lists</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="prose"><code>tolerates</code> and <code>intolerant_of</code> are recorded as stated and never derived from each other. The Plant Trait Ontology's salt tolerance (TO:0006001) and pH sensitivity classes are traits, not relations, but may type the response or map the predicate in OWL.</p>
+    <p class="prose">The object's kind varies by predicate: <code>has_habitat</code> takes an ENVO habitat or environment, the other three take a <code>quality_of_environmental_material</code> node. One LinkML slot cannot say that and no OWL axiom can carry it either, so a script checks it (<a href="#addgroup">section 4</a>, question 2). <code>RO:0002303</code> is reused exactly as RO publishes it, as an object property, and is never re-declared as anything else — which is the whole reason predicates live in a hand-maintained relations file.</p>
+  </div>
+
+  <div class="sub">
+    <h3>Qualifiers</h3>
+    <div class="tablewrap">
+    <table>
+      <thead><tr><th>Slot</th><th class="wrap">Values</th><th class="wrap">Notes</th></tr></thead>
+      <tbody>
+        <tr><td><code>range</code></td><td class="wrap"><code>QuantityRange</code></td><td class="wrap">UO units. <strong class="key">Not in the identity key</strong>; aggregated</td></tr>
+        <tr><td><code>optimum</code></td><td class="wrap"><code>Quantity</code></td><td class="wrap">Mostly with <code>prefers</code></td></tr>
+        <tr><td><code>class_value</code></td><td class="wrap"><code>ScaledValue</code></td><td class="wrap">Ellenberg R 1–9, EIVE 0–10, USDA low/medium/high, wetland indicator OBL to UPL</td></tr>
+        <tr><td><code>response</code></td><td class="wrap"><code>occurrence</code> · <code>germination</code> · <code>establishment</code> · <code>growth</code> · <code>survival</code> · <code>reproduction</code></td><td class="wrap">What the range was judged against</td></tr>
+        <tr><td><code>response_curve</code></td><td class="wrap">List of <code>CurvePoint</code></td><td class="wrap">HSI breakpoints; keeps the shape when a source gives it</td></tr>
+        <tr><td><code>explained_by</code></td><td class="wrap">Proposition IDs (claim level)</td><td class="wrap">Usually causal propositions giving the mechanism</td></tr>
+        <tr><td><code>context</code>, <code>place</code>, <code>ecosystem_context</code>, <code>scope</code>, <code>care</code></td><td class="wrap">As in other groups</td><td class="wrap">Region matters: indicator ratings are assigned by region, so <code>place</code> is in the identity key</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <div class="sub">
+    <h3>Proposition identity</h3>
+    <p class="prose">The key adds <code class="key">place</code> — the region, which is what a regional indicator rating is about, and not the same thing as <code>ecosystem_context</code>; the range is deliberately left out. Two sources giving blue grama pH 6.0–8.5 and 6.5–8.0 derive one proposition with two ranges to aggregate: agreement that pH limits the species, a spread of estimates for where. Non-overlapping ranges flag disagreement. A species rated facultative wetland in one region and facultative in another is two propositions, not a contradiction.</p>
+  </div>
+
+  <div class="sub">
+    <h3>Habitat suitability models</h3>
+    <div class="tablewrap">
+    <table>
+      <thead><tr><th>Model part</th><th class="wrap">In WARP</th></tr></thead>
+      <tbody>
+        <tr><td>Per-variable suitability curve</td><td class="wrap">One tolerance statement per variable, <code>response_curve</code> for breakpoints, <code>range</code> where suitability &gt; 0</td></tr>
+        <tr><td>Combination rule</td><td class="wrap">Not a statement. Geometric mean, minimum, weighted sum or CPTs belong to the model, recorded on the source document or an <code>EcoStudyResult</code></td></tr>
+        <tr><td>Bayesian network edges</td><td class="wrap">Factor → suitability edges are tolerance; factor → factor edges (drainage → saturation) may be causal</td></tr>
+        <tr><td>Model output for a site</td><td class="wrap">An assertional statement, or evidence with <code>evidence_object: correlation</code> for the general proposition</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="prose">It also runs the other way: a practitioner's graph can be assembled from sourced tolerance propositions, with site soil data as inputs.</p>
+  </div>
+
+  <div class="sub">
+    <h3>Structured sources</h3>
+    <div class="tablewrap">
+    <table>
+      <thead><tr><th>Source</th><th class="wrap">What it holds</th><th class="wrap">Maps to</th><th class="wrap">Notes</th></tr></thead>
+      <tbody>
+        <tr><td>USDA PLANTS Characteristics</td><td class="wrap">About 2,000 conservation species: pH min and max, salinity, drought, shade, fire, anaerobic tolerance, precipitation range, root depth</td><td class="wrap"><code>tolerates</code> with <code>range</code>; <code>class_value</code> for ratings</td><td class="wrap">US. Salinity defined by growth reduction, so <code>response: growth</code></td></tr>
+        <tr><td>EIVE 1.0</td><td class="wrap">14,835 European taxa on five niche dimensions, position and width on 0–10</td><td class="wrap"><code>prefers</code>: position as optimum, width as range</td><td class="wrap">Consolidates 31 regional systems</td></tr>
+        <tr><td>Ellenberg-type values (Europe)</td><td class="wrap">8,908 species, six dimensions, from 13 regional datasets</td><td class="wrap"><code>prefers</code> with <code>class_value</code></td><td class="wrap">Expert-based. Check licence <span class="flag">to check</span></td></tr>
+        <tr><td>National Wetland Plant List</td><td class="wrap">Wetland indicator status by region</td><td class="wrap"><code>prefers</code> on hydrology, <code>response: occurrence</code></td><td class="wrap">Needs <code>place</code>. US</td></tr>
+        <tr><td>USFWS HSI models (ecorest)</td><td class="wrap">351 HSI models as curve breakpoints</td><td class="wrap"><code>tolerates</code> with <code>response_curve</code></td><td class="wrap">Some curves estimated by judgement</td></tr>
+        <tr><td>TRY plant traits</td><td class="wrap">15.4 million records, 2,661 traits, ~305,000 taxa; CC BY by default</td><td class="wrap">Tolerance-type traits only</td><td class="wrap">Many records assertional</td></tr>
+        <tr><td>SoilGrids 250 m</td><td class="wrap">Global soil property maps, six depths, CC BY 4.0</td><td class="wrap">Not a statement source: site inputs and covariates</td><td class="wrap">Derived ranges are model output; flag them</td></tr>
+        <tr><td>Canadian sources</td><td class="wrap">Provincial floras, FQA coefficients, Prairie seed-mix guides</td><td class="wrap">To scope</td><td class="wrap"><span class="flag">to check</span> machine-readable and licensed?</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="prose">Related work: Knowledge Pixels nanopublication templates record taxon–environment associations with RO has habitat and Biolink's <code>OrganismTaxonToEnvironmentAssociation</code>; worth a look for alignment and publishing.</p>
+  </div>
+
+  <div class="sub">
+    <h3>Worked examples</h3>
+    <div class="ex">
+      <h4>Numeric range from a plant database</h4>
+<pre>tolerance_claims:
+  - id: stmt:usda-bogr-ph
+    claimant: org:usda-nrcs
+    subject: node:bouteloua-gracilis
+    predicate: warp:tolerates
+    object: node:ph-of-soil
+    predicate_qualifiers:
+      range: {min: 6.0, max: 8.5, unit: UO:0000196}   <span class="c"># pH unit; values placeholder</span>
+      response: growth
+    scope: prototypical
+    hasEvidenceLines:
+      - evidence_type: not_stated</pre>
+    </div>
+    <div class="ex">
+      <h4>Niche position from indicator values</h4>
+<pre>tolerance_claims:
+  - id: stmt:eive-taxon-r
+    claimant: org:eive-consortium
+    subject: node:taxon-x
+    predicate: warp:prefers
+    object: node:reaction-of-soil
+    predicate_qualifiers:
+      class_value: {value: "6.8", scale: scale:eive-1.0-reaction, concept: eiveR:6-8}
+      range: {min: 5.9, max: 7.7, unit: scale:eive-1.0-reaction}  <span class="c"># position ± width/2; a scale, not a UO unit</span>
+      response: occurrence
+    place: [place:europe]
+    hasEvidenceLines:
+      - evidence_type: expert_judgment
+      - evidence_type: observational_cross_sectional</pre>
+    </div>
+    <div class="ex">
+      <h4>A practitioner's knowledge</h4>
+      <p class="src">Illustrative: prairie cordgrass does fine in heavy wet clay but won't take hold on sandy ridges.</p>
+<pre>tolerance_claims:
+  - claimant: person:practitioner-a
+    claimant_kind: practitioner
+    subject: node:spartina-pectinata
+    predicate: warp:prefers
+    object: node:moisture-regime-of-soil
+    predicate_qualifiers: {class_value: {value: wet}, response: establishment}  <span class="c"># no scale: the practitioner's own words</span>
+    scope: contingent
+  - claimant: person:practitioner-a
+    subject: node:spartina-pectinata
+    predicate: warp:intolerant_of
+    object: node:texture-class-of-soil
+    predicate_qualifiers: {class_value: {value: sand, scale: scale:usda-texture-class, concept: usdatex:sand}, response: establishment}
+    scope: contingent</pre>
+    </div>
+  </div>
+
+  <details>
+    <summary>Schema sketch (harmonized)</summary>
+<pre>classes:
+  ToleranceClaim:
+    is_a: Claim
+    annotations: {&lt;group registry annotations, as in the repo&gt;}
+    slots: [predicate_qualifiers, explained_by, context, place, ecosystem_context]
+    slot_usage:
+      subject:   {range: CausalNode}                 <span class="c"># organism node</span>
+      predicate: {range: TolerancePredicateEnum}
+      object:    {range: CausalNode}                 <span class="c"># environmental variable node</span>
+      predicate_qualifiers: {range: ToleranceQualifiers}
+  ToleranceQualifiers:
+    attributes:
+      range:          {range: QuantityRange}
+      optimum:        {range: Quantity}
+      class_value:    {range: ScaledValue}
+      response:       {range: ToleranceResponseEnum}
+      response_curve: {range: CurvePoint, multivalued: true, inlined_as_list: true}
+  ToleranceProposition:
+    is_a: EcoProposition
+    slot_usage:
+      predicate: {range: TolerancePredicateEnum}
+
+slots:
+  explained_by: {range: EcoProposition, multivalued: true, inlined: false}
+
+enums:
+  TolerancePredicateEnum:
+    permissible_values:
+      tolerates:     {meaning: warp:tolerates}
+      prefers:       {meaning: warp:prefers}
+      intolerant_of: {meaning: warp:intolerant_of}
+      has_habitat:   {meaning: RO:0002303}
+  ToleranceResponseEnum:
+    permissible_values: {occurrence: {}, germination: {}, establishment: {}, growth: {}, survival: {}, reproduction: {}}
+
+<span class="c"># identity extras for this group: [place]</span>
+
+<span class="c"># warp-relations.ttl: three minted, one reused</span>
+warp:tolerates     a owl:ObjectProperty .
+warp:prefers       a owl:ObjectProperty .
+warp:intolerant_of a owl:ObjectProperty .
+<span class="c"># RO:0002303 is RO's. Reused as published, never re-declared.</span></pre>
+  </details>
+
+  <div class="sub">
+    <h3>In the graph</h3>
+    <p class="prose">Exported: the relation for every claim, with range, optimum, class value, response and curve on the claim's own qualifier individual. Class values carry scale and concept IRIs from <code>project/scales.ttl</code>; a practitioner's "wet" carries no scale, because it is not on one.</p>
+    <p class="prose">Projected to OWL: only <code>has_habitat</code>, and only through the gate, as <code>node:taxon rdfs:subClassOf RO:0002303 some &lt;ENVO habitat&gt;</code>. A prototypical tolerance does not project: "typically grows at pH 5.5 to 8" allows exceptions, and a subclass axiom does not. Ranges, optima, class values and curves never enter OWL at all — they are measurements across populations, not class axioms, and this is where the disposition question (Q2) now sits: a disposition rendering would need the range as a datatype facet, which leaves OWL 2 EL and buys nothing a query over the reification layer does not already give.</p>
+  </div>
+
+  <div class="sub">
+    <h3>What this makes possible</h3>
+    <ul class="prose">
+      <li><strong>Site–species matching.</strong> Join tolerance propositions with a site's soil data; a seed-mix recommendation cites them through <code>justified_by</code>.</li>
+      <li><strong>Suitability graphs built from evidence</strong>, each edge traced to where its range came from.</li>
+      <li><strong>Conflicting ranges</strong> flag where sources disagree, often over response or region.</li>
+      <li><strong>Priors for models:</strong> ranges and optima for SDMs and BBN tables; fitted models return as correlation-type evidence.</li>
+      <li><strong>Practitioner and Indigenous knowledge beside databases,</strong> each with its own claimant and <code>care</code>.</li>
+    </ul>
+  </div>
+
+  <div class="sub">
+    <h3>Open questions</h3>
+    <ol class="qs">
+      <li><span><strong>Name.</strong> Tolerance, niche or habitat requirement?</span></li>
+      <li><span><strong>OWL rendering.</strong> Ranges stay in the reification layer, and only <code>has_habitat</code> projects. The disposition option is still Lars's to weigh, but it is narrower than it was: it would need the range as a datatype facet on a quality, which leaves OWL 2 EL and gains nothing a query over the reification layer does not already give.</span></li>
+      <li><span><strong>Aggregating ranges.</strong> Union, intersection, or a weighted envelope by evidence type? Decide with the evidence weighting rules.</span></li>
+      <li><span><strong>Bulk import provenance.</strong> Claimant the database, the compiled source, or both? Statements, or propositions with evidence lines directly?</span></li>
+      <li><span><strong>Beyond plants and soils.</strong> The variable template must cover water depth, velocity and temperature for fish HSI models.</span></li>
+      <li><span><strong>Scope of a database record.</strong> Default to prototypical and flag for review?</span></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============================================================ COST -->
+<section class="part" id="cost" style="--c: var(--cost)">
+  <div class="eyebrow">Predicate group · proposed 8 November 2026</div>
+  <h2>8. The cost group</h2>
+  <p class="lede">What an action took to carry out (money, staff and volunteer time, equipment and materials) with the context needed to read the number. Qualifiers follow the five cost reporting standards of Iacona et al. (2018).</p>
+  <p class="meta">Prompted by the decision support sensitivity analysis. Causal statements give the benefit side of cost-effectiveness; nothing yet gives the cost side. Costs are highly context dependent, so every cost is a scoped statement by a claimant, and any reuse in a new context is an explicit, recorded step.</p>
+
+  <div class="sub">
+    <h3>Why a new group</h3>
+    <div class="prose">
+      <p>A cost statement says that carrying out an action, at a given scale, place and year, used a given amount of resources. It is not a claim about how the world responds, so direction and strength do not fit. Its truth depends on accounts and records, so the evidence types that grade causal claims would grade it as weak when it is often exact.</p>
+      <p>A cost figure is also almost meaningless without context. Iacona and colleagues reviewed 30 published costings, found critical information routinely missing, and proposed five reporting standards. WARP turns those standards into required and recommended slots, so a cost cannot enter the graph stripped of what it needs.</p>
+    </div>
+  </div>
+
+  <div class="cards">
+    <div class="card" style="--c: var(--cost)"><span class="lbl">Standard 1</span><span class="val">Objective and outcome</span><span class="d">What the spending aimed at, and what it achieved</span></div>
+    <div class="card" style="--c: var(--cost)"><span class="lbl">Standard 2</span><span class="val">Context and method</span><span class="d">Approach, starting conditions, intensity, phase</span></div>
+    <div class="card" style="--c: var(--cost)"><span class="lbl">Standard 3</span><span class="val">When, where, scale</span><span class="d">Place, period, area or units treated</span></div>
+    <div class="card" style="--c: var(--cost)"><span class="lbl">Standard 4</span><span class="val">Cost categories</span><span class="d">Labour, capital and equipment, consumables, overhead</span></div>
+    <div class="card" style="--c: var(--cost)"><span class="lbl">Standard 5</span><span class="val">Currency and date</span><span class="d">Original currency, year, conversion, adjustment</span></div>
+  </div>
+
+  <div class="sub">
+    <h3>Shape of a statement</h3>
+    <div class="shape" style="--c: var(--cost)">
+      <div class="node"><div class="lbl">Subject · action or strategy node</div><div class="val">Cutting, stump treatment and seedling control of <i>Acacia saligna</i>, coastal protected areas</div></div>
+      <div class="edge">incurs_cost</div>
+      <div class="node"><div class="lbl">Object · cost category</div><div class="val">Total cost (or one category: labour, consumables …)</div></div>
+      <div class="below">
+        <div class="node"><div class="lbl">Amount</div><div class="val"><code>{value: 17600, currency: ILS, price_year: 2008}</code></div></div>
+        <div class="node"><div class="lbl">Scale and level</div><div class="val">600 ha · intervention level · initial plus one year monitoring</div></div>
+        <div class="node"><div class="lbl">Claimant · basis</div><div class="val">Israel Nature and Parks Authority report; actual expenditure</div></div>
+      </div>
+    </div>
+    <p class="prose">The subject is the same kind of node the recommendation group uses, so a recommendation and the cost of following it meet at one node. A source reporting one total gives one statement with <code>object: total</code>; a breakdown gives one statement per category.</p>
+  </div>
+
+  <div class="sub">
+    <h3>Predicates</h3>
+    <div class="tablewrap">
+    <table>
+      <thead><tr><th>Predicate</th><th class="wrap">Definition (draft)</th><th class="wrap">Object</th><th class="wrap">Typical source</th></tr></thead>
+      <tbody>
+        <tr><td><code>warp:incurs_cost</code><br><span class="flag">abstract parent</span></td><td class="wrap">Carrying out the subject action, under the stated context and scale, used the stated resources in the object category.</td><td class="wrap">A <code>CostCategoryEnum</code> value: <code>total</code>, <code>labour</code>, <code>capital_equipment</code>, <code>consumables</code>, <code>overhead</code>. Not an IRI, and no <code>costcat:</code> terms are minted</td><td class="wrap">Published costings, project and grant reports, agency accounts, payment schedules</td></tr>
+        <tr><td><code>warp:costs_relative_to</code></td><td class="wrap">The subject action costs a stated multiple of the object action, for the same objective and scale.</td><td class="wrap">Another action or strategy node</td><td class="wrap">Practitioner elicitation, reviews, guides</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="prose">Ratios travel better than amounts: labour rates, fuel prices and currencies change from place to place, but "A costs about twice B" often holds across a region, and option ranking needs only ratios. Value Flows and REA may be worth an OWL mapping later.</p>
+    <p class="prose">One slot, two kinds of object: a category for <code>incurs_cost</code>, a node for <code>costs_relative_to</code>. The slot is declared as <code>any_of</code> the two ranges and a script enforces which goes with which, because nothing in LinkML or OWL can. Earlier drafts gave the slot a bare <code>uriorcurie</code> range and minted <code>costcat:total</code>; that puts an IRI in the graph that nothing declares and nothing can say the kind of, and leaves the slot with no coherent range in any layer.</p>
+    <div class="note"><strong>In RDF the category moves into the predicate.</strong><span>A cost is three things at once — an action, a category and an amount — and the only part of it that is a relation is action-to-amount. So the exporter writes <code>node:action warp:incurs_labour_cost amount:x</code>, one sub-property per category, with the amount as a named individual carrying value, currency, price year and adjustment. Named, not a blank node, because <code>transfer_costs.py</code> has to cite the amount a derived cost came from. There is no <code>unknown</code> sub-property: a total whose breakdown is unknown is <code>incurs_total_cost</code> with <code>includes_categories: [unknown]</code> kept as an annotated qualifier, since <code>unknown</code> is a sentinel and sentinels are never exported as IRIs.</span></div>
+  </div>
+
+  <div class="sub">
+    <h3>Qualifiers, by standard</h3>
+    <div class="tablewrap">
+    <table>
+      <thead><tr><th>Slot</th><th class="wrap">Values</th><th class="wrap">Level</th><th class="wrap">Notes</th></tr></thead>
+      <tbody>
+        <tr class="band" style="--c: var(--cost)"><td colspan="4">1 · Objective and outcome</td></tr>
+        <tr><td><code>stated_goal</code></td><td class="wrap">Text</td><td class="wrap">Evidence layer: the <code>EcoStudyResult</code> for the costed project</td><td class="wrap">As the source states it, without judging success</td></tr>
+        <tr><td><code>outcome_reported</code></td><td class="wrap">Claim IDs</td><td class="wrap">Claim</td><td class="wrap">Causal statements from the same source about what was achieved; the bridge to cost-effectiveness</td></tr>
+        <tr class="band" style="--c: var(--cost)"><td colspan="4">2 · Context and method</td></tr>
+        <tr><td><code>phase</code></td><td class="wrap"><code>initial</code> · <code>follow_up</code> · <code>maintenance</code> · <code>monitoring</code> · <code>whole_project</code></td><td class="wrap">Predicate qualifier, required, <strong class="key">in identity key</strong></td><td class="wrap">Keep initial and follow-up, management and monitoring apart where possible</td></tr>
+        <tr><td><code>covers_roles</code></td><td class="wrap">Strategy roles</td><td class="wrap">Predicate qualifier</td><td class="wrap">Which strategy components a phase-level cost covers</td></tr>
+        <tr><td><code>intensity</code></td><td class="wrap">Text or <code>Quantity</code></td><td class="wrap">Predicate qualifier</td><td class="wrap">"Two herbicide passes per year"</td></tr>
+        <tr><td><code>starting_conditions</code></td><td class="wrap">Text</td><td class="wrap">Claim</td><td class="wrap">Initial abundance or cover</td></tr>
+        <tr><td><code>context</code>, <code>care</code></td><td class="wrap">As in other groups</td><td class="wrap">Claim</td><td class="wrap">Social context (job-creation program), access (remote site by boat)</td></tr>
+        <tr class="band" style="--c: var(--cost)"><td colspan="4">3 · When, where, scale</td></tr>
+        <tr><td><code>scale</code></td><td class="wrap">List of <code>Quantity</code></td><td class="wrap">Predicate qualifier, required for <code>incurs_cost</code></td><td class="wrap">Always the total with its scale; per-hectare figures are derived, because costs rarely scale linearly</td></tr>
+        <tr><td><code>temporal_extent</code></td><td class="wrap">Start and end</td><td class="wrap">Claim</td><td class="wrap">Learning lowers cost over time</td></tr>
+        <tr><td><code>place</code></td><td class="wrap">An IRI from a registered place scheme</td><td class="wrap">Claim, <strong class="key">in identity key</strong></td><td class="wrap">Costs from different regions never merge silently. The region, not the functional group</td></tr>
+        <tr class="band" style="--c: var(--cost)"><td colspan="4">4 · Cost categories</td></tr>
+        <tr><td><code>amount</code></td><td class="wrap"><code>MonetaryAmount</code></td><td class="wrap">Predicate qualifier</td><td class="wrap">One of <code>amount</code> or <code>effort</code> required for <code>incurs_cost</code></td></tr>
+        <tr><td><code>includes_categories</code></td><td class="wrap"><code>labour</code> · <code>capital_equipment</code> · <code>consumables</code> · <code>overhead</code> · <code>unknown</code></td><td class="wrap">Required for totals</td><td class="wrap"><code>unknown</code> is valid and common for program budgets</td></tr>
+        <tr><td><code>cost_behaviour</code></td><td class="wrap"><code>fixed</code> · <code>variable</code> · <code>mixed</code></td><td class="wrap">Predicate qualifier</td><td class="wrap">Needed to estimate economies of scale</td></tr>
+        <tr><td><code>effort</code></td><td class="wrap">List of <code>Quantity</code></td><td class="wrap">Predicate qualifier</td><td class="wrap">Person-days, litres, machine hours: the most transferable part</td></tr>
+        <tr><td><code>volunteer_effort</code></td><td class="wrap"><code>Quantity</code></td><td class="wrap">Predicate qualifier</td><td class="wrap">Valuable and often uncounted</td></tr>
+        <tr class="band" style="--c: var(--cost)"><td colspan="4">5 · Currency and date</td></tr>
+        <tr><td><code>amount.currency</code></td><td class="wrap">ISO 4217</td><td class="wrap">Required</td><td class="wrap">Always the original currency</td></tr>
+        <tr><td><code>amount.price_year</code></td><td class="wrap">Year</td><td class="wrap">Required</td><td class="wrap">The year costs were incurred</td></tr>
+        <tr><td><code>amount.adjustment</code></td><td class="wrap"><code>none</code> · <code>inflation</code> · <code>discounted</code>, with rate and base year</td><td class="wrap">Optional</td><td class="wrap">Whether the source already standardized the figure</td></tr>
+        <tr class="band" style="--c: var(--cost)"><td colspan="4">Reporting level and basis</td></tr>
+        <tr><td><code>reporting_level</code></td><td class="wrap"><code>intervention</code> · <code>program</code> · <code>organization</code></td><td class="wrap">Predicate qualifier, <strong class="key">in identity key</strong></td><td class="wrap">The action's own costs, a share of a program's, or of an organization's</td></tr>
+        <tr><td><code>cost_basis</code></td><td class="wrap"><code>actual_expenditure</code> · <code>budget_allocation</code> · <code>estimate</code> · <code>quote</code> · <code>payment_rate</code></td><td class="wrap">Predicate qualifier</td><td class="wrap">Plays the role evidence type plays elsewhere <span class="flag">beyond Iacona</span></td></tr>
+        <tr><td><code>cost_bearer</code></td><td class="wrap">Agent ID</td><td class="wrap">Claim</td><td class="wrap">Who paid; may not be the claimant <span class="flag">beyond Iacona</span></td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="prose">A statement that misses some slots can still be recorded, as Iacona's own examples do for existing datasets; a completeness report lists what is missing so sensitivity analysis can exclude or down-weight it.</p>
+  </div>
+
+  <div class="sub">
+    <h3>Proposition identity</h3>
+    <p class="prose">The key adds <code class="key">place</code>, <code class="key">phase</code> and <code class="key">reporting_level</code>. Two costings of initial wattle removal in one region, both at intervention level, derive one proposition with two amounts. Initial and maintenance costs stay apart, as do an intervention's own cost and a program share. A synthesis over a cost proposition reports the spread after standardization, not a single best number; that spread is the input to sensitivity analysis.</p>
+  </div>
+
+  <div class="sub">
+    <h3>Transfer is explicit</h3>
+    <div class="cards">
+      <div class="card"><span class="lbl">Source statement</span><span class="d">Alberta, 2019, CAD; 12 person-days and $4,200 consumables per 10 ha</span></div>
+      <div class="card" style="--c: var(--cost)"><span class="lbl">Transfer rule (versioned)</span><span class="d">CPI to 2026; Saskatchewan wage rate for labour; consumables unchanged</span></div>
+      <div class="card" style="--c: var(--cost)"><span class="lbl">Derived statement</span><span class="d">Saskatchewan, 2026 dollars; claimant EcoWeaver; <code>transferred_from</code> the source</span></div>
+    </div>
+    <p class="prose">Reusing a cost in another year, currency or region creates a new derived statement, with EcoWeaver as claimant, naming its source and the versioned rule that adjusted it. Effort in physical units makes this defensible: labour is re-priced at local rates instead of scaling a dollar total. Transfer rules sit beside the evidence weighting rules as versioned configuration; changing one regenerates derived statements. Figures illustrative.</p>
+  </div>
+
+  <div class="sub">
+    <h3>Worked examples</h3>
+    <div class="ex">
+      <h4>Intervention-level costing with a reported outcome</h4>
+      <p class="src">From Iacona et al.'s worked examples (Oron and Hamod 2008): golden wreath wattle removal on Israel's coast. About 600 ha for NIS 17,600; natives regenerated but seedlings persisted. Price year assumed from the report date.</p>
+<pre>cost_claims:
+  - id: stmt:inpa-wattle-cost
+    claimant: org:israel-nature-parks-authority
+    subject: node:cut-treat-acacia-saligna-coastal-reserves
+    predicate: warp:incurs_cost
+    object: total
+    reportedIn: doc:oron-hamod-2008             <span class="c"># stated_goal on its study result</span>
+    outcome_reported: [stmt:inpa-wattle-natives-regenerate, stmt:inpa-wattle-seedlings-persist]
+    predicate_qualifiers:
+      amount: {value: 17600, currency: ILS, price_year: 2008, adjustment: none}
+      includes_categories: [unknown]
+      scale: [{value: 600, unit: TODO:hectare}]  <span class="c"># placeholder: verify the UO CURIE</span>
+      phase: whole_project
+      reporting_level: intervention
+      cost_basis: actual_expenditure
+    place: [place:mediterranean-coastal-israel]  <span class="c"># a place, not a functional group</span>
+    scope: assertional
+
+<span class="c"># exported:  node:cut-treat-acacia-saligna-coastal-reserves</span>
+<span class="c">#              warp:incurs_total_cost  amount:inpa-wattle-cost-1 .</span>
+<span class="c">#            the amount is a named individual, so a transferred cost can cite it</span></pre>
+    </div>
+    <div class="ex">
+      <h4>Program-level budget with unknown categories</h4>
+      <p class="src">Iacona et al.'s second example: Florida's allocations for invasive plant management on 46 protected areas, about 70,000 ha, 1999–2010; agency goal invasive cover at or below 5%.</p>
+<pre>cost_claims:
+  - id: stmt:fwc-invasive-program
+    claimant: org:florida-fwc
+    subject: node:herbicide-mechanical-control-invasive-plants-florida-pa
+    predicate: warp:incurs_cost
+    object: total
+    reportedIn: doc:iacona-et-al-2014
+    predicate_qualifiers:
+      amount: {value: TODO, currency: USD, price_year: TODO}
+      includes_categories: [unknown]
+      scale: [{value: 69996, unit: TODO:hectare}]        <span class="c"># placeholder: verify the UO CURIE</span>
+      count: [{value: 46, entity: TODO:protected_area}] <span class="c"># a count, not a unit</span>
+      phase: maintenance
+      reporting_level: program
+      cost_basis: budget_allocation
+    temporal_extent: {start: "1999", end: "2010"}
+    place: [place:florida-usa]</pre>
+    </div>
+    <div class="ex">
+      <h4>A practitioner's relative cost</h4>
+<pre>cost_claims:
+  - claimant: person:practitioner-b
+    claimant_kind: practitioner
+    subject: node:drill-seeding-native-grassland-mix
+    predicate: warp:costs_relative_to
+    object: node:planting-plugs-native-grassland
+    predicate_qualifiers:
+      ratio: {value: 0.33, basis: per_hectare}
+      phase: initial
+      cost_basis: estimate
+    scope: contingent
+    place: [place:northern-great-plains]</pre>
+    </div>
+  </div>
+
+  <details>
+    <summary>Schema sketch (harmonized)</summary>
+<pre>classes:
+  CostClaim:
+    is_a: Claim
+    annotations: {&lt;group registry annotations, as in the repo&gt;}
+    slots: [predicate_qualifiers, outcome_reported, starting_conditions, cost_bearer,
+            transferred_from, transfer_rule, context, place, temporal_extent]
+    slot_usage:
+      subject:   {range: CausalNode}                 <span class="c"># action or strategy node</span>
+      predicate: {range: CostPredicateEnum}
+      object:    {any_of: [{range: CostCategoryEnum}, {range: CausalNode}]}  <span class="c"># per-predicate, checked in check_cost.py</span>
+      predicate_qualifiers: {range: CostQualifiers}
+  CostQualifiers:
+    any_of: [{required: amount}, {required: effort}, {required: ratio}]   <span class="c"># per-predicate rules in check_cost.py</span>
+    attributes:
+      amount:              {range: MonetaryAmount}
+      effort:              {range: Quantity, multivalued: true}
+      volunteer_effort:    {range: Quantity}
+      ratio:               {range: CostRatio}
+      includes_categories: {range: CostCategoryEnum, multivalued: true}
+      cost_behaviour:      {range: CostBehaviourEnum}
+      scale:               {range: Quantity, multivalued: true}   <span class="c"># required for incurs_cost</span>
+      intensity:           {range: string}
+      phase:               {range: CostPhaseEnum, required: true}
+      covers_roles:        {range: StrategyRoleEnum, multivalued: true}
+      reporting_level:     {range: ReportingLevelEnum}
+      cost_basis:          {range: CostBasisEnum}
+  CostProposition:
+    is_a: EcoProposition
+    slot_usage:
+      predicate: {range: CostPredicateEnum}
+  MonetaryAmount:
+    attributes:
+      value:                {range: float}
+      currency:             {range: string, pattern: "^[A-Z]{3}$", required: true}
+      price_year:           {range: integer, required: true}
+      adjustment:           {range: CostAdjustmentEnum}
+      adjustment_rate:      {range: float}
+      adjustment_base_year: {range: integer}
+      conversion_rate:      {range: float}
+  CostRatio:
+    attributes: {value: {range: float}, basis: {range: string}}
+
+slots:
+  outcome_reported: {range: Claim, multivalued: true, inlined: false}
+  transferred_from: {range: CostClaim, inlined: false}
+  transfer_rule:    {range: string}                  <span class="c"># e.g. warp-cost-transfer/1</span>
+
+enums:
+  CostPredicateEnum:  {permissible_values: {incurs_cost: {meaning: warp:incurs_cost}, costs_relative_to: {meaning: warp:costs_relative_to}}}
+  CostCategoryEnum:   {permissible_values: {total: {}, labour: {}, capital_equipment: {}, consumables: {}, overhead: {}, unknown: {}}}
+  CostBehaviourEnum:  {permissible_values: {fixed: {}, variable: {}, mixed: {}}}
+  CostPhaseEnum:      {permissible_values: {initial: {}, follow_up: {}, maintenance: {}, monitoring: {}, whole_project: {}}}
+  ReportingLevelEnum: {permissible_values: {intervention: {}, program: {}, organization: {}}}
+  CostBasisEnum:      {permissible_values: {actual_expenditure: {}, budget_allocation: {}, estimate: {}, quote: {}, payment_rate: {}}}
+  CostAdjustmentEnum: {permissible_values: {none: {}, inflation: {}, discounted: {}}}
+
+<span class="c"># identity extras: [place, predicate_qualifiers.phase, predicate_qualifiers.reporting_level]</span>
+
+<span class="c"># warp-relations.ttl: the category is the predicate; the amount is the object</span>
+warp:incurs_cost                    a owl:ObjectProperty .
+warp:incurs_total_cost              a owl:ObjectProperty ; rdfs:subPropertyOf warp:incurs_cost .
+warp:incurs_labour_cost             a owl:ObjectProperty ; rdfs:subPropertyOf warp:incurs_cost .
+warp:incurs_capital_equipment_cost  a owl:ObjectProperty ; rdfs:subPropertyOf warp:incurs_cost .
+warp:incurs_consumables_cost        a owl:ObjectProperty ; rdfs:subPropertyOf warp:incurs_cost .
+warp:incurs_overhead_cost           a owl:ObjectProperty ; rdfs:subPropertyOf warp:incurs_cost .
+warp:costs_relative_to              a owl:ObjectProperty .</pre>
+  </details>
+
+  <div class="sub">
+    <h3>In the graph</h3>
+    <p class="prose">Exported: the category sub-property to a named amount individual, with effort, volunteer effort, ratio, scale, intensity, phase, basis and reporting level on the claim's qualifier individual, and <code>place</code> as an IRI. Price years are integers and periods are ISO strings with normalized bounds beside them; no <code>xsd:gYear</code> or <code>xsd:date</code> literal is written, because neither is in the OWL 2 datatype map.</p>
+    <p class="prose">Projected to OWL: <strong>nothing</strong>. A cost is a fact about one episode of work, in one place, in one year, by one organization. There is no universal-scope cost claim, and if one appeared it still would not be a class axiom. Cost-effectiveness is a query over the reification layer, joining a cost proposition's spread to a causal proposition's effect — which is what the sensitivity analysis needs, and it needs the spread, not a single inferred number.</p>
+  </div>
+
+  <div class="sub">
+    <h3>Where the data comes from</h3>
+    <div class="tablewrap">
+    <table>
+      <thead><tr><th>Source</th><th class="wrap">What it gives</th><th class="wrap">Typical gaps</th></tr></thead>
+      <tbody>
+        <tr><td>Published costings</td><td class="wrap">Full or partial costings, increasingly in the Iacona format</td><td class="wrap">Rare; older papers miss categories and price year</td></tr>
+        <tr><td>Grant and project reports</td><td class="wrap">Actual expenditure by line item, with scale and dates</td><td class="wrap">Shared costs hidden in overhead; often confidential</td></tr>
+        <tr><td>Program payment rates</td><td class="wrap">Cost-share and per-acre agreement payments</td><td class="wrap">A payment is not a cost: <code>payment_rate</code>, with <code>cost_bearer</code></td></tr>
+        <tr><td>Contractor quotes</td><td class="wrap">Current local prices for defined work</td><td class="wrap">Prices, not outcomes</td></tr>
+        <tr><td>Practitioner elicitation</td><td class="wrap">Ranges, ratios, effort in person-days</td><td class="wrap">Contingent scope; needs structured elicitation</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <div class="sub">
+    <h3>For the sensitivity analysis</h3>
+    <ul class="prose">
+      <li><strong>Ranges, not points.</strong> Vary cost across each proposition's spread and see whether the preferred option changes.</li>
+      <li><strong>Cost-effectiveness with traceable parts:</strong> a cost proposition divided by a causal effect, both traced to sources.</li>
+      <li><strong>Filters by basis:</strong> rerun with actual expenditure only, or without estimates and transferred costs.</li>
+      <li><strong>Value of information:</strong> where the decision changes across the cost range, that cost is a priority for collection.</li>
+    </ul>
+    <div class="note"><strong>Valuation is a separate group.</strong><span>What an outcome is worth, and to whom, has an actor or population as subject and is judged by representation and elicitation, not accounts. Likely sources: EVRI, ESVD, objectives in plans, preference surveys, structured decision-making workshops. Cost gives the denominator, causal statements the effect, valuation the weights.</span></div>
+  </div>
+
+  <div class="sub">
+    <h3>Open questions</h3>
+    <ol class="qs">
+      <li><span><strong>Opportunity costs.</strong> For conservation agreements a landowner's foregone income is often the largest cost. Add <code>cost_type: financial · opportunity · transaction</code>, or a separate predicate?</span></li>
+      <li><span><strong>Confidentiality.</strong> Reuse <code>care</code> access levels so a cost enters a synthesis without being shown?</span></li>
+      <li><span><strong>The Iacona workbook.</strong> Compare its fields (Appendix S1) line by line before fixing the slot list.</span></li>
+      <li><span><strong>Transfer rules.</strong> Which price indices, exchange rates and wage series? Statistics Canada for Canadian transfers.</span></li>
+      <li><span><strong>Payments as costs.</strong> Evidence of cost to the landowner, or only of what the program pays? Probably the latter.</span></li>
+      <li><span><strong>Existing protocols.</strong> Align with Cook et al. (2017) and Miradi budget fields.</span></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============================================================ IMPLEMENTATION -->
+<section class="part" id="impl" style="--c: var(--impl)">
+  <div class="eyebrow">Node template and two predicate groups · proposed 11 November 2026</div>
+  <h2>9. Sites, implementation and definitions</h2>
+  <p class="lede">Three additions that let WARP record restoration that actually happened, where it happened, and whether it counts as restoring a degraded area, without fixing any one definition of "degraded" or "effective" into the graph.</p>
+  <p class="meta">Prompted by two challenges under Target 2 of Canada's 2030 Nature Strategy: no national definition of "degraded areas" or "effective restoration", and information on restoration efforts scattered across many organizations.</p>
+
+  <div class="sub">
+    <h3>The problem</h3>
+    <div class="prose">
+      <p>None of the other groups records that a strategy <em>was carried out</em> at a place, over a period, by someone. Restoration reporting needs exactly that, aggregated across organizations that each hold part of the picture and often report the same project twice.</p>
+      <p>Reporting also depends on two contested judgements: whether an area is degraded, and whether restoration there is effective. If WARP built one definition into its structure, every record would need redoing when the definition changed, and nobody could see how much the choice matters.</p>
+    </div>
+  </div>
+
+  <div class="figure">
+    <div class="frame">
+      <svg viewBox="0 0 680 310" role="img" aria-labelledby="if-t if-d">
+        <title id="if-t">How implementation claims, sites, projects and criteria sets connect</title>
+        <desc id="if-d">A strategy node connects down to a site node through implementation claims labelled carried_out_at, reported by several organizations. A derived project sits to the right, made from those claims. A degradation criteria set at bottom left is linked to the site by an assessment; an effectiveness criteria set at bottom right is linked to the project by an assessment.</desc>
+        <text class="t-sub" x="20" y="40">Target 2 indicator:</text>
+        <text class="t-sub" x="20" y="57">area of projects on sites</text>
+        <text class="t-sub" x="20" y="74">assessed degraded (left)</text>
+        <text class="t-sub" x="20" y="91">and assessed effective (right)</text>
+        <rect class="part" x="250" y="24" width="180" height="56" rx="4" style="stroke: var(--node)"/>
+        <text class="t-node" x="262" y="45">STRATEGY</text>
+        <text class="t-lbl" x="262" y="67">Recontour, seed, mow</text>
+        <path class="seqi" d="M340,80 L340,228"/>
+        <path class="ahi" d="M340,236 L335,227 L345,227 Z"/>
+        <text class="t-seq" x="350" y="118">carried_out_at</text>
+        <text class="t-sub" x="350" y="134">reported by many</text>
+        <path class="der" d="M340,158 L500,158"/>
+        <text class="t-sub" x="398" y="151">derived</text>
+        <rect class="derived" x="500" y="130" width="160" height="56" rx="4"/>
+        <text class="t-impl" x="512" y="151">PROJECT · DERIVED</text>
+        <text class="t-lbl" x="512" y="173">site 0412, 2024–27</text>
+        <rect class="site" x="250" y="236" width="180" height="56" rx="4"/>
+        <text class="t-impl" x="262" y="256">SITE · site:0412</text>
+        <text class="t-sub" x="262" y="278">42 ha · grassland</text>
+        <rect class="part" x="20" y="236" width="150" height="56" rx="4"/>
+        <text class="t-sub" x="32" y="256">CRITERIA SET</text>
+        <text class="t-lbl" x="32" y="278">degraded / v1</text>
+        <path class="claim" d="M170,264 L250,264"/>
+        <text class="t-claim" x="177" y="256">assessed</text>
+        <rect class="part" x="500" y="236" width="160" height="56" rx="4"/>
+        <text class="t-sub" x="512" y="256">CRITERIA SET</text>
+        <text class="t-lbl" x="512" y="278">effective / v1</text>
+        <path class="claim" d="M580,186 L580,236"/>
+        <text class="t-claim" x="588" y="215">assessed</text>
+      </svg>
+    </div>
+    <p class="cap">Illustrative IDs and figures. Solid boxes are nodes; the dashed box is derived; criteria sets are information records, not nodes. Dashed amber lines are criteria claims.</p>
+  </div>
+
+  <div class="sub" id="site">
+    <h3>Site</h3>
+    <p class="prose">The place a strategy is carried out, or whose condition is assessed. A node, so any group can point at it, but unlike every node so far a <strong>particular</strong>: one piece of ground, not a kind of thing. In OWL, sites are individuals, not classes, and geometry never goes into generated outputs.</p>
+    <p class="prose">Sites therefore get their own IRI space, <code>site:</code>, rather than sharing <code>node:</code> (<a href="#iris">section 4</a>). The prefix is doing real work: <code>node:</code> IRIs are classes everywhere they appear and <code>site:</code> IRIs are individuals everywhere, so a check can catch a mistake instead of leaving one IRI meaning two things depending on which file you read. Only the IRI space differs; the LinkML range stays <code>CausalNode</code>, as in every other group.</p>
+    <div class="tablewrap">
+    <table>
+      <thead><tr><th>Field</th><th class="wrap">Values</th><th class="wrap">Notes</th></tr></thead>
+      <tbody>
+        <tr><td><code>label</code></td><td class="wrap">Text</td><td class="wrap">As the source names it</td></tr>
+        <tr><td><code>geometry</code></td><td class="wrap">GeoJSON or WKT, or a reference</td><td class="wrap">May be generalized or withheld under <code>care</code></td></tr>
+        <tr><td><code>geometry_precision</code></td><td class="wrap"><code>exact</code> · <code>generalized</code> · <code>centroid</code> · <code>withheld</code></td><td class="wrap">Required: matching and area sums need to know</td></tr>
+        <tr><td><code>area</code></td><td class="wrap"><code>Quantity</code></td><td class="wrap">Reported or computed; record which</td></tr>
+        <tr><td><code>ecosystem_type</code></td><td class="wrap">ENVO terms</td><td class="wrap">Multivalued; mixed sites are common. Exported as <code>rdf:type</code>: a site is an instance of an ENVO environmental system, not something that stands in a relation to the class</td></tr>
+        <tr><td><code>jurisdiction</code></td><td class="wrap">Province, territory, Indigenous territory</td><td class="wrap">For national roll-up. An IRI where a code exists (ISO 3166-2 <code>CA-SK</code>), a literal where one does not, as for many Indigenous territories</td></tr>
+        <tr><td><code>tenure</code></td><td class="wrap"><code>public</code> · <code>private</code> · <code>indigenous</code> · <code>mixed</code> · <code>unknown</code></td><td class="wrap">Drives default access level</td></tr>
+        <tr><td><code>care</code></td><td class="wrap"><code>CareMetadata</code></td><td class="wrap">Private agreements and Indigenous lands need this from the first record</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <div class="sub" id="implgroup">
+    <h3>The implementation group</h3>
+    <p class="prose">One predicate, <code>warp:carried_out_at</code>. Subject: a strategy or action node. Object: a site. Scope always <code>assertional</code>. The claimant is whoever reports it: implementer, funder, program or researcher.</p>
+    <div class="tablewrap">
+    <table>
+      <thead><tr><th>Qualifier</th><th class="wrap">Values</th><th class="wrap">Notes</th></tr></thead>
+      <tbody>
+        <tr><td><code>period</code></td><td class="wrap">Start, open end allowed</td><td class="wrap">Required. Ongoing work has no end</td></tr>
+        <tr><td><code>status</code></td><td class="wrap"><code>planned</code> · <code>in_progress</code> · <code>completed</code> · <code>maintained</code> · <code>abandoned</code></td><td class="wrap">Required. As of <code>reported_on</code></td></tr>
+        <tr><td><code>reported_on</code></td><td class="wrap">An ISO 8601 date string</td><td class="wrap">Later reports supersede; they do not conflict</td></tr>
+        <tr><td><code>area_treated</code></td><td class="wrap"><code>Quantity</code></td><td class="wrap">May be less than the site. Never divide a site's area among strategies</td></tr>
+        <tr><td><code>implemented_by</code></td><td class="wrap">Organization or person IDs</td><td class="wrap">Distinct from the claimant</td></tr>
+        <tr><td><code>funded_by</code></td><td class="wrap">Organization IDs</td><td class="wrap">Optional</td></tr>
+        <tr><td><code>specified_in</code></td><td class="wrap"><code>EcoDocument</code> IDs</td><td class="wrap">The plan, as a document</td></tr>
+        <tr><td><code>external_ids</code></td><td class="wrap"><code>{scheme, value}</code> records</td><td class="wrap">Registry IDs, agreement numbers. The strongest matching signal — and the scheme has to be a field, because <code>agreement:0412</code> is not an IRI anyone can resolve and the "two IDs from one namespace" report cannot be written without it</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <h4>Projects are derived</h4>
+    <div class="prose">
+      <p>Under <code class="key">warp-impl-identity/1</code>, two implementation claims describe the same project when they share an external ID, or when their strategy matches, their sites match and their periods overlap. A land trust, its funder and a provincial program reporting the same work become three attributed claims about one project. Where they disagree on area or status, the disagreement is visible rather than silently resolved or double-counted.</p>
+      <p>Site matching is the hard part: hash identity works for strategies but not for polygons, and generalized geometry makes it harder. Version 1 matches only on shared site IDs and external IDs, and reports candidate spatial matches for review. Periods overlap by normalized bounds, not by string comparison: the claims below say <code>2024-05</code> and <code>2023</code>, which no string ordering handles.</p>
+      <p>Earlier drafts wrote <code>ImplementationProposition # = project</code>, which makes an information record the same thing as the work that was done — and then made an effectiveness verdict an assertion about that record. The proposition stays what it is, the derived grouping record with its member claims and aggregates, and derivation also mints the project itself.</p>
+    </div>
+    <div class="cards">
+      <div class="card" style="--c: var(--impl)"><span class="lbl">Record · information entity</span><span class="val">ImplementationProposition</span><span class="d">The grouping: which claims, whose areas, whose statuses, the envelope of periods. <code>IAO:0000136 (is about)</code> the project individual.</span></div>
+      <div class="card" style="--c: var(--impl)"><span class="lbl">Individual · occurrent</span><span class="val">proj:&lt;id&gt;</span><span class="d">The work. <code>rdf:type</code> its canonical strategy class, located at its site individual, over its period. This is what makes the strategy class worth having, and what a criteria claim is about.</span></div>
+    </div>
+    <p class="prose">A project is an occurrent: something that happened, at a place, over a period. Typing it by its strategy class is what connects the two layers — the class says what kind of work it was, the individual says that this work occurred here. It also gives the criteria group a subject that is a particular, so "this project qualifies as effective restoration" is about the work and not about a record of it.</p>
+    <p class="prose">Exported to the logical layer: the project individuals, in <code>projects.ttl</code>. Nothing is projected from implementation claims through the gate — <code>warp:carried_out_at</code> relates a class to an individual, so it is asserted in the reification layer only. The project individual is this group's logical-layer output, and it comes from the derivation rule, not from the gate.</p>
+  </div>
+
+  <div class="sub" id="criteria">
+    <h3>Definitions are not nodes</h3>
+    <div class="prose">
+      <p>A definition such as "degraded area, version 1, issued by a federal department" is a particular, like documents, claims and identity rules, but nodes are what statements are <em>about</em>. A definition is closer to an identity rule: a stated, versioned test that other records are checked against. So definitions become <strong>criteria sets</strong>, information records named in a qualifier on claims that apply them.</p>
+    </div>
+    <div class="cards">
+      <div class="card" style="--c: var(--crit)"><span class="lbl">Concept</span><span class="val">What is being defined</span><span class="d">Controlled vocabulary (SKOS): <code>degraded_area</code>, <code>effective_restoration</code>. Stable across definitions.</span></div>
+      <div class="card" style="--c: var(--crit)"><span class="lbl">Criteria set</span><span class="val">One definition</span><span class="d">One body's versioned operationalization, linked by <code>operationalizes</code> and to its source document.</span></div>
+      <div class="card" style="--c: var(--crit)"><span class="lbl">Criteria claim</span><span class="val">Applying it</span><span class="d">A claim that a site or project meets a criteria set in a period, with evidence. The ecological detail lives here.</span></div>
+    </div>
+    <h4>Keeping criteria sets small</h4>
+    <p class="prose">Each definition is described only through a fixed set of definitional elements, plus its verbatim text, so a definition never becomes its own small graph.</p>
+    <div class="tablewrap">
+    <table>
+      <thead><tr><th>Element</th><th class="wrap">Values (draft)</th><th class="wrap">Question it answers</th></tr></thead>
+      <tbody>
+        <tr><td><code>reference_basis</code></td><td class="wrap"><code>reference_ecosystem</code> · <code>historical_baseline</code> · <code>potential_natural_state</code> · <code>policy_target</code></td><td class="wrap">Degraded compared with what?</td></tr>
+        <tr><td><code>baseline_date</code></td><td class="wrap">Date or period</td><td class="wrap">As of when?</td></tr>
+        <tr><td><code>attributes_assessed</code></td><td class="wrap">SER's six attributes: absence of threats, physical conditions, species composition, structural diversity, ecosystem function, external exchanges</td><td class="wrap">Which aspects count?</td></tr>
+        <tr><td><code>threshold_kind</code></td><td class="wrap"><code>any_decline</code> · <code>fraction_of_reference</code> · <code>categorical_state</code> · <code>expert_judgement</code></td><td class="wrap">How much change makes it degraded?</td></tr>
+        <tr><td><code>threshold_text</code></td><td class="wrap">Text</td><td class="wrap">The threshold as written</td></tr>
+        <tr><td><code>human_caused</code></td><td class="wrap">Boolean</td><td class="wrap">Must the decline be caused by people?</td></tr>
+        <tr><td><code>assessment_unit</code></td><td class="wrap"><code>site</code> · <code>ecosystem_unit</code> · <code>jurisdiction</code></td><td class="wrap">What is judged?</td></tr>
+        <tr><td><code>assessment_basis</code></td><td class="wrap"><code>process</code> · <code>trajectory</code> · <code>outcome</code></td><td class="wrap">For effectiveness: actions in place, moving toward reference, or reached it? Target 2 counts areas <em>under</em> effective restoration</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="prose">Taxa, indicator variables and measured values never appear on a criteria set; they appear in the evidence for a criteria claim, using existing outcome nodes and study results. Comparing definitions becomes a query: which require human causation, which use a historical baseline and from when.</p>
+
+    <h4>The criteria group</h4>
+    <div class="prose">
+      <p>One predicate for annotators, <code>warp:qualifies_as</code>, and two in the graph. Subject: a site individual (degradation) or a project individual (effectiveness) — both particulars, so <code>subject</code> is simply required; object: a concept; the criteria set is a required qualifier. Under <code class="key">warp-criteria-identity/1</code>, two criteria claims share a proposition when subject, concept, criteria set and assessed period match. "Qualifies under A" and "does not qualify under B" are different propositions and do not contradict. Two assessors applying the same definition and disagreeing share a proposition, one supporting and one disputing it. The verdict is the claim's evidential direction: <code>supports</code>, <code>disputes</code>, <code>neutral</code>.</p>
+    </div>
+    <div class="tablewrap">
+    <table>
+      <thead><tr><th>Qualifier</th><th class="wrap">Values</th><th class="wrap">Notes</th></tr></thead>
+      <tbody>
+        <tr><td><code>criteria_set</code></td><td class="wrap">Criteria set ID</td><td class="wrap">Required; in the identity key</td></tr>
+        <tr><td><code>assessed_period</code></td><td class="wrap">Start and end</td><td class="wrap">Required; in the identity key. Condition changes over time</td></tr>
+        <tr><td><code>assessment_method</code></td><td class="wrap"><code>field_assessment</code> · <code>remote_sensing</code> · <code>rule_applied</code> · <code>expert_judgement</code> · <code>self_reported</code></td><td class="wrap"><code>rule_applied</code>: EcoWeaver applying a criteria set to data</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="prose">Earlier drafts held a project subject in <code>subject_proposition</code>, with exactly one of the two required. With the project as an individual (above) that is unnecessary: both kinds of subject are particulars, the identity rule needs no alternative subject slot, and a verdict is about the work rather than about a record of it.</p>
+    <div class="note"><strong>In the graph: the object is the criteria set, not the concept.</strong><span>The exported triple is <code>site:0412 warp:qualifies_as crit:degraded-area/fed-draft-1</code>, with the concept recoverable through the set's <code>operationalizes</code>. Keeping the set in the object position is what stops the graph holding <code>site:0412 qualifies_as degraded_area</code> and <code>site:0412 does_not_qualify_as degraded_area</code> as a flat contradiction, when the two verdicts are in fact about two definitions. The verdict comes from the claim's direction: <code>supports</code> gives <code>qualifies_as</code>, <code>disputes</code> gives <code>does_not_qualify_as</code>, both under an abstract <code>warp:assessed_against</code>, and a neutral claim exports no relation triple at all. This is the one place where the exported object is not the annotated object.</span></div>
+    <p class="prose">Projected to OWL: <strong>nothing</strong>. A criteria set is a stated, versioned test, deliberately not an OWL definition, so a verdict can never be inferred — which is also exactly what lets a definition change without a single record being rewritten. The concepts are <code>skos:Concept</code> and never <code>owl:Class</code>, and the enum's <code>meaning:</code> points at those same IRIs so that one concept does not end up with two. This also answers half of the automated-verdicts question (Q6): a SHACL or SPARQL rule may propose a verdict, and it enters as a claim by EcoWeaver with <code>assessment_method: rule_applied</code>, like any other claim, never as an axiom. Whether a policy counts such verdicts is not ours to settle.</p>
+  </div>
+
+  <div class="sub" id="target2">
+    <h3>The Target 2 query</h3>
+    <div class="prose">
+      <p>For a jurisdiction and year, under definitions D (degraded) and E (effective):</p>
+      <ol>
+        <li>Sites with a supported <code>qualifies_as degraded_area</code> proposition under D, for the baseline period.</li>
+        <li>Derived projects on those sites with status <code>in_progress</code>, <code>completed</code> or <code>maintained</code> in the reporting year.</li>
+        <li>Of those, projects with a supported <code>qualifies_as effective_restoration</code> proposition under E.</li>
+        <li>The union, not the sum, of their treated areas, since projects on one site can overlap. Without geometry this is reported as lower and upper bounds.</li>
+      </ol>
+      <p>Run it again with another D or E and the difference is the effect of the definition. WARP does not settle which definition is right; it shows what each would mean for the national number, and which records would change.</p>
+    </div>
+  </div>
+
+  <div class="sub">
+    <h3>Worked example</h3>
+    <p class="meta">Illustrative: a land trust and its funder report grassland work on one agreement site; an assessor judges the site degraded at baseline under a draft federal definition. All IDs, figures and definitions are placeholders.</p>
+<pre>criteria_sets:
+  - id: crit:degraded-area/fed-draft-1
+    operationalizes: concept:degraded_area
+    issued_by: org:federal-department
+    version: "draft-1"
+    status: draft
+    specified_in: doc:definition-consultation-paper
+    reference_basis: historical_baseline
+    baseline_date: "2000"
+    attributes_assessed: [species_composition, ecosystem_function]
+    threshold_kind: fraction_of_reference
+    threshold_text: "..."                         <span class="c"># verbatim from the source</span>
+    human_caused: true
+    assessment_unit: site
+
+node_definitions:
+  - node: site:0412                               <span class="c"># a particular: site:, not node:</span>
+    template: site
+    label: Agreement site 0412
+    geometry_precision: generalized
+    area: {value: 64, unit: TODO:hectare}         <span class="c"># verify the UO CURIE</span>
+    ecosystem_type: [TODO:grassland]              <span class="c"># verify the ENVO term</span>
+    jurisdiction: iso3166-2:CA-SK
+    tenure: private
+    care: {access_level: restricted}
+
+implementation_claims:
+  - subject: node:earthworks-seed-mow
+    predicate: warp:carried_out_at
+    object: site:0412
+    scope: assertional
+    claimant: org:land-trust-a
+    predicate_qualifiers:
+      period: {start: "2024-05"}
+      status: in_progress
+      reported_on: "2026-03-31"
+      area_treated: {value: 42, unit: TODO:hectare}
+      implemented_by: [org:land-trust-a]
+      external_ids: [{scheme: agreement, value: "0412"}]
+  - subject: node:earthworks-seed-mow
+    predicate: warp:carried_out_at
+    object: site:0412
+    scope: assertional
+    claimant: org:funder-b
+    predicate_qualifiers:
+      period: {start: "2024-06", end: "2027-10"}
+      status: in_progress
+      reported_on: "2026-01-15"
+      area_treated: {value: 40, unit: TODO:hectare}    <span class="c"># disagrees: kept, attributed</span>
+      external_ids: [{scheme: agreement, value: "0412"}]  <span class="c"># → same derived project</span>
+
+criteria_claims:
+  - subject: site:0412                            <span class="c"># a site individual; a project claim would say proj:&lt;id&gt;</span>
+    predicate: warp:qualifies_as
+    object: concept:degraded_area
+    direction: supports
+    claimant: org:assessor-c
+    predicate_qualifiers:
+      criteria_set: crit:degraded-area/fed-draft-1
+      assessed_period: {start: "2023", end: "2023"}
+      assessment_method: field_assessment
+    hasEvidenceLines: [...]                      <span class="c"># monitoring results vs reference</span>
+
+<span class="c"># derived, and exported to the logical layer:</span>
+<span class="c">#   proj:0412  rdf:type node:earthworks-seed-mow ; located_in site:0412 .</span>
+<span class="c">#   site:0412  rdf:type TODO:grassland .</span>
+<span class="c"># exported to the reification layer, from the criteria claim's direction:</span>
+<span class="c">#   site:0412  warp:qualifies_as crit:degraded-area/fed-draft-1 .</span></pre>
+  </div>
+
+  <details>
+    <summary>Schema sketch (harmonized)</summary>
+<pre>classes:
+  SiteDefinition:
+    is_a: NodeDefinition
+    slot_usage: {template: {equals_string: site}}
+    attributes:
+      geometry:           {range: string}
+      geometry_precision: {range: GeometryPrecisionEnum, required: true}
+      area:               {range: Quantity}
+      area_source:        {range: AreaSourceEnum}          <span class="c"># reported · computed</span>
+      ecosystem_type:     {range: uriorcurie, multivalued: true}   <span class="c"># exported as rdf:type</span>
+      jurisdiction:       {range: string}
+      tenure:             {range: TenureEnum}
+
+  ImplementationClaim:
+    is_a: Claim
+    annotations: {&lt;group registry annotations, as in the repo&gt;}
+    slot_usage:
+      subject: {range: CausalNode}                <span class="c"># strategy or action node</span>
+      object:  {range: CausalNode}                <span class="c"># site node (checked)</span>
+      scope:   {equals_string: assertional}
+      predicate_qualifiers: {range: ImplementationQualifiers, required: true}
+  ImplementationQualifiers:
+    attributes:
+      period:         {range: &lt;temporal_extent type&gt;, required: true}
+      status:         {range: ImplementationStatusEnum, required: true}
+      reported_on:    {range: string, pattern: "^\d{4}(-\d{2}(-\d{2})?)?$"}   <span class="c"># not LinkML date: xsd:date is not an OWL 2 datatype</span>
+      area_treated:   {range: Quantity}
+      implemented_by: {range: string, multivalued: true}
+      funded_by:      {range: string, multivalued: true}
+      specified_in:   {range: EcoDocument, multivalued: true, inlined: false}
+      external_ids:   {range: ExternalId, multivalued: true, inlined_as_list: true}
+  ExternalId:
+    attributes: {scheme: {range: string, required: true}, value: {range: string, required: true}}
+  ImplementationProposition:                      <span class="c"># the grouping record; derived</span>
+    is_a: EcoProposition
+    attributes:
+      about_project: {range: uriorcurie}          <span class="c"># proj:&lt;id&gt;, the process individual (IAO:0000136)</span>
+
+  CriteriaSet:                                    <span class="c"># information record, not a node</span>
+    attributes:
+      id:                  {identifier: true}
+      operationalizes:     {range: CriteriaConceptEnum, required: true}
+      issued_by:           {range: string, required: true}
+      version:             {range: string, required: true}
+      status:              {range: CriteriaStatusEnum}   <span class="c"># draft · adopted · superseded</span>
+      supersedes:          {range: CriteriaSet, inlined: false}
+      specified_in:        {range: EcoDocument, inlined: false}
+      criteria_text:       {range: string}
+      reference_basis:     {range: ReferenceBasisEnum}
+      baseline_date:       {range: string}                 <span class="c"># ISO 8601, any granularity</span>
+      attributes_assessed: {range: EcosystemAttributeEnum, multivalued: true}
+      threshold_kind:      {range: ThresholdKindEnum}
+      threshold_text:      {range: string}
+      human_caused:        {range: boolean}
+      assessment_unit:     {range: AssessmentUnitEnum}
+      assessment_basis:    {range: AssessmentBasisEnum}
+
+  CriteriaClaim:
+    is_a: Claim
+    annotations: {&lt;group registry annotations; identity rule warp-criteria-identity/1&gt;}
+    slot_usage:
+      subject:   {range: CausalNode, required: true}   <span class="c"># a site: or proj: individual; both particulars</span>
+      object:    {range: CriteriaConceptEnum}          <span class="c"># meaning: the SKOS concept IRI, so there is only one</span>
+      direction: {required: true}                      <span class="c"># the verdict; picks the exported sub-property</span>
+      predicate_qualifiers: {range: CriteriaQualifiers, required: true}
+  CriteriaQualifiers:
+    attributes:
+      criteria_set:      {range: CriteriaSet, required: true, inlined: false}
+      assessed_period:   {range: &lt;temporal_extent type&gt;, required: true}
+      assessment_method: {range: AssessmentMethodEnum}
+  CriteriaProposition:
+    is_a: EcoProposition
+
+ClaimSet additions:
+  implementation_claims, implementation_propositions,
+  criteria_sets, criteria_claims, criteria_propositions
+
+<span class="c"># warp-relations.ttl</span>
+warp:carried_out_at        a owl:ObjectProperty .   <span class="c"># class → individual: reification layer only</span>
+warp:assessed_against      a owl:ObjectProperty .   <span class="c"># abstract</span>
+warp:qualifies_as          a owl:ObjectProperty ; rdfs:subPropertyOf warp:assessed_against .
+warp:does_not_qualify_as   a owl:ObjectProperty ; rdfs:subPropertyOf warp:assessed_against .</pre>
+  </details>
+
+  <div class="sub">
+    <h3>Open questions</h3>
+    <ol class="qs">
+      <li><span><strong>Particulars in the node layer.</strong> Should sites be nodes, or a separate collection like documents? The mechanics are settled — individuals, under their own prefix, never classes — so what is left for Lars is whether they belong in the node layer at all.</span></li>
+      <li><span><strong>Spatial identity.</strong> When do two site records describe the same place? v1: shared IDs only; spatial overlap produces candidates for review.</span></li>
+      <li><span><strong>Statements about propositions.</strong> Answered: neither. The subject is the project individual, so no claim is made about a record and no parallel assessment class is needed.</span></li>
+      <li><span><strong>Element vocabulary.</strong> SER's six attributes, the IUCN Red List of Ecosystems criteria, FAO's FERM, or whatever the federal process settles on?</span></li>
+      <li><span><strong>Counting rules.</strong> Does planned work count as "under restoration"? Area treated or site area?</span></li>
+      <li><span><strong>Automated verdicts.</strong> Criteria sets expressed as SHACL or SPARQL rules: should <code>rule_applied</code> verdicts count for reporting, or only flag candidates? How they enter is settled — as a claim by EcoWeaver, never as an axiom — but whether a policy counts them is not ours to settle.</span></li>
+      <li><span><strong>Existing platforms.</strong> Map to FERM and CMP Open Standards so registries can be imported.</span></li>
+      <li><span><strong>Reporting without exposure.</strong> Can roll-ups run over restricted records and publish only aggregates, and who authorizes that under <code>care</code>?</span></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============================================================ LATER -->
+<section class="part" id="later" style="--c: var(--muted)">
+  <h2>10. Proposed separately</h2>
+  <p class="prose">Changes the proposals point to but do not specify in full.</p>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Change</th><th class="wrap">What</th><th class="wrap">From</th></tr></thead>
+    <tbody>
+      <tr><td><code>ThreatAssessment</code></td><td class="wrap">Subclass of <code>SynthesisAssessment</code> holding IUCN-CMP threat calculator fields (impact, scope, severity, timing) and DFO fields (likelihood, impact, spatial and temporal extent), each on the source's scale. DFO's certainty rating maps onto <code>evidence_object</code> and <code>evidence_type</code>.</td><td class="wrap">Recommendation</td></tr>
+      <tr><td>Rate-of-interaction template</td><td class="wrap">A node template for the rate of an interaction, so causal statements can modify interaction statements (sedimentation increases salmonid predation on salamanders).</td><td class="wrap">Recommendation</td></tr>
+      <tr><td>Lag on causal claims</td><td class="wrap">Time to effect and timescale. Moves MARSS, VAR and DBN priors from structure-only to structure plus lag.</td><td class="wrap">Feedback-models note</td></tr>
+      <tr><td>Measurable state variables</td><td class="wrap">Quantity and unit on node templates, for state-space observation models.</td><td class="wrap">Feedback-models note</td></tr>
+      <tr><td>Quantitative effect size</td><td class="wrap">Effect size with uncertainty beside the ordinal <code>effect_strength</code>.</td><td class="wrap">Feedback-models note</td></tr>
+      <tr><td>Self-regulation claims</td><td class="wrap">A node's effect on itself, completing loop analysis.</td><td class="wrap">Feedback-models note</td></tr>
+      <tr><td>Valuation group</td><td class="wrap">What an outcome is worth, and to whom. Needs its own proposal.</td><td class="wrap">Cost</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ============================================================ HARMONIZE -->
+<section class="part" id="harmonize" style="--c: var(--weft)">
+  <h2>11. Harmonization and pending decisions</h2>
+  <div class="sub">
+    <h3>Where the original proposals differed</h3>
+    <p class="prose">This page already applies these fixes.</p>
+    <div class="tablewrap">
+    <table>
+      <thead><tr><th>Issue</th><th class="wrap">In the proposals</th><th class="wrap">Here</th></tr></thead>
+      <tbody>
+        <tr><td>Quantity type</td><td class="wrap">Implementation sketch used <code>QuantityValue</code></td><td class="wrap"><code>Quantity</code> everywhere</td></tr>
+        <tr><td>Period type</td><td class="wrap">Implementation sketch added <code>Period</code></td><td class="wrap">Reuse the existing <code>temporal_extent</code> type</td></tr>
+        <tr><td>Expert evidence</td><td class="wrap"><code>expert_opinion</code></td><td class="wrap">CAMO's existing <code>expert_judgment</code></td></tr>
+        <tr><td>Cost validation rule</td><td class="wrap">A rule on <code>CostClaim</code> testing slots inside <code>predicate_qualifiers</code>, which LinkML rules cannot reach</td><td class="wrap"><code>any_of</code> on <code>CostQualifiers</code>, plus per-predicate checks in a script</td></tr>
+        <tr><td>Required cost scale</td><td class="wrap">Required, but the relative-cost example has none</td><td class="wrap">Required only for <code>incurs_cost</code></td></tr>
+        <tr><td>Adjustment base year</td><td class="wrap">In the cost table, missing from the sketch</td><td class="wrap"><code>adjustment_base_year</code> added</td></tr>
+        <tr><td>Criteria subjects</td><td class="wrap"><code>subject</code> implicitly required; a project subject held in <code>subject_proposition</code></td><td class="wrap"><code>subject</code> required, and always a particular: a site or project individual</td></tr>
+        <tr><td>Missing identity fields</td><td class="wrap">Not covered</td><td class="wrap">Missing extras encode as null and still group; missing scope still ungrouped</td></tr>
+        <tr><td>Strategy references</td><td class="wrap">Derived IDs, with no rule for how claims refer to them</td><td class="wrap">Local IDs, canonicalized before proposition derivation</td></tr>
+        <tr><td>Role and phase</td><td class="wrap">Said to "line up"</td><td class="wrap"><code>site_preparation</code>, <code>establishment</code> → <code>initial</code>; others one to one</td></tr>
+        <tr><td>Registry keys</td><td class="wrap">Placeholder <code>warp_group</code></td><td class="wrap">The repo's real <code>warp_*</code> annotations</td></tr>
+        <tr><td>Group numbering</td><td class="wrap">"Third", "fourth", "fifth" group</td><td class="wrap">Seven groups in total</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+  <div class="sub">
+    <h3>Where the proposals would not have produced OWL 2</h3>
+    <p class="prose">These are not disagreements between the proposals. They are places where all five sketches, or the 0.3.0 code they build on, would put something in the graph that is not OWL 2 — or is OWL 2 but says the wrong thing. <a href="#graph">Section 4</a> is the fix; the dev guide carries them as R13 to R22.</p>
+    <div class="tablewrap">
+    <table>
+      <thead><tr><th>Issue</th><th class="wrap">What happens</th><th class="wrap">Here</th></tr></thead>
+      <tbody>
+        <tr><td>Predicates as classes</td><td class="wrap">Generating OWL from the schema types every predicate enum value as a class, so <code>RO:0002470 a owl:Class</code> contradicts RO; the claim layer then uses the same kind of IRI as an individual. Eight new predicates would follow</td><td class="wrap">Declared once in <code>warp-relations.ttl</code> as object properties; upstream IRIs reused, never re-declared</td></tr>
+        <tr><td>Enum slots with literal values</td><td class="wrap">The schema declares <code>warp:scope</code> an object property with a class range; the data writes <code>"assertional"</code>. A literal in an object property's object position does not map to OWL 2 DL. 0.4 adds about 28 enums</td><td class="wrap">Enum values export as IRIs, typed as named individuals of the enum class</td></tr>
+        <tr><td>Covering axioms on named classes</td><td class="wrap"><code>owl:unionOf</code> written directly onto the enum class IRI: not mappable to OWL 2 DL, and outside EL</td><td class="wrap">Dropped in post-processing; the values are typed instead</td></tr>
+        <tr><td>One IRI, two kinds</td><td class="wrap">A <code>node:</code> IRI is an <code>owl:Class</code> in one generated file and an individual in another</td><td class="wrap">Four IRI spaces, a check that no IRI has two kinds, and annotation properties for references from claims</td></tr>
+        <tr><td>Polarity in a qualifier</td><td class="wrap">"Do X" and "avoid X" become identical triples; so do a supporting and a disputing criteria verdict, and a negated causal claim reads as its opposite</td><td class="wrap">Sub-properties per polarity; negated claims export no relation triple</td></tr>
+        <tr><td>Cost object</td><td class="wrap"><code>object: {range: uriorcurie}</code>, minting <code>costcat:total</code>, an IRI nothing declares and nothing can type</td><td class="wrap"><code>any_of</code> the two real ranges; the category becomes the predicate; no <code>costcat:</code> terms</td></tr>
+        <tr><td>Project as proposition</td><td class="wrap"><code>ImplementationProposition # = project</code> makes a record the same thing as the work, and a verdict an assertion about the record</td><td class="wrap">A <code>proj:</code> individual for the work; the proposition is about it</td></tr>
+        <tr><td>Region in <code>ecosystem_context</code></td><td class="wrap">Every example puts a place in a slot that ranges over CAMO's functional groups — and it is in three identity keys</td><td class="wrap">A <code>place</code> slot, with IRIs from a registered scheme</td></tr>
+        <tr><td>Scales and units as bare tokens</td><td class="wrap"><code>scale: dfo-recovery-priority</code>, <code>unit: UO:hectare</code> (UO IDs are numeric), <code>unit: protected_area</code> (a count). In RDF these resolve as relative IRIs: silent garbage</td><td class="wrap">SKOS schemes for scales, verified unit CURIEs, counts recorded as counts</td></tr>
+        <tr><td>Dates as OWL datatypes</td><td class="wrap"><code>xsd:date</code>, <code>xsd:gYear</code> and <code>xsd:duration</code> are not in the OWL 2 datatype map, and period overlap was being tested on strings</td><td class="wrap">ISO strings in the data, normalized <code>xsd:dateTime</code> bounds in the output and for overlap</td></tr>
+        <tr><td>Placeholders under real prefixes</td><td class="wrap"><code>ELMO:TODO_planting</code> and <code>ENVO:TODO_grassland</code> are honest in YAML and indistinguishable from real terms in Turtle</td><td class="wrap">A <code>TODO:</code> prefix of their own</td></tr>
+        <tr><td>SEPIO's namespace</td><td class="wrap"><code>subject</code>, <code>predicate</code>, <code>object</code> and the evidence slots still resolve under <code>example.org</code></td><td class="wrap">Confined to one constant, with the upstream fix still to do. <strong>This blocks publishing the reification layer</strong></td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+  <div class="sub">
+    <h3>Decisions still to confirm</h3>
+    <div class="tablewrap">
+    <table>
+      <thead><tr><th>Decision</th><th class="wrap">Working default</th></tr></thead>
+      <tbody>
+        <tr><td>Context of place in identity</td><td class="wrap">Per group (tolerance, cost), as the proposals say, and as <code>place</code> rather than <code>ecosystem_context</code>; not yet for causal and interaction</td></tr>
+        <tr><td>Where <code>not_stated</code> lives</td><td class="wrap">Profile enum extending CAMO's; propose upstream later</td></tr>
+        <tr><td>Proposition ID stability under rule v3</td><td class="wrap">Unchanged for groups with no extras</td></tr>
+        <tr><td>Strategy order in OWL</td><td class="wrap">RDF only, and the part axioms are <code>subClassOf</code>, not equivalence. What is left for Lars is whether part-to-part <code>precedes</code> relations are wanted as well</td></tr>
+        <tr><td>Sites</td><td class="wrap">Nodes; OWL individuals under <code>site:</code>; no geometry in generated outputs. Whether particulars belong in the node layer at all is still for Lars</td></tr>
+        <tr><td>Effectiveness about projects</td><td class="wrap"><code>CriteriaClaim</code> whose subject is the project individual</td></tr>
+        <tr><td>Target 2 counting</td><td class="wrap">Planned excluded by default; supported = at least one supporting and no disputing claim; area as bounds</td></tr>
+        <tr><td>The projection gate</td><td class="wrap">Universal scope, not negated, observed modality, and a supporting assessment. Deliberately strict: on this page's examples it passes nothing</td></tr>
+        <tr><td>Grounding SEPIO's IRIs</td><td class="wrap">Mint WARP aliases and map to SEPIO later, or wait for upstream. Needs the semantics working group before 0.5</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ REFS -->
+<section class="part" id="refs" style="--c: var(--muted)">
+  <h2>12. References</h2>
+  <ul class="refs">
+    <li>Cook, C. N., Pullin, A. S., Sutherland, W. J., Stewart, G. B., &amp; Carrasco, L. R. 2017. Considering cost alongside the effectiveness of management in evidence-based conservation: a systematic reporting protocol. <i>Biological Conservation</i> 209: 508–516.</li>
+    <li>Armsworth, P. R. 2014. Inclusion of costs in conservation planning depends on limited datasets and hopeful assumptions. <i>Annals of the New York Academy of Sciences</i> 1322: 61–76.</li>
+    <li>Bayraktarov, E., et al. 2016. The cost and feasibility of marine coastal restoration. <i>Ecological Applications</i> 26: 1055–1074.</li>
+    <li>Dengler, J., et al. 2023. Ecological Indicator Values for Europe (EIVE) 1.0. <i>Vegetation Classification and Survey</i> 4: 7–29. doi:10.3897/VCS.98324</li>
+    <li>Iacona, G., Price, F., &amp; Armsworth, P. 2014. Predicting the invadedness of protected areas. <i>Diversity and Distributions</i> 20: 430–439.</li>
+    <li>Iacona, G. D., et al. 2018. Standardized reporting of the costs of management interventions for biodiversity conservation. <i>Conservation Biology</i> 32(5): 979–988. doi:10.1111/cobi.13195</li>
+    <li>Kattge, J., et al. 2020. TRY plant trait database: enhanced coverage and open access. <i>Global Change Biology</i> 26(1): 119–188. doi:10.1111/gcb.14904</li>
+    <li>Oron, T., &amp; Hamod, S. 2008. Management of golden wreath wattle in Hof Hachziv – Rosh HaNikra Nature Reserve. Project report, Israel Nature and Parks Authority.</li>
+    <li>Poggio, L., et al. 2021. SoilGrids 2.0: producing soil information for the globe with quantified spatial uncertainty. <i>SOIL</i> 7: 217–240. doi:10.5194/soil-7-217-2021</li>
+    <li>Tichý, L., et al. 2023. Ellenberg-type indicator values for European vascular plant species. <i>Journal of Vegetation Science</i> 34: e13168. doi:10.1111/jvs.13168</li>
+    <li>U.S. Army Corps of Engineers. National Wetland Plant List (current edition and Federal Register notices, 2018–2021).</li>
+    <li>USDA NRCS. PLANTS Database: Conservation Plant Characteristics data definitions.</li>
+    <li>U.S. Fish and Wildlife Service. Habitat Suitability Index model series (FWS/OBS 82/10.x, Biological Report 82). Digitized in the <i>ecorest</i> R package.</li>
+    <li>Environmental Valuation Reference Inventory (EVRI), Environment and Climate Change Canada. Ecosystem Services Valuation Database (ESVD).</li>
+    <li>Relation Ontology: has habitat (RO:0002303). Plant Trait Ontology: salt tolerance (TO:0006001).</li>
+    <li>Fisheries and Oceans Canada. Recovery Strategy for the Mountain Sucker, Milk River populations (final, 2026). Environment and Climate Change Canada. Recovery Strategy for the Spring Salamander, Adirondack / Appalachian population (proposed, 2026).</li>
+  </ul>
+  <p class="meta">As in the source proposals: Iacona et al. (2018) was checked against the accepted manuscript; the cost references beyond it come from its reference list and were not checked separately; Poggio et al.'s author list was not checked in full. Confirm before citing.</p>
+</section>
+
+<footer>WARP: Weaving Assertions, Reasons and Provenance · EcoWeaver · Consolidated from five draft proposals, 7–11 November 2026. Draft for discussion. Predicate names, qualifier values, example node IDs, definitions and figures are provisional.</footer>
+
+</main>
+</div>
+</body>
+</html>

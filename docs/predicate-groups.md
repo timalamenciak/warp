@@ -8,7 +8,10 @@ statements, occurrence statements, and so on. Each group brings:
   statements: the philosophical account and causal features);
 - a **statement class** and a **proposition class**, constraining subject,
   predicate and object;
-- two **StatementSet lists**: one for statements, one for propositions.
+- two **StatementSet lists**: one for statements, one for propositions;
+- an answer to the five questions in [rdf-owl.md](rdf-owl.md): what the group
+  emits in RDF, and whether any of it becomes OWL. Most groups project nothing,
+  but the answer is recorded rather than assumed.
 
 Groups share everything else: the SEPIO frame, scope, hedging conventions,
 CARE metadata, evidence lines, synthesis assessments and proposition
@@ -59,6 +62,14 @@ enums:
 Without a `rosetta_template`, text falls back to "{subject} ⟨predicate⟩
 {object}". Add further annotations (sign, FCM weight) if downstream
 renderings need them, following CAMO's `CausalPredicateEnum`.
+
+The enum is the annotator's list, not the ontology. A predicate WARP mints is
+also declared once, as an `owl:ObjectProperty`, in `src/warp/owl/warp-relations.ttl`;
+predicates reused from RO or CAMO are named here and never re-declared there.
+If a qualifier in your group can reverse what a statement says — the way
+`negated` does — the relation layer needs sub-properties for it, or a triple
+read on its own says the opposite of the source. See
+[rdf-owl.md §3](rdf-owl.md#3-predicates).
 
 ## 3. Predicate qualifiers (a class)
 
@@ -201,4 +212,5 @@ proposition ids for that group to change.
 - [ ] Proposition class: `is_a: EcoProposition`, same constraints
 - [ ] Two StatementSet lists, named as in the annotations
 - [ ] Node templates exist for the subjects and objects
+- [ ] The five questions in [rdf-owl.md §8](rdf-owl.md#8-adding-a-group) answered, and the group added to its register
 - [ ] Example statement; `make all` passes; version bumped
