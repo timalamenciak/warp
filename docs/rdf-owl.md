@@ -389,6 +389,12 @@ section and record the answers in the register below.
 
 ### The register
 
+Management strategies are nodes, not a group, but they follow the same
+rules: the canonical strategy node is an OWL class (`rdfs:subClassOf` planned
+process and `has part some` per required part, never `owl:equivalentClass`),
+and its components are reification-layer individuals under `comp:`, linked by
+the annotation properties `warp:action` and `warp:component_of`.
+
 | Group | Predicates | Subject → object kinds | Polarity | Projects |
 |---|---|---|---|---|
 | causal | CAMO (`camo:causes`, `camo:prevents`, …) | class → class | `negated`: no triple | Existential subsumption, through the gate |

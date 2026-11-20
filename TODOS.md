@@ -492,3 +492,24 @@ job in `scripts/clean_owl.py`; when one is fixed upstream, delete the job.
       `examples/recommendation_statements.yaml` against the Mountain Sucker
       and Spring Salamander recovery strategies, and add node template
       fillings.
+
+### 8.6 Management strategy node (proposal section 6)
+
+- [ ] **Q3 Conditional steps and alternatives.** "Mow until native cover
+      exceeds 50%" is `repeat.until` as text; "burn or mow": two strategies,
+      or one with an alternatives field?
+- [ ] **Q4 Extraction.** Can the LLM pass recognise strategy boundaries
+      reliably, or should annotators confirm them in Loom?
+- [ ] **Q6 Order in OWL, for Lars.** Order stays in the reification layer
+      and the part axioms are subsumption (D6). What is left is whether
+      part-to-part `precedes` relations are wanted as well.
+- [ ] **Q7 CMP and Miradi.** Map strategies to Open Standards strategies and
+      activities, so Miradi plans can be imported?
+- [ ] **The occurrent part relation.** The guide asks for BFO's occurrent
+      has-part relation; `BFO:0000117` (has occurrent part) could not be
+      verified offline, so strategies use `BFO:0000051` (has part), which is
+      verified and transitive. Switch if `BFO:0000117` is confirmed and
+      wanted.
+- [ ] **Strategy placeholders.** `TODO:earthworks`, `TODO:hand_seeding`,
+      `TODO:native_seed_mix_a`, `TODO:mowing`, `TODO:weedy_vegetation` in
+      `examples/strategy_statements.yaml`, and the TODO-named sources.

@@ -47,6 +47,85 @@
     warp:statementText "Restoring tidal action may reduce Aedes dorsalis larval density in marshes generally; the only evidence is one unreplicated site." ;
     warp:strength <https://w3id.org/ecoweaver/warp/CertaintyGradeEnum#very_low> .
 
+<https://w3id.org/ecoweaver/warp/component/earthworks-seed-mow/1> a warp:StrategyComponent ;
+    warp:action node:earthworks_recontouring ;
+    warp:component_of node:strategy-f38f3a2661ee ;
+    warp:role <https://w3id.org/ecoweaver/warp/StrategyRoleEnum#site_preparation> ;
+    warp:step 1 .
+
+<https://w3id.org/ecoweaver/warp/component/earthworks-seed-mow/2> a warp:StrategyComponent ;
+    warp:action node:hand_seeding_native_mix_a ;
+    warp:component_of node:strategy-f38f3a2661ee ;
+    warp:lag "P2W" ;
+    warp:role <https://w3id.org/ecoweaver/warp/StrategyRoleEnum#establishment> ;
+    warp:step 2 .
+
+<https://w3id.org/ecoweaver/warp/component/earthworks-seed-mow/3> a warp:StrategyComponent ;
+    warp:action node:mowing_weed_control ;
+    warp:component_of node:strategy-f38f3a2661ee ;
+    warp:repeat <https://w3id.org/ecoweaver/warp/component/earthworks-seed-mow/3/repeat> ;
+    warp:role <https://w3id.org/ecoweaver/warp/StrategyRoleEnum#follow_up> ;
+    warp:step 3 .
+
+<https://w3id.org/ecoweaver/warp/component/fill-removal-plugs-spot-spray/1> a warp:StrategyComponent ;
+    warp:action node:fill_removal ;
+    warp:component_of node:strategy-3adb20db5eef ;
+    warp:role <https://w3id.org/ecoweaver/warp/StrategyRoleEnum#site_preparation> ;
+    warp:step 1 .
+
+<https://w3id.org/ecoweaver/warp/component/fill-removal-plugs-spot-spray/2> a warp:StrategyComponent ;
+    warp:action node:planting_plugs_sedge_meadow ;
+    warp:component_of node:strategy-3adb20db5eef ;
+    warp:role <https://w3id.org/ecoweaver/warp/StrategyRoleEnum#establishment> ;
+    warp:step 1 .
+
+<https://w3id.org/ecoweaver/warp/component/fill-removal-plugs-spot-spray/3> a warp:StrategyComponent ;
+    warp:action node:spot_herbicide_phalaris ;
+    warp:component_of node:strategy-3adb20db5eef ;
+    warp:optional true ;
+    warp:role <https://w3id.org/ecoweaver/warp/StrategyRoleEnum#maintenance> ;
+    warp:step 2 .
+
+<https://w3id.org/ecoweaver/warp/component/recontour-seed-mow-b/1> a warp:StrategyComponent ;
+    warp:action node:earthworks_recontouring ;
+    warp:component_of node:strategy-f38f3a2661ee ;
+    warp:step 1 .
+
+<https://w3id.org/ecoweaver/warp/component/recontour-seed-mow-b/2> a warp:StrategyComponent ;
+    warp:action node:hand_seeding_native_mix_a ;
+    warp:component_of node:strategy-f38f3a2661ee ;
+    warp:lag "P3W" ;
+    warp:step 2 .
+
+<https://w3id.org/ecoweaver/warp/component/recontour-seed-mow-b/3> a warp:StrategyComponent ;
+    warp:action node:mowing_weed_control ;
+    warp:component_of node:strategy-f38f3a2661ee ;
+    warp:repeat <https://w3id.org/ecoweaver/warp/component/recontour-seed-mow-b/3/repeat> ;
+    warp:step 3 .
+
+<https://w3id.org/ecoweaver/warp/component/site-preparation-then-seeding/1> a warp:StrategyComponent ;
+    warp:action node:strategy-f970cca73021 ;
+    warp:component_of node:strategy-ab075dde135f ;
+    warp:step 1 .
+
+<https://w3id.org/ecoweaver/warp/component/site-preparation-then-seeding/2> a warp:StrategyComponent ;
+    warp:action node:hand_seeding_native_mix_a ;
+    warp:component_of node:strategy-ab075dde135f ;
+    warp:role <https://w3id.org/ecoweaver/warp/StrategyRoleEnum#establishment> ;
+    warp:step 2 .
+
+<https://w3id.org/ecoweaver/warp/component/standard-site-preparation/1> a warp:StrategyComponent ;
+    warp:action node:removal_of_invasive_shrubs ;
+    warp:component_of node:strategy-f970cca73021 ;
+    warp:role <https://w3id.org/ecoweaver/warp/StrategyRoleEnum#site_preparation> ;
+    warp:step 1 .
+
+<https://w3id.org/ecoweaver/warp/component/standard-site-preparation/2> a warp:StrategyComponent ;
+    warp:action node:earthworks_recontouring ;
+    warp:component_of node:strategy-f970cca73021 ;
+    warp:role <https://w3id.org/ecoweaver/warp/StrategyRoleEnum#site_preparation> ;
+    warp:step 2 .
+
 warp:date_lower_bound a owl:AnnotationProperty ;
     rdfs:comment "Normalized xsd:dateTime bound of an ISO 8601 date (half-open: lower inclusive, upper exclusive). Written by export_rdf.py beside the verbatim string (D19)." .
 
@@ -82,6 +161,8 @@ prop:question-road-salt-spring-salamander a warp:CausalProposition ;
 
 <https://w3id.org/ecoweaver/warp/statementset/recommendation-example> a warp:StatementSet .
 
+<https://w3id.org/ecoweaver/warp/statementset/strategy-example> a warp:StatementSet .
+
 <https://w3id.org/ecoweaver/warp/agent/burn-study-authors> a warp:EcoAgent ;
     warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#researcher> ;
     warp:agent_subtype "organization" ;
@@ -102,10 +183,28 @@ prop:question-road-salt-spring-salamander a warp:CausalProposition ;
     warp:agent_subtype "organization" ;
     warp:name "TODO: a regional air quality agency" .
 
+<https://w3id.org/ecoweaver/warp/agent/org/consultancy-b> a warp:EcoAgent ;
+    warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#organization> ;
+    warp:agent_subtype "organization" ;
+    warp:name "TODO: a restoration consultancy (source B)" .
+
 <https://w3id.org/ecoweaver/warp/agent/org/grassland-plan-authors> a warp:EcoAgent ;
     warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#organization> ;
     warp:agent_subtype "organization" ;
     warp:name "TODO: authors of a grassland management plan" .
+
+<https://w3id.org/ecoweaver/warp/agent/org/land-trust-a> a warp:EcoAgent ;
+    warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#organization> ;
+    warp:agent_subtype "organization" ;
+    warp:name "TODO: a land trust (source A)" .
+
+<https://w3id.org/ecoweaver/warp/component/earthworks-seed-mow/3/repeat> a warp:Recurrence ;
+    warp:every "P1Y" ;
+    warp:times 3 .
+
+<https://w3id.org/ecoweaver/warp/component/recontour-seed-mow-b/3/repeat> a warp:Recurrence ;
+    warp:every "P1Y" ;
+    warp:until "native cover exceeds 50%" .
 
 <https://w3id.org/ecoweaver/warp/contrib/bloodroot-gm-1-author> a warp:EcoContribution ;
     warp:contributor <https://w3id.org/ecoweaver/warp/agent/ecoweaver-synthesis> ;
@@ -230,6 +329,22 @@ prop:question-road-salt-spring-salamander a warp:CausalProposition ;
 
 <https://w3id.org/ecoweaver/warp/contrib/notebook-i1-author> a warp:EcoContribution ;
     warp:contributor <https://w3id.org/ecoweaver/warp/agent/practitioner-1> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
+<https://w3id.org/ecoweaver/warp/contrib/strategy-a-native-cover-annotation> a warp:EcoContribution ;
+    warp:contributor orcid:0000-0000-0000-0000 ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
+
+<https://w3id.org/ecoweaver/warp/contrib/strategy-a-native-cover-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/org/land-trust-a> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
+<https://w3id.org/ecoweaver/warp/contrib/strategy-b-native-cover-annotation> a warp:EcoContribution ;
+    warp:contributor orcid:0000-0000-0000-0000 ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
+
+<https://w3id.org/ecoweaver/warp/contrib/strategy-b-native-cover-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/org/consultancy-b> ;
     warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
 
 <https://w3id.org/ecoweaver/warp/contrib/tidal-aedes-1-author> a warp:EcoContribution ;
@@ -379,6 +494,12 @@ doc:notebook-entry-2 a warp:EcoDocument ;
 <https://w3id.org/ecoweaver/warp/doc/notebook-entry-2/subtype> a warp:EcoCoding ;
     warp:label "field notebook" .
 
+doc:practice-note-b a warp:EcoDocument ;
+    warp:title "TODO: practice note (source B)" .
+
+doc:project-report-x a warp:EcoDocument ;
+    warp:title "TODO: project report X (source A)" .
+
 <https://w3id.org/ecoweaver/warp/el/bloodroot-gm-1-experimental> a warp:EcoEvidenceLine ;
     warp:directionOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
     warp:evidence_item_refs stmt:murphy2005-c1 ;
@@ -475,6 +596,18 @@ doc:notebook-entry-2 a warp:EcoDocument ;
     warp:evidence_type <https://w3id.org/ecoweaver/warp/WarpEvidenceTypeEnum#practitioner_experience> ;
     warp:strengthOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceStrengthEnum#weak> ;
     warp:targetProposition prop:6ac6fc0d7703 .
+
+<https://w3id.org/ecoweaver/warp/el/strategy-a-native-cover-1> a warp:EcoEvidenceLine ;
+    warp:directionOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
+    warp:evidence_type <https://w3id.org/ecoweaver/warp/WarpEvidenceTypeEnum#case_study> ;
+    warp:strengthOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceStrengthEnum#not_assessed> ;
+    warp:targetProposition prop:83d87b9d22ad .
+
+<https://w3id.org/ecoweaver/warp/el/strategy-b-native-cover-1> a warp:EcoEvidenceLine ;
+    warp:directionOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
+    warp:evidence_type <https://w3id.org/ecoweaver/warp/WarpEvidenceTypeEnum#practitioner_experience> ;
+    warp:strengthOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceStrengthEnum#not_assessed> ;
+    warp:targetProposition prop:83d87b9d22ad .
 
 <https://w3id.org/ecoweaver/warp/el/tidal-aedes-1-case> a warp:EcoEvidenceLine ;
     warp:directionOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
@@ -845,6 +978,40 @@ stmt:notebook-i1 a warp:InteractionStatement ;
 <https://w3id.org/ecoweaver/warp/statement/notebook-i1/recordMetadata> a warp:EcoRecordMetadata ;
     warp:contributions <https://w3id.org/ecoweaver/warp/contrib/notebook-i1-annotation> .
 
+stmt:strategy-a-native-cover a warp:CausalStatement ;
+    warp:causal_language <https://w3id.org/ecoweaver/warp/ClaimStrengthEnum#associational> ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/strategy-a-native-cover-author> ;
+    warp:hasEvidenceLines <https://w3id.org/ecoweaver/warp/el/strategy-a-native-cover-1> ;
+    warp:modality <https://w3id.org/ecoweaver/warp/ModalityEnum#observed> ;
+    warp:object node:native_plant_cover ;
+    warp:predicate camo:causes ;
+    warp:proposition prop:83d87b9d22ad ;
+    warp:recordMetadata <https://w3id.org/ecoweaver/warp/statement/strategy-a-native-cover/recordMetadata> ;
+    warp:reportedIn doc:project-report-x ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
+    warp:statementText "TODO: after earthworks, seeding and three years of mowing, native cover increased on the project site." ;
+    warp:subject node:strategy-f38f3a2661ee .
+
+<https://w3id.org/ecoweaver/warp/statement/strategy-a-native-cover/recordMetadata> a warp:EcoRecordMetadata ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/strategy-a-native-cover-annotation> .
+
+stmt:strategy-b-native-cover a warp:CausalStatement ;
+    warp:causal_language <https://w3id.org/ecoweaver/warp/ClaimStrengthEnum#associational> ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/strategy-b-native-cover-author> ;
+    warp:hasEvidenceLines <https://w3id.org/ecoweaver/warp/el/strategy-b-native-cover-1> ;
+    warp:modality <https://w3id.org/ecoweaver/warp/ModalityEnum#observed> ;
+    warp:object node:native_plant_cover ;
+    warp:predicate camo:causes ;
+    warp:proposition prop:83d87b9d22ad ;
+    warp:recordMetadata <https://w3id.org/ecoweaver/warp/statement/strategy-b-native-cover/recordMetadata> ;
+    warp:reportedIn doc:practice-note-b ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
+    warp:statementText "TODO: recontouring and seeding, then mowing, increased native cover." ;
+    warp:subject node:strategy-f38f3a2661ee .
+
+<https://w3id.org/ecoweaver/warp/statement/strategy-b-native-cover/recordMetadata> a warp:EcoRecordMetadata ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/strategy-b-native-cover-annotation> .
+
 node:water_conservation_measures_milk_river warp:recommended_to_achieve node:maintained_habitat_quantity_of_mountain_sucker_milk_river .
 
 node:water_extraction_milk_river camo:prevents node:habitat_quantity_of_mountain_sucker_milk_river .
@@ -1059,6 +1226,19 @@ node:stocking_of_predacious_sportfish_milk_river camo:prevents node:abundance_of
 doc:notebook-entry-1 a warp:EcoDocument ;
     warp:subtype <https://w3id.org/ecoweaver/warp/doc/notebook-entry-1/subtype> .
 
+prop:83d87b9d22ad a warp:CausalProposition ;
+    warp:derived_from_statements stmt:strategy-a-native-cover,
+        stmt:strategy-b-native-cover ;
+    warp:identity_key "causal|node:strategy-f38f3a2661ee|causes|node:native_plant_cover|affirmed|assertional" ;
+    warp:identity_rule_version "warp-prop-identity/4" ;
+    warp:negated false ;
+    warp:object node:native_plant_cover ;
+    warp:predicate camo:causes ;
+    warp:propositionText "In a particular case, earthworks then seeding then mowing causes Native plant cover." ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
+    warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
+    warp:subject node:strategy-f38f3a2661ee .
+
 doc:dfo-mountain-sucker-recovery-strategy a warp:EcoDocument ;
     warp:title "TODO: Recovery Strategy for the Mountain Sucker (Catostomus platyrhynchus), Milk River populations" .
 
@@ -1090,6 +1270,8 @@ prop:247fc9907bf5 a warp:CausalProposition ;
 node:prescribed_burning_of_grassland camo:prevents node:shrub_cover_in_grassland ;
     warp:advised_against_for node:decrease_in_shrub_cover_in_grassland ;
     warp:recommended_to_achieve node:decrease_in_shrub_cover_in_grassland .
+
+node:strategy-f38f3a2661ee camo:causes node:native_plant_cover .
 
 orcid:0000-0000-0000-0000 a warp:EcoAgent ;
     warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#researcher> ;

@@ -12,7 +12,8 @@ export PYTHONUTF8 := 1
 # Annotated statement sets (inputs). Each gets a derived file next to it.
 STATEMENTS  := examples/bloodroot_statements.yaml \
                examples/kramer1995_statements.yaml \
-               examples/recommendation_statements.yaml
+               examples/recommendation_statements.yaml \
+               examples/strategy_statements.yaml
 DERIVED     := $(STATEMENTS:.yaml=.derived.yaml)
 ASSESSMENTS := examples/bloodroot_assessment.yaml examples/kramer1995_assessment.yaml
 
@@ -45,7 +46,7 @@ LOGICAL   = project/nodes.ttl project/axioms.ttl \
 
 # templates -> vocab -> nodes -> propositions -> schema OWL -> rdf -> owl ->
 # validate (shapes, references, OWL lint) -> checks -> profiles -> reports -> tests
-all: patterns vocab nodes derive gen rdf owl validate check owl-check reports test
+all: patterns vocab derive nodes gen rdf owl validate check owl-check reports test
 
 # --- Node templates ----------------------------------------------------------
 
@@ -64,9 +65,10 @@ patterns: templates
 vocab:
 	$(PY) scripts/gen_vocab.py vocab/scales.yaml --out project/scales.ttl
 
-# Expand node definitions: OWL (Turtle) + DOSDP fill tables.
-nodes: templates
-	$(PY) scripts/expand_nodes.py $(TEMPLATES) $(STATEMENTS) \
+# Expand node definitions: OWL (Turtle) + DOSDP fill tables. Reads the
+# derived sets, where canonical strategy nodes live.
+nodes: templates derive
+	$(PY) scripts/expand_nodes.py $(TEMPLATES) $(DERIVED) \
 	  --owl project/nodes.ttl --tsv-dir patterns/data
 
 # Same OWL via the ODK route (needs dosdp-tools installed).
@@ -80,10 +82,14 @@ owl-dosdp: patterns nodes
 
 # --- Statements ------------------------------------------------------------------
 
-# Derive propositions for every registered predicate group, one set at a time.
+# Derive, one set at a time: canonical strategies first (references to local
+# strategy IDs are rewritten), then propositions for every registered
+# predicate group, so statements about one strategy meet in one proposition.
 derive:
 	for f in $(STATEMENTS); do \
-	  $(PY) scripts/derive_propositions.py $$f $${f%.yaml}.derived.yaml || exit 1; \
+	  d=$${f%.yaml}.derived.yaml; \
+	  $(PY) scripts/derive_strategies.py $$f $$d && \
+	  $(PY) scripts/derive_propositions.py $$d $$d || exit 1; \
 	done
 
 # Shapes and enums (LinkML), every reference resolving (check_refs.py), and

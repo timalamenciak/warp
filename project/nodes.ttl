@@ -1,5 +1,7 @@
+@prefix BFO: <http://purl.obolibrary.org/obo/BFO_> .
 @prefix ENVO: <http://purl.obolibrary.org/obo/ENVO_> .
 @prefix NCBITaxon: <http://purl.obolibrary.org/obo/NCBITaxon_> .
+@prefix OBI: <http://purl.obolibrary.org/obo/OBI_> .
 @prefix PATO: <http://purl.obolibrary.org/obo/PATO_> .
 @prefix PCO: <http://purl.obolibrary.org/obo/PCO_> .
 @prefix RO: <http://purl.obolibrary.org/obo/RO_> .
@@ -58,6 +60,56 @@ node:rate_of_population_growth_of_alliaria_petiolata a owl:Class ;
                                                                 owl:onProperty RO:0002351 ;
                                                                 owl:someValuesFrom NCBITaxon:126270 ] ) ] ] ) ] ] ) ] .
 
+node:strategy-3adb20db5eef a owl:Class ;
+    rdfs:label "Fill removal and plug planting with spot spraying if needed" ;
+    obo:IAO_0000115 "A planned process whose required parts are, in order: step 1: Fill removal; step 1: Planting sedge meadow plugs." ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty BFO:0000051 ;
+            owl:someValuesFrom node:fill_removal ],
+        [ a owl:Restriction ;
+            owl:onProperty BFO:0000051 ;
+            owl:someValuesFrom node:planting_plugs_sedge_meadow ],
+        OBI:0000011 .
+
+node:strategy-ab075dde135f a owl:Class ;
+    rdfs:label "Standard site preparation then seeding" ;
+    obo:IAO_0000115 "A planned process whose required parts are, in order: step 1: Removal of invasive shrubs; step 2: Earthworks recontouring; step 3: Hand seeding of native mix A." ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty BFO:0000051 ;
+            owl:someValuesFrom node:hand_seeding_native_mix_a ],
+        [ a owl:Restriction ;
+            owl:onProperty BFO:0000051 ;
+            owl:someValuesFrom node:earthworks_recontouring ],
+        [ a owl:Restriction ;
+            owl:onProperty BFO:0000051 ;
+            owl:someValuesFrom node:removal_of_invasive_shrubs ],
+        OBI:0000011 .
+
+node:strategy-f38f3a2661ee a owl:Class ;
+    rdfs:label "Earthworks then seeding then mowing" ;
+    obo:IAO_0000115 "A planned process whose required parts are, in order: step 1: Earthworks recontouring; step 2: Hand seeding of native mix A; step 3: Mowing for weed control." ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty BFO:0000051 ;
+            owl:someValuesFrom node:hand_seeding_native_mix_a ],
+        [ a owl:Restriction ;
+            owl:onProperty BFO:0000051 ;
+            owl:someValuesFrom node:mowing_weed_control ],
+        [ a owl:Restriction ;
+            owl:onProperty BFO:0000051 ;
+            owl:someValuesFrom node:earthworks_recontouring ],
+        OBI:0000011 .
+
+node:strategy-f970cca73021 a owl:Class ;
+    rdfs:label "Standard site preparation" ;
+    obo:IAO_0000115 "A planned process whose required parts are, in order: step 1: Removal of invasive shrubs; step 2: Earthworks recontouring." ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty BFO:0000051 ;
+            owl:someValuesFrom node:earthworks_recontouring ],
+        [ a owl:Restriction ;
+            owl:onProperty BFO:0000051 ;
+            owl:someValuesFrom node:removal_of_invasive_shrubs ],
+        OBI:0000011 .
+
 node:tidal_restoration_of_marsh a owl:Class ;
     rdfs:label "tidal restoration of marsh" ;
     obo:IAO_0000115 "A tidal restoration process acting on marsh." ;
@@ -99,21 +151,75 @@ PATO:0001353 a owl:Class .
 
 PCO:0000011 a owl:Class .
 
+RO:0002233 a owl:ObjectProperty .
+
 RO:0002491 a owl:ObjectProperty .
 
 UBERON:0000069 a owl:Class .
+
+node:fill_removal a owl:Class .
+
+node:mowing_weed_control a owl:Class ;
+    rdfs:label "mowing of weedy vegetation" ;
+    obo:IAO_0000115 "A mowing process acting on weedy vegetation." ;
+    dcterms:conformsTo <https://w3id.org/ecoweaver/patterns/intervention.yaml> ;
+    owl:equivalentClass [ a owl:Class ;
+            owl:intersectionOf ( TODO:mowing [ a owl:Restriction ;
+                        owl:onProperty RO:0000057 ;
+                        owl:someValuesFrom TODO:weedy_vegetation ] ) ] .
+
+node:planting_plugs_sedge_meadow a owl:Class .
+
+TODO:earthworks a owl:Class .
+
+TODO:hand_seeding a owl:Class .
+
+TODO:mowing a owl:Class .
+
+TODO:native_seed_mix_a a owl:Class .
 
 TODO:planting a owl:Class .
 
 TODO:tidal_restoration a owl:Class .
 
+TODO:weedy_vegetation a owl:Class .
+
+ENVO:00001998 a owl:Class .
+
 NCBITaxon:126270 a owl:Class .
 
 RO:0000052 a owl:ObjectProperty .
 
-RO:0000057 a owl:ObjectProperty .
+node:hand_seeding_native_mix_a a owl:Class ;
+    rdfs:label "hand seeding of soil with native seed mix A" ;
+    obo:IAO_0000115 "A hand seeding process acting on soil that has native seed mix A as input." ;
+    dcterms:conformsTo <https://w3id.org/ecoweaver/patterns/intervention_with_method.yaml> ;
+    owl:equivalentClass [ a owl:Class ;
+            owl:intersectionOf ( TODO:hand_seeding [ a owl:Restriction ;
+                        owl:onProperty RO:0000057 ;
+                        owl:someValuesFrom ENVO:00001998 ] [ a owl:Restriction ;
+                        owl:onProperty RO:0002233 ;
+                        owl:someValuesFrom TODO:native_seed_mix_a ] ) ] .
+
+node:removal_of_invasive_shrubs a owl:Class .
+
+node:earthworks_recontouring a owl:Class ;
+    rdfs:label "earthworks of soil" ;
+    obo:IAO_0000115 "A earthworks process acting on soil." ;
+    dcterms:conformsTo <https://w3id.org/ecoweaver/patterns/intervention.yaml> ;
+    owl:equivalentClass [ a owl:Class ;
+            owl:intersectionOf ( TODO:earthworks [ a owl:Restriction ;
+                        owl:onProperty RO:0000057 ;
+                        owl:someValuesFrom ENVO:00001998 ] ) ] .
+
+OBI:0000011 a owl:Class .
 
 PCO:0000001 a owl:Class .
 
 RO:0002351 a owl:ObjectProperty .
+
+RO:0000057 a owl:ObjectProperty .
+
+BFO:0000051 a owl:ObjectProperty,
+        owl:TransitiveProperty .
 

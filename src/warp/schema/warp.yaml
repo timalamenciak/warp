@@ -402,6 +402,31 @@ enums:
       direct:
       precursor:
 
+  # --- management strategies (0.7.0, Phase 4) ------------------------------------
+
+  StrategyRoleEnum:
+    implements: [owl:NamedIndividual]
+    description: >-
+      What a strategy component does in the strategy. Each value names the
+      cost phase it falls in (warp_cost_phase), so a phase-level cost can say
+      which components it covers (R10).
+    permissible_values:
+      site_preparation:
+        annotations:
+          warp_cost_phase: initial
+      establishment:
+        annotations:
+          warp_cost_phase: initial
+      follow_up:
+        annotations:
+          warp_cost_phase: follow_up
+      maintenance:
+        annotations:
+          warp_cost_phase: maintenance
+      monitoring:
+        annotations:
+          warp_cost_phase: monitoring
+
 
 ## =============================================================================
 ## SLOTS shared across classes
@@ -526,6 +551,15 @@ classes:
           and with what. Expanded to OWL and DOSDP fill tables by
           scripts/expand_nodes.py. See docs/node-templates.md.
         range: NodeDefinition
+        multivalued: true
+        inlined_as_list: true
+      strategy_definitions:
+        description: >-
+          Management strategies: ordered bundles of action nodes. Their own
+          list (not node_definitions) because a NodeDefinition list has no
+          type designator to tell a strategy from a filled template.
+          scripts/derive_strategies.py derives each one's canonical node.
+        range: StrategyDefinition
         multivalued: true
         inlined_as_list: true
 
@@ -1095,11 +1129,126 @@ classes:
         description: "Id of a template in templates/node_templates.yaml."
         required: true
       fillers:
-        description: "One filler per template variable."
+        description: >-
+          One filler per template variable. Required for class_expression
+          templates (checked by scripts/expand_nodes.py); strategies and sites
+          have no variables.
         range: TemplateFiller
         multivalued: true
         inlined_as_list: true
+
+  StrategyDefinition:
+    is_a: NodeDefinition
+    class_uri: warp:StrategyDefinition
+    description: >-
+      A management strategy: a set of management actions carried out together,
+      in a stated order. Its parts are references to ordinary action nodes
+      (or to another strategy, nested one level deep); the strategy holds only
+      their order. Annotators give each definition a local node ID;
+      scripts/derive_strategies.py (warp-strategy-identity/1) computes the
+      canonical node from the sorted (step, action) pairs of the required
+      parts after flattening, records it here, and rewrites references so
+      statements about two descriptions of the same work meet in one
+      proposition.
+    comments:
+      - >-
+        No objective field, on purpose. What counts as restoration success is
+        contested, and the same actions are aimed at different outcomes by
+        different people. A node with an objective would build one view of
+        success into the graph. Aims stay on statements, where they belong to
+        a claimant, and in EcoStudyResult.stated_goal.
+    slots:
+      - specified_in
+    slot_usage:
+      template:
+        equals_string: management_strategy
+    attributes:
+      components:
+        description: "The parts, at least two. Parallel parts share a step number."
+        range: StrategyComponent
+        multivalued: true
+        inlined_as_list: true
         required: true
+        minimum_cardinality: 2
+      identity_key:
+        description: >-
+          DERIVED: the sorted (step, action) pairs of the required components
+          after flattening, as derive_strategies.py wrote them.
+        annotations:
+          loom_role: calculated
+      identity_rule_version:
+        description: "DERIVED: the rule that produced identity_key (warp-strategy-identity/1)."
+        annotations:
+          loom_role: calculated
+      canonical_node:
+        description: >-
+          DERIVED: the strategy's canonical node, node:strategy-<hash of the
+          key>. Definitions with the same key share it.
+        range: CausalNode
+        annotations:
+          loom_role: calculated
+      replaces:
+        description: >-
+          DERIVED: canonical nodes this definition had under earlier
+          derivations, before a component changed. Each is written to OWL as
+          deprecated and replaced by the current one (IAO:0100001).
+        range: uriorcurie
+        multivalued: true
+        annotations:
+          loom_role: calculated
+
+  StrategyComponent:
+    class_uri: warp:StrategyComponent
+    description: >-
+      One part of a strategy. Exported to RDF as an individual of its own
+      (comp:<strategy>/<n>), so order, lag, repeats and role are addressable;
+      in OWL only the action, as `has part some <action>`, and only when the
+      part is required.
+    attributes:
+      action:
+        description: >-
+          The action node, or another strategy's node (nested one level deep
+          only). A reference, never an inline copy.
+        slot_uri: warp:action
+        implements: [owl:AnnotationProperty]   # points at a node class (D12)
+        range: CausalNode
+        required: true
+      step:
+        description: "Position in the sequence, from 1. Parts that run together share a step."
+        range: integer
+        required: true
+        minimum_value: 1
+      lag:
+        description: >-
+          Time after the previous step starts, as an ISO 8601 duration (P2W:
+          two weeks). A string, never xsd:duration (decision D19).
+        pattern: "^P(?!$)([0-9]+Y)?([0-9]+M)?([0-9]+W)?([0-9]+D)?(T([0-9]+H)?([0-9]+M)?([0-9]+S)?)?$"
+      repeat:
+        description: "How the part recurs (yearly mowing for three years)."
+        range: Recurrence
+        inlined: true
+      role:
+        description: "What the part does in the strategy; maps to a cost phase."
+        range: StrategyRoleEnum
+      optional:
+        description: >-
+          True for parts marked "if needed". Left out of the identity key and
+          out of the OWL, kept in RDF.
+        range: boolean
+
+  Recurrence:
+    class_uri: warp:Recurrence
+    description: "A repeating strategy component: every, how many times, until when."
+    attributes:
+      every:
+        description: "ISO 8601 duration between repeats (P1Y: yearly)."
+        pattern: "^P(?!$)([0-9]+Y)?([0-9]+M)?([0-9]+W)?([0-9]+D)?(T([0-9]+H)?([0-9]+M)?([0-9]+S)?)?$"
+      times:
+        description: "Number of times the part is carried out."
+        range: integer
+        minimum_value: 1
+      until:
+        description: "When repeats stop, as text, for open-ended repeats (\"until native cover exceeds 50%\")."
 
   TemplateFiller:
     description: "The term filling one template variable."

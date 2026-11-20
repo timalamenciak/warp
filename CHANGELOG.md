@@ -58,6 +58,59 @@ round, built on the 0.6.0 foundations.
   agreeing, no projection at any scope, and the report's three findings.
 - No existing proposition ID changed.
 
+### Phase 4: management strategy node
+
+- **Template kinds.** `warp_templates.yaml` gains `kind` (`class_expression`,
+  the default; `composite`; `particular`), and `parent_class` /
+  `part_property` for composites. `vars`, `name`, `definition` and
+  `equivalent_to` are now required only for class-expression templates
+  (checked in `templates_lib.py`). `gen_dosdp.py` skips other kinds.
+- **`management_strategy` template** (`kind: composite`, parent
+  `OBI:0000011` planned process, part relation `BFO:0000051` has part; both
+  verified in the local ECOCORE imports).
+- **Schema:** `StrategyDefinition` (is_a `NodeDefinition`: `components`, at
+  least two; `specified_in`; derived `identity_key`, `identity_rule_version`,
+  `canonical_node`, `replaces`), `StrategyComponent` (`action`, `step`, `lag`
+  as an ISO 8601 duration string, `repeat`, `role`, `optional`),
+  `Recurrence` (`every`, `times`, `until`), `StrategyRoleEnum` (each value
+  annotated with its cost phase, R10). New `StatementSet.strategy_definitions`
+  (its own list: node definitions have no type designator).
+  `NodeDefinition.fillers` is no longer schema-required; `expand_nodes.py`
+  requires it for class-expression templates. No objective field, with the
+  reason in a schema comment.
+- **`scripts/derive_strategies.py`**, rule `warp-strategy-identity/1`:
+  flattens one level of nesting (renumbering later steps), keys on the sorted
+  (step, action) pairs of required parts, mints `node:strategy-<hash>`,
+  records the canonical node on each definition, adds a node record for it,
+  rewrites references to local strategy IDs, refuses cycles and deeper
+  nesting, and records superseded canonical IDs in `replaces` by comparing
+  with the previous derived file. `make derive` runs it before
+  `derive_propositions.py`.
+- **OWL:** `expand_nodes.py` (now run on the derived files) writes each
+  canonical strategy as `rdfs:subClassOf` planned process and
+  `has part some <action>` per required part, never `owl:equivalentClass`;
+  `BFO:0000051` is declared transitive there; superseded IRIs are
+  `owl:deprecated` with `IAO:0100001`. No DOSDP pattern.
+- **RDF:** `export_rdf.py` exports strategy components as
+  `comp:<local ID>/<n>` individuals with step, lag, repeat, role and
+  optional, linked by the new annotation properties `warp:action` and
+  `warp:component_of`; the definitions themselves are not exported (their
+  nodes are classes).
+- **Example** `examples/strategy_statements.yaml`: the proposal's
+  earthworks-seed-mow strategy, a second source describing it flat under
+  another name (merges), parallel and optional parts, a nested "standard
+  site preparation", and two causal statements about the two descriptions,
+  which derive one proposition.
+- Derived files' header now names both derivation scripts.
+- `docs/node-templates.md` section 8: template kinds, strategies, why no
+  DOSDP pattern, and that strategy IRIs are stable only while their parts are.
+- Tests: flattening, renumbering, parallel and optional parts, nested
+  optional, nested and flat meeting, order in the key, cycles, deep nesting,
+  merging, one proposition for merged strategies, superseded IDs and their
+  deprecation in OWL, subclass-not-equivalence, optional parts absent from
+  OWL, component export, and validation (two components, ISO lag).
+- No existing proposition ID changed.
+
 ## 0.6.0 (unreleased)
 
 Shared foundations, the identity engine and the RDF/OWL contract, with the two

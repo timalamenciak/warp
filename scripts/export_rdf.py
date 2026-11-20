@@ -57,6 +57,7 @@ WARP = Namespace("https://w3id.org/ecoweaver/warp/")
 STATEMENTS_ONTOLOGY = URIRef("https://w3id.org/ecoweaver/warp/ontology/statements")
 EXPORT_VERSION = "warp-export-rdf/1"
 NOT_EXPORTED = {"nodes", "node_definitions"}     # nodes are classes: project/nodes.ttl
+COMPONENT_LISTS = {"strategy_definitions"}       # exported as their components only
 SKIP_SLOTS = {"id", "type"}
 DATE_PATTERN_MARK = "[0-9]{4}(-(0[1-9]|1[0-2])"
 XSD_FOR = {"xsd:boolean": XSD.boolean, "xsd:integer": XSD.integer, "xsd:float": XSD.float,
@@ -119,7 +120,7 @@ class Exporter:
         self.groups = dp.load_groups(Path(sv.schema.source_file), all_groups=True)
         self.group_of_class = {g["statement_class"]: g for g in self.groups}
         self.group_of_class.update({g["proposition_class"]: g for g in self.groups})
-        self.counts = {"records": 0, "relations": 0, "negated": 0, "sentinels": 0}
+        self.counts = {"records": 0, "relations": 0, "negated": 0, "sentinels": 0, "components": 0}
 
     # -- IRIs --------------------------------------------------------------
 
@@ -240,9 +241,26 @@ class Exporter:
             slot = root.get(key)
             if slot is None or key in NOT_EXPORTED or not isinstance(val, list):
                 continue
+            if key in COMPONENT_LISTS:
+                for defn in val:
+                    self.components(defn)
+                continue
             for obj in val:
                 if isinstance(obj, dict) and isinstance(obj.get("id"), str):
                     self.record(obj, slot.range, self.iri(obj["id"]))
+
+    def components(self, defn):
+        """A strategy's parts, each as its own individual comp:<strategy>/<n>
+        (D11): its order, lag, repeats and role stay addressable here, while
+        nodes.ttl holds only `has part some <action>`. The definition itself
+        is not exported: its node is a class."""
+        local = defn["node"].split(":", 1)[-1]
+        strategy = self.iri(defn.get("canonical_node") or defn["node"])
+        for i, comp in enumerate(defn.get("components") or [], start=1):
+            iri = self.iri(f"comp:{local}/{i}")
+            self.record(comp, "StrategyComponent", iri)
+            self.g.add((iri, WARP.component_of, strategy))
+            self.counts["components"] += 1
 
     def finish(self):
         self.g.add((STATEMENTS_ONTOLOGY, RDF.type, OWL.Ontology))

@@ -31,11 +31,13 @@ from rdflib.collection import Collection
 from rdflib.namespace import OWL, RDF, RDFS, DCTERMS
 
 from templates_lib import (
-    TemplateError, check_template, expand_curie, fill_text, load_collection,
+    CLASS_EXPRESSION, TemplateError, check_template, expand_curie, fill_text, load_collection,
+    template_kind,
 )
 
 OBO = Namespace("http://purl.obolibrary.org/obo/")
 DEFINITION = OBO.IAO_0000115
+TERM_REPLACED_BY = OBO.IAO_0100001
 PATTERN_BASE = "https://w3id.org/ecoweaver/patterns/"
 PLACEHOLDER_PREFIX = "TODO"
 NODES_ONTOLOGY = URIRef("https://w3id.org/ecoweaver/warp/ontology/nodes")
@@ -46,6 +48,8 @@ def check_definition(defn, template):
     node = defn["node"]
     declared = {v["name"]: v for v in template["vars"]}
     filled = defaultdict(list)
+    if not defn.get("fillers"):
+        return [f"{node}: template {tid} needs fillers"]
     for f in defn["fillers"]:
         filled[f["var"]].append(f)
     problems = []
@@ -65,6 +69,76 @@ def check_definition(defn, template):
         if prefix not in allowed and prefix != PLACEHOLDER_PREFIX:
             problems.append(f"{node}: var '{name}' = {fs[0]['value']} must use one of {allowed}")
     return problems
+
+
+def expand_strategies(g, data, templates, prefixes, names, seen, problems):
+    """Write each canonical management strategy as an OWL class (Phase 4).
+
+    `<strategy> rdfs:subClassOf <parent_class>` and one
+    `rdfs:subClassOf [ owl:onProperty <part_property> ; owl:someValuesFrom <part> ]`
+    per required part after flattening (decisions D5, D6). Subclass, never
+    equivalent class: order is in the identity key but does not render, so
+    equivalence would merge strategies the rule holds apart. The part
+    relation is transitive and used only inside someValuesFrom, so the output
+    stays in OWL 2 EL. Optional parts, order, lags, repeats and roles stay in
+    the reification layer. Superseded canonical IRIs (a part changed) are
+    written as deprecated and replaced by the current one (IAO:0100001).
+    Yields (canonical node, label) per strategy written."""
+    defs = data.get("strategy_definitions") or []
+    if not defs:
+        return
+    import derive_strategies as ds
+    template = templates.get("management_strategy")
+    if template is None:
+        problems.append("strategy_definitions present but templates define no management_strategy")
+        return
+    parent = URIRef(expand_curie(template["parent_class"], prefixes))
+    part = URIRef(expand_curie(template["part_property"], prefixes))
+    # Derived files point nested components at canonical IDs, so look
+    # definitions up by either ID.
+    by_node = {d["node"]: d for d in defs}
+    by_node.update({d["canonical_node"]: d for d in defs if d.get("canonical_node")})
+    for d in defs:
+        canon = d.get("canonical_node")
+        if not canon:
+            problems.append(f"{d['node']}: no canonical_node; run scripts/derive_strategies.py first")
+            continue
+        cls = URIRef(expand_curie(canon, prefixes))
+        for old in d.get("replaces") or []:
+            old_iri = URIRef(expand_curie(old, prefixes))
+            g.add((old_iri, RDF.type, OWL.Class))
+            g.add((old_iri, OWL.deprecated, Literal(True)))
+            g.add((old_iri, TERM_REPLACED_BY, cls))
+            g.add((TERM_REPLACED_BY, RDF.type, OWL.AnnotationProperty))
+        if canon in seen:
+            continue
+        seen.add(canon)
+        try:
+            flat = ds.flatten(d, by_node)
+        except ds.StrategyError as err:
+            problems.append(str(err))
+            continue
+        required = sorted({c["action"] for c in flat if not c.get("optional")})
+        steps = sorted((c["step"], names.get(c["action"], c["action"])) for c in flat if not c.get("optional"))
+        label = names.get(canon, canon)
+        g.add((cls, RDF.type, OWL.Class))
+        g.add((cls, RDFS.label, Literal(label)))
+        g.add((cls, DEFINITION, Literal(
+            "A planned process whose required parts are, in order: "
+            + "; ".join(f"step {s}: {n}" for s, n in steps) + ".")))
+        g.add((parent, RDF.type, OWL.Class))
+        g.add((part, RDF.type, OWL.ObjectProperty))
+        g.add((part, RDF.type, OWL.TransitiveProperty))
+        g.add((cls, RDFS.subClassOf, parent))
+        for action in required:
+            a = URIRef(expand_curie(action, prefixes))
+            g.add((a, RDF.type, OWL.Class))
+            r = BNode()
+            g.add((r, RDF.type, OWL.Restriction))
+            g.add((r, OWL.onProperty, part))
+            g.add((r, OWL.someValuesFrom, a))
+            g.add((cls, RDFS.subClassOf, r))
+        yield canon, label
 
 
 def build_expression(g, expr, values, prefixes):
@@ -120,6 +194,7 @@ def main(argv=None):
     g.add((DCTERMS.conformsTo, RDF.type, OWL.AnnotationProperty))
     rows = defaultdict(dict)   # template -> {node: row}; deduplicates across files
     problems, count = [], 0
+    seen_strategies = set()
 
     for path in args.statement_sets:
         data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
@@ -128,6 +203,10 @@ def main(argv=None):
             template = templates.get(defn["template"])
             if template is None:
                 problems.append(f"{defn['node']}: unknown template '{defn['template']}'")
+                continue
+            if template_kind(template) != CLASS_EXPRESSION:
+                problems.append(f"{defn['node']}: template {defn['template']} is {template_kind(template)}; "
+                                "define it in its own list (strategy_definitions)")
                 continue
             issues = check_definition(defn, template)
             etype = node_types.get(defn["node"])
@@ -159,6 +238,11 @@ def main(argv=None):
             count += 1
             print(f"{defn['node']}  ->  {label}")
 
+        names = {n["id"]: n.get("name", n["id"]) for n in data.get("nodes") or []}
+        for canon, label in expand_strategies(g, data, templates, prefixes, names, seen_strategies, problems):
+            count += 1
+            print(f"{canon}  ->  {label} (strategy)")
+
     if args.owl:
         args.owl.parent.mkdir(parents=True, exist_ok=True)
         g.serialize(args.owl, format="turtle")
@@ -167,6 +251,8 @@ def main(argv=None):
         args.tsv_dir.mkdir(parents=True, exist_ok=True)
         for tid, by_node in rows.items():
             template = templates[tid]
+            if template_kind(template) != CLASS_EXPRESSION:
+                continue
             cols = ["defined_class", "defined_class_label"]
             for v in template["vars"]:
                 cols += [v["name"], f"{v['name']}_label"]

@@ -68,6 +68,16 @@ warp:focus a owl:AnnotationProperty ;
     obo:IAO_0000115 "The node (a variable, as a class) a study result's data are about. An annotation, so the node class is not punned as an individual." ;
     rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
 
+warp:action a owl:AnnotationProperty ;
+    rdfs:label "action" ;
+    obo:IAO_0000115 "The action node (a class) a strategy component carries out. An annotation, so the class is not punned as an individual; in OWL the part is `has part some <action>` on the strategy class (project/nodes.ttl)." ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+warp:component_of a owl:AnnotationProperty ;
+    rdfs:label "component of" ;
+    obo:IAO_0000115 "The management strategy (a node class) a strategy component individual belongs to. Written by export_rdf.py." ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
 # Axiom annotation on every class axiom in project/axioms.ttl: the
 # proposition the axiom was projected from (decision D15).
 warp:derived_from a owl:AnnotationProperty ;
@@ -130,3 +140,16 @@ warp:suggested_for_consideration a owl:ObjectProperty ;
     obo:IAO_0000115 "Guidance to consider the subject action, because of the object outcome; covers hedged guidance." ;
     warp:selected_by <https://w3id.org/ecoweaver/warp/GuidanceEnum#consider> ;
     rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+# --- management strategies (0.7.0; proposal section 6) -------------------------
+# The part relation is reused from BFO/RO, not minted: BFO:0000051 has part
+# (checked in the local ECOCORE imports). It is transitive in RO, which is
+# what makes the derivation's one-level flattening agree with the OWL: a
+# nested strategy's parts are parts of the outer strategy either way. It is
+# used only inside someValuesFrom, never in a cardinality restriction, so the
+# node classes stay in OWL 2 EL. project/nodes.ttl states the transitivity
+# where it uses the relation, because the logical layer is reasoned over
+# without this file.
+#   <strategy> rdfs:subClassOf OBI:0000011 (planned process) ,
+#                             [ owl:onProperty BFO:0000051 ; owl:someValuesFrom <action> ] .
+# Subclass, never equivalent class (D6): see docs/rdf-owl.md section 8.

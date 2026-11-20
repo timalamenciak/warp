@@ -27,6 +27,7 @@ prefixes:
   # Placeholder terms (decision D20). Any variable may be filled with a TODO:
   # term while the real one is unverified; expand_nodes.py allows it everywhere.
   - {prefix: TODO, expansion: "https://w3id.org/ecoweaver/warp/TODO/"}
+  - {prefix: OBI, expansion: "http://purl.obolibrary.org/obo/OBI_"}
 
 # Every fixed class and relation used below needs a label: DOSDP writes
 # logical definitions with quoted labels. IDs and labels checked against OLS
@@ -52,6 +53,10 @@ terms:
   - {id: "RO:0002573", label: has modifier, kind: object_property}
   - {id: "BFO:0000050", label: part of, kind: object_property}
   - {id: "BFO:0000066", label: occurs in, kind: object_property}
+  # Management strategies (0.7.0). Checked against the local ECOCORE imports
+  # (envo_import.owl, chebi_import.owl) on 2026-11-20.
+  - {id: "OBI:0000011", label: planned process, kind: class}
+  - {id: "BFO:0000051", label: has part, kind: object_property}
 
 templates:
 
@@ -715,3 +720,32 @@ templates:
           filler: {var: value}
     examples:
       - "trait=TO:<vegetative spread> value=PATO:<rhizomatous>"
+
+  # ===========================================================================
+  # 0.7.0 templates whose OWL does not come from a class expression.
+  # ===========================================================================
+
+  # --- Management strategy (composite) ---------------------------------------
+  - id: management_strategy
+    title: Management strategy
+    kind: composite
+    status: draft
+    description: >-
+      A set of management actions carried out together, in a stated order, so
+      that a cost, an outcome or a recommendation can point at the bundle
+      without dividing it among its parts. Parts are references to ordinary
+      action nodes (or one level of nested strategy); the strategy holds only
+      their order. Defined in a StatementSet's strategy_definitions, not with
+      fillers. Its canonical node ID is derived by scripts/derive_strategies.py
+      (warp-strategy-identity/1) from the sorted (step, action) pairs of its
+      required parts. OWL: rdfs:subClassOf planned process, and has part some
+      <action> per required part. Subclass, not equivalent class: order is in
+      the identity key but does not render, so equivalence would make two
+      strategies the identity rule holds apart the same class. No DOSDP
+      pattern: the number of parts varies. No objective: what counts as
+      success is contested, so aims stay on statements and in stated_goal.
+    camo_entity_type: management_intervention
+    parent_class: "OBI:0000011"
+    part_property: "BFO:0000051"
+    examples:
+      - "earthworks (step 1) -> hand seeding (step 2, lag P2W) -> mowing (step 3, yearly x3)"
