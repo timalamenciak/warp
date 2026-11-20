@@ -8,6 +8,56 @@ documents keep their "0.4" names as the name of the proposal round only.
 
 Each entry names the dev-guide phase it came from.
 
+## 0.7.0 (unreleased)
+
+The five new predicate groups and three node templates of the 0.4 proposal
+round, built on the 0.6.0 foundations.
+
+### Phase 3: recommendation group
+
+- **New predicate group `recommendation`** (proposal section 5):
+  `RecommendationStatement`, `RecommendationQualifiers`,
+  `RecommendationProposition`, and `StatementSet` lists
+  `recommendation_statements` / `recommendation_propositions`. Registered with
+  the real `warp_*` annotations and `warp_identity_extras:
+  predicate_qualifiers.guidance`.
+- Enums `RecommendationPredicateEnum` (`suggested_to`, meaning
+  `warp:suggested_to`), `GuidanceEnum` (do, avoid, consider), `DeonticForceEnum`
+  (required, recommended, suggested, optional), `ContributionEnum` (direct,
+  precursor). Qualifiers: `guidance` (required, in the key), `deontic_force`,
+  `priority` and `timing_of_influence` (`ScaledValue`), `contribution`.
+- New shared slot **`justified_by`** (propositions, by reference).
+- **RDF (D16):** `warp-relations.ttl` declares `warp:suggested_to` as an
+  abstract parent (`warp:abstract_predicate true`) and three sub-properties,
+  `warp:recommended_to_achieve`, `warp:advised_against_for` and
+  `warp:suggested_for_consideration`, each with `warp:selected_by` its
+  `GuidanceEnum` value; the enum values name their sub-property in a
+  `warp_subproperty` annotation. `export_rdf.py` writes the sub-property in
+  relation triples and in the record's `warp:predicate`; the abstract parent
+  is never asserted. New annotation property `warp:selected_by`.
+- **OWL:** nothing projects from this group, at any scope (guidance is
+  deontic).
+- **Example** `examples/recommendation_statements.yaml` (+ derived file):
+  Mountain Sucker approaches 11 (avoid stocking; prediction with
+  `expert_judgment`) and 9 (do water conservation; prediction with
+  `not_stated`), the Spring Salamander road-salt open question, and the
+  prescribed burning do/avoid pair citing one causal proposition, which
+  derives two propositions, plus a practitioner whose "do" joins the plan's
+  (one proposition, two claimants). Placeholders marked TODO.
+- **`scripts/report_guidance.py`** (`make reports`, new target): unsupported
+  guidance, self-supporting guidance, and the assessed strength of cited
+  propositions, in `project/reports/guidance.md` and `guidance.csv`.
+- `docs/predicate-groups.md`: the recommendation group, the annotator's test,
+  and the rule that predictions are causal statements, never derived from
+  guidance. Open questions Q1 to Q6 in `TODOS.md`.
+- The `Makefile` was rewritten for readability (earlier scripted edits had
+  folded its line continuations); no target changed behaviour.
+- Tests: identity (do/avoid split, shared guidance merges), predictions not
+  derived, open question kept, validation of required guidance,
+  sub-properties in the relation layer and records, relations file and schema
+  agreeing, no projection at any scope, and the report's three findings.
+- No existing proposition ID changed.
+
 ## 0.6.0 (unreleased)
 
 Shared foundations, the identity engine and the RDF/OWL contract, with the two

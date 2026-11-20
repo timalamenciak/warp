@@ -341,6 +341,67 @@ enums:
           not record one). A sentinel: it records an absence, so it has no
           meaning and is never exported to RDF (decision D14).
 
+  # --- recommendation group (0.7.0, Phase 3) ---------------------------------
+
+  RecommendationPredicateEnum:
+    implements: [owl:ObjectProperty]
+    description: >-
+      The recommendation group's one predicate. warp:suggested_to is abstract
+      in the relation layer: the exporter always writes the sub-property the
+      statement's guidance selects (decision D16), declared in
+      src/warp/owl/warp-relations.ttl.
+    permissible_values:
+      suggested_to:
+        description: >-
+          The claimant gives guidance about the subject action because of its
+          relation to the object outcome. The guidance qualifier says whether
+          to do, avoid or consider the action. Says nothing about strength,
+          which is held in deontic_force.
+        meaning: warp:suggested_to
+        annotations:
+          rosetta_template: "{guidance}: {subject}, for {object}"
+
+  GuidanceEnum:
+    implements: [owl:NamedIndividual]
+    description: >-
+      What the guidance says to do with the subject action. In the identity
+      key, so "do X" and "avoid X" for the same outcome are two propositions.
+      Each value names the sub-property of warp:suggested_to the exporter
+      writes (warp_subproperty), so the relation layer reads correctly
+      without the qualifier.
+    permissible_values:
+      do:
+        description: "Carry out the action."
+        annotations:
+          warp_subproperty: warp:recommended_to_achieve
+      avoid:
+        description: "Do not carry out the action."
+        annotations:
+          warp_subproperty: warp:advised_against_for
+      consider:
+        description: "Consider the action; covers hedged guidance (\"may be appropriate where...\")."
+        annotations:
+          warp_subproperty: warp:suggested_for_consideration
+
+  DeonticForceEnum:
+    implements: [owl:NamedIndividual]
+    description: "How strongly the guidance binds. Not part of identity."
+    permissible_values:
+      required:
+        description: "A legal or regulatory duty, such as a SARA prohibition."
+      recommended:
+      suggested:
+      optional:
+
+  ContributionEnum:
+    implements: [owl:NamedIndividual]
+    description: >-
+      Whether the action acts on the outcome directly or enables later
+      actions that do (recovery strategies rank approaches partly by this).
+    permissible_values:
+      direct:
+      precursor:
+
 
 ## =============================================================================
 ## SLOTS shared across classes
@@ -412,6 +473,17 @@ slots:
     multivalued: true
     inlined: false
 
+  justified_by:
+    description: >-
+      The propositions the guidance cites as its reason, usually causal
+      propositions ("avoid stocking: stocking decreases abundance"). Empty when
+      the source gives no reason. A prediction in the guidance is recorded as
+      its own causal statement (modality anticipated) and cited here; it is
+      never derived from the guidance automatically.
+    range: EcoProposition
+    multivalued: true
+    inlined: false
+
 
 ## =============================================================================
 ## CLASSES
@@ -479,6 +551,17 @@ classes:
       interaction_propositions:
         description: "Biotic interaction propositions (derived or open questions)."
         range: InteractionProposition
+        multivalued: true
+        inlined_as_list: true
+
+      recommendation_statements:
+        description: "Guidance statements: do, avoid or consider an action because of an outcome."
+        range: RecommendationStatement
+        multivalued: true
+        inlined_as_list: true
+      recommendation_propositions:
+        description: "Recommendation propositions (derived): one per action, outcome, scope and guidance."
+        range: RecommendationProposition
         multivalued: true
         inlined_as_list: true
 
@@ -898,6 +981,101 @@ classes:
         range: InteractionPredicateEnum
       object:
         range: CausalNode
+
+  # ---------------------------------------------------------------------------
+  # Predicate group: recommendation (0.7.0, Phase 3;
+  # warp-proposals-0.4.html section 5)
+  # ---------------------------------------------------------------------------
+
+  RecommendationStatement:
+    is_a: EcoStatement
+    class_uri: warp:RecommendationStatement
+    description: >-
+      Guidance: a source tells someone to do, avoid or consider an action
+      because of an outcome. The subject is the action as the source names it
+      (an action node, or a management strategy node), never the
+      recommender: who gave the advice is the claimant (the author
+      contribution), as in every group. The object is the outcome node, a
+      change or target state. The advice is in predicate_qualifiers.guidance.
+      Annotator's test: is the source telling someone what to do, or
+      describing what happens? Describing is a causal statement.
+    annotations:
+      warp_group: recommendation
+      warp_statements_slot: recommendation_statements
+      warp_propositions_slot: recommendation_propositions
+      warp_proposition_class: RecommendationProposition
+      warp_identity_extras: predicate_qualifiers.guidance
+    slots:
+      - justified_by
+    slot_usage:
+      subject:
+        range: CausalNode
+        required: true
+        description: "The action, or strategy, as the source names it."
+      predicate:
+        range: RecommendationPredicateEnum
+        required: true
+      object:
+        range: CausalNode
+        required: true
+        description: "The outcome: a change or target state."
+    attributes:
+      predicate_qualifiers:
+        description: "The guidance, its force, priority, timing and contribution."
+        range: RecommendationQualifiers
+        inlined: true
+        required: true
+
+  RecommendationQualifiers:
+    class_uri: warp:RecommendationQualifiers
+    description: >-
+      The predicate layer of a recommendation statement. Only guidance is in
+      the identity key; force, priority, timing and contribution vary across
+      the statements of one proposition.
+    attributes:
+      guidance:
+        description: "Do, avoid or consider. In the identity key."
+        range: GuidanceEnum
+        required: true
+      deontic_force:
+        description: "How strongly the guidance binds: required (a legal duty), recommended, suggested, optional."
+        range: DeonticForceEnum
+      priority:
+        description: >-
+          The priority on the source's own scale (DFO High / Medium / Low;
+          ECCC Urgent / Necessary / Beneficial), as a ScaledValue with scale
+          and concept IRIs from vocab/scales.yaml.
+        range: ScaledValue
+        inlined: true
+      timing_of_influence:
+        description: "When the action takes effect, on the source's scale (DFO Immediate / Medium / Future)."
+        range: ScaledValue
+        inlined: true
+      contribution:
+        description: "Direct, or a precursor to actions that act on the outcome."
+        range: ContributionEnum
+
+  RecommendationProposition:
+    is_a: EcoProposition
+    class_uri: warp:RecommendationProposition
+    description: >-
+      A proposition put forward by recommendation statements: this guidance,
+      about this action, for this outcome, at this scope. Two agencies giving
+      the same guidance share one; "do" and "avoid" for the same action and
+      outcome are two, which may cite the same causal proposition: agreement
+      about how the world works, disagreement about what to do.
+    slot_usage:
+      subject:
+        range: CausalNode
+      predicate:
+        range: RecommendationPredicateEnum
+      object:
+        range: CausalNode
+    attributes:
+      predicate_qualifiers:
+        description: "The identity extra this proposition was grouped by (guidance)."
+        range: RecommendationQualifiers
+        inlined: true
 
   # ---------------------------------------------------------------------------
   # Node definitions: a CAMO node filled from a node template

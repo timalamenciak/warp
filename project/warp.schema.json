@@ -1950,6 +1950,15 @@
             "title": "Contribution",
             "type": "object"
         },
+        "ContributionEnum": {
+            "description": "Whether the action acts on the outcome directly or enables later actions that do (recovery strategies rank approaches partly by this).",
+            "enum": [
+                "direct",
+                "precursor"
+            ],
+            "title": "ContributionEnum",
+            "type": "string"
+        },
         "ContributionRoleEnum": {
             "description": "What an agent did toward a statement, evidence line or record. Specializes SEPIO Contribution.activityType.",
             "enum": [
@@ -2445,6 +2454,17 @@
             ],
             "title": "DataSet",
             "type": "object"
+        },
+        "DeonticForceEnum": {
+            "description": "How strongly the guidance binds. Not part of identity.",
+            "enum": [
+                "required",
+                "recommended",
+                "suggested",
+                "optional"
+            ],
+            "title": "DeonticForceEnum",
+            "type": "string"
         },
         "DeterminismEnum": {
             "description": "Whether the causal relationship frames the underlying process as deterministic or indeterministic, or uses probability only to express epistemic uncertainty.",
@@ -5704,6 +5724,16 @@
             "title": "GraphProvenance",
             "type": "object"
         },
+        "GuidanceEnum": {
+            "description": "What the guidance says to do with the subject action. In the identity key, so \"do X\" and \"avoid X\" for the same outcome are two propositions. Each value names the sub-property of warp:suggested_to the exporter writes (warp_subproperty), so the relation layer reads correctly without the qualifier.",
+            "enum": [
+                "do",
+                "avoid",
+                "consider"
+            ],
+            "title": "GuidanceEnum",
+            "type": "string"
+        },
         "InformationEntity": {
             "additionalProperties": false,
             "description": "An abstract (non-physical) entity that is about something - representing the underlying 'information content' conveyed by physical or digital information artifacts like books, web pages, data tables, or photographs.",
@@ -7190,6 +7220,588 @@
             "title": "QuantityRange",
             "type": "object"
         },
+        "RecommendationPredicateEnum": {
+            "description": "The recommendation group's one predicate. warp:suggested_to is abstract in the relation layer: the exporter always writes the sub-property the statement's guidance selects (decision D16), declared in src/warp/owl/warp-relations.ttl.",
+            "enum": [
+                "suggested_to"
+            ],
+            "title": "RecommendationPredicateEnum",
+            "type": "string"
+        },
+        "RecommendationProposition": {
+            "additionalProperties": false,
+            "description": "A proposition put forward by recommendation statements: this guidance, about this action, for this outcome, at this scope. Two agencies giving the same guidance share one; \"do\" and \"avoid\" for the same action and outcome are two, which may cite the same causal proposition: agreement about how the world works, disagreement about what to do.",
+            "properties": {
+                "alternativeLabels": {
+                    "description": "Alternative name(s) for the Entity.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "derived_from_statements": {
+                    "description": "Statements grouped under this proposition.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "description": {
+                    "description": "A free text description of the Entity.",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "extensions": {
+                    "description": "A list of extensions to the Entity, that allow for capture of information not directly supported by elements defined in the model.",
+                    "items": {
+                        "$ref": "#/$defs/Extension"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "id": {
+                    "description": "The 'logical' identifier of the entity in the system of record, e.g. a UUID.  This 'id' is unique within a given system, but may or may not be globally unique outside the system. It is used within a system to reference one object from another.",
+                    "type": "string"
+                },
+                "identifiers": {
+                    "description": "A globally-unique 'business' identifier or accession number for the real-world entity represented by a data object. These are typically assigned by an external system or authority, and used to connect entities and share content across different systems.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "identity_key": {
+                    "description": "The normalized key that defines this proposition under the identity rule.",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "identity_rule_version": {
+                    "description": "Which identity rule produced this grouping. Changing the rule regroups statements, so it must be recorded.",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "label": {
+                    "description": "A primary name for the Entity.",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "negated": {
+                    "description": "A boolean flag set to 'true' to represent a negation of the proposition expressed by the subject, predicate, object, and qualifier(s) (e.g. that \"Variant X is NOT pathogenic for Disease Y\")",
+                    "type": [
+                        "boolean",
+                        "null"
+                    ]
+                },
+                "object": {
+                    "description": "An Entity or concept that is related to the subject of a Proposition via its predicate.",
+                    "type": "string"
+                },
+                "predicate": {
+                    "$ref": "#/$defs/RecommendationPredicateEnum",
+                    "description": "The relationship declared to hold between the subject and the object of the Proposition."
+                },
+                "predicate_qualifiers": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/RecommendationQualifiers"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "The identity extra this proposition was grouped by (guidance)."
+                },
+                "propositionText": {
+                    "description": "A natural-language expression of the Proposition's meaning (i.e. the 'possible fact' it expresses).",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "qualifier": {
+                    "description": "An additional piece of information that extends or refines the meaning of a Propositions's core subject - predicate - object 'triple' - by providing additional detail, or constraining the statement to apply in a particular context.",
+                    "items": {
+                        "$ref": "#/$defs/Qualifier"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "raised_as_question": {
+                    "description": "True if people created this proposition as an open question before any statement asserted it. Such propositions keep their id and are never deleted by re-derivation; they revert to open_question if their statements are removed.",
+                    "type": [
+                        "boolean",
+                        "null"
+                    ]
+                },
+                "scope": {
+                    "$ref": "#/$defs/SemanticUnitScopeEnum",
+                    "description": "Semantic unit type of what is stated or proposed. Part of a proposition's identity; copied onto statements so propositions can be derived from them."
+                },
+                "status": {
+                    "$ref": "#/$defs/PropositionStatusEnum"
+                },
+                "subject": {
+                    "description": "The Entity or concept about which the Proposition is made.",
+                    "type": "string"
+                },
+                "type": {
+                    "description": "The name of the class that is instantiated by a data object representing the Entity.",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "scope",
+                "status",
+                "subject",
+                "predicate",
+                "object",
+                "id",
+                "type"
+            ],
+            "title": "RecommendationProposition",
+            "type": "object"
+        },
+        "RecommendationQualifiers": {
+            "additionalProperties": false,
+            "description": "The predicate layer of a recommendation statement. Only guidance is in the identity key; force, priority, timing and contribution vary across the statements of one proposition.",
+            "properties": {
+                "contribution": {
+                    "$ref": "#/$defs/ContributionEnum",
+                    "description": "Direct, or a precursor to actions that act on the outcome."
+                },
+                "deontic_force": {
+                    "$ref": "#/$defs/DeonticForceEnum",
+                    "description": "How strongly the guidance binds: required (a legal duty), recommended, suggested, optional."
+                },
+                "guidance": {
+                    "$ref": "#/$defs/GuidanceEnum",
+                    "description": "Do, avoid or consider. In the identity key."
+                },
+                "priority": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ScaledValue"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "The priority on the source's own scale (DFO High / Medium / Low; ECCC Urgent / Necessary / Beneficial), as a ScaledValue with scale and concept IRIs from vocab/scales.yaml."
+                },
+                "timing_of_influence": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ScaledValue"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "When the action takes effect, on the source's scale (DFO Immediate / Medium / Future)."
+                }
+            },
+            "required": [
+                "guidance"
+            ],
+            "title": "RecommendationQualifiers",
+            "type": "object"
+        },
+        "RecommendationStatement": {
+            "additionalProperties": false,
+            "description": "Guidance: a source tells someone to do, avoid or consider an action because of an outcome. The subject is the action as the source names it (an action node, or a management strategy node), never the recommender: who gave the advice is the claimant (the author contribution), as in every group. The object is the outcome node, a change or target state. The advice is in predicate_qualifiers.guidance. Annotator's test: is the source telling someone what to do, or describing what happens? Describing is a causal statement.",
+            "properties": {
+                "alternativeLabels": {
+                    "description": "Alternative name(s) for the Entity.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "care": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/CareMetadata"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "Consent, access and governance metadata. Required for statements whose author is an Indigenous knowledge holder or community member (checked by scripts/check_statements.py)."
+                },
+                "context": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ContextAnnotation"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "Conditions under which the statement is said to hold (scope conditions), as the source gives them. Shared by every predicate group."
+                },
+                "contributions": {
+                    "description": "Who made the statement: at least one contribution with role author. Who recorded it goes in recordMetadata, not here.",
+                    "items": {
+                        "$ref": "#/$defs/EcoContribution"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "dateAuthored": {
+                    "description": "Indicates when the information content expressed in the Information Entity was generated.",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "derivedFrom": {
+                    "description": "Another Information Entity from which this Information Entity is derived, in whole or in part.",
+                    "items": {
+                        "$ref": "#/$defs/InformationEntity"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "description": {
+                    "description": "A free text description of the Entity.",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "direction": {
+                    "$ref": "#/$defs/EvidenceDirectionEnum",
+                    "description": "A term indicating whether the Statement supports, disputes, or remains neutral w.r.t. the validity of the Proposition it evaluates."
+                },
+                "ecosystem_context": {
+                    "$ref": "#/$defs/EcosystemFunctionalGroupEnum",
+                    "description": "The KIND of ecosystem the statement is about, as one of CAMO's IUCN Global Ecosystem Typology functional groups (warm_temperate_forests, coastal_saltmarshes_and_reedbeds). Not a place: \"Florida\" or \"the Mediterranean coast of Israel\" go in `place`. Every 0.4 proposal example confused the two (R19)."
+                },
+                "extensions": {
+                    "description": "A list of extensions to the Entity, that allow for capture of information not directly supported by elements defined in the model.",
+                    "items": {
+                        "$ref": "#/$defs/Extension"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "hasEvidence": {
+                    "description": "A piece of information that represents or contributes to an argument for or against the validity of the Proposition put forth in a Statement. This is a shortcut relation that links a Statement directly to a piece of evidence supporting it, bypassing the Evidence Line class when used data creators do not utilize an Evidence Line object.",
+                    "items": {
+                        "$ref": "#/$defs/InformationEntity"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "hasEvidenceFromSources": {
+                    "description": "An Information Entity (typically a publication, dataset, or database) that provided information used as evidence to generate the knowledge expressed in a Statement.",
+                    "items": {
+                        "$ref": "#/$defs/InformationEntity"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "hasEvidenceLines": {
+                    "description": "An evidence-based argument that supports or disputes the validity of the proposition that a Statement assesses or puts forth as true. The strength and direction of this argument (whether it supports or disputes  the proposition, and how strongly) is based on an interpretation of one or more pieces of information as evidence (i.e. 'Evidence Items).",
+                    "items": {
+                        "$ref": "#/$defs/EcoEvidenceLine"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "hasEvidenceOfTypes": {
+                    "description": "A term describing a type of evidence used to assess the validity of Statement's proposition (e.g. 'sequence similarity evidence', 'in vitro assay evidence').",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "id": {
+                    "description": "The 'logical' identifier of the entity in the system of record, e.g. a UUID.  This 'id' is unique within a given system, but may or may not be globally unique outside the system. It is used within a system to reference one object from another.",
+                    "type": "string"
+                },
+                "identifiers": {
+                    "description": "A globally-unique 'business' identifier or accession number for the real-world entity represented by a data object. These are typically assigned by an external system or authority, and used to connect entities and share content across different systems.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "informationQuality": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Coding"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "A qualitative term indicating the scientific rigor or reliability with which the information was generated/collected."
+                },
+                "isAbout": {
+                    "description": "An entity or concept in the world that the information entity describes/is about.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "justified_by": {
+                    "description": "The propositions the guidance cites as its reason, usually causal propositions (\"avoid stocking: stocking decreases abundance\"). Empty when the source gives no reason. A prediction in the guidance is recorded as its own causal statement (modality anticipated) and cited here; it is never derived from the guidance automatically.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "label": {
+                    "description": "A primary name for the Entity.",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "modality": {
+                    "$ref": "#/$defs/ModalityEnum",
+                    "description": "Whether the statement reports (observed), infers (inferred) or forecasts (anticipated). Different from hedging, which is causal_language: hedging is how sure the speaker sounds, modality is what kind of statement it is. A proposition projects to OWL only when every statement grouped under it is observed (decision D15)."
+                },
+                "object": {
+                    "description": "The outcome: a change or target state.",
+                    "type": "string"
+                },
+                "original_text": {
+                    "description": "The statement as worded in its source (verbatim sentence, notebook line, transcript passage). Distinct from statementText, which is the normalized rendering.",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "place": {
+                    "description": "The REGION the statement is about, as an IRI from a registered place scheme: an ISO 3166-2 code for a province or state (ISO3166-2:CA-SK); a Wikidata item for a municipality, park, lake or territory (wd:Q...); a GeoNames or Getty TGN entry where Wikidata has none; an ENVO ecoregion individual; or, failing all of these, a locally minted place: concept with a TODO to replace it. Never a bare name, never a coordinate pair standing in for an area. Not the kind of ecosystem, which is ecosystem_context. Part of the identity key for tolerance and cost statements (decision D18). How to find an IRI: docs/values.md.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "predicate": {
+                    "$ref": "#/$defs/RecommendationPredicateEnum",
+                    "description": "The relationship declared to hold between the subject and the object of the Statement."
+                },
+                "predicate_qualifiers": {
+                    "$ref": "#/$defs/RecommendationQualifiers",
+                    "description": "The guidance, its force, priority, timing and contribution."
+                },
+                "proposition": {
+                    "description": "The proposition this statement puts forward. DERIVED: filled by scripts/derive_propositions.py, never by annotators. Exception: SynthesisAssessment, which targets a chosen proposition.",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "qualifier": {
+                    "description": "An additional piece of information that extends or refines the meaning of a Statement's core subject - predicate - object 'triple' - by providing additional detail, or constraining the statement to apply in a particular context.",
+                    "items": {
+                        "$ref": "#/$defs/Qualifier"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "recordMetadata": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/EcoRecordMetadata"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "Provenance of this record: who annotated it in EcoWeaver and when (role annotator, dateRecordCreated)."
+                },
+                "reportedIn": {
+                    "description": "The source documents the statement was reported in, by id.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "scope": {
+                    "$ref": "#/$defs/SemanticUnitScopeEnum",
+                    "description": "Semantic unit type of what is stated or proposed. Part of a proposition's identity; copied onto statements so propositions can be derived from them."
+                },
+                "score": {
+                    "description": "A quantitative score that indicates the strength of a Proposition's validity assessment in the direction indicated (i.e. how strongly supported or disputed the Proposition is believed to be).  Depending on its implementation, a score may reflect how *confident* that agent is that the Proposition is true or false, or the *strength of evidence* they believe supports or disputes it.",
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                },
+                "source_spans": {
+                    "description": "Text spans grounding the statement in its source document.",
+                    "items": {
+                        "$ref": "#/$defs/TextSpan"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "sources": {
+                    "description": "A document or other informtion resource in which the information entity, or evidence supporting it, is reported.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "specifiedBy": {
+                    "description": "A specification that describes all or part of the process that led to creation of the Information Entity.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "specified_in": {
+                    "description": "Plan documents that specify what was, or is to be, done: a recovery strategy, a restoration plan, a work order. Referenced by id, not inlined. Used by strategies and implementation statements.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "statementText": {
+                    "description": "A natural-language expression of what a Statement asserts to be true.",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "strength": {
+                    "$ref": "#/$defs/CertaintyGradeEnum",
+                    "description": "A term used to report the strength of a Proposition's assessment in the direction indicated (i.e. how strongly supported or disputed the Proposition is believed to be).  Implementers may choose to frame a strength assessment in terms of how *confident* an agent is that the Proposition is true or false, or in terms of the *strength of all evidence* they believe supports or disputes it."
+                },
+                "subject": {
+                    "description": "The action, or strategy, as the source names it.",
+                    "type": "string"
+                },
+                "subjectClassification": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Coding"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "A single term or phrase summarizing the outcome of direction and strength assessments of a Statement's proposition, in terms of a classification of its subject."
+                },
+                "supportingMethodTypes": {
+                    "description": "Types of methodological approaches that were executed to directly or indirectly support creation of the Information Entity.",
+                    "items": {
+                        "$ref": "#/$defs/Coding"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "supportingMethods": {
+                    "description": "Specific methods that were executed to directly or indirectly support creation of the Information Entity.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "temporal_extent": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/TemporalExtent"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "The temporal window over which the stated effect or condition was observed (CAMO TemporalExtent). Not a calendar period: dated periods use Period (start and end as ISO 8601 strings)."
+                },
+                "type": {
+                    "description": "The name of the class that is instantiated by a data object representing the Entity.",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "predicate_qualifiers",
+                "subject",
+                "predicate",
+                "object",
+                "id",
+                "type"
+            ],
+            "title": "RecommendationStatement",
+            "type": "object"
+        },
         "RecordMetadata": {
             "additionalProperties": false,
             "description": "A reusable structure that encapsulates provenance metadata about a serialized data record or object in a particular dataset (as opposed to provenance of the real world entity this record or object represents).",
@@ -7855,6 +8467,26 @@
                     "description": "Version of this profile the set conforms to.",
                     "type": [
                         "string",
+                        "null"
+                    ]
+                },
+                "recommendation_propositions": {
+                    "description": "Recommendation propositions (derived): one per action, outcome, scope and guidance.",
+                    "items": {
+                        "$ref": "#/$defs/RecommendationProposition"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "recommendation_statements": {
+                    "description": "Guidance statements: do, avoid or consider an action because of an outcome.",
+                    "items": {
+                        "$ref": "#/$defs/RecommendationStatement"
+                    },
+                    "type": [
+                        "array",
                         "null"
                     ]
                 },

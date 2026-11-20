@@ -1,4 +1,5 @@
 @prefix RO: <http://purl.obolibrary.org/obo/RO_> .
+@prefix TODO: <https://w3id.org/ecoweaver/warp/TODO/> .
 @prefix camo: <https://w3id.org/camo/> .
 @prefix causal_mosaic: <https://w3id.org/causal-mosaic/> .
 @prefix doc: <https://w3id.org/ecoweaver/warp/doc/> .
@@ -7,9 +8,15 @@
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix prop: <https://w3id.org/ecoweaver/warp/prop/> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix scale: <https://w3id.org/ecoweaver/warp/scale/> .
 @prefix stmt: <https://w3id.org/ecoweaver/warp/statement/> .
 @prefix warp: <https://w3id.org/ecoweaver/warp/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<https://w3id.org/ecoweaver/warp/agent/org/eccc> a warp:EcoAgent ;
+    warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#organization> ;
+    warp:agent_subtype "organization" ;
+    warp:name "Environment and Climate Change Canada" .
 
 <https://w3id.org/ecoweaver/warp/assessment/bloodroot-gm-1> a warp:SynthesisAssessment ;
     warp:contributions <https://w3id.org/ecoweaver/warp/contrib/bloodroot-gm-1-author> ;
@@ -20,6 +27,15 @@
     warp:proposition prop:question-bloodroot-garlic-mustard ;
     warp:statementText "The evidence that planting bloodroot typically suppresses garlic mustard population growth is supportive but of low certainty." ;
     warp:strength <https://w3id.org/ecoweaver/warp/CertaintyGradeEnum#low> .
+
+<https://w3id.org/ecoweaver/warp/assessment/burning-shrub-cover-1> a warp:SynthesisAssessment ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/burning-shrub-cover-1-author> ;
+    warp:direction <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
+    warp:evidence_balance <https://w3id.org/ecoweaver/warp/EvidenceBalanceEnum#supportive> ;
+    warp:hasEvidenceLines <https://w3id.org/ecoweaver/warp/el/burning-shrub-cover-1-study> ;
+    warp:proposition prop:247fc9907bf5 ;
+    warp:statementText "Illustrative: the evidence that prescribed burning typically reduces shrub cover is supportive, of moderate certainty." ;
+    warp:strength <https://w3id.org/ecoweaver/warp/CertaintyGradeEnum#moderate> .
 
 <https://w3id.org/ecoweaver/warp/assessment/tidal-restoration-aedes-dorsalis-1> a warp:SynthesisAssessment ;
     warp:contributions <https://w3id.org/ecoweaver/warp/contrib/tidal-aedes-1-author> ;
@@ -37,10 +53,24 @@ warp:date_lower_bound a owl:AnnotationProperty ;
 warp:date_upper_bound a owl:AnnotationProperty ;
     rdfs:comment "Normalized xsd:dateTime bound of an ISO 8601 date (half-open: lower inclusive, upper exclusive). Written by export_rdf.py beside the verbatim string (D19)." .
 
+doc:eccc-spring-salamander-recovery-strategy a warp:EcoDocument ;
+    warp:title "TODO: Recovery Strategy for the Spring Salamander (Gyrinophilus porphyriticus), Adirondack / Appalachian population (proposed)" .
+
 <https://w3id.org/ecoweaver/warp/ontology/statements> a owl:Ontology ;
     rdfs:label "WARP statements (reification layer)" ;
     rdfs:comment "Who said what, on what basis. Nothing here is asserted as true of the world, and relation triples may have a node class as subject: query with SPARQL, never merge into the logical layer for reasoning. See docs/rdf-owl.md." ;
     owl:versionInfo "warp-export-rdf/1" .
+
+prop:question-road-salt-spring-salamander a warp:CausalProposition ;
+    warp:identity_key "causal|node:road_salt_application|prevents|node:abundance_of_spring_salamander|affirmed|contingent" ;
+    warp:identity_rule_version "warp-prop-identity/4" ;
+    warp:object node:abundance_of_spring_salamander ;
+    warp:predicate camo:prevents ;
+    warp:propositionText "Does road salt application reduce Spring Salamander abundance? The recovery strategy says its impact cannot be properly assessed (TODO check wording)." ;
+    warp:raised_as_question true ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#contingent> ;
+    warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#open_question> ;
+    warp:subject node:road_salt_application .
 
 <https://w3id.org/ecoweaver/warp/statementset/bloodroot-assessment> a warp:StatementSet .
 
@@ -49,6 +79,13 @@ warp:date_upper_bound a owl:AnnotationProperty ;
 <https://w3id.org/ecoweaver/warp/statementset/kramer1995-assessment> a warp:StatementSet .
 
 <https://w3id.org/ecoweaver/warp/statementset/kramer1995-example> a warp:StatementSet .
+
+<https://w3id.org/ecoweaver/warp/statementset/recommendation-example> a warp:StatementSet .
+
+<https://w3id.org/ecoweaver/warp/agent/burn-study-authors> a warp:EcoAgent ;
+    warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#researcher> ;
+    warp:agent_subtype "organization" ;
+    warp:name "TODO: authors of a prescribed burning study" .
 
 <https://w3id.org/ecoweaver/warp/agent/kramer1995-authors> a warp:EcoAgent ;
     warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#researcher> ;
@@ -60,11 +97,57 @@ warp:date_upper_bound a owl:AnnotationProperty ;
     warp:agent_subtype "organization" ;
     warp:name "TODO: Murphy et al. 2005 authors" .
 
+<https://w3id.org/ecoweaver/warp/agent/org/air-quality-agency> a warp:EcoAgent ;
+    warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#organization> ;
+    warp:agent_subtype "organization" ;
+    warp:name "TODO: a regional air quality agency" .
+
+<https://w3id.org/ecoweaver/warp/agent/org/grassland-plan-authors> a warp:EcoAgent ;
+    warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#organization> ;
+    warp:agent_subtype "organization" ;
+    warp:name "TODO: authors of a grassland management plan" .
+
 <https://w3id.org/ecoweaver/warp/contrib/bloodroot-gm-1-author> a warp:EcoContribution ;
     warp:contributor <https://w3id.org/ecoweaver/warp/agent/ecoweaver-synthesis> ;
     warp:date "2026-10-11" ;
     warp:date_lower_bound "2026-10-11T00:00:00Z"^^xsd:dateTime ;
     warp:date_upper_bound "2026-10-12T00:00:00Z"^^xsd:dateTime ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
+<https://w3id.org/ecoweaver/warp/contrib/burn-avoid-agency-annotation> a warp:EcoContribution ;
+    warp:contributor orcid:0000-0000-0000-0000 ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
+
+<https://w3id.org/ecoweaver/warp/contrib/burn-avoid-agency-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/org/air-quality-agency> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
+<https://w3id.org/ecoweaver/warp/contrib/burn-do-plan-annotation> a warp:EcoContribution ;
+    warp:contributor orcid:0000-0000-0000-0000 ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
+
+<https://w3id.org/ecoweaver/warp/contrib/burn-do-plan-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/org/grassland-plan-authors> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
+<https://w3id.org/ecoweaver/warp/contrib/burn-do-practitioner-annotation> a warp:EcoContribution ;
+    warp:contributor orcid:0000-0000-0000-0000 ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
+
+<https://w3id.org/ecoweaver/warp/contrib/burn-do-practitioner-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/person/practitioner-2> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
+<https://w3id.org/ecoweaver/warp/contrib/burn-study-c1-annotation> a warp:EcoContribution ;
+    warp:contributor orcid:0000-0000-0000-0000 ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
+
+<https://w3id.org/ecoweaver/warp/contrib/burn-study-c1-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/burn-study-authors> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
+<https://w3id.org/ecoweaver/warp/contrib/burning-shrub-cover-1-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/ecoweaver-synthesis> ;
     warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
 
 <https://w3id.org/ecoweaver/warp/contrib/kramer1995-c1-1-assessment> a warp:EcoContribution ;
@@ -84,6 +167,38 @@ warp:date_upper_bound a owl:AnnotationProperty ;
 
 <https://w3id.org/ecoweaver/warp/contrib/kramer1995-c1-author> a warp:EcoContribution ;
     warp:contributor <https://w3id.org/ecoweaver/warp/agent/kramer1995-authors> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
+<https://w3id.org/ecoweaver/warp/contrib/ms-09-causal-annotation> a warp:EcoContribution ;
+    warp:contributor orcid:0000-0000-0000-0000 ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
+
+<https://w3id.org/ecoweaver/warp/contrib/ms-09-causal-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/org/dfo> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
+<https://w3id.org/ecoweaver/warp/contrib/ms-09-rec-annotation> a warp:EcoContribution ;
+    warp:contributor orcid:0000-0000-0000-0000 ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
+
+<https://w3id.org/ecoweaver/warp/contrib/ms-09-rec-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/org/dfo> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
+<https://w3id.org/ecoweaver/warp/contrib/ms-11-causal-annotation> a warp:EcoContribution ;
+    warp:contributor orcid:0000-0000-0000-0000 ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
+
+<https://w3id.org/ecoweaver/warp/contrib/ms-11-causal-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/org/dfo> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
+<https://w3id.org/ecoweaver/warp/contrib/ms-11-rec-annotation> a warp:EcoContribution ;
+    warp:contributor orcid:0000-0000-0000-0000 ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
+
+<https://w3id.org/ecoweaver/warp/contrib/ms-11-rec-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/org/dfo> ;
     warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
 
 <https://w3id.org/ecoweaver/warp/contrib/murphy2005-c1-annotation> a warp:EcoContribution ;
@@ -245,11 +360,23 @@ warp:date_upper_bound a owl:AnnotationProperty ;
 <https://w3id.org/ecoweaver/warp/data/murphy2005-planted-sd/subtype> a warp:EcoCoding ;
     warp:label "standard deviation" .
 
+doc:air-quality-guidance a warp:EcoDocument ;
+    warp:title "TODO: an air quality agency's guidance on prescribed fire" .
+
+doc:grassland-plan a warp:EcoDocument ;
+    warp:title "TODO: a grassland management plan" .
+
 doc:murphy2005 a warp:EcoDocument ;
     warp:doi "TODO" ;
     warp:title "TODO: Murphy 2005" .
 
 <https://w3id.org/ecoweaver/warp/doc/notebook-entry-1/subtype> a warp:EcoCoding ;
+    warp:label "field notebook" .
+
+doc:notebook-entry-2 a warp:EcoDocument ;
+    warp:subtype <https://w3id.org/ecoweaver/warp/doc/notebook-entry-2/subtype> .
+
+<https://w3id.org/ecoweaver/warp/doc/notebook-entry-2/subtype> a warp:EcoCoding ;
     warp:label "field notebook" .
 
 <https://w3id.org/ecoweaver/warp/el/bloodroot-gm-1-experimental> a warp:EcoEvidenceLine ;
@@ -267,6 +394,22 @@ doc:murphy2005 a warp:EcoDocument ;
     warp:evidence_type <https://w3id.org/ecoweaver/warp/WarpEvidenceTypeEnum#practitioner_experience> ;
     warp:strengthOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceStrengthEnum#weak> ;
     warp:targetProposition prop:question-bloodroot-garlic-mustard .
+
+<https://w3id.org/ecoweaver/warp/el/burn-study-c1-1> a warp:EcoEvidenceLine ;
+    warp:directionOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
+    warp:evidence_item_refs doc:burn-study ;
+    warp:evidence_object <https://w3id.org/ecoweaver/warp/EvidenceObjectEnum#correlation> ;
+    warp:evidence_type <https://w3id.org/ecoweaver/warp/WarpEvidenceTypeEnum#randomized_experiment> ;
+    warp:strengthOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceStrengthEnum#not_assessed> ;
+    warp:targetProposition prop:247fc9907bf5 .
+
+<https://w3id.org/ecoweaver/warp/el/burning-shrub-cover-1-study> a warp:EcoEvidenceLine ;
+    warp:directionOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
+    warp:evidence_item_refs stmt:burn-study-c1 ;
+    warp:evidence_object <https://w3id.org/ecoweaver/warp/EvidenceObjectEnum#correlation> ;
+    warp:evidence_type <https://w3id.org/ecoweaver/warp/WarpEvidenceTypeEnum#randomized_experiment> ;
+    warp:strengthOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceStrengthEnum#moderate> ;
+    warp:targetProposition prop:247fc9907bf5 .
 
 <https://w3id.org/ecoweaver/warp/el/kramer1995-c1-1> a warp:EcoEvidenceLine ;
     warp:contributions <https://w3id.org/ecoweaver/warp/contrib/kramer1995-c1-1-assessment> ;
@@ -288,6 +431,24 @@ doc:murphy2005 a warp:EcoDocument ;
     warp:evidence_type <https://w3id.org/ecoweaver/warp/WarpEvidenceTypeEnum#practitioner_experience> ;
     warp:strengthOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceStrengthEnum#weak> ;
     warp:targetProposition prop:9f0b068ca33b .
+
+<https://w3id.org/ecoweaver/warp/el/ms-09-causal-1> a warp:EcoEvidenceLine ;
+    warp:directionOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
+    warp:strengthOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceStrengthEnum#not_assessed> ;
+    warp:targetProposition prop:c16be9de6aa6 .
+
+<https://w3id.org/ecoweaver/warp/el/ms-11-causal-1> a warp:EcoEvidenceLine ;
+    warp:directionOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
+    warp:evidence_item_refs doc:dfo-mountain-sucker-recovery-strategy ;
+    warp:evidence_type <https://w3id.org/ecoweaver/warp/WarpEvidenceTypeEnum#expert_judgment> ;
+    warp:strengthOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceStrengthEnum#not_assessed> ;
+    warp:targetProposition prop:4f9905a0d7a2 .
+
+<https://w3id.org/ecoweaver/warp/el/ms-11-rec-1> a warp:EcoEvidenceLine ;
+    warp:directionOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
+    warp:evidence_type <https://w3id.org/ecoweaver/warp/WarpEvidenceTypeEnum#expert_judgment> ;
+    warp:strengthOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceStrengthEnum#not_assessed> ;
+    warp:targetProposition prop:69ccdaf69ec4 .
 
 <https://w3id.org/ecoweaver/warp/el/murphy2005-c1-1> a warp:EcoEvidenceLine ;
     warp:directionOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
@@ -322,6 +483,44 @@ doc:murphy2005 a warp:EcoDocument ;
     warp:evidence_type <https://w3id.org/ecoweaver/warp/WarpEvidenceTypeEnum#quasi_experiment> ;
     warp:strengthOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceStrengthEnum#weak> ;
     warp:targetProposition prop:question-tidal-restoration-aedes-dorsalis .
+
+prop:2812c13c41fc a warp:RecommendationProposition ;
+    warp:derived_from_statements stmt:ms-09-rec ;
+    warp:identity_key "recommendation|node:water_conservation_measures_milk_river|suggested_to|node:maintained_habitat_quantity_of_mountain_sucker_milk_river|affirmed|contingent|predicate_qualifiers.guidance=\"do\"" ;
+    warp:identity_rule_version "warp-prop-identity/4" ;
+    warp:negated false ;
+    warp:object node:maintained_habitat_quantity_of_mountain_sucker_milk_river ;
+    warp:predicate warp:recommended_to_achieve ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/prop/2812c13c41fc/predicate_qualifiers> ;
+    warp:propositionText "Sometimes, do: Water management and conservation measures in the Milk River drainage, for Maintained habitat quantity and quality for Mountain Sucker, Milk River." ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#contingent> ;
+    warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
+    warp:subject node:water_conservation_measures_milk_river .
+
+<https://w3id.org/ecoweaver/warp/prop/2812c13c41fc/predicate_qualifiers> a warp:RecommendationQualifiers ;
+    warp:guidance <https://w3id.org/ecoweaver/warp/GuidanceEnum#do> .
+
+<https://w3id.org/ecoweaver/warp/prop/69ccdaf69ec4/predicate_qualifiers> a warp:RecommendationQualifiers ;
+    warp:guidance <https://w3id.org/ecoweaver/warp/GuidanceEnum#avoid> .
+
+<https://w3id.org/ecoweaver/warp/prop/9c043c560227/predicate_qualifiers> a warp:RecommendationQualifiers ;
+    warp:guidance <https://w3id.org/ecoweaver/warp/GuidanceEnum#do> .
+
+prop:c34ece72a226 a warp:RecommendationProposition ;
+    warp:derived_from_statements stmt:burn-avoid-agency ;
+    warp:identity_key "recommendation|node:prescribed_burning_of_grassland|suggested_to|node:decrease_in_shrub_cover_in_grassland|affirmed|prototypical|predicate_qualifiers.guidance=\"avoid\"" ;
+    warp:identity_rule_version "warp-prop-identity/4" ;
+    warp:negated false ;
+    warp:object node:decrease_in_shrub_cover_in_grassland ;
+    warp:predicate warp:advised_against_for ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/prop/c34ece72a226/predicate_qualifiers> ;
+    warp:propositionText "Typically, avoid: Prescribed burning of grassland, for Decrease in shrub cover in grassland." ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#prototypical> ;
+    warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
+    warp:subject node:prescribed_burning_of_grassland .
+
+<https://w3id.org/ecoweaver/warp/prop/c34ece72a226/predicate_qualifiers> a warp:RecommendationQualifiers ;
+    warp:guidance <https://w3id.org/ecoweaver/warp/GuidanceEnum#avoid> .
 
 <https://w3id.org/ecoweaver/warp/result/kramer1995-reference-1991> a warp:EcoStudyResult ;
     warp:dataItems <https://w3id.org/ecoweaver/warp/data/kramer1995-reference-1991-mean> ;
@@ -361,6 +560,73 @@ doc:murphy2005 a warp:EcoDocument ;
         <https://w3id.org/ecoweaver/warp/data/murphy2005-planted-sd> ;
     warp:focus node:rate_of_population_growth_of_alliaria_petiolata ;
     warp:sourceDataSet <https://w3id.org/ecoweaver/warp/dataset/murphy2005> .
+
+stmt:burn-avoid-agency a warp:RecommendationStatement ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/burn-avoid-agency-author> ;
+    warp:justified_by prop:247fc9907bf5 ;
+    warp:object node:decrease_in_shrub_cover_in_grassland ;
+    warp:predicate warp:advised_against_for ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/statement/burn-avoid-agency/predicate_qualifiers> ;
+    warp:proposition prop:c34ece72a226 ;
+    warp:recordMetadata <https://w3id.org/ecoweaver/warp/statement/burn-avoid-agency/recordMetadata> ;
+    warp:reportedIn doc:air-quality-guidance ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#prototypical> ;
+    warp:statementText "Avoid prescribed burning as a means of reducing shrub cover, because of the smoke it produces." ;
+    warp:subject node:prescribed_burning_of_grassland .
+
+<https://w3id.org/ecoweaver/warp/statement/burn-avoid-agency/predicate_qualifiers> a warp:RecommendationQualifiers ;
+    warp:deontic_force <https://w3id.org/ecoweaver/warp/DeonticForceEnum#suggested> ;
+    warp:guidance <https://w3id.org/ecoweaver/warp/GuidanceEnum#avoid> .
+
+<https://w3id.org/ecoweaver/warp/statement/burn-avoid-agency/recordMetadata> a warp:EcoRecordMetadata ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/burn-avoid-agency-annotation> .
+
+stmt:burn-do-plan a warp:RecommendationStatement ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/burn-do-plan-author> ;
+    warp:justified_by prop:247fc9907bf5 ;
+    warp:object node:decrease_in_shrub_cover_in_grassland ;
+    warp:predicate warp:recommended_to_achieve ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/statement/burn-do-plan/predicate_qualifiers> ;
+    warp:proposition prop:9c043c560227 ;
+    warp:recordMetadata <https://w3id.org/ecoweaver/warp/statement/burn-do-plan/recordMetadata> ;
+    warp:reportedIn doc:grassland-plan ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#prototypical> ;
+    warp:statementText "Use prescribed burning to reduce shrub cover in grassland." ;
+    warp:subject node:prescribed_burning_of_grassland .
+
+<https://w3id.org/ecoweaver/warp/statement/burn-do-plan/predicate_qualifiers> a warp:RecommendationQualifiers ;
+    warp:deontic_force <https://w3id.org/ecoweaver/warp/DeonticForceEnum#recommended> ;
+    warp:guidance <https://w3id.org/ecoweaver/warp/GuidanceEnum#do> .
+
+<https://w3id.org/ecoweaver/warp/statement/burn-do-plan/recordMetadata> a warp:EcoRecordMetadata ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/burn-do-plan-annotation> .
+
+stmt:burn-do-practitioner a warp:RecommendationStatement ;
+    warp:care <https://w3id.org/ecoweaver/warp/statement/burn-do-practitioner/care> ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/burn-do-practitioner-author> ;
+    warp:object node:decrease_in_shrub_cover_in_grassland ;
+    warp:original_text "TODO: notebook wording" ;
+    warp:predicate warp:recommended_to_achieve ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/statement/burn-do-practitioner/predicate_qualifiers> ;
+    warp:proposition prop:9c043c560227 ;
+    warp:recordMetadata <https://w3id.org/ecoweaver/warp/statement/burn-do-practitioner/recordMetadata> ;
+    warp:reportedIn doc:notebook-entry-2 ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#prototypical> ;
+    warp:statementText "Burn the grassland to knock back the shrubs." ;
+    warp:subject node:prescribed_burning_of_grassland .
+
+<https://w3id.org/ecoweaver/warp/statement/burn-do-practitioner/care> a warp:CareMetadata ;
+    warp:access_level <https://w3id.org/ecoweaver/warp/AccessLevelEnum#attribution_required> ;
+    warp:knowledge_holders <https://w3id.org/ecoweaver/warp/agent/person/practitioner-2> .
+
+<https://w3id.org/ecoweaver/warp/statement/burn-do-practitioner/predicate_qualifiers> a warp:RecommendationQualifiers ;
+    warp:guidance <https://w3id.org/ecoweaver/warp/GuidanceEnum#do> .
+
+<https://w3id.org/ecoweaver/warp/statement/burn-do-practitioner/recordMetadata> a warp:EcoRecordMetadata ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/burn-do-practitioner-annotation> .
+
+<https://w3id.org/ecoweaver/warp/statement/burn-study-c1/recordMetadata> a warp:EcoRecordMetadata ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/burn-study-c1-annotation> .
 
 <https://w3id.org/ecoweaver/warp/statement/kramer1995-c1/comparator/0> a causal_mosaic:ComparatorAnnotation ;
     causal_mosaic:comparator_description "Same site and monitoring stations in 1991, before tidal enhancement." ;
@@ -410,6 +676,117 @@ doc:murphy2005 a warp:EcoDocument ;
     causal_mosaic:duration_text "One mosquito season (May-October 1992) after the 6-week project ended in late 1991." ;
     causal_mosaic:observation_grain "Five 400 ml dips per inundated monitoring station after each high tide cycle" ;
     causal_mosaic:observation_seasons "May-October" .
+
+stmt:ms-09-causal a warp:CausalStatement ;
+    warp:causal_language <https://w3id.org/ecoweaver/warp/ClaimStrengthEnum#uncertain_causal> ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/ms-09-causal-author> ;
+    warp:hasEvidenceLines <https://w3id.org/ecoweaver/warp/el/ms-09-causal-1> ;
+    warp:modality <https://w3id.org/ecoweaver/warp/ModalityEnum#anticipated> ;
+    warp:object node:habitat_quantity_of_mountain_sucker_milk_river ;
+    warp:original_text "TODO: verbatim wording of Table 4, approach 9" ;
+    warp:place TODO:place_milk_river_drainage ;
+    warp:predicate camo:prevents ;
+    warp:proposition prop:c16be9de6aa6 ;
+    warp:recordMetadata <https://w3id.org/ecoweaver/warp/statement/ms-09-causal/recordMetadata> ;
+    warp:reportedIn doc:dfo-mountain-sucker-recovery-strategy ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#contingent> ;
+    warp:statementText "Water extraction or degradation could reduce habitat quantity and quality for the Milk River Mountain Sucker." ;
+    warp:subject node:water_extraction_milk_river .
+
+<https://w3id.org/ecoweaver/warp/statement/ms-09-causal/recordMetadata> a warp:EcoRecordMetadata ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/ms-09-causal-annotation> .
+
+stmt:ms-09-rec a warp:RecommendationStatement ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/ms-09-rec-author> ;
+    warp:justified_by prop:c16be9de6aa6 ;
+    warp:modality <https://w3id.org/ecoweaver/warp/ModalityEnum#anticipated> ;
+    warp:object node:maintained_habitat_quantity_of_mountain_sucker_milk_river ;
+    warp:original_text "TODO: verbatim wording of Table 4, approach 9" ;
+    warp:place TODO:place_milk_river_drainage ;
+    warp:predicate warp:recommended_to_achieve ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/statement/ms-09-rec/predicate_qualifiers> ;
+    warp:proposition prop:2812c13c41fc ;
+    warp:recordMetadata <https://w3id.org/ecoweaver/warp/statement/ms-09-rec/recordMetadata> ;
+    warp:reportedIn doc:dfo-mountain-sucker-recovery-strategy ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#contingent> ;
+    warp:statementText "Carry out water management and conservation in the Milk River drainage, to maintain habitat quantity and quality for Mountain Sucker." ;
+    warp:subject node:water_conservation_measures_milk_river .
+
+<https://w3id.org/ecoweaver/warp/statement/ms-09-rec/predicate_qualifiers> a warp:RecommendationQualifiers ;
+    warp:contribution <https://w3id.org/ecoweaver/warp/ContributionEnum#direct> ;
+    warp:deontic_force <https://w3id.org/ecoweaver/warp/DeonticForceEnum#recommended> ;
+    warp:guidance <https://w3id.org/ecoweaver/warp/GuidanceEnum#do> ;
+    warp:priority <https://w3id.org/ecoweaver/warp/statement/ms-09-rec/predicate_qualifiers/priority> ;
+    warp:timing_of_influence <https://w3id.org/ecoweaver/warp/statement/ms-09-rec/predicate_qualifiers/timing_of_influence> .
+
+<https://w3id.org/ecoweaver/warp/statement/ms-09-rec/predicate_qualifiers/priority> a warp:ScaledValue ;
+    warp:concept <https://w3id.org/ecoweaver/warp/scale/dfo-recovery-priority/high> ;
+    warp:scale scale:dfo-recovery-priority ;
+    warp:value "High" .
+
+<https://w3id.org/ecoweaver/warp/statement/ms-09-rec/predicate_qualifiers/timing_of_influence> a warp:ScaledValue ;
+    warp:concept <https://w3id.org/ecoweaver/warp/scale/dfo-timing-of-influence/immediate> ;
+    warp:scale scale:dfo-timing-of-influence ;
+    warp:value "Immediate" .
+
+<https://w3id.org/ecoweaver/warp/statement/ms-09-rec/recordMetadata> a warp:EcoRecordMetadata ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/ms-09-rec-annotation> .
+
+stmt:ms-11-causal a warp:CausalStatement ;
+    warp:causal_language <https://w3id.org/ecoweaver/warp/ClaimStrengthEnum#uncertain_causal> ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/ms-11-causal-author> ;
+    warp:hasEvidenceLines <https://w3id.org/ecoweaver/warp/el/ms-11-causal-1> ;
+    warp:modality <https://w3id.org/ecoweaver/warp/ModalityEnum#anticipated> ;
+    warp:object node:abundance_of_mountain_sucker_milk_river ;
+    warp:original_text "TODO: verbatim wording of Table 4, approach 11" ;
+    warp:place TODO:place_milk_river_drainage ;
+    warp:predicate camo:prevents ;
+    warp:proposition prop:4f9905a0d7a2 ;
+    warp:recordMetadata <https://w3id.org/ecoweaver/warp/statement/ms-11-causal/recordMetadata> ;
+    warp:reportedIn doc:dfo-mountain-sucker-recovery-strategy ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#contingent> ;
+    warp:statementText "Stocking competitive or predacious sportfish can reduce the abundance of the Milk River Mountain Sucker population." ;
+    warp:subject node:stocking_of_predacious_sportfish_milk_river .
+
+<https://w3id.org/ecoweaver/warp/statement/ms-11-causal/recordMetadata> a warp:EcoRecordMetadata ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/ms-11-causal-annotation> .
+
+stmt:ms-11-rec a warp:RecommendationStatement ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/ms-11-rec-author> ;
+    warp:hasEvidenceLines <https://w3id.org/ecoweaver/warp/el/ms-11-rec-1> ;
+    warp:justified_by prop:4f9905a0d7a2 ;
+    warp:modality <https://w3id.org/ecoweaver/warp/ModalityEnum#anticipated> ;
+    warp:object node:decrease_in_abundance_of_mountain_sucker_milk_river ;
+    warp:original_text "TODO: verbatim wording of Table 4, approach 11" ;
+    warp:place TODO:place_milk_river_drainage ;
+    warp:predicate warp:advised_against_for ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/statement/ms-11-rec/predicate_qualifiers> ;
+    warp:proposition prop:69ccdaf69ec4 ;
+    warp:recordMetadata <https://w3id.org/ecoweaver/warp/statement/ms-11-rec/recordMetadata> ;
+    warp:reportedIn doc:dfo-mountain-sucker-recovery-strategy ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#contingent> ;
+    warp:statementText "Avoid stocking competitive or predacious sportfish in the Milk River drainage, because it can reduce Mountain Sucker abundance." ;
+    warp:subject node:stocking_of_predacious_sportfish_milk_river .
+
+<https://w3id.org/ecoweaver/warp/statement/ms-11-rec/predicate_qualifiers> a warp:RecommendationQualifiers ;
+    warp:contribution <https://w3id.org/ecoweaver/warp/ContributionEnum#direct> ;
+    warp:deontic_force <https://w3id.org/ecoweaver/warp/DeonticForceEnum#recommended> ;
+    warp:guidance <https://w3id.org/ecoweaver/warp/GuidanceEnum#avoid> ;
+    warp:priority <https://w3id.org/ecoweaver/warp/statement/ms-11-rec/predicate_qualifiers/priority> ;
+    warp:timing_of_influence <https://w3id.org/ecoweaver/warp/statement/ms-11-rec/predicate_qualifiers/timing_of_influence> .
+
+<https://w3id.org/ecoweaver/warp/statement/ms-11-rec/predicate_qualifiers/priority> a warp:ScaledValue ;
+    warp:concept <https://w3id.org/ecoweaver/warp/scale/dfo-recovery-priority/medium> ;
+    warp:scale scale:dfo-recovery-priority ;
+    warp:value "Medium" .
+
+<https://w3id.org/ecoweaver/warp/statement/ms-11-rec/predicate_qualifiers/timing_of_influence> a warp:ScaledValue ;
+    warp:concept <https://w3id.org/ecoweaver/warp/scale/dfo-timing-of-influence/medium> ;
+    warp:scale scale:dfo-timing-of-influence ;
+    warp:value "Medium" .
+
+<https://w3id.org/ecoweaver/warp/statement/ms-11-rec/recordMetadata> a warp:EcoRecordMetadata ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/ms-11-rec-annotation> .
 
 <https://w3id.org/ecoweaver/warp/statement/murphy2005-c1/comparator/0> a causal_mosaic:ComparatorAnnotation ;
     causal_mosaic:comparator_type <https://w3id.org/ecoweaver/warp/ComparatorTypeEnum#untreated_control> ;
@@ -468,17 +845,37 @@ stmt:notebook-i1 a warp:InteractionStatement ;
 <https://w3id.org/ecoweaver/warp/statement/notebook-i1/recordMetadata> a warp:EcoRecordMetadata ;
     warp:contributions <https://w3id.org/ecoweaver/warp/contrib/notebook-i1-annotation> .
 
-<https://w3id.org/ecoweaver/warp/agent/ecoweaver-synthesis> a warp:EcoAgent ;
-    warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#synthesis_pipeline> ;
-    warp:agent_subtype "software" ;
-    warp:name "EcoWeaver synthesis pipeline" .
+node:water_conservation_measures_milk_river warp:recommended_to_achieve node:maintained_habitat_quantity_of_mountain_sucker_milk_river .
+
+node:water_extraction_milk_river camo:prevents node:habitat_quantity_of_mountain_sucker_milk_river .
+
+<https://w3id.org/ecoweaver/warp/agent/person/practitioner-2> a warp:EcoAgent ;
+    warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#practitioner> ;
+    warp:agent_subtype "person" ;
+    warp:name "TODO: practitioner name or pseudonym" .
 
 <https://w3id.org/ecoweaver/warp/dataset/murphy2005> a warp:EcoDataSet ;
     warp:version "TODO" .
 
+doc:burn-study a warp:EcoDocument ;
+    warp:title "TODO: a field study of prescribed burning and shrub cover" .
+
 doc:kramer1995 a warp:EcoDocument ;
     warp:description "Journal of the American Mosquito Control Association 11(4):389-395, 1995." ;
     warp:title "Reduction of Aedes dorsalis by enhancing tidal action in a northern California marsh" .
+
+prop:69ccdaf69ec4 a warp:RecommendationProposition ;
+    warp:derived_from_statements stmt:ms-11-rec ;
+    warp:identity_key "recommendation|node:stocking_of_predacious_sportfish_milk_river|suggested_to|node:decrease_in_abundance_of_mountain_sucker_milk_river|affirmed|contingent|predicate_qualifiers.guidance=\"avoid\"" ;
+    warp:identity_rule_version "warp-prop-identity/4" ;
+    warp:negated false ;
+    warp:object node:decrease_in_abundance_of_mountain_sucker_milk_river ;
+    warp:predicate warp:advised_against_for ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/prop/69ccdaf69ec4/predicate_qualifiers> ;
+    warp:propositionText "Sometimes, avoid: Stocking of predacious sportfish in the Milk River drainage, for Decrease in abundance of the Mountain Sucker population, Milk River." ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#contingent> ;
+    warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
+    warp:subject node:stocking_of_predacious_sportfish_milk_river .
 
 prop:6ac6fc0d7703 a warp:InteractionProposition ;
     warp:derived_from_statements stmt:notebook-i1 ;
@@ -491,6 +888,20 @@ prop:6ac6fc0d7703 a warp:InteractionProposition ;
     warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#prototypical> ;
     warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
     warp:subject node:population_of_odocoileus_virginianus .
+
+prop:9c043c560227 a warp:RecommendationProposition ;
+    warp:derived_from_statements stmt:burn-do-plan,
+        stmt:burn-do-practitioner ;
+    warp:identity_key "recommendation|node:prescribed_burning_of_grassland|suggested_to|node:decrease_in_shrub_cover_in_grassland|affirmed|prototypical|predicate_qualifiers.guidance=\"do\"" ;
+    warp:identity_rule_version "warp-prop-identity/4" ;
+    warp:negated false ;
+    warp:object node:decrease_in_shrub_cover_in_grassland ;
+    warp:predicate warp:recommended_to_achieve ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/prop/9c043c560227/predicate_qualifiers> ;
+    warp:propositionText "Typically, do: Prescribed burning of grassland, for Decrease in shrub cover in grassland." ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#prototypical> ;
+    warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
+    warp:subject node:prescribed_burning_of_grassland .
 
 prop:aea4ac8269ae a warp:CausalProposition ;
     warp:derived_from_statements stmt:notebook-c1 ;
@@ -514,6 +925,21 @@ prop:question-tidal-restoration-aedes-dorsalis a warp:CausalProposition ;
     warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#prototypical> ;
     warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#open_question> ;
     warp:subject node:tidal_restoration_of_marsh .
+
+stmt:burn-study-c1 a warp:CausalStatement ;
+    warp:causal_language <https://w3id.org/ecoweaver/warp/ClaimStrengthEnum#direct_causal> ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/burn-study-c1-author> ;
+    warp:hasEvidenceLines <https://w3id.org/ecoweaver/warp/el/burn-study-c1-1> ;
+    warp:modality <https://w3id.org/ecoweaver/warp/ModalityEnum#observed> ;
+    warp:object node:shrub_cover_in_grassland ;
+    warp:original_text "TODO: verbatim sentence from the study" ;
+    warp:predicate camo:prevents ;
+    warp:proposition prop:247fc9907bf5 ;
+    warp:recordMetadata <https://w3id.org/ecoweaver/warp/statement/burn-study-c1/recordMetadata> ;
+    warp:reportedIn doc:burn-study ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#prototypical> ;
+    warp:statementText "Prescribed burning reduces shrub cover in grassland." ;
+    warp:subject node:prescribed_burning_of_grassland .
 
 stmt:kramer1995-c1 a warp:CausalStatement ;
     warp:causal_language <https://w3id.org/ecoweaver/warp/ClaimStrengthEnum#direct_causal> ;
@@ -574,6 +1000,23 @@ stmt:notebook-c1 a warp:CausalStatement ;
 
 node:tidal_restoration_of_marsh camo:prevents node:volumetric_density_of_ochlerotatus_dorsalis_population_at_larval_stage .
 
+<https://w3id.org/ecoweaver/warp/agent/ecoweaver-synthesis> a warp:EcoAgent ;
+    warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#synthesis_pipeline> ;
+    warp:agent_subtype "software" ;
+    warp:name "EcoWeaver synthesis pipeline" .
+
+prop:4f9905a0d7a2 a warp:CausalProposition ;
+    warp:derived_from_statements stmt:ms-11-causal ;
+    warp:identity_key "causal|node:stocking_of_predacious_sportfish_milk_river|prevents|node:abundance_of_mountain_sucker_milk_river|affirmed|contingent" ;
+    warp:identity_rule_version "warp-prop-identity/4" ;
+    warp:negated false ;
+    warp:object node:abundance_of_mountain_sucker_milk_river ;
+    warp:predicate camo:prevents ;
+    warp:propositionText "Sometimes, stocking of predacious sportfish in the Milk River drainage prevents Abundance of the Mountain Sucker population, Milk River." ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#contingent> ;
+    warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
+    warp:subject node:stocking_of_predacious_sportfish_milk_river .
+
 prop:9f0b068ca33b a warp:CausalProposition ;
     warp:derived_from_statements stmt:kramer1995-c1 ;
     warp:identity_key "causal|node:tidal_restoration_of_marsh|prevents|node:volumetric_density_of_ochlerotatus_dorsalis_population_at_larval_stage|affirmed|assertional" ;
@@ -586,7 +1029,27 @@ prop:9f0b068ca33b a warp:CausalProposition ;
     warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
     warp:subject node:tidal_restoration_of_marsh .
 
+prop:c16be9de6aa6 a warp:CausalProposition ;
+    warp:derived_from_statements stmt:ms-09-causal ;
+    warp:identity_key "causal|node:water_extraction_milk_river|prevents|node:habitat_quantity_of_mountain_sucker_milk_river|affirmed|contingent" ;
+    warp:identity_rule_version "warp-prop-identity/4" ;
+    warp:negated false ;
+    warp:object node:habitat_quantity_of_mountain_sucker_milk_river ;
+    warp:predicate camo:prevents ;
+    warp:propositionText "Sometimes, water extraction or degradation in the Milk River drainage prevents Habitat quantity and quality for Mountain Sucker, Milk River." ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#contingent> ;
+    warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
+    warp:subject node:water_extraction_milk_river .
+
 node:planting_of_sanguinaria_canadensis camo:prevents node:rate_of_population_growth_of_alliaria_petiolata .
+
+node:stocking_of_predacious_sportfish_milk_river camo:prevents node:abundance_of_mountain_sucker_milk_river ;
+    warp:advised_against_for node:decrease_in_abundance_of_mountain_sucker_milk_river .
+
+<https://w3id.org/ecoweaver/warp/agent/org/dfo> a warp:EcoAgent ;
+    warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#organization> ;
+    warp:agent_subtype "organization" ;
+    warp:name "Fisheries and Oceans Canada" .
 
 <https://w3id.org/ecoweaver/warp/agent/practitioner-1> a warp:EcoAgent ;
     warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#practitioner> ;
@@ -595,6 +1058,9 @@ node:planting_of_sanguinaria_canadensis camo:prevents node:rate_of_population_gr
 
 doc:notebook-entry-1 a warp:EcoDocument ;
     warp:subtype <https://w3id.org/ecoweaver/warp/doc/notebook-entry-1/subtype> .
+
+doc:dfo-mountain-sucker-recovery-strategy a warp:EcoDocument ;
+    warp:title "TODO: Recovery Strategy for the Mountain Sucker (Catostomus platyrhynchus), Milk River populations" .
 
 prop:question-bloodroot-garlic-mustard a warp:CausalProposition ;
     warp:derived_from_statements stmt:murphy2005-c1 ;
@@ -608,6 +1074,22 @@ prop:question-bloodroot-garlic-mustard a warp:CausalProposition ;
     warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#prototypical> ;
     warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
     warp:subject node:planting_of_sanguinaria_canadensis .
+
+prop:247fc9907bf5 a warp:CausalProposition ;
+    warp:derived_from_statements stmt:burn-study-c1 ;
+    warp:identity_key "causal|node:prescribed_burning_of_grassland|prevents|node:shrub_cover_in_grassland|affirmed|prototypical" ;
+    warp:identity_rule_version "warp-prop-identity/4" ;
+    warp:negated false ;
+    warp:object node:shrub_cover_in_grassland ;
+    warp:predicate camo:prevents ;
+    warp:propositionText "Typically, prescribed burning of grassland prevents Shrub cover in grassland." ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#prototypical> ;
+    warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
+    warp:subject node:prescribed_burning_of_grassland .
+
+node:prescribed_burning_of_grassland camo:prevents node:shrub_cover_in_grassland ;
+    warp:advised_against_for node:decrease_in_shrub_cover_in_grassland ;
+    warp:recommended_to_achieve node:decrease_in_shrub_cover_in_grassland .
 
 orcid:0000-0000-0000-0000 a warp:EcoAgent ;
     warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#researcher> ;

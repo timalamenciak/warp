@@ -90,3 +90,43 @@ warp:derived_from a owl:AnnotationProperty ;
 # RO:0002455 pollinates, RO:0002444 parasite of) are reused, never
 # re-declared here. Subject and object: population node classes.
 # Polarity: `negated` only.
+
+# Which qualifier value makes the exporter write a sub-property (D16).
+warp:selected_by a owl:AnnotationProperty ;
+    rdfs:label "selected by" ;
+    obo:IAO_0000115 "The qualifier value (an enum value IRI) for which export_rdf.py writes this sub-property in place of its abstract parent." ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+# --- recommendation (0.7.0; warp-proposals-0.4.html section 5) ----------------
+# Subject: an action or strategy node class. Object: an outcome node class.
+# Polarity: `guidance` (do / avoid / consider) picks the sub-property.
+# Projected to OWL: nothing, at any scope. Guidance is deontic, and "you
+# should do X" has no OWL 2 rendering. No domain or range: both ends are node
+# classes, used only in the reification layer.
+
+warp:suggested_to a owl:ObjectProperty ;
+    rdfs:label "suggested to" ;
+    obo:IAO_0000115 "The claimant gives guidance about the subject action because of its relation to the object outcome. Whether to do, avoid or consider the action is said by a sub-property; strength is held in the statement's deontic_force. Never asserted of anything itself." ;
+    warp:abstract_predicate true ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+warp:recommended_to_achieve a owl:ObjectProperty ;
+    rdfs:subPropertyOf warp:suggested_to ;
+    rdfs:label "recommended to achieve" ;
+    obo:IAO_0000115 "Guidance to carry out the subject action, because of the object outcome." ;
+    warp:selected_by <https://w3id.org/ecoweaver/warp/GuidanceEnum#do> ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+warp:advised_against_for a owl:ObjectProperty ;
+    rdfs:subPropertyOf warp:suggested_to ;
+    rdfs:label "advised against for" ;
+    obo:IAO_0000115 "Guidance not to carry out the subject action, because of the object outcome." ;
+    warp:selected_by <https://w3id.org/ecoweaver/warp/GuidanceEnum#avoid> ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+warp:suggested_for_consideration a owl:ObjectProperty ;
+    rdfs:subPropertyOf warp:suggested_to ;
+    rdfs:label "suggested for consideration" ;
+    obo:IAO_0000115 "Guidance to consider the subject action, because of the object outcome; covers hedged guidance." ;
+    warp:selected_by <https://w3id.org/ecoweaver/warp/GuidanceEnum#consider> ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .

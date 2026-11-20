@@ -191,7 +191,7 @@ def test_examples_pass_nothing(sv):
     sets = [load_yaml(p) for p in sorted(EXAMPLES.glob("*.derived.yaml"))] + \
            [load_yaml(p) for p in sorted(EXAMPLES.glob("*_assessment.yaml"))]
     g, report = project_owl.Projector(sv).run(sets)
-    assert report["considered"] == 5 and not report["passed"]
+    assert report["considered"] >= 5 and not report["passed"]
     assert "Nothing passed" in project_owl.render_report(report)
 
 

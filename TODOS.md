@@ -466,3 +466,29 @@ job in `scripts/clean_owl.py`; when one is fixed upstream, delete the job.
 - [ ] **Predicate enums from imported schemas** (feature). There is no way
       for an importing schema to say what an imported enum's values are
       (CAMO's `CausalPredicateEnum`), short of editing the import.
+
+### 8.5 Recommendation group (proposal section 5)
+
+- [ ] **Q1 Claimant for government documents.** The Minister, the recovery
+      team or the department? It matters for CARE metadata where Indigenous
+      knowledge informs a strategy. The example uses the department.
+- [ ] **Q2 Priority scales.** Each agency's scale is kept
+      (`vocab/scales.yaml`); decide whether to also map to a shared ordinal
+      for querying across agencies.
+- [ ] **Q3 Research actions.** "Clarify life history" aims to close a
+      knowledge gap; allow an open-question proposition as object, or model
+      the gap as a node?
+- [ ] **Q4 Conditions on guidance.** "Avoid in-stream work during egg
+      incubation": is `context` enough, or is a structured condition slot
+      needed?
+- [ ] **Q5 Scope of forward-looking guidance.** Guidance about one named
+      population over the next ten years is about a particular and looks
+      forward (the example marks it `contingent`, `anticipated`). For Lars.
+- [ ] **Q6 Theories of change.** Map `suggested_to` chains to CMP Open
+      Standards results chains?
+- [ ] **A closer relation than `warp:suggested_to`.** Search OBO and IAO for
+      an existing relation for guidance before 0.7.0 is released.
+- [ ] **Example wording.** Check every TODO in
+      `examples/recommendation_statements.yaml` against the Mountain Sucker
+      and Spring Salamander recovery strategies, and add node template
+      fillings.

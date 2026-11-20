@@ -1,0 +1,191 @@
+#!/usr/bin/env python3
+"""Report on guidance: what each recommendation rests on.
+
+    python scripts/report_guidance.py FILE.yaml [FILE.yaml ...] \
+        --out project/reports/guidance.md --csv project/reports/guidance.csv
+
+Pass derived statement sets and any assessments. For every recommendation
+statement it lists:
+
+  (a) unsupported guidance: justified_by is empty (the source gives no
+      reason);
+  (b) self-supporting guidance: every proposition in justified_by is
+      supported only by statements from the same claimant whose evidence
+      lines are all not_stated or expert_judgment (or absent). DFO advises
+      avoiding stocking because DFO predicts harm. Not an error: in recovery
+      planning it is often the precautionary principle at work. It is where
+      effectiveness monitoring adds the most;
+  (c) for every cited proposition with a SynthesisAssessment, its direction
+      and strength, so weakly supported guidance can be sorted.
+
+These are findings, not validation errors: the script always exits 0.
+"""
+
+import argparse
+import csv
+import sys
+from collections import defaultdict
+from pathlib import Path
+
+import yaml
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import derive_propositions as dp  # noqa: E402
+
+ASSERTION_ONLY = {"not_stated", "expert_judgment"}
+CERTAINTY_ORDER = {"high": 4, "moderate": 3, "low": 2, "very_low": 1, "not_assessed": 0}
+
+
+def claimant(statement):
+    for c in statement.get("contributions") or []:
+        if c.get("role") == "author":
+            return c.get("contributor")
+    return None
+
+
+def evidence_types(statement):
+    return [line.get("evidence_type") for line in statement.get("hasEvidenceLines") or []]
+
+
+class Index:
+    def __init__(self, sets, schema=dp.DEFAULT_SCHEMA):
+        self.groups = dp.load_groups(schema, all_groups=True)
+        self.statements, self.propositions = {}, {}
+        self.assessments = defaultdict(list)
+        self.recommendations = []
+        self.node_names = {}
+        for data in sets:
+            for n in data.get("nodes") or []:
+                self.node_names.setdefault(n["id"], n.get("name", n["id"]))
+            for g in self.groups:
+                for s in data.get(g["statements_slot"]) or []:
+                    self.statements[s["id"]] = s
+                    if g["group"] == "recommendation" and s not in self.recommendations:
+                        self.recommendations.append(s)
+                for p in data.get(g["propositions_slot"]) or []:
+                    self.propositions[p["id"]] = p
+            for a in data.get("assessments") or []:
+                if a.get("proposition"):
+                    self.assessments[a["proposition"]].append(a)
+
+
+def self_supporting(idx, rec):
+    """True when every cited proposition rests only on the recommender's own
+    statements, none of which gives more than assertion as its basis."""
+    cited = rec.get("justified_by") or []
+    if not cited:
+        return False
+    who = claimant(rec)
+    for pid in cited:
+        prop = idx.propositions.get(pid)
+        members = (prop or {}).get("derived_from_statements") or []
+        if not members:
+            return False
+        for sid in members:
+            s = idx.statements.get(sid) or {}
+            if claimant(s) != who:
+                return False
+            if any(t not in ASSERTION_ONLY for t in evidence_types(s)):
+                return False
+    return True
+
+
+def assessed(idx, rec):
+    out = []
+    for pid in rec.get("justified_by") or []:
+        for a in idx.assessments.get(pid, []):
+            out.append((pid, a.get("direction"), a.get("strength")))
+    return out
+
+
+def findings(idx):
+    rows = []
+    for rec in idx.recommendations:
+        q = rec.get("predicate_qualifiers") or {}
+        cited = rec.get("justified_by") or []
+        flags = []
+        if not cited:
+            flags.append("unsupported")
+        elif self_supporting(idx, rec):
+            flags.append("self-supporting")
+        grades = assessed(idx, rec)
+        weakest = min((CERTAINTY_ORDER.get(g[2], 0) for g in grades), default=None)
+        rows.append({
+            "statement": rec["id"],
+            "claimant": claimant(rec) or "",
+            "guidance": q.get("guidance", ""),
+            "subject": rec.get("subject", ""),
+            "object": rec.get("object", ""),
+            "proposition": rec.get("proposition", ""),
+            "justified_by": " ".join(cited),
+            "findings": " ".join(flags),
+            "assessments": "; ".join(f"{p} {d} {s}" for p, d, s in grades),
+            "weakest_certainty": "" if weakest is None else
+                next(k for k, v in CERTAINTY_ORDER.items() if v == weakest),
+        })
+    return rows
+
+
+def render(idx, rows):
+    name = lambda n: idx.node_names.get(n, n)  # noqa: E731
+    lines = ["# Guidance report", "",
+             "Generated by `scripts/report_guidance.py`. Findings, not errors: they say what each "
+             "recommendation rests on.", "",
+             f"- Recommendation statements: {len(rows)}",
+             f"- (a) Unsupported (no justified_by): {sum('unsupported' in r['findings'] for r in rows)}",
+             f"- (b) Self-supporting: {sum('self-supporting' in r['findings'] for r in rows)}",
+             f"- (c) Citing an assessed proposition: {sum(bool(r['assessments']) for r in rows)}", ""]
+    sections = [("(a) Unsupported guidance", lambda r: "unsupported" in r["findings"],
+                 "The source gives no reason. Not wrong; worth knowing."),
+                ("(b) Self-supporting guidance", lambda r: "self-supporting" in r["findings"],
+                 "Every cited proposition rests only on the same claimant's statements, with no "
+                 "basis beyond assertion or expert judgment. Often the precautionary principle; "
+                 "where monitoring adds the most."),
+                ("(c) Guidance citing assessed propositions", lambda r: bool(r["assessments"]),
+                 "Sorted by the weakest certainty among the cited propositions' assessments.")]
+    for title, keep, note in sections:
+        chosen = [r for r in rows if keep(r)]
+        lines += [f"## {title}", "", note, ""]
+        if title.startswith("(c)"):
+            chosen.sort(key=lambda r: CERTAINTY_ORDER.get(r["weakest_certainty"], 0))
+        if not chosen:
+            lines += ["None.", ""]
+            continue
+        for r in chosen:
+            lines.append(f"- `{r['statement']}` ({r['claimant']}): **{r['guidance']}** "
+                         f"{name(r['subject'])}, for {name(r['object'])}")
+            if r["justified_by"]:
+                lines.append(f"  - cites {r['justified_by']}")
+            if r["assessments"]:
+                lines.append(f"  - assessed: {r['assessments']}")
+        lines.append("")
+    return "\n".join(lines)
+
+
+FIELDS = ["statement", "claimant", "guidance", "subject", "object", "proposition",
+          "justified_by", "findings", "assessments", "weakest_certainty"]
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
+    parser.add_argument("files", type=Path, nargs="+")
+    parser.add_argument("--out", type=Path, required=True)
+    parser.add_argument("--csv", type=Path)
+    args = parser.parse_args(argv)
+    sets = [yaml.safe_load(f.read_text(encoding="utf-8")) or {} for f in args.files]
+    idx = Index(sets)
+    rows = findings(idx)
+    args.out.parent.mkdir(parents=True, exist_ok=True)
+    args.out.write_text(render(idx, rows) + "\n", encoding="utf-8")
+    if args.csv:
+        with args.csv.open("w", newline="", encoding="utf-8") as fh:
+            w = csv.DictWriter(fh, fieldnames=FIELDS)
+            w.writeheader()
+            w.writerows(rows)
+    print(f"wrote {args.out}: {len(rows)} recommendation(s), "
+          f"{sum('unsupported' in r['findings'] for r in rows)} unsupported, "
+          f"{sum('self-supporting' in r['findings'] for r in rows)} self-supporting")
+
+
+if __name__ == "__main__":
+    main()

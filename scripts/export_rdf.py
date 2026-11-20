@@ -79,7 +79,29 @@ def default_relation(ex, group, record, iri):
     return (p, o) if p is not None and o is not None else None
 
 
-RELATIONS = {}
+def qualifier_subproperty(path):
+    """Polarity in a qualifier (D16): the enum value at `path` names, in its
+    `warp_subproperty` annotation, the sub-property to write. The object stays
+    the statement's object."""
+    def relation(ex, group, record, iri):
+        import derive_propositions as dp
+        value = dp.get_path(record, path)
+        if value is None:
+            return None
+        slot = dp.resolve_path(ex.sv, group["statement_class"], path)
+        pv = ex.sv.get_enum(slot.range).permissible_values.get(value)
+        sub = ws.annotation(pv, "warp_subproperty") if pv is not None else None
+        if not sub or not record.get("object"):
+            return None
+        return ex.iri(sub), ex.iri(record["object"])
+    return relation
+
+
+RELATIONS = {
+    # guidance do / avoid / consider -> recommended_to_achieve / advised_against_for /
+    # suggested_for_consideration; the abstract warp:suggested_to is never written.
+    "recommendation": qualifier_subproperty("predicate_qualifiers.guidance"),
+}
 
 
 class Exporter:

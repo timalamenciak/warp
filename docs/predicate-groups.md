@@ -17,9 +17,10 @@ Groups share everything else: the SEPIO frame, scope, hedging conventions,
 CARE metadata, evidence lines, synthesis assessments and proposition
 derivation.
 
-The repository has two groups. **causal** reuses CAMO's predicates and
-features. **interaction** (biotic interactions) is a small worked example of
-adding a group; every step below points at it in
+The repository's groups are listed at the end of this guide, each with the
+test an annotator uses to tell it from its neighbours. **causal** reuses
+CAMO's predicates and features. **interaction** (biotic interactions) is a
+small worked example of adding a group; every step below points at it in
 `src/warp/schema/warp.yaml`.
 
 All edits go in `warp.yaml`. Never edit `upstream/`.
@@ -232,6 +233,7 @@ proposition rather than as separate propositions.
 |---|---|
 | causal | none |
 | interaction | none |
+| recommendation | `predicate_qualifiers.guidance` |
 
 (Later groups add theirs; the register in [rdf-owl.md](rdf-owl.md) lists every
 group.)
@@ -277,3 +279,57 @@ set together with its derived file and with anything that cites it.
 - [ ] Node templates exist for the subjects and objects
 - [ ] The five questions in [rdf-owl.md §8](rdf-owl.md#8-adding-a-group) answered, and the group added to its register
 - [ ] Example statement; `make all` passes; version bumped
+
+---
+
+## The groups
+
+### causal and interaction
+
+What changes what; which organisms act on which. See the README.
+
+### recommendation (0.7.0)
+
+Guidance: a source tells someone to **do, avoid or consider** an action because
+of an outcome. `RecommendationStatement`, one predicate `suggested_to`.
+
+- **Subject**: the action as the source names it (an action node, or a
+  management strategy node). Never the recommender: who gave the advice is the
+  claimant, the statement's author contribution.
+- **Object**: the outcome node, a change or target state ("decrease in
+  abundance of the Milk River Mountain Sucker").
+- **Qualifiers**: `guidance` (do / avoid / consider; required; in the identity
+  key), `deontic_force` (required / recommended / suggested / optional),
+  `priority` and `timing_of_influence` (`ScaledValue`s on the source's scale),
+  `contribution` (direct / precursor).
+- **`justified_by`**: the propositions the guidance cites, usually causal.
+  Empty when the source gives no reason.
+
+**The annotator's test: is the source telling someone what to do, or
+describing what happens?** "Do X to achieve Y" is guidance. "The outcome of X
+is, or was, Y" is a causal statement. When a sentence does both, record both,
+and have the guidance cite the causal proposition through `justified_by`.
+
+**Predictions are causal statements, never derived from guidance.** "If
+sportfish are stocked, Mountain Sucker abundance will decrease" describes what
+happens: record it as a causal statement with `modality: anticipated`, its
+hedging in `causal_language`, and its basis in an evidence line
+(`expert_judgment` for expert opinion, `not_stated` when the source gives
+none). The guidance cites it. Nothing derives predictions from guidance
+automatically: that would put claims in the source's mouth. An impact the
+source says cannot be assessed is an open-question proposition, not a
+prediction.
+
+"Do prescribed burning" and "avoid prescribed burning" for the same outcome are
+two propositions, because guidance is in the identity key; they may cite the
+same causal proposition. Two agencies giving the same guidance share one
+proposition.
+
+In RDF the exporter writes `warp:recommended_to_achieve`,
+`warp:advised_against_for` or `warp:suggested_for_consideration`, never the
+abstract `warp:suggested_to`, so the relation layer cannot turn "avoid" into
+"do". Nothing in this group projects to OWL, at any scope.
+`scripts/report_guidance.py` (`make reports`) lists unsupported guidance,
+self-supporting guidance (cited propositions resting only on the same
+claimant's assertion or expert judgment), and the assessed strength of what
+each recommendation cites. Example: `examples/recommendation_statements.yaml`.

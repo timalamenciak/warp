@@ -10,7 +10,9 @@ export PYTHONIOENCODING := utf-8
 export PYTHONUTF8 := 1
 
 # Annotated statement sets (inputs). Each gets a derived file next to it.
-STATEMENTS  := examples/bloodroot_statements.yaml examples/kramer1995_statements.yaml
+STATEMENTS  := examples/bloodroot_statements.yaml \
+               examples/kramer1995_statements.yaml \
+               examples/recommendation_statements.yaml
 DERIVED     := $(STATEMENTS:.yaml=.derived.yaml)
 ASSESSMENTS := examples/bloodroot_assessment.yaml examples/kramer1995_assessment.yaml
 
@@ -20,7 +22,8 @@ ASSESSMENTS := examples/bloodroot_assessment.yaml examples/kramer1995_assessment
 # --no-use-native-uris honours slot_uri (WARP IRIs for SEPIO slots, Q13);
 # --xsd-anyuri-as-iri makes CURIE-valued slots object properties, so their
 # values are IRIs, not strings.
-OWLGEN_FLAGS := --no-use-native-uris --xsd-anyuri-as-iri --default-permissible-value-type owl:NamedIndividual
+OWLGEN_FLAGS := --no-use-native-uris --xsd-anyuri-as-iri \
+                --default-permissible-value-type owl:NamedIndividual
 
 # Hand-maintained predicate declarations (D13) and the ROBOT catalog that
 # resolves the logical layer's owl:imports to local files.
@@ -28,16 +31,21 @@ RELATIONS := src/warp/owl/warp-relations.ttl
 CATALOG   := src/warp/owl/catalog-v001.xml
 ROBOT     ?= robot
 
-# Every generated Turtle file, for check_owl.py. Sites and projects arrive in
-# Phase 7; wildcard keeps the list honest until then.
-OWL_FILES = project/nodes.ttl project/axioms.ttl project/statements.ttl project/warp.owl.ttl             project/scales.ttl $(wildcard project/sites.ttl project/projects.ttl             project/criteria_concepts.ttl) $(RELATIONS)
-LOGICAL   = project/nodes.ttl project/axioms.ttl $(wildcard project/sites.ttl project/projects.ttl)
+# Every generated Turtle file, for check_owl.py. Files that later phases add
+# are picked up by wildcard once they exist.
+OWL_FILES = project/nodes.ttl project/axioms.ttl project/statements.ttl \
+            project/warp.owl.ttl project/scales.ttl \
+            $(wildcard project/sites.ttl project/projects.ttl project/criteria_concepts.ttl) \
+            $(RELATIONS)
+LOGICAL   = project/nodes.ttl project/axioms.ttl \
+            $(wildcard project/sites.ttl project/projects.ttl)
 
-.PHONY: all templates patterns vocab nodes derive validate check lint gen rdf owl owl-check test owl-dosdp clean
+.PHONY: all templates patterns vocab nodes derive validate check lint gen rdf owl \
+        owl-check reports test owl-dosdp clean
 
 # templates -> vocab -> nodes -> propositions -> schema OWL -> rdf -> owl ->
-# validate (shapes, references, OWL lint) -> checks -> profiles -> tests
-all: patterns vocab nodes derive gen rdf owl validate check owl-check test
+# validate (shapes, references, OWL lint) -> checks -> profiles -> reports -> tests
+all: patterns vocab nodes derive gen rdf owl validate check owl-check reports test
 
 # --- Node templates ----------------------------------------------------------
 
@@ -85,9 +93,10 @@ validate: derive gen rdf owl
 	$(PY) scripts/check_refs.py $(STATEMENTS) $(DERIVED) $(ASSESSMENTS)
 	$(PY) scripts/check_owl.py $(OWL_FILES)
 
-# What the schema cannot express: Assertion Mode, negation, contribution roles,
-# CARE, and references resolving across files. Pass files that cite each other together.
-# Identifiers, units, places, scales and dates: scripts/check_values.py.
+# What the schema cannot express: Assertion Mode, negation, contribution
+# roles, CARE, references resolving across files (check_statements.py); and
+# identifiers, units, places, scales and dates (check_values.py). Pass files
+# that cite each other together.
 check: derive
 	$(PY) scripts/check_statements.py $(DERIVED) $(ASSESSMENTS)
 	$(PY) scripts/check_values.py $(STATEMENTS) $(DERIVED) $(ASSESSMENTS)
@@ -103,7 +112,8 @@ gen:
 	mkdir -p project
 	gen-json-schema $(SCHEMA) > project/warp.schema.json
 	gen-owl $(OWLGEN_FLAGS) $(SCHEMA) > project/warp.owl.raw.ttl
-	$(PY) scripts/clean_owl.py project/warp.owl.raw.ttl project/warp.owl.ttl --relations $(RELATIONS)
+	$(PY) scripts/clean_owl.py project/warp.owl.raw.ttl project/warp.owl.ttl \
+	  --relations $(RELATIONS)
 	rm -f project/warp.owl.raw.ttl
 
 # --- RDF and OWL (docs/rdf-owl.md) -------------------------------------------------
@@ -114,13 +124,31 @@ rdf: derive
 
 # The logical layer: class axioms for propositions that pass the gate (D15).
 owl: derive
-	$(PY) scripts/project_owl.py $(DERIVED) $(ASSESSMENTS) --out project/axioms.ttl 	  --report project/reports/projection.md
+	$(PY) scripts/project_owl.py $(DERIVED) $(ASSESSMENTS) --out project/axioms.ttl \
+	  --report project/reports/projection.md
 
 # OWL 2 profiles with ROBOT: EL for the logical layer, DL for the schema and
 # relations. Without robot on PATH this warns and succeeds (Q9); releases are
 # checked with it.
 owl-check:
-	@if command -v $(ROBOT) >/dev/null 2>&1; then 	  mkdir -p project/reports && 	  $(ROBOT) merge --catalog $(CATALOG) $(foreach f,$(LOGICAL),--input $(f)) 	    validate-profile --profile EL --output project/reports/profile-el.txt && 	  $(ROBOT) merge --catalog $(CATALOG) --input project/warp.owl.ttl --input $(RELATIONS) 	    validate-profile --profile DL --output project/reports/profile-dl.txt && 	  echo "owl-check: EL (logical layer) and DL (schema, relations) both pass"; 	else 	  echo "WARNING: '$(ROBOT)' is not on PATH: OWL 2 profile checks skipped."; 	  echo "         Releases are checked with ROBOT (make owl-check ROBOT=/path/to/robot)."; 	fi
+	@if command -v $(ROBOT) >/dev/null 2>&1; then \
+	  mkdir -p project/reports && \
+	  $(ROBOT) merge --catalog $(CATALOG) $(foreach f,$(LOGICAL),--input $(f)) \
+	    validate-profile --profile EL --output project/reports/profile-el.txt && \
+	  $(ROBOT) merge --catalog $(CATALOG) --input project/warp.owl.ttl --input $(RELATIONS) \
+	    validate-profile --profile DL --output project/reports/profile-dl.txt && \
+	  echo "owl-check: EL (logical layer) and DL (schema, relations) both pass"; \
+	else \
+	  echo "WARNING: '$(ROBOT)' is not on PATH: OWL 2 profile checks skipped."; \
+	  echo "         Releases are checked with ROBOT (make owl-check ROBOT=/path/to/robot)."; \
+	fi
+
+# --- Reports ------------------------------------------------------------------------
+
+# Findings, not validation: project/reports/.
+reports: derive
+	$(PY) scripts/report_guidance.py $(DERIVED) $(ASSESSMENTS) \
+	  --out project/reports/guidance.md --csv project/reports/guidance.csv
 
 # pytest suite under tests/.
 test:
