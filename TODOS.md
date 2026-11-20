@@ -361,8 +361,8 @@ example; a real database needs statements from many sources grouped together.
 - [ ] Write the merge script (concatenate every StatementSet list, dedupe
       by id, fail when one id names two different objects, pass open
       questions through untouched).
-- [ ] Generalize the Makefile: `derive`, `validate` and `check` hard-code
-      the example paths; only `STATEMENTS` is a variable.
+- [x] Generalize the Makefile: `derive`, `validate` and `check` hard-coded
+      the example paths. Now `STATEMENTS` and `ASSESSMENTS` list them (0.6.0).
 
 ### 7.2 Smaller fixes
 
@@ -381,5 +381,6 @@ example; a real database needs statements from many sources grouped together.
       letter of non-proper names, or use the template-generated label.
 - [ ] **Duplicate ids across files.** `check_statements.py` compares
       duplicate ids within a file only. Compare across all files given.
-- [ ] **Windows.** `make` is not in Git Bash. Document an install, or add
-      a small Python task runner alongside the Makefile.
+- [ ] **Windows.** `make` is not in Git Bash. Rtools' GNU make works
+      (`/c/rtools45/usr/bin`, noted in `CLAUDE.md`); document it for
+      contributors in `mechanic.html`, or add a small Python task runner.

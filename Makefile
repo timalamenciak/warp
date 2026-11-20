@@ -1,14 +1,18 @@
 SCHEMA    := src/warp/schema/warp.yaml
 TSCHEMA   := src/warp/schema/warp_templates.yaml
 TEMPLATES := templates/node_templates.yaml
-STATEMENTS    := examples/bloodroot_statements.yaml
 PY        ?= python
 # Optional: path to dosdp-tools (https://github.com/INCATools/dosdp-tools/releases)
 DOSDP_TOOLS ?= dosdp-tools
 
-.PHONY: all templates patterns nodes derive validate check lint gen owl-dosdp clean
+# Annotated statement sets (inputs). Each gets a derived file next to it.
+STATEMENTS  := examples/bloodroot_statements.yaml examples/kramer1995_statements.yaml
+DERIVED     := $(STATEMENTS:.yaml=.derived.yaml)
+ASSESSMENTS := examples/bloodroot_assessment.yaml examples/kramer1995_assessment.yaml
 
-all: patterns nodes derive validate check gen
+.PHONY: all templates patterns nodes derive validate check lint gen test owl-dosdp clean
+
+all: patterns nodes derive validate check gen test
 
 # --- Node templates ----------------------------------------------------------
 
@@ -19,7 +23,9 @@ templates:
 # Generate DOSDP pattern files from the templates and check them.
 patterns: templates
 	$(PY) scripts/gen_dosdp.py $(TEMPLATES) patterns
-	for f in patterns/*.yaml; do \n	  [ $$f = patterns/prefixes.yaml ] || $(PY) -m dosdp validate -i $$f || exit 1; \n	done
+	for f in patterns/*.yaml; do \
+	  [ $$f = patterns/prefixes.yaml ] || $(PY) -m dosdp validate -i $$f || exit 1; \
+	done
 
 # Expand node definitions: OWL (Turtle) + DOSDP fill tables.
 nodes: templates
@@ -37,22 +43,19 @@ owl-dosdp: patterns nodes
 
 # --- Statements ------------------------------------------------------------------
 
-# Derive propositions for every registered predicate group.
+# Derive propositions for every registered predicate group, one set at a time.
 derive:
-	$(PY) scripts/derive_propositions.py $(STATEMENTS) examples/bloodroot_statements.derived.yaml
+	for f in $(STATEMENTS); do \
+	  $(PY) scripts/derive_propositions.py $$f $${f%.yaml}.derived.yaml || exit 1; \
+	done
 
 validate: derive
-	linkml-validate -s $(SCHEMA) -C StatementSet \
-	  $(STATEMENTS) \
-	  examples/bloodroot_statements.derived.yaml \
-	  examples/bloodroot_assessment.yaml
+	linkml-validate -s $(SCHEMA) -C StatementSet $(STATEMENTS) $(DERIVED) $(ASSESSMENTS)
 
 # What the schema cannot express: Assertion Mode, negation, contribution roles,
 # CARE, and references resolving across files. Pass files that cite each other together.
 check: derive
-	$(PY) scripts/check_statements.py \
-	  examples/bloodroot_statements.derived.yaml \
-	  examples/bloodroot_assessment.yaml
+	$(PY) scripts/check_statements.py $(DERIVED) $(ASSESSMENTS)
 
 # Warnings about camelCase slot names come from upstream SEPIO and are expected.
 lint:
@@ -63,6 +66,10 @@ gen:
 	mkdir -p project
 	gen-json-schema $(SCHEMA) > project/warp.schema.json
 	gen-owl $(SCHEMA) > project/warp.owl.ttl
+
+# pytest suite under tests/.
+test:
+	$(PY) -m pytest -q tests
 
 clean:
 	rm -rf project examples/*.derived.yaml patterns/data patterns/*.yaml

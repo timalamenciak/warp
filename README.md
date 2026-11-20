@@ -15,6 +15,9 @@ and numbers are placeholders.
   shape in LinkML and get DOSDP patterns and OWL classes from it.
 - [Adding a predicate group](docs/predicate-groups.md): add a new kind of
   statement (its predicates, qualifiers, statement and proposition classes).
+- [WARP in RDF and OWL](docs/rdf-owl.md): what each generated file may be read
+  as, which IRI denotes what, and the gate a statement passes before a reasoner
+  is allowed to use it. Draft, written against the 0.4 work.
 
 Open work, including draft ECO term requests: [TODOS.md](TODOS.md).
 
@@ -300,36 +303,4 @@ Requires Python 3.10+ with `pip install -r requirements.txt`. The optional
 
 ## Changes
 
-- **0.5.0**: provenance the SEPIO way, and checks for what the schema cannot
-  say. New `EcoAgent`, `EcoContribution` (with `role`) and
-  `EcoRecordMetadata`; `StatementSet.agents`. Who made a statement is now a
-  contribution with role author (replaces `agent_kind` on the statement,
-  which moves to the agent); `annotator` and `annotation_timestamp` move to
-  `recordMetadata`; evidence lines can record who judged them
-  (`evidence_assessor`). `CareMetadata.knowledge_holder` (text) →
-  `knowledge_holders` (agent ids). `evidence_type` and `role` documented as
-  specializations of SEPIO's `subtype` and `activityType`. New
-  `scripts/check_statements.py` and `make check`. Identity rule
-  `warp-prop-identity/3`: the key says "affirmed" rather than "asserted";
-  derived proposition ids change.
-- **0.4.0**: back to SEPIO's own terms. "Claim" is now "statement"
-  throughout: `Claim` → `EcoStatement`, `CausalClaim` → `CausalStatement`,
-  `InteractionClaim` → `InteractionStatement`, `ClaimSet` → `StatementSet`;
-  slots `causal_claims` / `interaction_claims` / `derived_from_claims` →
-  `*_statements`, `claimant_kind` → `agent_kind` (`AgentKindEnum`); registry
-  annotation `warp_claims_slot` → `warp_statements_slot`; example ids
-  `warp:claim/…` → `warp:statement/…`. Profile classes get their own
-  `class_uri`s (`warp:EcoProposition`, `warp:EcoEvidenceLine`, …) instead of
-  names that look like SEPIO's; example `type` values name the concrete
-  class. Derivation now also fills `targetProposition` on each statement's
-  evidence lines. Identity rule and proposition ids unchanged.
-- **0.3.0**: renamed WARP (Weaving Assertions, Reasons and Provenance), from
-  "EcoWeaver Claims". Namespace `https://w3id.org/ecoweaver/warp/` and CURIE
-  prefix `warp:` (were `.../claims/` and `ew:`); schema files `warp.yaml` and
-  `warp_templates.yaml`; group registry annotations `warp_*`; identity rule
-  renamed `warp-prop-identity/2` (same rule as before). No structural changes.
-- **0.2.0**: node templates (LinkML → DOSDP and OWL); predicate group
-  registry and the biotic interaction group; `EcoProposition` base class;
-  `propositions` list renamed `causal_propositions`; identity rule v2 adds
-  the group to the key.
-- **0.1.0**: first draft of the SEPIO profile.
+See [CHANGELOG.md](CHANGELOG.md).
