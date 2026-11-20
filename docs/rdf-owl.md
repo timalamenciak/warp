@@ -12,11 +12,12 @@ with a range nobody else agrees with, is not a class axiom in any logic — and
 asserting it as one would state something stronger than the source did. So
 WARP has two layers, and the rules below are mostly about keeping them apart.
 
-> **Status.** This describes the target, built in Phase 2.5 of the 0.4 work
-> (`warp-0.4-dev-guide.md`, decisions D11 to D20). Today only the node layer and
-> the schema OWL are generated; `examples/kramer1995.ttl` is a hand-written
-> rendering of one statement, and it is the worked specification for
-> `export_rdf.py`. The "state of play" table in section 9 says what exists.
+> **Status.** Built in 0.6.0 (Phase 2.5 of the 0.4 proposal round,
+> `warp-0.4-dev-guide.md`, decisions D11 to D20) for the causal and
+> interaction groups; each later group adds its row to the register in
+> section 8. The "state of play" table in section 9 says what exists.
+> `examples/kramer1995.ttl` was the hand-written specification for
+> `export_rdf.py`; `project/statements.ttl` is now the generated version.
 >
 > **Terminology.** The 0.4 proposals write `Claim` and `ClaimSet` where the
 > code writes `Statement` and `StatementSet`. This file follows the code.
@@ -65,7 +66,7 @@ nothing becomes an axiom without passing the gate (§6).
 | `node:` | OWL **class** | Actions, outcomes, environmental variables, taxa and populations, strategies ([node-templates.md](node-templates.md)) | `expand_nodes.py` (strategy IRIs come from `derive_strategies.py`) |
 | `site:` | OWL **individual** | One piece of ground | `expand_nodes.py` → `sites.ttl` |
 | `proj:` | OWL **individual** | The work that was done: a process instance | `derive_projects.py` → `projects.ttl` |
-| `warp:statement/`, `warp:prop/`, `warp:el/`, `stmt:`, `crit:`, `comp:`, `amount:` … | RDF individual | The reification layer | `export_rdf.py` |
+| `stmt:` (`warp:statement/`), `prop:` (`warp:prop/`), `warp:el/`, `doc:`, `crit:`, `comp:` …, and `<owner>/<slot>` for inlined records | RDF individual | The reification layer | `export_rdf.py` |
 
 A `node:` IRI is a class everywhere it appears. A `site:` or `proj:` IRI is an
 individual everywhere it appears. No IRI is ever both, and `check_owl.py`
@@ -82,17 +83,51 @@ on which file you read.
 ### 2.2 How a statement points at a node class
 
 A statement's `subject`, `predicate` and `object` are declared as **annotation
-properties** in `warp-relations.ttl`, and `export_rdf.py` emits them as
-annotation assertions:
+properties** in `warp-relations.ttl` (`implements: [owl:AnnotationProperty]`
+in the profile says the same), and `export_rdf.py` emits them as annotation
+assertions. From `project/statements.ttl`:
 
 ```turtle
-warp:statement/kramer1995-c1 a warp:CausalStatement ;
-    sepio:subject   node:tidal_restoration_of_marsh ;      # an annotation assertion
-    sepio:predicate camo:prevents ;
-    sepio:object    node:volumetric_density_of_ochlerotatus_dorsalis_population_at_larval_stage ;
-    warp:scope      <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
-    warp:negated    false .
+stmt:kramer1995-c1 a warp:CausalStatement ;
+    warp:subject   node:tidal_restoration_of_marsh ;      # an annotation assertion
+    warp:predicate camo:prevents ;
+    warp:object    node:volumetric_density_of_ochlerotatus_dorsalis_population_at_larval_stage ;
+    warp:scope     <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
+    warp:causal_language <https://w3id.org/ecoweaver/warp/ClaimStrengthEnum#direct_causal> ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/statement/kramer1995-c1/predicate_qualifiers> .
 ```
+
+The same goes for `focus`, the node a study result's data are about. Every
+other slot is the object or datatype property the schema OWL declares, and
+its values are IRIs or literals to match (`check_owl.py` enforces it).
+
+**WARP's own IRIs for SEPIO's slots (Q13).** SEPIO's LinkML schema has no
+`slot_uri`s and a placeholder default prefix, so its slots resolve under
+`https://example.org/sepio-model/` and nothing using them could be published.
+The profile sets `slot_uri: warp:<name>` in `slot_usage` for every SEPIO slot
+WARP uses (`warp:subject`, `warp:statementText`, `warp:hasEvidenceLines`,
+`warp:targetProposition`, …), with thin subclasses (`EcoDataItem`,
+`EcoDataSet`, `EcoCoding`) for SEPIO classes the data uses directly, and
+`gen-owl` runs with `--no-use-native-uris` so it honours them. `export_rdf.py`
+reads every IRI from the schema. When SEPIO grounds its terms, one file of
+`owl:equivalentProperty` axioms (`warp:subject owl:equivalentProperty
+sepio:subject`, …) maps them, with no data change and no re-derivation.
+
+**Relation triples.** Besides the record, each annotated statement that is not
+negated contributes one triple between its subject and object, using the
+predicate (or, for groups with polarity in a qualifier, a sub-property; §3.3):
+
+```turtle
+node:tidal_restoration_of_marsh camo:prevents
+    node:volumetric_density_of_ochlerotatus_dorsalis_population_at_larval_stage .
+```
+
+so the relation layer reads correctly with no qualifiers. Its subject is a
+node class: read as OWL, that would pun the class as an individual. That is
+why `statements.ttl` is RDF for SPARQL and is never merged into the logical
+layer, and why `check_owl.py` takes kinds from usage only in the OWL files.
+Typing still counts there: a node IRI with an `rdf:type` in the reification
+layer is an error.
 
 An annotation assertion sits outside the logical part of the ontology, so a
 class IRI may appear in it without anything being inferred and without the IRI
@@ -114,29 +149,34 @@ the point, and fully visible to SPARQL, which is how the layer is queried.
 
 Every predicate WARP mints is declared in `src/warp/owl/warp-relations.ttl`,
 once, as an `owl:ObjectProperty`, with a label, an `IAO:0000115` definition
-taken from its proposal, and `rdfs:isDefinedBy`. The file is hand-maintained
+taken from its proposal, and `rdfs:isDefinedBy`. (Because its enum says
+`implements: [owl:ObjectProperty]`, the schema OWL also types it an object
+property, with the same kind; its definition and sub-property structure live
+only in the relations file.) The file is hand-maintained
 and never generated. Each group phase adds its own predicates and touches
 nothing else.
 
 Predicates from other ontologies — RO's `RO:0002303 has habitat`, CAMO's
 `camo:prevents` — are **reused exactly as published and never re-declared**.
 
-The reason is specific. Generating OWL from the LinkML schema types every
-permissible value of a predicate enum as a class, so `project/warp.owl.ttl`
-contains:
+The reason is specific. Until 0.6.0, generating OWL from the LinkML schema
+typed every permissible value of a predicate enum as a class, so
+`project/warp.owl.ttl` contained:
 
 ```turtle
-RO:0002470 a owl:Class ;                     # "eats" — an object property in RO
+RO:0002470 a owl:Class ;                     # "eats": an object property in RO
     rdfs:subClassOf warp:InteractionPredicateEnum .
 ```
 
-OWL 2 DL permits an IRI to be both a class and an individual. It does not
-permit one to be both a class and an object property, so merging that file with
-RO gives an ontology that DL-typing tools reject. `clean_owl.py` strips those
-triples after `gen-owl` runs, and the declarations live in the relations file
-instead. Until LinkML can be told that an enum value denotes a property, this
-stays a post-processing step; the list of what it removes is in the script, and
-in `TODOS.md` as a candidate upstream issue.
+OWL 2 DL would tolerate that as punning (an IRI may be a class and an object
+property at once), but the two readings are unrelated entities, so the class
+says nothing about eating, and WARP's own rule is stricter: one IRI, one kind
+(§2). The fix is a schema setting, not a script: `implements:
+[owl:ObjectProperty]` on a predicate enum makes `gen-owl` emit
+`RO:0002470 a owl:ObjectProperty` with no subclass axiom and no covering
+axiom. CAMO's `CausalPredicateEnum` comes from the vendored upstream, which
+the profile cannot annotate, so `clean_owl.py` does the same retyping for it
+(and turns `correlated_with`'s subclass link into `rdfs:subPropertyOf`).
 
 ### 3.2 Domains and ranges: usually none
 
@@ -188,13 +228,18 @@ warp:evidence_type <https://w3id.org/ecoweaver/warp/EvidenceTypeEnum#quasi_exper
 ```
 
 and each value IRI is declared once as an `owl:NamedIndividual` typed by its
-enum class. The form is the one `gen-owl` already mints, so `clean_owl.py`
-retypes those IRIs rather than minting new ones. Note that neither these nor
-proposition IRIs (`https://w3id.org/ecoweaver/warp/prop/9f0b068ca33b`) are
-legal Turtle prefixed names — `#` and `/` need escaping in a local part — so
-write them out in full in hand-written Turtle and SPARQL. No covering axiom is emitted: `gen-owl` writes `owl:unionOf`
-directly onto the named enum class, which does not reverse-map to OWL 2 DL and
-is outside EL in any case, so `clean_owl.py` removes it.
+enum class: `implements: [owl:NamedIndividual]` on every profile enum, and
+`gen-owl --default-permissible-value-type owl:NamedIndividual` for the CAMO
+enums. Enum value IRIs (`…/SemanticUnitScopeEnum#assertional`) are not legal
+Turtle prefixed names (`#` needs escaping in a local part), so write them out
+in full in hand-written Turtle and SPARQL. Proposition IRIs are fine as
+`prop:9f0b068ca33b` now that `prop:` is a declared prefix; written as
+`warp:prop/9f0b068ca33b` they are not, because of the `/`.
+
+`gen-owl` writes the covering axiom (`owl:oneOf`) directly onto the named enum
+class, which does not reverse-map to OWL 2 DL, so `clean_owl.py` moves it to
+`<enum> owl:equivalentClass [ a owl:Class ; owl:oneOf (…) ]`. That is the one
+real LinkML defect here; the dev guide's appendix has the upstream patch.
 
 Literals were the old behaviour and they do not work. The schema declares
 `warp:scope` an `owl:ObjectProperty` with `rdfs:range warp:SemanticUnitScopeEnum`,
@@ -211,8 +256,9 @@ no null. The same goes for the explicit null that `derive_propositions.py` puts
 in an identity key for a missing extra — it lives inside the key string and
 reaches no slot and no file.
 
-The list of sentinel values is in one place in `clean_owl.py`. Add to it when a
-group adds one.
+The list of sentinel values is in one place, `SENTINELS` in `clean_owl.py`,
+which also removes them from `warp.owl.ttl`; `export_rdf.py` and
+`check_owl.py` read it from there. Add to it when a group adds one.
 
 ## 5. Values, units, scales and dates
 
@@ -238,7 +284,9 @@ so rather than inventing one.
 temporal values are ISO 8601 strings in the data, at whatever granularity the
 source gave (`2024-05`, `2023`, `2026-03-31`), and every exporter writes the
 verbatim string plus normalized `xsd:dateTime` lower and upper bounds beside
-it. The bounds are also what period-overlap tests use — `derive_projects.py`
+it, on `<slot>_lower_bound` and `<slot>_upper_bound` (half-open: the upper
+bound is the first instant after the value; `scripts/warp_time.py`). The bounds
+are also what period-overlap tests use — `derive_projects.py`
 compares bounds, never strings, because no string ordering handles `2024-05`
 against `2023`.
 
@@ -272,12 +320,21 @@ What is projected, per group, is in the register in section 8. The shape for
 causal and interaction is existential subsumption, annotated with its source:
 
 ```turtle
-node:soil_compaction rdfs:subClassOf [
-    a owl:Restriction ;
+node:soil_compaction rdfs:subClassOf _:r .
+_:r a owl:Restriction ;
     owl:onProperty camo:prevents ;
-    owl:someValuesFrom node:seedling_survival ] .
-# axiom annotation: warp:derived_from warp:prop/9f0b068ca33b
+    owl:someValuesFrom node:seedling_survival .
+[] a owl:Axiom ;                       # the axiom annotation
+    owl:annotatedSource node:soil_compaction ;
+    owl:annotatedProperty rdfs:subClassOf ;
+    owl:annotatedTarget _:r ;
+    warp:derived_from prop:9f0b068ca33b .
 ```
+
+`project_owl.py` writes the report to `project/reports/projection.md`: how
+many propositions were considered, how many passed, and every condition each
+rejected one failed. Groups register their projection in `PROJECTIONS`; a
+group with no entry projects nothing.
 
 Never `owl:equivalentClass`, and never a plain triple between two class IRIs.
 
@@ -387,14 +444,34 @@ robot merge warp.owl.ttl warp-relations.ttl             | validate-profile --pro
 
 | Piece | State |
 |---|---|
-| `nodes.ttl`, node classes in EL | Built (`expand_nodes.py`) |
-| `warp.owl.ttl` | Built, but not yet OWL 2 DL: see §3.1 and §4 |
-| `warp-relations.ttl`, `clean_owl.py`, `export_rdf.py`, `project_owl.py`, `check_owl.py`, `make owl-check` | Phase 2.5 |
-| `scales.ttl`, `place`, unit checking, date normalization | Phase 1 |
+| `nodes.ttl`, node classes in EL, with an ontology header | Built (`expand_nodes.py`) |
+| `warp.owl.ttl` | Built: `gen-owl`, then `clean_owl.py` (§9.1) |
+| `warp-relations.ttl` | Hand-maintained; causal and interaction reuse CAMO and RO, so for 0.6.0 it declares only the annotation properties |
+| `statements.ttl` | Built (`export_rdf.py`) |
+| `axioms.ttl` | Built (`project_owl.py`); empty of axioms on the examples, by design |
+| `scales.ttl` | Built (`gen_vocab.py`, Phase 1) |
+| `check_owl.py` | In `make validate`; clean |
+| `make owl-check` | Written; skipped with a warning where `robot` is not on PATH, which includes the machine 0.6.0 was built on. **Neither profile has been confirmed by ROBOT yet.** |
 | `sites.ttl` | Phase 7.1 |
 | `projects.ttl` | Phase 7.2 |
 | `criteria_concepts.ttl` | Phase 7.3 |
-| Grounded IRIs for SEPIO's `subject`, `predicate`, `object`, `hasEvidenceLines`, `targetProposition` | **Not solved.** They resolve under `https://example.org/sepio-model/`. `export_rdf.py` reads the namespace from one constant, so re-grounding is a one-line change, but until it happens the reification layer cannot be published. See `TODOS.md`. |
+| WARP IRIs for SEPIO's slots | **Done (Q13):** `slot_uri` in the profile; a SEPIO mapping file waits on SEPIO grounding its terms. SEPIO's own classes and slots still appear under `https://example.org/sepio-model/` in `warp.owl.ttl`, which carries the vendored schema as it is; `check_owl.py` refuses them in every data file. |
+
+### 9.1 What `clean_owl.py` does
+
+The dev guide expected one job. There are eight, each a function that reports
+every change, and each a candidate upstream issue (`TODOS.md`, "Upstream"):
+
+| Job | Why |
+|---|---|
+| `predicate_enums` | CAMO's predicate enum cannot carry `implements:`; retype its values as object properties |
+| `sentinels` | absence values have no IRI (§4) |
+| `annotation_restrictions` | `gen-owl` writes class restrictions on subject, predicate and object, which are annotation properties; not OWL 2 DL |
+| `datatypes` | LinkML `date` becomes `xsd:date`, outside the OWL 2 datatype map; becomes `xsd:string` (only SEPIO's own `date` slot still has it) |
+| `declarations` | `gen-owl` uses `slot_uri` IRIs from `slot_usage` without declaring them; OWL 2 DL needs declarations |
+| `kind_conflicts` | same-named upstream attributes with different ranges (CAMO `id`, SEPIO `subtype`) come out as both object and datatype property |
+| `covering_axioms` | `owl:oneOf` on a named class (R15) |
+| `relative_iris` | element metadata such as `status: Draft` comes out as a relative IRI |
 
 ## Checklist for a group's RDF and OWL
 

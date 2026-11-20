@@ -159,7 +159,27 @@ pipeline, as claimant of `SynthesisAssessment`s, is the agent
   an `owl:equivalentClass` intersection to `project/nodes.ttl`, plus DOSDP fill
   tables in `patterns/data/`.
 
-### Where each kind of OWL entity comes from (0.5.0)
+### RDF and OWL (0.6.0)
+
+- `project/warp.owl.ttl`: `gen-owl $(OWLGEN_FLAGS)` then `scripts/clean_owl.py`
+  (eight reported jobs; see `docs/rdf-owl.md` §9.1). Enum values are
+  individuals, predicate enum values object properties, SEPIO slots WARP uses
+  have `warp:` IRIs via `slot_uri` in `slot_usage` (Q13).
+- `src/warp/owl/warp-relations.ttl`: hand-maintained; every predicate WARP
+  mints, abstract parents marked `warp:abstract_predicate true`, and the
+  annotation properties `warp:subject`/`predicate`/`object`/`focus`.
+- `project/statements.ttl`: `scripts/export_rdf.py`, schema-driven. Group
+  polarity hooks go in its `RELATIONS` dict.
+- `project/axioms.ttl` + `project/reports/projection.md`:
+  `scripts/project_owl.py`. Group projections go in its `PROJECTIONS` dict;
+  no entry means the group projects nothing.
+- `scripts/check_owl.py` (in `make validate`) must stay clean. Sentinel
+  values are listed once, in `SENTINELS` in `clean_owl.py`.
+- New slot names: if a slot name already exists elsewhere with a different
+  kind of value (literal vs IRI), give the new one its own `slot_uri`, or
+  `check_owl.py` will report the IRI as two kinds.
+
+### Where each kind of OWL entity came from (0.5.0, before the contract)
 
 - `project/nodes.ttl` (`expand_nodes.py`): node classes, the object properties
   used in their definitions, `IAO:0000115` and `dcterms:conformsTo` as

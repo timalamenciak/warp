@@ -424,3 +424,45 @@ one IRI.
 - [ ] **Indigenous territories as places.** Agree with knowledge holders how
       a territory is named in `place` (whose IRI, and whether a broader place
       should be used when a boundary is sensitive).
+
+### 8.3 RDF and OWL contract
+
+- [ ] **Run `make owl-check` with ROBOT** (not installed where 0.6.0 was
+      built). Neither the EL check (nodes, axioms, sites, projects) nor the DL
+      check (schema + relations) has been run; fix what it finds before
+      releasing 0.6.0.
+- [ ] **SEPIO mapping file (Q13).** When SEPIO gives its slots real IRIs,
+      add `src/warp/owl/warp-sepio-mapping.ttl` with one
+      `warp:<slot> owl:equivalentProperty sepio:<slot>` per slot that has a
+      `slot_uri: warp:...` override in `warp.yaml`, and file the upstream PR
+      for SEPIO's grounding (section 3).
+- [ ] **Projection report as a review artefact.** `project/reports/projection.md`
+      is regenerated on every build; decide whether releases should commit a
+      copy, so a change in what passes the gate is visible in review.
+
+### 8.4 Upstream: LinkML issues behind `clean_owl.py`
+
+Candidate issues against `linkml/linkml` (checked against 1.11.1). Each is a
+job in `scripts/clean_owl.py`; when one is fixed upstream, delete the job.
+
+- [ ] **Covering axioms on named classes** (bug). `add_enum()` writes
+      `owl:oneOf`/`owl:unionOf` onto the named enum class, which does not
+      map to OWL 2 DL. The dev guide's appendix has the patch (anonymous
+      class plus `owl:equivalentClass`, explicit one-item lists, a datatype
+      for literal enums, behind a flag).
+- [ ] **`implements:` is undocumented** (docs). It is the supported way to
+      make enum values object properties or individuals, and slots
+      annotation properties.
+- [ ] **Restrictions on annotation properties** (bug). A slot that
+      `implements: [owl:AnnotationProperty]` still gets class restrictions.
+- [ ] **`slot_uri` in `slot_usage` is used but never declared** (bug), so the
+      output has undeclared properties.
+- [ ] **Object and datatype property from one IRI** (bug). Same-named
+      attributes with different range kinds produce both declarations.
+- [ ] **`date` maps to `xsd:date`**, which is outside the OWL 2 datatype map
+      (OWL 2 DL output should use `xsd:dateTime` or a string).
+- [ ] **Element metadata as relative IRIs** (bug). `status: Draft` comes
+      out as `<Draft>`.
+- [ ] **Predicate enums from imported schemas** (feature). There is no way
+      for an importing schema to say what an imported enum's values are
+      (CAMO's `CausalPredicateEnum`), short of editing the import.

@@ -40,7 +40,7 @@ description: >-
   syntheses across statements. Causal statements reuse the Causal Mosaic (CAMO) node
   shapes, predicates and causal features.
 license: CC0
-version: 0.5.0
+version: 0.6.0
 status: Draft
 
 prefixes:
@@ -434,7 +434,7 @@ classes:
         required: true
       profile_version:
         description: "Version of this profile the set conforms to."
-        ifabsent: string(0.5.0)
+        ifabsent: string(0.6.0)
       agents:
         description: >-
           People, organizations, communities and software that make, record
@@ -545,12 +545,16 @@ classes:
       # Declared annotation properties, so a statement can reference a class
       # IRI without punning it as an individual (decision D12).
       subject:
+        slot_uri: warp:subject
         implements: [owl:AnnotationProperty]
       predicate:
+        slot_uri: warp:predicate
         implements: [owl:AnnotationProperty]
       object:
+        slot_uri: warp:object
         implements: [owl:AnnotationProperty]
       proposition:
+        slot_uri: warp:proposition
         range: EcoProposition
         inlined: false
         description: >-
@@ -560,11 +564,14 @@ classes:
         annotations:
           loom_role: calculated
       direction:
+        slot_uri: warp:direction
         range: EvidenceDirectionEnum
       hasEvidenceLines:
+        slot_uri: warp:hasEvidenceLines
         range: EcoEvidenceLine
         inlined_as_list: true
       contributions:
+        slot_uri: warp:contributions
         description: >-
           Who made the statement: at least one contribution with role author.
           Who recorded it goes in recordMetadata, not here.
@@ -572,11 +579,29 @@ classes:
         inlined_as_list: true
         recommended: true
       recordMetadata:
+        slot_uri: warp:recordMetadata
         description: >-
           Provenance of this record: who annotated it in EcoWeaver and when
           (role annotator, dateRecordCreated).
         range: EcoRecordMetadata
         inlined: true
+      statementText:
+        slot_uri: warp:statementText
+      strength:
+        slot_uri: warp:strength
+        range: CertaintyGradeEnum   # CAMO; empty in Assertion Mode, filled by SynthesisAssessment
+      score:
+        slot_uri: warp:score
+      reportedIn:
+        slot_uri: warp:reportedIn
+        description: "The source documents the statement was reported in, by id."
+        range: EcoDocument
+        inlined: false
+        multivalued: true
+      dateAuthored:
+        slot_uri: warp:dateAuthored
+      description:
+        slot_uri: warp:description
     attributes:
       original_text:
         description: >-
@@ -704,6 +729,7 @@ classes:
         required: true
         description: "The proposition being assessed (chosen, not derived)."
       direction:
+        range: EvidenceDirectionEnum   # restated: gen-owl does not inherit it from EcoStatement
         required: true
       strength:
         range: CertaintyGradeEnum   # CAMO
@@ -763,11 +789,20 @@ classes:
       id:
         identifier: true
       subject:
+        slot_uri: warp:subject
         implements: [owl:AnnotationProperty]
       predicate:
+        slot_uri: warp:predicate
         implements: [owl:AnnotationProperty]
       object:
+        slot_uri: warp:object
         implements: [owl:AnnotationProperty]
+      negated:
+        slot_uri: warp:negated
+      propositionText:
+        slot_uri: warp:propositionText
+      description:
+        slot_uri: warp:description
     attributes:
       status:
         range: PropositionStatusEnum
@@ -896,6 +931,7 @@ classes:
         required: true
       value:
         description: "The filling term, as a CURIE."
+        slot_uri: warp:filler_term   # not warp:value, which holds literals elsewhere (one IRI, one kind)
         range: uriorcurie
         required: true
       label:
@@ -922,16 +958,22 @@ classes:
       id:
         identifier: true
       targetProposition:
+        slot_uri: warp:targetProposition
         range: EcoProposition
         inlined: false
       directionOfEvidenceProvided:
+        slot_uri: warp:directionOfEvidenceProvided
         range: EvidenceDirectionEnum
         required: true
       strengthOfEvidenceProvided:
+        slot_uri: warp:strengthOfEvidenceProvided
         range: EvidenceStrengthEnum
       contributions:
+        slot_uri: warp:contributions
         range: EcoContribution
         inlined_as_list: true
+      description:
+        slot_uri: warp:description
     attributes:
       evidence_type:
         description: >-
@@ -970,6 +1012,14 @@ classes:
     slot_usage:
       id:
         identifier: true
+      name:
+        slot_uri: warp:name
+      label:
+        slot_uri: warp:label
+      subtype:
+        slot_uri: warp:agent_subtype   # a string here; warp:subtype holds a coding record elsewhere (one IRI, one kind)
+      description:
+        slot_uri: warp:description
     attributes:
       agent_kind:
         description: "The kind of knowledge the agent brings."
@@ -983,9 +1033,18 @@ classes:
       recording either. The role says which.
     slot_usage:
       contributor:
+        slot_uri: warp:contributor
         range: EcoAgent
         inlined: false
         required: true
+      date:
+        slot_uri: warp:date
+        range: string
+        pattern: "^[0-9]{4}(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[01]))?)?$"
+        description: >-
+          When the contribution was made, as an ISO 8601 year, year-month or
+          date. A string, not LinkML's date type: xsd:date is not in the OWL 2
+          datatype map (decision D19).
     attributes:
       role:
         description: >-
@@ -1002,9 +1061,11 @@ classes:
       annotated it and when.
     slot_usage:
       contributions:
+        slot_uri: warp:contributions
         range: EcoContribution
         inlined_as_list: true
-
+      dateRecordCreated:
+        slot_uri: warp:dateRecordCreated
   EcoStudyResult:
     is_a: StudyResult
     class_uri: warp:EcoStudyResult
@@ -1016,12 +1077,20 @@ classes:
       id:
         identifier: true
       focus:
+        slot_uri: warp:focus
+        implements: [owl:AnnotationProperty]   # points at a node class (D12)
         range: CausalNode
         description: "The CAMO node (variable) the data are about."
       dataItems:
+        slot_uri: warp:dataItems
+        range: EcoDataItem
         inlined_as_list: true
       sourceDataSet:
+        slot_uri: warp:sourceDataSet
+        range: EcoDataSet
         inlined_as_list: true
+      description:
+        slot_uri: warp:description
     attributes:
       stated_goal:
         description: >-
@@ -1038,6 +1107,77 @@ classes:
     slot_usage:
       id:
         identifier: true
+      title:
+        slot_uri: warp:title
+      description:
+        slot_uri: warp:description
+      doi:
+        slot_uri: warp:doi
+      subtype:
+        slot_uri: warp:subtype
+        range: EcoCoding
+      urls:
+        slot_uri: warp:urls
+      license:
+        slot_uri: warp:license
+
+  # ---------------------------------------------------------------------------
+  # SEPIO value classes used directly by WARP data. Subclassed only to give
+  # their slots WARP IRIs (Q13): SEPIO's own resolve under the placeholder
+  # https://example.org/sepio-model/, so nothing using them could be
+  # published. When SEPIO grounds its terms, an owl:equivalentProperty
+  # mapping file replaces these IRIs without any data changing.
+  # ---------------------------------------------------------------------------
+
+  EcoDataItem:
+    is_a: DataItem
+    class_uri: warp:EcoDataItem
+    description: "A SEPIO DataItem with WARP IRIs for its slots: one summary statistic of a study result."
+    slot_usage:
+      id:
+        identifier: true
+      subtype:
+        slot_uri: warp:subtype
+        range: EcoCoding
+      value:
+        slot_uri: warp:value
+      unit:
+        slot_uri: warp:unit
+        range: EcoCoding
+      description:
+        slot_uri: warp:description
+      label:
+        slot_uri: warp:label
+
+  EcoDataSet:
+    is_a: DataSet
+    class_uri: warp:EcoDataSet
+    description: "A SEPIO DataSet with WARP IRIs for its slots: the dataset a study result summarizes."
+    slot_usage:
+      id:
+        identifier: true
+      version:
+        slot_uri: warp:version
+      license:
+        slot_uri: warp:license
+      description:
+        slot_uri: warp:description
+      label:
+        slot_uri: warp:label
+
+  EcoCoding:
+    is_a: Coding
+    class_uri: warp:EcoCoding
+    description: "A SEPIO Coding (a code or label from some system) with WARP IRIs for its slots."
+    slot_usage:
+      code:
+        slot_uri: warp:code
+      label:
+        slot_uri: warp:label
+      system:
+        slot_uri: warp:system
+      systemVersion:
+        slot_uri: warp:systemVersion
 
   # ---------------------------------------------------------------------------
   # Value types shared by several predicate groups (0.6.0, Phase 1)

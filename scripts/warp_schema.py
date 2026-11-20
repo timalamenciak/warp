@@ -39,6 +39,7 @@ def prefix_map(sv):
     """Prefix -> expansion, from the profile and every schema it imports.
     The profile's own declarations win over an import's."""
     pm = {}
+    sv.imports_closure()          # schema_map is filled lazily
     schemas = list(sv.schema_map.values())
     main = sv.schema
     for s in schemas:

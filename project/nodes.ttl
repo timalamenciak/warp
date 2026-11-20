@@ -82,7 +82,7 @@ node:volumetric_density_of_ochlerotatus_dorsalis_population_at_larval_stage a ow
                                                                 owl:onProperty RO:0002491 ;
                                                                 owl:someValuesFrom UBERON:0000069 ] ) ] ] ) ] ] ) ] .
 
-<https://w3id.org/ecoweaver/warp/nodes> a owl:Ontology ;
+<https://w3id.org/ecoweaver/warp/ontology/nodes> a owl:Ontology ;
     rdfs:label "WARP node classes" .
 
 ENVO:00000035 a owl:Class .

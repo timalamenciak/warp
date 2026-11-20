@@ -13,6 +13,27 @@ Each entry names the dev-guide phase it came from.
 Shared foundations, the identity engine and the RDF/OWL contract, with the two
 existing predicate groups.
 
+**This release changes what WARP emits as RDF.** Until 0.5.0 nothing generated
+RDF for statements, and the schema OWL typed predicate IRIs as classes and
+enum values as classes while data wrote literals for them. From 0.6.0:
+
+- Four IRI spaces, and nothing crosses between them (D11): `node:` IRIs are
+  OWL classes; `site:` and `proj:` IRIs are OWL individuals (from 0.7.0);
+  `stmt:`/`warp:statement/`, `prop:`/`warp:prop/`, `warp:el/`, `doc:` and the
+  rest are RDF individuals of the reification layer; enum values are
+  individuals of their enum class. `check_owl.py` fails the build if one IRI
+  is two kinds of thing.
+- Statements point at node classes through annotation properties
+  (`warp:subject`, `warp:predicate`, `warp:object`, D12).
+- Every SEPIO slot WARP uses has a WARP IRI (`warp:statementText`,
+  `warp:hasEvidenceLines`, …) instead of `https://example.org/sepio-model/…`
+  (Q13). A mapping to SEPIO's IRIs will follow when SEPIO grounds them.
+- `warp:prop/<hash>` keeps a slash in its local part, so it is not a legal
+  Turtle prefixed name: write it in full, or as `prop:<hash>` now that `prop:`
+  is declared, in hand-written Turtle and SPARQL. The same holds for enum
+  value IRIs (`…/SemanticUnitScopeEnum#assertional`), whose `#` needs
+  escaping.
+
 ### Phase 0: orientation and test harness
 
 - **Build fix.** The `patterns` recipe in the `Makefile` had literal `\n`
@@ -134,6 +155,81 @@ existing predicate groups.
   annotations, idempotent re-derivation, unchanged example IDs, and
   dangling references caught (subject, nested contributor, node definition,
   `specified_in`).
+
+### Phase 2.5: the RDF and OWL contract
+
+- **`docs/rdf-owl.md`** corrected against the code and marked as built: the
+  IRI spaces, how a statement points at a node class, relation triples, enum
+  values, dates, the projection gate and its report, the state of play, and
+  what `clean_owl.py` actually does. One correction of substance: the draft
+  said OWL 2 DL forbids an IRI being both a class and an object property; it
+  allows that as punning. WARP's one-IRI-one-kind rule is a house rule,
+  stricter than OWL, and the docs now say so.
+- **`src/warp/owl/warp-relations.ttl`** (hand-maintained, D13): an ontology
+  with its own IRI and version IRI declaring the reification layer's
+  annotation properties (`warp:subject`, `warp:predicate`, `warp:object`,
+  `warp:focus`), the axiom annotation `warp:derived_from`, and
+  `warp:abstract_predicate` for abstract parents. Causal and interaction reuse
+  CAMO and RO predicates, which are never re-declared.
+- **WARP IRIs for SEPIO's slots** (Q13, supersedes R22): `slot_uri` set in
+  `slot_usage` on the profile classes for every SEPIO slot WARP uses, and new
+  thin subclasses `EcoDataItem`, `EcoDataSet` and `EcoCoding` for the SEPIO
+  classes the examples used directly (their `type` values in the examples
+  changed accordingly). `gen-owl` now runs with `--no-use-native-uris` and
+  `--xsd-anyuri-as-iri`.
+- **Schema fixes found by the new checks:** `reportedIn` is narrowed from a
+  string to a reference to `EcoDocument` (so `check_refs.py` covers it);
+  `EcoContribution.date` is an ISO 8601 string, not LinkML `date` (D19);
+  `focus` is an annotation property (D12); `TemplateFiller.value` is
+  `warp:filler_term` and `EcoAgent.subtype` is `warp:agent_subtype`, because
+  `warp:value` and `warp:subtype` hold other kinds of value elsewhere;
+  `SynthesisAssessment.direction` and `EcoStatement.strength` restate their
+  enum ranges, which `gen-owl` did not inherit.
+- **`scripts/clean_owl.py`** runs on `gen-owl`'s output in `make gen`. The
+  guide expected one job; there are eight, each reported: retype CAMO's
+  predicate enum values as object properties, drop sentinel values, remove
+  restrictions on annotation properties, replace `xsd:date`, declare
+  `slot_uri` IRIs `gen-owl` uses but never declares, resolve upstream
+  object/datatype property conflicts, move covering axioms off named enum
+  classes (R15), and turn relative IRIs from element metadata into literals.
+- **`scripts/export_rdf.py`** (`make rdf`) writes `project/statements.ttl`:
+  every statement, proposition, evidence line, study result, agent and
+  document as named individuals, inlined records at `<owner>/<slot>` IRIs
+  (no blank nodes), enum values as IRIs, sentinels not exported, ISO dates
+  verbatim plus `xsd:dateTime` bounds, and one relation triple per
+  non-negated statement. Groups register polarity handling in `RELATIONS`.
+- **`scripts/project_owl.py`** (`make owl`) writes `project/axioms.ttl` and
+  `project/reports/projection.md`. The gate: scope universal, not negated,
+  every grouped statement observed, a supporting SynthesisAssessment.
+  Causal and interaction project existential subsumption with a
+  `warp:derived_from` axiom annotation. **On the examples nothing passes**
+  (5 propositions: assertional or prototypical), which is the correct answer.
+- **`scripts/check_owl.py`** in `make validate`: one kind per IRI across every
+  generated file, no `xsd:date`/`gYear`/`duration`, no relative IRIs,
+  placeholders or SEPIO placeholder IRIs in data, no exported sentinels,
+  every predicate declared or upstream, no abstract predicate asserted,
+  literal/IRI values matching the declared property kind, and every
+  restricted property declared. Clean on all generated files.
+- **`make owl-check`**: ROBOT merges and `validate-profile` (EL for nodes,
+  axioms, sites and projects; DL for the schema and relations), with a
+  catalog for local imports. **ROBOT is not installed on the machine this was
+  built on, so neither profile has been checked by ROBOT yet**; the target
+  warns and succeeds without it (Q9).
+- Generated ontology IRIs live under `https://w3id.org/ecoweaver/warp/ontology/`
+  (`…/nodes`, `…/axioms`, `…/statements`, `…/scales`, `…/relations`), so they
+  cannot collide with slot IRIs such as `warp:nodes`.
+- `examples/kramer1995.ttl` is marked historical: `project/statements.ttl` is
+  the generated rendering.
+- Schema version **0.6.0**; examples' `profile_version` 0.6.0.
+- Tests: exporter (no blank nodes, annotation properties, enum IRIs,
+  sentinels, relation triples and negation, date bounds, no SEPIO
+  placeholder), the gate (accepts one fixture; rejects assertional,
+  prototypical, negated, anticipated, missing modality, unassessed and
+  disputed, and a proposition with one anticipated statement among two),
+  every `check_owl` rule, `clean_owl` (covering axioms, sentinels and nothing
+  else; predicate retyping; annotation restrictions; one-value enums), and
+  the generated files lint clean.
+- No proposition ID changed.
 
 ## 0.5.0
 

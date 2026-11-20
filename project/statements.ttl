@@ -1,0 +1,616 @@
+@prefix RO: <http://purl.obolibrary.org/obo/RO_> .
+@prefix camo: <https://w3id.org/camo/> .
+@prefix causal_mosaic: <https://w3id.org/causal-mosaic/> .
+@prefix doc: <https://w3id.org/ecoweaver/warp/doc/> .
+@prefix node: <https://w3id.org/causal-mosaic/node/> .
+@prefix orcid: <https://orcid.org/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix prop: <https://w3id.org/ecoweaver/warp/prop/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix stmt: <https://w3id.org/ecoweaver/warp/statement/> .
+@prefix warp: <https://w3id.org/ecoweaver/warp/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<https://w3id.org/ecoweaver/warp/assessment/bloodroot-gm-1> a warp:SynthesisAssessment ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/bloodroot-gm-1-author> ;
+    warp:direction <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
+    warp:evidence_balance <https://w3id.org/ecoweaver/warp/EvidenceBalanceEnum#supportive> ;
+    warp:hasEvidenceLines <https://w3id.org/ecoweaver/warp/el/bloodroot-gm-1-experimental>,
+        <https://w3id.org/ecoweaver/warp/el/bloodroot-gm-1-practice> ;
+    warp:proposition prop:question-bloodroot-garlic-mustard ;
+    warp:statementText "The evidence that planting bloodroot typically suppresses garlic mustard population growth is supportive but of low certainty." ;
+    warp:strength <https://w3id.org/ecoweaver/warp/CertaintyGradeEnum#low> .
+
+<https://w3id.org/ecoweaver/warp/assessment/tidal-restoration-aedes-dorsalis-1> a warp:SynthesisAssessment ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/tidal-aedes-1-author> ;
+    warp:direction <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
+    warp:evidence_balance <https://w3id.org/ecoweaver/warp/EvidenceBalanceEnum#insufficient> ;
+    warp:hasEvidenceLines <https://w3id.org/ecoweaver/warp/el/tidal-aedes-1-case> ;
+    warp:proposition prop:question-tidal-restoration-aedes-dorsalis ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#prototypical> ;
+    warp:statementText "Restoring tidal action may reduce Aedes dorsalis larval density in marshes generally; the only evidence is one unreplicated site." ;
+    warp:strength <https://w3id.org/ecoweaver/warp/CertaintyGradeEnum#very_low> .
+
+warp:date_lower_bound a owl:AnnotationProperty ;
+    rdfs:comment "Normalized xsd:dateTime bound of an ISO 8601 date (half-open: lower inclusive, upper exclusive). Written by export_rdf.py beside the verbatim string (D19)." .
+
+warp:date_upper_bound a owl:AnnotationProperty ;
+    rdfs:comment "Normalized xsd:dateTime bound of an ISO 8601 date (half-open: lower inclusive, upper exclusive). Written by export_rdf.py beside the verbatim string (D19)." .
+
+<https://w3id.org/ecoweaver/warp/ontology/statements> a owl:Ontology ;
+    rdfs:label "WARP statements (reification layer)" ;
+    rdfs:comment "Who said what, on what basis. Nothing here is asserted as true of the world, and relation triples may have a node class as subject: query with SPARQL, never merge into the logical layer for reasoning. See docs/rdf-owl.md." ;
+    owl:versionInfo "warp-export-rdf/1" .
+
+<https://w3id.org/ecoweaver/warp/statementset/bloodroot-assessment> a warp:StatementSet .
+
+<https://w3id.org/ecoweaver/warp/statementset/bloodroot-example> a warp:StatementSet .
+
+<https://w3id.org/ecoweaver/warp/statementset/kramer1995-assessment> a warp:StatementSet .
+
+<https://w3id.org/ecoweaver/warp/statementset/kramer1995-example> a warp:StatementSet .
+
+<https://w3id.org/ecoweaver/warp/agent/kramer1995-authors> a warp:EcoAgent ;
+    warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#researcher> ;
+    warp:agent_subtype "organization" ;
+    warp:name "Kramer, Collins, Malamud-Roam and Beesley (Contra Costa Mosquito and Vector Control District)" .
+
+<https://w3id.org/ecoweaver/warp/agent/murphy2005-authors> a warp:EcoAgent ;
+    warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#researcher> ;
+    warp:agent_subtype "organization" ;
+    warp:name "TODO: Murphy et al. 2005 authors" .
+
+<https://w3id.org/ecoweaver/warp/contrib/bloodroot-gm-1-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/ecoweaver-synthesis> ;
+    warp:date "2026-10-11" ;
+    warp:date_lower_bound "2026-10-11T00:00:00Z"^^xsd:dateTime ;
+    warp:date_upper_bound "2026-10-12T00:00:00Z"^^xsd:dateTime ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
+<https://w3id.org/ecoweaver/warp/contrib/kramer1995-c1-1-assessment> a warp:EcoContribution ;
+    warp:contributor orcid:0000-0000-0000-0000 ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#evidence_assessor> .
+
+<https://w3id.org/ecoweaver/warp/contrib/kramer1995-c1-2-assessment> a warp:EcoContribution ;
+    warp:contributor orcid:0000-0000-0000-0000 ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#evidence_assessor> .
+
+<https://w3id.org/ecoweaver/warp/contrib/kramer1995-c1-annotation> a warp:EcoContribution ;
+    warp:contributor orcid:0000-0000-0000-0000 ;
+    warp:date "2026-10-27" ;
+    warp:date_lower_bound "2026-10-27T00:00:00Z"^^xsd:dateTime ;
+    warp:date_upper_bound "2026-10-28T00:00:00Z"^^xsd:dateTime ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
+
+<https://w3id.org/ecoweaver/warp/contrib/kramer1995-c1-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/kramer1995-authors> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
+<https://w3id.org/ecoweaver/warp/contrib/murphy2005-c1-annotation> a warp:EcoContribution ;
+    warp:contributor orcid:0000-0000-0000-0000 ;
+    warp:date "2026-10-10" ;
+    warp:date_lower_bound "2026-10-10T00:00:00Z"^^xsd:dateTime ;
+    warp:date_upper_bound "2026-10-11T00:00:00Z"^^xsd:dateTime ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
+
+<https://w3id.org/ecoweaver/warp/contrib/murphy2005-c1-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/murphy2005-authors> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
+<https://w3id.org/ecoweaver/warp/contrib/notebook-c1-1-assessment> a warp:EcoContribution ;
+    warp:contributor orcid:0000-0000-0000-0000 ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#evidence_assessor> .
+
+<https://w3id.org/ecoweaver/warp/contrib/notebook-c1-annotation> a warp:EcoContribution ;
+    warp:contributor orcid:0000-0000-0000-0000 ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
+
+<https://w3id.org/ecoweaver/warp/contrib/notebook-c1-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/practitioner-1> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
+<https://w3id.org/ecoweaver/warp/contrib/notebook-i1-annotation> a warp:EcoContribution ;
+    warp:contributor orcid:0000-0000-0000-0000 ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
+
+<https://w3id.org/ecoweaver/warp/contrib/notebook-i1-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/practitioner-1> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
+<https://w3id.org/ecoweaver/warp/contrib/tidal-aedes-1-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/ecoweaver-synthesis> ;
+    warp:date "2026-10-27" ;
+    warp:date_lower_bound "2026-10-27T00:00:00Z"^^xsd:dateTime ;
+    warp:date_upper_bound "2026-10-28T00:00:00Z"^^xsd:dateTime ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
+<https://w3id.org/ecoweaver/warp/data/kramer1995-reference-1991-mean> a warp:EcoDataItem ;
+    warp:subtype <https://w3id.org/ecoweaver/warp/data/kramer1995-reference-1991-mean/subtype> ;
+    warp:unit <https://w3id.org/ecoweaver/warp/data/kramer1995-reference-1991-mean/unit> ;
+    warp:value "2.1" .
+
+<https://w3id.org/ecoweaver/warp/data/kramer1995-reference-1991-mean/subtype> a warp:EcoCoding ;
+    warp:label "mean" .
+
+<https://w3id.org/ecoweaver/warp/data/kramer1995-reference-1991-mean/unit> a warp:EcoCoding ;
+    warp:label "larvae per dip" .
+
+<https://w3id.org/ecoweaver/warp/data/kramer1995-reference-1992-mean> a warp:EcoDataItem ;
+    warp:subtype <https://w3id.org/ecoweaver/warp/data/kramer1995-reference-1992-mean/subtype> ;
+    warp:unit <https://w3id.org/ecoweaver/warp/data/kramer1995-reference-1992-mean/unit> ;
+    warp:value "3.8" .
+
+<https://w3id.org/ecoweaver/warp/data/kramer1995-reference-1992-mean/subtype> a warp:EcoCoding ;
+    warp:label "mean" .
+
+<https://w3id.org/ecoweaver/warp/data/kramer1995-reference-1992-mean/unit> a warp:EcoCoding ;
+    warp:label "larvae per dip" .
+
+<https://w3id.org/ecoweaver/warp/data/kramer1995-site-1991-mean> a warp:EcoDataItem ;
+    warp:subtype <https://w3id.org/ecoweaver/warp/data/kramer1995-site-1991-mean/subtype> ;
+    warp:unit <https://w3id.org/ecoweaver/warp/data/kramer1995-site-1991-mean/unit> ;
+    warp:value "3.6" .
+
+<https://w3id.org/ecoweaver/warp/data/kramer1995-site-1991-mean/subtype> a warp:EcoCoding ;
+    warp:label "mean" .
+
+<https://w3id.org/ecoweaver/warp/data/kramer1995-site-1991-mean/unit> a warp:EcoCoding ;
+    warp:label "larvae per dip" .
+
+<https://w3id.org/ecoweaver/warp/data/kramer1995-site-1991-n> a warp:EcoDataItem ;
+    warp:subtype <https://w3id.org/ecoweaver/warp/data/kramer1995-site-1991-n/subtype> ;
+    warp:value "64" .
+
+<https://w3id.org/ecoweaver/warp/data/kramer1995-site-1991-n/subtype> a warp:EcoCoding ;
+    warp:label "number of monitoring stations" .
+
+<https://w3id.org/ecoweaver/warp/data/kramer1995-site-1991-range> a warp:EcoDataItem ;
+    warp:subtype <https://w3id.org/ecoweaver/warp/data/kramer1995-site-1991-range/subtype> ;
+    warp:value "0.0-52.8" .
+
+<https://w3id.org/ecoweaver/warp/data/kramer1995-site-1991-range/subtype> a warp:EcoCoding ;
+    warp:label "range" .
+
+<https://w3id.org/ecoweaver/warp/data/kramer1995-site-1991-tides> a warp:EcoDataItem ;
+    warp:subtype <https://w3id.org/ecoweaver/warp/data/kramer1995-site-1991-tides/subtype> ;
+    warp:value "7" .
+
+<https://w3id.org/ecoweaver/warp/data/kramer1995-site-1991-tides/subtype> a warp:EcoCoding ;
+    warp:label "number of high tide cycles" .
+
+<https://w3id.org/ecoweaver/warp/data/kramer1995-site-1992-mean> a warp:EcoDataItem ;
+    warp:subtype <https://w3id.org/ecoweaver/warp/data/kramer1995-site-1992-mean/subtype> ;
+    warp:unit <https://w3id.org/ecoweaver/warp/data/kramer1995-site-1992-mean/unit> ;
+    warp:value "0.05" .
+
+<https://w3id.org/ecoweaver/warp/data/kramer1995-site-1992-mean/subtype> a warp:EcoCoding ;
+    warp:label "mean" .
+
+<https://w3id.org/ecoweaver/warp/data/kramer1995-site-1992-mean/unit> a warp:EcoCoding ;
+    warp:label "larvae per dip" .
+
+<https://w3id.org/ecoweaver/warp/data/kramer1995-site-1992-n> a warp:EcoDataItem ;
+    warp:subtype <https://w3id.org/ecoweaver/warp/data/kramer1995-site-1992-n/subtype> ;
+    warp:value "59" .
+
+<https://w3id.org/ecoweaver/warp/data/kramer1995-site-1992-n/subtype> a warp:EcoCoding ;
+    warp:label "number of monitoring stations" .
+
+<https://w3id.org/ecoweaver/warp/data/kramer1995-site-1992-positive> a warp:EcoDataItem ;
+    warp:subtype <https://w3id.org/ecoweaver/warp/data/kramer1995-site-1992-positive/subtype> ;
+    warp:value "3" .
+
+<https://w3id.org/ecoweaver/warp/data/kramer1995-site-1992-positive/subtype> a warp:EcoCoding ;
+    warp:label "number of stations with larvae" .
+
+<https://w3id.org/ecoweaver/warp/data/kramer1995-site-1992-range> a warp:EcoDataItem ;
+    warp:subtype <https://w3id.org/ecoweaver/warp/data/kramer1995-site-1992-range/subtype> ;
+    warp:value "0.0-2.1" .
+
+<https://w3id.org/ecoweaver/warp/data/kramer1995-site-1992-range/subtype> a warp:EcoCoding ;
+    warp:label "range" .
+
+<https://w3id.org/ecoweaver/warp/data/kramer1995-site-1992-tides> a warp:EcoDataItem ;
+    warp:subtype <https://w3id.org/ecoweaver/warp/data/kramer1995-site-1992-tides/subtype> ;
+    warp:value "5" .
+
+<https://w3id.org/ecoweaver/warp/data/kramer1995-site-1992-tides/subtype> a warp:EcoCoding ;
+    warp:label "number of high tide cycles" .
+
+<https://w3id.org/ecoweaver/warp/data/murphy2005-control-mean> a warp:EcoDataItem ;
+    warp:subtype <https://w3id.org/ecoweaver/warp/data/murphy2005-control-mean/subtype> ;
+    warp:value "TODO" .
+
+<https://w3id.org/ecoweaver/warp/data/murphy2005-control-mean/subtype> a warp:EcoCoding ;
+    warp:label "mean" .
+
+<https://w3id.org/ecoweaver/warp/data/murphy2005-planted-mean> a warp:EcoDataItem ;
+    warp:subtype <https://w3id.org/ecoweaver/warp/data/murphy2005-planted-mean/subtype> ;
+    warp:value "TODO" .
+
+<https://w3id.org/ecoweaver/warp/data/murphy2005-planted-mean/subtype> a warp:EcoCoding ;
+    warp:label "mean" .
+
+<https://w3id.org/ecoweaver/warp/data/murphy2005-planted-n> a warp:EcoDataItem ;
+    warp:subtype <https://w3id.org/ecoweaver/warp/data/murphy2005-planted-n/subtype> ;
+    warp:value "TODO" .
+
+<https://w3id.org/ecoweaver/warp/data/murphy2005-planted-n/subtype> a warp:EcoCoding ;
+    warp:label "number of plots" .
+
+<https://w3id.org/ecoweaver/warp/data/murphy2005-planted-sd> a warp:EcoDataItem ;
+    warp:subtype <https://w3id.org/ecoweaver/warp/data/murphy2005-planted-sd/subtype> ;
+    warp:value "TODO" .
+
+<https://w3id.org/ecoweaver/warp/data/murphy2005-planted-sd/subtype> a warp:EcoCoding ;
+    warp:label "standard deviation" .
+
+doc:murphy2005 a warp:EcoDocument ;
+    warp:doi "TODO" ;
+    warp:title "TODO: Murphy 2005" .
+
+<https://w3id.org/ecoweaver/warp/doc/notebook-entry-1/subtype> a warp:EcoCoding ;
+    warp:label "field notebook" .
+
+<https://w3id.org/ecoweaver/warp/el/bloodroot-gm-1-experimental> a warp:EcoEvidenceLine ;
+    warp:directionOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
+    warp:evidence_item_refs stmt:murphy2005-c1 ;
+    warp:evidence_object <https://w3id.org/ecoweaver/warp/EvidenceObjectEnum#correlation> ;
+    warp:evidence_type <https://w3id.org/ecoweaver/warp/WarpEvidenceTypeEnum#randomized_experiment> ;
+    warp:strengthOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceStrengthEnum#moderate> ;
+    warp:targetProposition prop:question-bloodroot-garlic-mustard .
+
+<https://w3id.org/ecoweaver/warp/el/bloodroot-gm-1-practice> a warp:EcoEvidenceLine ;
+    warp:directionOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
+    warp:evidence_item_refs stmt:notebook-c1 ;
+    warp:evidence_object <https://w3id.org/ecoweaver/warp/EvidenceObjectEnum#correlation> ;
+    warp:evidence_type <https://w3id.org/ecoweaver/warp/WarpEvidenceTypeEnum#practitioner_experience> ;
+    warp:strengthOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceStrengthEnum#weak> ;
+    warp:targetProposition prop:question-bloodroot-garlic-mustard .
+
+<https://w3id.org/ecoweaver/warp/el/kramer1995-c1-1> a warp:EcoEvidenceLine ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/kramer1995-c1-1-assessment> ;
+    warp:directionOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
+    warp:evidence_item_refs <https://w3id.org/ecoweaver/warp/result/kramer1995-reference-1991>,
+        <https://w3id.org/ecoweaver/warp/result/kramer1995-reference-1992>,
+        <https://w3id.org/ecoweaver/warp/result/kramer1995-site-1991>,
+        <https://w3id.org/ecoweaver/warp/result/kramer1995-site-1992> ;
+    warp:evidence_object <https://w3id.org/ecoweaver/warp/EvidenceObjectEnum#correlation> ;
+    warp:evidence_type <https://w3id.org/ecoweaver/warp/WarpEvidenceTypeEnum#quasi_experiment> ;
+    warp:strengthOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceStrengthEnum#moderate> ;
+    warp:targetProposition prop:9f0b068ca33b .
+
+<https://w3id.org/ecoweaver/warp/el/kramer1995-c1-2> a warp:EcoEvidenceLine ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/kramer1995-c1-2-assessment> ;
+    warp:directionOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
+    warp:evidence_item_refs doc:kramer1995 ;
+    warp:evidence_object <https://w3id.org/ecoweaver/warp/EvidenceObjectEnum#correlation> ;
+    warp:evidence_type <https://w3id.org/ecoweaver/warp/WarpEvidenceTypeEnum#practitioner_experience> ;
+    warp:strengthOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceStrengthEnum#weak> ;
+    warp:targetProposition prop:9f0b068ca33b .
+
+<https://w3id.org/ecoweaver/warp/el/murphy2005-c1-1> a warp:EcoEvidenceLine ;
+    warp:directionOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
+    warp:evidence_item_refs <https://w3id.org/ecoweaver/warp/result/murphy2005-control>,
+        <https://w3id.org/ecoweaver/warp/result/murphy2005-planted> ;
+    warp:evidence_object <https://w3id.org/ecoweaver/warp/EvidenceObjectEnum#correlation> ;
+    warp:evidence_type <https://w3id.org/ecoweaver/warp/WarpEvidenceTypeEnum#randomized_experiment> ;
+    warp:strengthOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceStrengthEnum#not_assessed> ;
+    warp:targetProposition prop:question-bloodroot-garlic-mustard .
+
+<https://w3id.org/ecoweaver/warp/el/notebook-c1-1> a warp:EcoEvidenceLine ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/notebook-c1-1-assessment> ;
+    warp:directionOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
+    warp:evidence_item_refs doc:notebook-entry-1 ;
+    warp:evidence_object <https://w3id.org/ecoweaver/warp/EvidenceObjectEnum#correlation> ;
+    warp:evidence_type <https://w3id.org/ecoweaver/warp/WarpEvidenceTypeEnum#practitioner_experience> ;
+    warp:strengthOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceStrengthEnum#weak> ;
+    warp:targetProposition prop:aea4ac8269ae .
+
+<https://w3id.org/ecoweaver/warp/el/notebook-i1-1> a warp:EcoEvidenceLine ;
+    warp:directionOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
+    warp:evidence_item_refs doc:notebook-entry-1 ;
+    warp:evidence_object <https://w3id.org/ecoweaver/warp/EvidenceObjectEnum#correlation> ;
+    warp:evidence_type <https://w3id.org/ecoweaver/warp/WarpEvidenceTypeEnum#practitioner_experience> ;
+    warp:strengthOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceStrengthEnum#weak> ;
+    warp:targetProposition prop:6ac6fc0d7703 .
+
+<https://w3id.org/ecoweaver/warp/el/tidal-aedes-1-case> a warp:EcoEvidenceLine ;
+    warp:directionOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
+    warp:evidence_item_refs stmt:kramer1995-c1 ;
+    warp:evidence_object <https://w3id.org/ecoweaver/warp/EvidenceObjectEnum#correlation> ;
+    warp:evidence_type <https://w3id.org/ecoweaver/warp/WarpEvidenceTypeEnum#quasi_experiment> ;
+    warp:strengthOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceStrengthEnum#weak> ;
+    warp:targetProposition prop:question-tidal-restoration-aedes-dorsalis .
+
+<https://w3id.org/ecoweaver/warp/result/kramer1995-reference-1991> a warp:EcoStudyResult ;
+    warp:dataItems <https://w3id.org/ecoweaver/warp/data/kramer1995-reference-1991-mean> ;
+    warp:description "Surrounding marshes, not enhanced (1991)." ;
+    warp:focus node:volumetric_density_of_ochlerotatus_dorsalis_population_at_larval_stage .
+
+<https://w3id.org/ecoweaver/warp/result/kramer1995-reference-1992> a warp:EcoStudyResult ;
+    warp:dataItems <https://w3id.org/ecoweaver/warp/data/kramer1995-reference-1992-mean> ;
+    warp:description "Surrounding marshes, not enhanced (1992)." ;
+    warp:focus node:volumetric_density_of_ochlerotatus_dorsalis_population_at_larval_stage .
+
+<https://w3id.org/ecoweaver/warp/result/kramer1995-site-1991> a warp:EcoStudyResult ;
+    warp:dataItems <https://w3id.org/ecoweaver/warp/data/kramer1995-site-1991-mean>,
+        <https://w3id.org/ecoweaver/warp/data/kramer1995-site-1991-n>,
+        <https://w3id.org/ecoweaver/warp/data/kramer1995-site-1991-range>,
+        <https://w3id.org/ecoweaver/warp/data/kramer1995-site-1991-tides> ;
+    warp:description "Project site before tidal enhancement (1991)." ;
+    warp:focus node:volumetric_density_of_ochlerotatus_dorsalis_population_at_larval_stage .
+
+<https://w3id.org/ecoweaver/warp/result/kramer1995-site-1992> a warp:EcoStudyResult ;
+    warp:dataItems <https://w3id.org/ecoweaver/warp/data/kramer1995-site-1992-mean>,
+        <https://w3id.org/ecoweaver/warp/data/kramer1995-site-1992-n>,
+        <https://w3id.org/ecoweaver/warp/data/kramer1995-site-1992-positive>,
+        <https://w3id.org/ecoweaver/warp/data/kramer1995-site-1992-range>,
+        <https://w3id.org/ecoweaver/warp/data/kramer1995-site-1992-tides> ;
+    warp:description "Project site one season after tidal enhancement (1992)." ;
+    warp:focus node:volumetric_density_of_ochlerotatus_dorsalis_population_at_larval_stage .
+
+<https://w3id.org/ecoweaver/warp/result/murphy2005-control> a warp:EcoStudyResult ;
+    warp:dataItems <https://w3id.org/ecoweaver/warp/data/murphy2005-control-mean> ;
+    warp:focus node:rate_of_population_growth_of_alliaria_petiolata ;
+    warp:sourceDataSet <https://w3id.org/ecoweaver/warp/dataset/murphy2005> .
+
+<https://w3id.org/ecoweaver/warp/result/murphy2005-planted> a warp:EcoStudyResult ;
+    warp:dataItems <https://w3id.org/ecoweaver/warp/data/murphy2005-planted-mean>,
+        <https://w3id.org/ecoweaver/warp/data/murphy2005-planted-n>,
+        <https://w3id.org/ecoweaver/warp/data/murphy2005-planted-sd> ;
+    warp:focus node:rate_of_population_growth_of_alliaria_petiolata ;
+    warp:sourceDataSet <https://w3id.org/ecoweaver/warp/dataset/murphy2005> .
+
+<https://w3id.org/ecoweaver/warp/statement/kramer1995-c1/comparator/0> a causal_mosaic:ComparatorAnnotation ;
+    causal_mosaic:comparator_description "Same site and monitoring stations in 1991, before tidal enhancement." ;
+    causal_mosaic:comparator_type <https://w3id.org/ecoweaver/warp/ComparatorTypeEnum#pre_treatment_baseline> ;
+    causal_mosaic:status <https://w3id.org/ecoweaver/warp/FeatureAssertionEnum#explicitly_asserted> .
+
+<https://w3id.org/ecoweaver/warp/statement/kramer1995-c1/comparator/1> a causal_mosaic:ComparatorAnnotation ;
+    causal_mosaic:comparator_description "Surrounding marshlands (2.1 and 3.8 larvae/dip in 1991 and 1992), used to rule out a regional decline." ;
+    causal_mosaic:comparator_type <https://w3id.org/ecoweaver/warp/ComparatorTypeEnum#spatial_or_temporal_control> ;
+    causal_mosaic:status <https://w3id.org/ecoweaver/warp/FeatureAssertionEnum#explicitly_asserted> .
+
+<https://w3id.org/ecoweaver/warp/statement/kramer1995-c1/context> a causal_mosaic:ContextAnnotation ;
+    causal_mosaic:ecosystem_scope <https://w3id.org/elmo/elmo_3620206> ;
+    causal_mosaic:geographic_scope "28-ha brackish marsh on U.S. Navy property, north central Contra Costa County, California (San Francisco Bay Estuary)" ;
+    causal_mosaic:status <https://w3id.org/ecoweaver/warp/FeatureAssertionEnum#explicitly_asserted> ;
+    causal_mosaic:temporal_scope "1991 (before) vs 1992 (first season after completion)" .
+
+<https://w3id.org/ecoweaver/warp/statement/kramer1995-c1/predicate_qualifiers> a warp:CausalPredicateQualifiers ;
+    warp:causal_direction <https://w3id.org/ecoweaver/warp/statement/kramer1995-c1/predicate_qualifiers/causal_direction> ;
+    warp:effect_strength <https://w3id.org/ecoweaver/warp/statement/kramer1995-c1/predicate_qualifiers/effect_strength> ;
+    warp:mediation <https://w3id.org/ecoweaver/warp/statement/kramer1995-c1/predicate_qualifiers/mediation> ;
+    warp:philosophical_accounts camo:Interventionist .
+
+<https://w3id.org/ecoweaver/warp/statement/kramer1995-c1/predicate_qualifiers/causal_direction> a causal_mosaic:DirectionAnnotation ;
+    causal_mosaic:evidence_for_direction <https://w3id.org/ecoweaver/warp/DirectionEvidenceEnum#experimental> ;
+    causal_mosaic:status <https://w3id.org/ecoweaver/warp/DirectionStatusEnum#asserted> .
+
+<https://w3id.org/ecoweaver/warp/statement/kramer1995-c1/predicate_qualifiers/effect_strength> a causal_mosaic:StrengthAnnotation ;
+    causal_mosaic:qualitative_descriptor <https://w3id.org/ecoweaver/warp/StrengthQualitativeEnum#strong> ;
+    causal_mosaic:quantitative_numeric "98.7"^^xsd:float ;
+    causal_mosaic:quantitative_value "approximately 98.7% reduction in seasonal mean 4th-instar larvae per dip (3.6 to 0.05)" ;
+    causal_mosaic:status <https://w3id.org/ecoweaver/warp/FeatureAssertionEnum#explicitly_asserted> .
+
+<https://w3id.org/ecoweaver/warp/statement/kramer1995-c1/predicate_qualifiers/mediation> a causal_mosaic:MediationAnnotation ;
+    causal_mosaic:pathway_description "Discussion offers, hedged: less standing water, more predator circulation, or disrupted conditioning of eggs." ;
+    causal_mosaic:status <https://w3id.org/ecoweaver/warp/FeatureAssertionEnum#implicitly_assumed> .
+
+<https://w3id.org/ecoweaver/warp/statement/kramer1995-c1/recordMetadata> a warp:EcoRecordMetadata ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/kramer1995-c1-annotation> ;
+    warp:dateRecordCreated "2026-10-27T12:00:00Z" .
+
+<https://w3id.org/ecoweaver/warp/statement/kramer1995-c1/source_spans/0> a causal_mosaic:TextSpan ;
+    causal_mosaic:section <https://w3id.org/ecoweaver/warp/DocumentSectionEnum#results> ;
+    causal_mosaic:text "The tidal enhancement project therefore resulted in a larval reduction of approximately 98.7%." .
+
+<https://w3id.org/ecoweaver/warp/statement/kramer1995-c1/temporal_extent> a causal_mosaic:TemporalExtent ;
+    causal_mosaic:duration_text "One mosquito season (May-October 1992) after the 6-week project ended in late 1991." ;
+    causal_mosaic:observation_grain "Five 400 ml dips per inundated monitoring station after each high tide cycle" ;
+    causal_mosaic:observation_seasons "May-October" .
+
+<https://w3id.org/ecoweaver/warp/statement/murphy2005-c1/comparator/0> a causal_mosaic:ComparatorAnnotation ;
+    causal_mosaic:comparator_type <https://w3id.org/ecoweaver/warp/ComparatorTypeEnum#untreated_control> ;
+    causal_mosaic:status <https://w3id.org/ecoweaver/warp/FeatureAssertionEnum#explicitly_asserted> .
+
+<https://w3id.org/ecoweaver/warp/statement/murphy2005-c1/predicate_qualifiers> a warp:CausalPredicateQualifiers ;
+    warp:causal_direction <https://w3id.org/ecoweaver/warp/statement/murphy2005-c1/predicate_qualifiers/causal_direction> ;
+    warp:philosophical_accounts camo:Interventionist .
+
+<https://w3id.org/ecoweaver/warp/statement/murphy2005-c1/predicate_qualifiers/causal_direction> a causal_mosaic:DirectionAnnotation ;
+    causal_mosaic:evidence_for_direction <https://w3id.org/ecoweaver/warp/DirectionEvidenceEnum#experimental> ;
+    causal_mosaic:status <https://w3id.org/ecoweaver/warp/DirectionStatusEnum#asserted> .
+
+<https://w3id.org/ecoweaver/warp/statement/murphy2005-c1/recordMetadata> a warp:EcoRecordMetadata ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/murphy2005-c1-annotation> ;
+    warp:dateRecordCreated "2026-10-10T14:00:00Z" .
+
+<https://w3id.org/ecoweaver/warp/statement/notebook-c1/care> a warp:CareMetadata ;
+    warp:access_level <https://w3id.org/ecoweaver/warp/AccessLevelEnum#attribution_required> ;
+    warp:consent_reference "TODO: consent record" ;
+    warp:knowledge_holders <https://w3id.org/ecoweaver/warp/agent/practitioner-1> .
+
+<https://w3id.org/ecoweaver/warp/statement/notebook-c1/comparator/0> a causal_mosaic:ComparatorAnnotation ;
+    causal_mosaic:comparator_type <https://w3id.org/ecoweaver/warp/ComparatorTypeEnum#pre_treatment_baseline> ;
+    causal_mosaic:status <https://w3id.org/ecoweaver/warp/FeatureAssertionEnum#implicitly_assumed> .
+
+<https://w3id.org/ecoweaver/warp/statement/notebook-c1/context> a causal_mosaic:ContextAnnotation ;
+    causal_mosaic:geographic_scope "plot beside the path" ;
+    causal_mosaic:status <https://w3id.org/ecoweaver/warp/FeatureAssertionEnum#explicitly_asserted> .
+
+<https://w3id.org/ecoweaver/warp/statement/notebook-c1/recordMetadata> a warp:EcoRecordMetadata ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/notebook-c1-annotation> ;
+    warp:dateRecordCreated "2026-10-10T14:30:00Z" .
+
+stmt:notebook-i1 a warp:InteractionStatement ;
+    warp:care <https://w3id.org/ecoweaver/warp/statement/notebook-i1/care> ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/notebook-i1-author> ;
+    warp:hasEvidenceLines <https://w3id.org/ecoweaver/warp/el/notebook-i1-1> ;
+    warp:negated true ;
+    warp:object node:population_of_alliaria_petiolata ;
+    warp:predicate RO:0002470 ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/statement/notebook-i1/predicate_qualifiers> ;
+    warp:proposition prop:6ac6fc0d7703 ;
+    warp:recordMetadata <https://w3id.org/ecoweaver/warp/statement/notebook-i1/recordMetadata> ;
+    warp:reportedIn doc:notebook-entry-1 ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#prototypical> ;
+    warp:statementText "Deer generally do not browse garlic mustard." ;
+    warp:subject node:population_of_odocoileus_virginianus .
+
+<https://w3id.org/ecoweaver/warp/statement/notebook-i1/care> a warp:CareMetadata ;
+    warp:access_level <https://w3id.org/ecoweaver/warp/AccessLevelEnum#attribution_required> ;
+    warp:knowledge_holders <https://w3id.org/ecoweaver/warp/agent/practitioner-1> .
+
+<https://w3id.org/ecoweaver/warp/statement/notebook-i1/predicate_qualifiers> a warp:InteractionQualifiers .
+
+<https://w3id.org/ecoweaver/warp/statement/notebook-i1/recordMetadata> a warp:EcoRecordMetadata ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/notebook-i1-annotation> .
+
+<https://w3id.org/ecoweaver/warp/agent/ecoweaver-synthesis> a warp:EcoAgent ;
+    warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#synthesis_pipeline> ;
+    warp:agent_subtype "software" ;
+    warp:name "EcoWeaver synthesis pipeline" .
+
+<https://w3id.org/ecoweaver/warp/dataset/murphy2005> a warp:EcoDataSet ;
+    warp:version "TODO" .
+
+doc:kramer1995 a warp:EcoDocument ;
+    warp:description "Journal of the American Mosquito Control Association 11(4):389-395, 1995." ;
+    warp:title "Reduction of Aedes dorsalis by enhancing tidal action in a northern California marsh" .
+
+prop:6ac6fc0d7703 a warp:InteractionProposition ;
+    warp:derived_from_statements stmt:notebook-i1 ;
+    warp:identity_key "interaction|node:population_of_odocoileus_virginianus|eats|node:population_of_alliaria_petiolata|negated|prototypical" ;
+    warp:identity_rule_version "warp-prop-identity/4" ;
+    warp:negated true ;
+    warp:object node:population_of_alliaria_petiolata ;
+    warp:predicate RO:0002470 ;
+    warp:propositionText "Typically, it is not the case that Odocoileus virginianus population eats Alliaria petiolata population." ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#prototypical> ;
+    warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
+    warp:subject node:population_of_odocoileus_virginianus .
+
+prop:aea4ac8269ae a warp:CausalProposition ;
+    warp:derived_from_statements stmt:notebook-c1 ;
+    warp:identity_key "causal|node:planting_of_sanguinaria_canadensis|prevents|node:rate_of_population_growth_of_alliaria_petiolata|affirmed|assertional" ;
+    warp:identity_rule_version "warp-prop-identity/4" ;
+    warp:negated false ;
+    warp:object node:rate_of_population_growth_of_alliaria_petiolata ;
+    warp:predicate camo:prevents ;
+    warp:propositionText "In a particular case, planting of Sanguinaria canadensis prevents Population growth rate of Alliaria petiolata." ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
+    warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
+    warp:subject node:planting_of_sanguinaria_canadensis .
+
+prop:question-tidal-restoration-aedes-dorsalis a warp:CausalProposition ;
+    warp:identity_key "causal|node:tidal_restoration_of_marsh|prevents|node:volumetric_density_of_ochlerotatus_dorsalis_population_at_larval_stage|affirmed|prototypical" ;
+    warp:identity_rule_version "warp-prop-identity/4" ;
+    warp:object node:volumetric_density_of_ochlerotatus_dorsalis_population_at_larval_stage ;
+    warp:predicate camo:prevents ;
+    warp:propositionText "Does restoring tidal action to a marsh typically reduce Aedes dorsalis larval density?" ;
+    warp:raised_as_question true ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#prototypical> ;
+    warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#open_question> ;
+    warp:subject node:tidal_restoration_of_marsh .
+
+stmt:kramer1995-c1 a warp:CausalStatement ;
+    warp:causal_language <https://w3id.org/ecoweaver/warp/ClaimStrengthEnum#direct_causal> ;
+    warp:comparator <https://w3id.org/ecoweaver/warp/statement/kramer1995-c1/comparator/0>,
+        <https://w3id.org/ecoweaver/warp/statement/kramer1995-c1/comparator/1> ;
+    warp:context <https://w3id.org/ecoweaver/warp/statement/kramer1995-c1/context> ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/kramer1995-c1-author> ;
+    warp:dateAuthored "1995" ;
+    warp:ecosystem_context <https://w3id.org/elmo/elmo_3620206> ;
+    warp:hasEvidenceLines <https://w3id.org/ecoweaver/warp/el/kramer1995-c1-1>,
+        <https://w3id.org/ecoweaver/warp/el/kramer1995-c1-2> ;
+    warp:object node:volumetric_density_of_ochlerotatus_dorsalis_population_at_larval_stage ;
+    warp:original_text "The tidal enhancement project therefore resulted in a larval reduction of approximately 98.7%." ;
+    warp:predicate camo:prevents ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/statement/kramer1995-c1/predicate_qualifiers> ;
+    warp:proposition prop:9f0b068ca33b ;
+    warp:recordMetadata <https://w3id.org/ecoweaver/warp/statement/kramer1995-c1/recordMetadata> ;
+    warp:reportedIn doc:kramer1995 ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
+    warp:source_spans <https://w3id.org/ecoweaver/warp/statement/kramer1995-c1/source_spans/0> ;
+    warp:statementText "Restoring full tidal action to the project marsh reduced Aedes dorsalis larval density by about 98.7%." ;
+    warp:subject node:tidal_restoration_of_marsh ;
+    warp:temporal_extent <https://w3id.org/ecoweaver/warp/statement/kramer1995-c1/temporal_extent> .
+
+stmt:murphy2005-c1 a warp:CausalStatement ;
+    warp:causal_language <https://w3id.org/ecoweaver/warp/ClaimStrengthEnum#direct_causal> ;
+    warp:comparator <https://w3id.org/ecoweaver/warp/statement/murphy2005-c1/comparator/0> ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/murphy2005-c1-author> ;
+    warp:dateAuthored "2005" ;
+    warp:hasEvidenceLines <https://w3id.org/ecoweaver/warp/el/murphy2005-c1-1> ;
+    warp:object node:rate_of_population_growth_of_alliaria_petiolata ;
+    warp:original_text "TODO: verbatim sentence from the source" ;
+    warp:predicate camo:prevents ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/statement/murphy2005-c1/predicate_qualifiers> ;
+    warp:proposition prop:question-bloodroot-garlic-mustard ;
+    warp:recordMetadata <https://w3id.org/ecoweaver/warp/statement/murphy2005-c1/recordMetadata> ;
+    warp:reportedIn doc:murphy2005 ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#prototypical> ;
+    warp:statementText "Planting bloodroot reduces the population growth rate of garlic mustard." ;
+    warp:subject node:planting_of_sanguinaria_canadensis .
+
+stmt:notebook-c1 a warp:CausalStatement ;
+    warp:care <https://w3id.org/ecoweaver/warp/statement/notebook-c1/care> ;
+    warp:causal_language <https://w3id.org/ecoweaver/warp/ClaimStrengthEnum#associational> ;
+    warp:comparator <https://w3id.org/ecoweaver/warp/statement/notebook-c1/comparator/0> ;
+    warp:context <https://w3id.org/ecoweaver/warp/statement/notebook-c1/context> ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/notebook-c1-author> ;
+    warp:hasEvidenceLines <https://w3id.org/ecoweaver/warp/el/notebook-c1-1> ;
+    warp:object node:rate_of_population_growth_of_alliaria_petiolata ;
+    warp:original_text "Planted bloodroot by the path last year and noticed there was not as much garlic mustard this year" ;
+    warp:predicate camo:prevents ;
+    warp:proposition prop:aea4ac8269ae ;
+    warp:recordMetadata <https://w3id.org/ecoweaver/warp/statement/notebook-c1/recordMetadata> ;
+    warp:reportedIn doc:notebook-entry-1 ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
+    warp:statementText "After bloodroot was planted by the path, there was less garlic mustard the following year." ;
+    warp:subject node:planting_of_sanguinaria_canadensis .
+
+node:tidal_restoration_of_marsh camo:prevents node:volumetric_density_of_ochlerotatus_dorsalis_population_at_larval_stage .
+
+prop:9f0b068ca33b a warp:CausalProposition ;
+    warp:derived_from_statements stmt:kramer1995-c1 ;
+    warp:identity_key "causal|node:tidal_restoration_of_marsh|prevents|node:volumetric_density_of_ochlerotatus_dorsalis_population_at_larval_stage|affirmed|assertional" ;
+    warp:identity_rule_version "warp-prop-identity/4" ;
+    warp:negated false ;
+    warp:object node:volumetric_density_of_ochlerotatus_dorsalis_population_at_larval_stage ;
+    warp:predicate camo:prevents ;
+    warp:propositionText "In a particular case, tidal restoration of marsh prevents Larval density of Aedes (Ochlerotatus) dorsalis." ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
+    warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
+    warp:subject node:tidal_restoration_of_marsh .
+
+node:planting_of_sanguinaria_canadensis camo:prevents node:rate_of_population_growth_of_alliaria_petiolata .
+
+<https://w3id.org/ecoweaver/warp/agent/practitioner-1> a warp:EcoAgent ;
+    warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#practitioner> ;
+    warp:agent_subtype "person" ;
+    warp:name "TODO: practitioner name or pseudonym" .
+
+doc:notebook-entry-1 a warp:EcoDocument ;
+    warp:subtype <https://w3id.org/ecoweaver/warp/doc/notebook-entry-1/subtype> .
+
+prop:question-bloodroot-garlic-mustard a warp:CausalProposition ;
+    warp:derived_from_statements stmt:murphy2005-c1 ;
+    warp:description "Raised as an open question: Does planting bloodroot typically suppress garlic mustard population growth?" ;
+    warp:identity_key "causal|node:planting_of_sanguinaria_canadensis|prevents|node:rate_of_population_growth_of_alliaria_petiolata|affirmed|prototypical" ;
+    warp:identity_rule_version "warp-prop-identity/4" ;
+    warp:object node:rate_of_population_growth_of_alliaria_petiolata ;
+    warp:predicate camo:prevents ;
+    warp:propositionText "Typically, planting of Sanguinaria canadensis prevents Population growth rate of Alliaria petiolata." ;
+    warp:raised_as_question true ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#prototypical> ;
+    warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
+    warp:subject node:planting_of_sanguinaria_canadensis .
+
+orcid:0000-0000-0000-0000 a warp:EcoAgent ;
+    warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#researcher> ;
+    warp:agent_subtype "person" ;
+    warp:name "TODO: annotator" .
+

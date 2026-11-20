@@ -1,0 +1,92 @@
+# WARP relations: every predicate WARP mints, declared once (decision D13).
+#
+# HAND-MAINTAINED. Never generated. Each predicate-group phase adds its own
+# predicates here and touches nothing else. Contract: docs/rdf-owl.md.
+#
+# Rules for this file:
+# - Every predicate WARP mints is an owl:ObjectProperty with rdfs:label, an
+#   IAO:0000115 definition (from its proposal) and rdfs:isDefinedBy.
+# - Predicates from other ontologies (RO, CAMO, BFO) are REUSED, never
+#   re-declared here.
+# - Abstract parents (warp:abstract_predicate true) are never asserted of
+#   anything: the exporter always picks a sub-property (decision D16).
+# - No domain or range unless the end is a single kind of thing. Where the
+#   kind varies by predicate, a comment says so and a group check script
+#   enforces it (R17).
+# - The annotation properties the reification layer uses for subject,
+#   predicate and object live here too (decision D12).
+#
+# Profile: OWL 2 DL, checked merged with project/warp.owl.ttl by
+# `make owl-check` (needs ROBOT).
+
+@prefix warp:    <https://w3id.org/ecoweaver/warp/> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix obo:     <http://purl.obolibrary.org/obo/> .
+
+<https://w3id.org/ecoweaver/warp/ontology/relations> a owl:Ontology ;
+    rdfs:label "WARP relations" ;
+    dcterms:description "Every predicate WARP mints, declared once as an object property, and the annotation properties of WARP's reification layer." ;
+    owl:versionIRI <https://w3id.org/ecoweaver/warp/ontology/relations/0.6.0> ;
+    owl:versionInfo "0.6.0" .
+
+obo:IAO_0000115 a owl:AnnotationProperty ;
+    rdfs:label "definition" .
+
+warp:abstract_predicate a owl:AnnotationProperty ;
+    rdfs:label "abstract predicate" ;
+    obo:IAO_0000115 "True on a predicate that groups sub-properties and is never asserted of anything itself. The exporter always uses one of its sub-properties (decision D16)." ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+
+# =============================================================================
+# Reification layer: how a statement or proposition points at what it is about
+# (decision D12). Annotation properties, so a statement can name a node CLASS
+# without punning it as an individual. The logical layer never uses them.
+# =============================================================================
+
+warp:subject a owl:AnnotationProperty ;
+    rdfs:label "subject" ;
+    obo:IAO_0000115 "The node a statement or proposition is about: usually a node class, a site or project individual for particulars. An annotation, not a relation: nothing is inferred about the node." ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+warp:predicate a owl:AnnotationProperty ;
+    rdfs:label "predicate" ;
+    obo:IAO_0000115 "The predicate a statement or proposition puts forward, as the predicate's IRI (an RO, CAMO or WARP object property)." ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+warp:object a owl:AnnotationProperty ;
+    rdfs:label "object" ;
+    obo:IAO_0000115 "The node, or other value, a statement or proposition relates its subject to. An annotation, not a relation." ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+warp:focus a owl:AnnotationProperty ;
+    rdfs:label "focus" ;
+    obo:IAO_0000115 "The node (a variable, as a class) a study result's data are about. An annotation, so the node class is not punned as an individual." ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+# Axiom annotation on every class axiom in project/axioms.ttl: the
+# proposition the axiom was projected from (decision D15).
+warp:derived_from a owl:AnnotationProperty ;
+    rdfs:label "derived from" ;
+    obo:IAO_0000115 "The WARP proposition an axiom was projected from. Follow it to the statements grouped under the proposition and to the synthesis assessment that let it through the projection gate." ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+
+# =============================================================================
+# Predicate groups
+# =============================================================================
+
+# --- causal (0.2) -------------------------------------------------------------
+# CAMO predicates (camo:causes, camo:prevents, ...; biolink:precedes) are
+# reused, never re-declared here. Subject and object: node classes.
+# Polarity: `negated` only; a negated statement exports no relation triple.
+
+# --- interaction (0.2) ---------------------------------------------------------
+# RO predicates (RO:0002437 biotically interacts with, RO:0002470 eats,
+# RO:0002455 pollinates, RO:0002444 parasite of) are reused, never
+# re-declared here. Subject and object: population node classes.
+# Polarity: `negated` only.

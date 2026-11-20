@@ -6,13 +6,13 @@
 @prefix warp: <https://w3id.org/ecoweaver/warp/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
+<https://w3id.org/ecoweaver/warp/ontology/scales> a owl:Ontology ;
+    rdfs:label "WARP source scales" ;
+    owl:versionInfo "warp-scales/1" .
+
 warp:ordinal a owl:AnnotationProperty ;
     rdfs:label "ordinal" ;
     skos:definition "1-based position of a concept in its scheme, ascending in what the scheme's skos:scopeNote says the order measures." .
-
-warp:scales a owl:Ontology ;
-    rdfs:label "WARP source scales" ;
-    owl:versionInfo "warp-scales/1" .
 
 <https://w3id.org/ecoweaver/warp/scale/dfo-recovery-priority/high> a skos:Concept ;
     skos:inScheme scale:dfo-recovery-priority ;

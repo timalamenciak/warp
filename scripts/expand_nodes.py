@@ -38,7 +38,7 @@ OBO = Namespace("http://purl.obolibrary.org/obo/")
 DEFINITION = OBO.IAO_0000115
 PATTERN_BASE = "https://w3id.org/ecoweaver/patterns/"
 PLACEHOLDER_PREFIX = "TODO"
-NODES_ONTOLOGY = URIRef("https://w3id.org/ecoweaver/warp/nodes")
+NODES_ONTOLOGY = URIRef("https://w3id.org/ecoweaver/warp/ontology/nodes")
 
 
 def check_definition(defn, template):

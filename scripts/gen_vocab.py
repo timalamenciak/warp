@@ -85,7 +85,7 @@ def build_graph(scales):
     g.bind("warp", WARP)
     g.bind("scale", SCALE)
     g.bind("dcterms", DCTERMS)
-    onto = URIRef("https://w3id.org/ecoweaver/warp/scales")
+    onto = URIRef("https://w3id.org/ecoweaver/warp/ontology/scales")
     g.add((onto, RDF.type, OWL.Ontology))
     g.add((onto, RDFS.label, Literal("WARP source scales")))
     g.add((onto, OWL.versionInfo, Literal(VOCAB_VERSION)))

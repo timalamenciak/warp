@@ -7,7 +7,7 @@ Core Information Model and reuses the
 [Causal Mosaic (CAMO)](https://github.com/timalamenciak/causalmosaic) for
 causal statements.
 
-Status: draft 0.5.0. The worked example is illustrative; its citation, quotes
+Status: draft 0.6.0. The worked example is illustrative; its citation, quotes
 and numbers are placeholders.
 
 **How-to guides**
@@ -209,8 +209,10 @@ once that is aligned with this profile.
 ## 8. Worked example
 
 ```
-make all        # templates → DOSDP patterns, nodes → OWL, derive propositions,
-                # validate, generate JSON Schema and OWL for the profile
+make all        # templates → DOSDP patterns, scales → SKOS, nodes → OWL,
+                # derive propositions, schema → JSON Schema and OWL,
+                # statements → RDF, propositions → OWL axioms, validate
+                # (shapes, references, OWL lint), checks, OWL profiles, tests
 ```
 
 1. `examples/bloodroot_statements.yaml`: what annotators produce. Four nodes with
@@ -229,8 +231,33 @@ All three validate against the profile, and `make check` runs
 `scripts/check_statements.py` over the derived set and the assessment
 together: Assertion Mode, negation, contribution roles, CARE, and every
 reference resolving. `make nodes` also writes
-`project/nodes.ttl`, the four nodes as OWL classes (checked to be in OWL 2
-EL with ROBOT), and `patterns/data/*.tsv`, the same fillings as DOSDP input.
+`project/nodes.ttl`, the four nodes as OWL classes (meant to be OWL 2 EL;
+`make owl-check` confirms it with ROBOT where ROBOT is installed), and
+`patterns/data/*.tsv`, the same fillings as DOSDP input.
+
+`examples/kramer1995_statements.yaml` is a second, real example: one finding
+from Kramer et al. 1995, with its derived file and an assessment.
+
+### What comes out as RDF and OWL
+
+Two layers, and nothing mixes them. The contract is
+[docs/rdf-owl.md](docs/rdf-owl.md).
+
+| File | Layer | Holds | Profile |
+|---|---|---|---|
+| `project/nodes.ttl` | logical | Node classes from templates | OWL 2 EL |
+| `project/axioms.ttl` | logical | Class axioms projected from propositions that pass the gate | OWL 2 EL |
+| `project/statements.ttl` | reification | Every statement, proposition, evidence line, qualifier, agent and document | RDF, for SPARQL |
+| `project/warp.owl.ttl` | schema | The profile itself, after `clean_owl.py` | OWL 2 DL |
+| `src/warp/owl/warp-relations.ttl` | schema | Every predicate WARP mints, declared once (hand-maintained) | OWL 2 DL |
+| `project/scales.ttl` | vocabulary | Source scales as SKOS | SKOS |
+
+A proposition becomes an OWL axiom only when its scope is universal, it is not
+negated, every statement under it is `modality: observed`, and a synthesis
+assessment supports it. On the examples nothing passes, which is correct:
+they are assertional or prototypical, and OWL cannot say "typically".
+`project/reports/projection.md` lists every proposition and why it was or was
+not projected.
 
 ## 9. Known gaps and upstream contributions
 
@@ -288,12 +315,19 @@ src/warp/schema/
   warp.yaml              the profile (edit this)
   warp_templates.yaml           schema for node templates
   upstream/                   vendored SEPIO and CAMO (never edit)
+src/warp/owl/
+  warp-relations.ttl          WARP's predicates, declared once (edit this)
+  catalog-v001.xml            resolves owl:imports for ROBOT
 templates/
   node_templates.yaml         node templates (edit this)
 patterns/                     GENERATED DOSDP patterns, prefixes, fill tables
 scripts/
   derive_propositions.py      proposition derivation, all groups (identity rule v4)
   check_refs.py               every reference resolves (schema-driven)
+  export_rdf.py               statement sets → project/statements.ttl (reification layer)
+  project_owl.py              propositions through the gate → project/axioms.ttl
+  clean_owl.py                gen-owl output → OWL 2 DL schema (project/warp.owl.ttl)
+  check_owl.py                OWL lint over every generated Turtle file
   check_statements.py         checks the schema cannot express
   check_values.py             CURIEs, units, places, scales, dates
   gen_vocab.py                vocab/*.yaml → SKOS (project/scales.ttl)
@@ -308,12 +342,14 @@ vocab/
 docs/                         how-to guides
 tests/                        pytest suite (make test)
 examples/                     worked example
-project/                      GENERATED JSON Schema, OWL, node classes
+project/                      GENERATED JSON Schema, OWL, node classes, RDF, reports
 ```
 
 Requires Python 3.10+ with `pip install -r requirements.txt`. The optional
 `make owl-dosdp` route needs [dosdp-tools](https://github.com/INCATools/dosdp-tools)
-(and Java).
+(and Java). `make owl-check` needs [ROBOT](https://robot.obolibrary.org/); without
+it the profile checks are skipped with a warning, and releases are checked
+with it.
 
 ## Changes
 
