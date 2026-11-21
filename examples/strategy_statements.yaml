@@ -6,8 +6,8 @@
 # derived. See docs/node-templates.md.
 #
 # ILLUSTRATIVE ONLY. Strategies, sources and figures are placeholders from
-# the proposal (warp-proposals-0.4.html, section 6). Action terms are TODO:
-# placeholders until ELMO terms are verified (decision D20).
+# the proposal (docs/proposals/warp-proposals-0.4.html, section 6). Action
+# terms are TODO: placeholders until ELMO terms are verified (decision D20).
 
 id: warp:statementset/strategy-example
 profile_version: 0.7.0

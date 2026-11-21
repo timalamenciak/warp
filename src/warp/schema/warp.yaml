@@ -1395,7 +1395,7 @@ classes:
 
   # ---------------------------------------------------------------------------
   # Predicate group: recommendation (0.7.0, Phase 3;
-  # warp-proposals-0.4.html section 5)
+  # docs/proposals/warp-proposals-0.4.html section 5)
   # ---------------------------------------------------------------------------
 
   RecommendationStatement:
@@ -1490,7 +1490,7 @@ classes:
 
   # ---------------------------------------------------------------------------
   # Predicate group: tolerance (0.7.0, Phase 5;
-  # warp-proposals-0.4.html section 7)
+  # docs/proposals/warp-proposals-0.4.html section 7)
   # ---------------------------------------------------------------------------
 
   ToleranceStatement:
@@ -1594,7 +1594,8 @@ classes:
         range: CausalNode
 
   # ---------------------------------------------------------------------------
-  # Predicate group: cost (0.7.0, Phase 6; warp-proposals-0.4.html section 8)
+  # Predicate group: cost (0.7.0, Phase 6;
+  # docs/proposals/warp-proposals-0.4.html section 8)
   # Qualifiers follow the five cost reporting standards of Iacona et al. 2018.
   # ---------------------------------------------------------------------------
 
@@ -1840,7 +1841,7 @@ classes:
         description: "What the ratio is per (per_hectare, per_site)."
 
   # ---------------------------------------------------------------------------
-  # Sites (0.7.0, Phase 7.1; warp-proposals-0.4.html section 9)
+  # Sites (0.7.0, Phase 7.1; docs/proposals/warp-proposals-0.4.html, s. 9)
   # ---------------------------------------------------------------------------
 
   SiteDefinition:

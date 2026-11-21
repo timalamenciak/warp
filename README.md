@@ -12,9 +12,10 @@ recommendation, tolerance, cost, implementation, criteria), management
 strategies and sites as nodes, criteria sets as versioned definitions, and an
 RDF and OWL output with a projection gate. The worked examples are
 illustrative: their citations, quotes and numbers are placeholders unless a
-comment says otherwise. The 0.4 proposal round (`warp-proposals-0.4.html`,
-`warp-0.4-dev-guide.md`, `warp-0.4-reference.html`) shipped as releases 0.6.0
-and 0.7.0.
+comment says otherwise. The 0.4 proposal round shipped as releases 0.6.0
+and 0.7.0; its proposals, build guide and slot reference are in
+[docs/proposals/](docs/proposals/) (`warp-proposals-0.4.html`,
+`warp-0.4-dev-guide.md`, `warp-0.4-reference.html`).
 
 **How-to guides**
 - [Adding a node template](docs/node-templates.md): define a fillable node

@@ -2,9 +2,10 @@
 
 Working notes for anyone (person or Claude Code session) changing WARP. Read
 this before touching the schema, a script or an example. The build plan for
-the current round of work is `warp-0.4-dev-guide.md`; the reference for every
-slot and enum is `warp-0.4-reference.html`; the graph contract is
-`docs/rdf-owl.md`.
+the current round of work is `docs/proposals/warp-0.4-dev-guide.md`; the
+reference for every slot and enum is `docs/proposals/warp-0.4-reference.html`;
+the graph contract is `docs/rdf-owl.md`. The proposals themselves are
+`docs/proposals/warp-proposals-0.4.html`.
 
 ## Running the build
 

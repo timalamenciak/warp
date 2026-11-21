@@ -13,8 +13,8 @@ asserting it as one would state something stronger than the source did. So
 WARP has two layers, and the rules below are mostly about keeping them apart.
 
 > **Status.** Built in 0.6.0 (Phase 2.5 of the 0.4 proposal round,
-> `warp-0.4-dev-guide.md`, decisions D11 to D20) for the causal and
-> interaction groups; each later group adds its row to the register in
+> `docs/proposals/warp-0.4-dev-guide.md`, decisions D11 to D20) for the causal
+> and interaction groups; each later group adds its row to the register in
 > section 8. The "state of play" table in section 9 says what exists.
 > `examples/kramer1995.ttl` was the hand-written specification for
 > `export_rdf.py`; `project/statements.ttl` is now the generated version.
@@ -452,7 +452,7 @@ robot merge warp.owl.ttl warp-relations.ttl             | validate-profile --pro
 |---|---|
 | `nodes.ttl`, node classes in EL, with an ontology header | Built (`expand_nodes.py`) |
 | `warp.owl.ttl` | Built: `gen-owl`, then `clean_owl.py` (§9.1) |
-| `warp-relations.ttl` | Hand-maintained; causal and interaction reuse CAMO and RO, so for 0.6.0 it declares only the annotation properties |
+| `warp-relations.ttl` | Hand-maintained (version 0.7.0): the annotation properties, and every predicate WARP mints for the recommendation, tolerance, cost, implementation and criteria groups. Causal and interaction reuse CAMO and RO |
 | `statements.ttl` | Built (`export_rdf.py`) |
 | `axioms.ttl` | Built (`project_owl.py`); empty of axioms on the examples, by design |
 | `scales.ttl` | Built (`gen_vocab.py`, Phase 1) |

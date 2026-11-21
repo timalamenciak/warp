@@ -1,10 +1,11 @@
 # Changelog
 
 All notable changes to WARP. The 0.4 proposal round
-(`warp-proposals-0.4.html`, built from `warp-0.4-dev-guide.md`) ships as two
-releases, **0.6.0** and **0.7.0**: the repository was already at 0.5.0 when the
-work started, so "0.4.0" would have been a downgrade (dev guide, Q15b). The
-documents keep their "0.4" names as the name of the proposal round only.
+(`docs/proposals/warp-proposals-0.4.html`, built from
+`docs/proposals/warp-0.4-dev-guide.md`) ships as two releases, **0.6.0** and
+**0.7.0**: the repository was already at 0.5.0 when the work started, so
+"0.4.0" would have been a downgrade (dev guide, Q15b). The documents keep their
+"0.4" names as the name of the proposal round only.
 
 Each entry names the dev-guide phase it came from.
 
@@ -41,6 +42,23 @@ round, built on the 0.6.0 foundations. Schema version 0.7.0; examples'
   (Q15b).
 - Verified with `make clean` and `make all` on a fresh clone of the branch.
   ROBOT profile checks were skipped there too (not installed).
+
+### Release tidy
+
+- **Proposal documents moved** to `docs/proposals/`: the proposals
+  (`warp-proposals-0.4.html`), the build guide (`warp-0.4-dev-guide.md`)
+  and the slot reference (`warp-0.4-reference.html`), unchanged. Every
+  reference to them (README, CLAUDE.md, TODOS.md, `docs/rdf-owl.md`, schema
+  and relations comments, example headers, test docstrings) now gives the
+  new path.
+- **Versions.** The node template schema (`warp_templates.yaml`) goes from
+  0.1.0 to 0.7.0, matching the profile, since 0.7.0 changed it (`kind`,
+  `parent_class`, `part_property`, `refinements`). The profile, examples'
+  `profile_version`, its default and `warp-relations.ttl` were already
+  0.7.0. `docs/rdf-owl.md`'s state-of-play row for `warp-relations.ttl` no
+  longer says it declares only annotation properties.
+- **`docs/html/`** pages still describe 0.5.0; each now says so at the top
+  and points to the current Markdown docs (TODOS 0.4b).
 
 ### Phase 7.1: sites
 

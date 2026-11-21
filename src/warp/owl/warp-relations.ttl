@@ -107,7 +107,7 @@ warp:selected_by a owl:AnnotationProperty ;
     obo:IAO_0000115 "The qualifier value (an enum value IRI) for which export_rdf.py writes this sub-property in place of its abstract parent." ;
     rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
 
-# --- recommendation (0.7.0; warp-proposals-0.4.html section 5) ----------------
+# --- recommendation (0.7.0; docs/proposals/warp-proposals-0.4.html, s. 5) ---
 # Subject: an action or strategy node class. Object: an outcome node class.
 # Polarity: `guidance` (do / avoid / consider) picks the sub-property.
 # Projected to OWL: nothing, at any scope. Guidance is deontic, and "you
@@ -154,7 +154,7 @@ warp:suggested_for_consideration a owl:ObjectProperty ;
 #                             [ owl:onProperty BFO:0000051 ; owl:someValuesFrom <action> ] .
 # Subclass, never equivalent class (D6): see docs/rdf-owl.md section 8.
 
-# --- tolerance (0.7.0; warp-proposals-0.4.html section 7) ---------------------
+# --- tolerance (0.7.0; docs/proposals/warp-proposals-0.4.html section 7) ------
 # Subject: an organism node class (taxon, population or life stage).
 # Object: the kind VARIES BY PREDICATE, so no range is declared here:
 # tolerates, prefers and intolerant_of take a quality_of_environmental_material
@@ -181,7 +181,7 @@ warp:intolerant_of a owl:ObjectProperty ;
     obo:IAO_0000115 "The organism fails to establish, persist or reproduce when the environmental variable is within the stated range." ;
     rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
 
-# --- cost (0.7.0; warp-proposals-0.4.html section 8) --------------------------
+# --- cost (0.7.0; docs/proposals/warp-proposals-0.4.html section 8) -----------
 # A cost is three things at once: an action, a category and an amount. The
 # only relation among them is action-to-amount, so the category moves into the
 # predicate and the amount is the object (D16):
@@ -239,7 +239,7 @@ warp:costs_relative_to a owl:ObjectProperty ;
     obo:IAO_0000115 "The subject action costs a stated multiple of the object action, for the same objective and scale. The multiple is the statement's ratio." ;
     rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
 
-# --- implementation (0.7.0; warp-proposals-0.4.html section 9) ----------------
+# --- implementation (0.7.0; docs/proposals/warp-proposals-0.4.html, s. 9) ---
 # Subject: a strategy or action node CLASS. Object: a site INDIVIDUAL. A class
 # to an individual: so it is asserted only in the reification layer
 # (statements.ttl). The claim records that a kind of work was done at a

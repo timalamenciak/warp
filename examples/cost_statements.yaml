@@ -4,12 +4,13 @@
 # (Iacona et al. 2018's five reporting standards).
 #
 # The INPA wattle costing and the Florida program use the figures Iacona et
-# al.'s worked examples give, as the proposal does (warp-proposals-0.4.html,
-# section 8): about 600 ha for NIS 17,600 (price year assumed from the report
-# date), and about 70,000 ha over 46 protected areas. The strategy costs use
-# the proposal's illustrative figures. Everything else is a placeholder:
-# statements whose text begins "Placeholder" carry no real figures, and
-# amounts with no value record a figure not yet transcribed (TODO).
+# al.'s worked examples give, as the proposal does
+# (docs/proposals/warp-proposals-0.4.html, section 8): about 600 ha for NIS
+# 17,600 (price year assumed from the report date), and about 70,000 ha over 46
+# protected areas. The strategy costs use the proposal's illustrative figures.
+# Everything else is a placeholder: statements whose text begins "Placeholder"
+# carry no real figures, and amounts with no value record a figure not yet
+# transcribed (TODO).
 
 id: warp:statementset/cost-example
 profile_version: 0.7.0

@@ -6,9 +6,9 @@
 # a tolerance explained by a mechanism, and a habitat statement.
 #
 # ILLUSTRATIVE ONLY. Every figure is a placeholder shaped like the proposal's
-# examples (warp-proposals-0.4.html, section 7), not a value from the named
-# kinds of source. Taxa and most terms are TODO: placeholders until their IDs
-# are verified; units are the TODO: units of docs/values.md.
+# examples (docs/proposals/warp-proposals-0.4.html, section 7), not a value
+# from the named kinds of source. Taxa and most terms are TODO: placeholders
+# until their IDs are verified; units are the TODO: units of docs/values.md.
 
 id: warp:statementset/tolerance-example
 profile_version: 0.7.0

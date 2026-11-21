@@ -1,4 +1,4 @@
-"""The tolerance group (Phase 5, warp-proposals-0.4.html section 7)."""
+"""The tolerance group (Phase 5; proposals section 7)."""
 
 import copy
 import subprocess

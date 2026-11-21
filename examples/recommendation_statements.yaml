@@ -7,9 +7,10 @@
 # guidance.
 #
 # ILLUSTRATIVE ONLY. Wording, priorities and timings follow the proposal
-# (warp-proposals-0.4.html, section 5); node fillings, agents, documents and
-# the burning case are placeholders, marked TODO. Nothing here should be
-# read as what the recovery strategies say until checked against them.
+# (docs/proposals/warp-proposals-0.4.html, section 5); node fillings, agents,
+# documents and the burning case are placeholders, marked TODO. Nothing here
+# should be read as what the recovery strategies say until checked against
+# them.
 #
 # justified_by cites propositions by ID. Causal propositions are derived, so
 # their IDs are the hashes derive_propositions.py computes (in a database the

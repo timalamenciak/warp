@@ -408,9 +408,10 @@ example; a real database needs statements from many sources grouped together.
 
 ## 8. The 0.4 proposal round (releases 0.6.0 and 0.7.0)
 
-Open questions and placeholders left by the build in `warp-0.4-dev-guide.md`,
-grouped by proposal. Question numbers refer to each proposal's "Open
-questions" in `warp-proposals-0.4.html`.
+Open questions and placeholders left by the build in
+`docs/proposals/warp-0.4-dev-guide.md`, grouped by proposal. Question numbers
+refer to each proposal's "Open questions" in
+`docs/proposals/warp-proposals-0.4.html`.
 
 ### 8.1 Placeholders to fill (Q12)
 

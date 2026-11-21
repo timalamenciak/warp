@@ -1,4 +1,4 @@
-"""The cost group (Phase 6, warp-proposals-0.4.html section 8)."""
+"""The cost group (Phase 6; proposals section 8)."""
 
 import copy
 

@@ -2,7 +2,7 @@
 
 Every phase of the 0.4 work promises that groups which declare no identity
 extras keep their proposition IDs (decision D4). These are the IDs as of
-0.5.0. If one changes, the change must be deliberate, explained in
+0.5.0, unchanged through 0.7.0. If one changes, the change must be deliberate, explained in
 CHANGELOG.md, and this list updated in the same commit.
 """
 

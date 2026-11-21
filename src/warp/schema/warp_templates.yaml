@@ -18,7 +18,7 @@ id: https://w3id.org/ecoweaver/templates
 name: ecoweaver-templates
 title: WARP node templates
 license: CC0
-version: 0.1.0
+version: 0.7.0
 
 prefixes:
   linkml: https://w3id.org/linkml/
