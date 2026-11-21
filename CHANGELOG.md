@@ -11,7 +11,107 @@ Each entry names the dev-guide phase it came from.
 ## 0.7.0 (unreleased)
 
 The five new predicate groups and three node templates of the 0.4 proposal
-round, built on the 0.6.0 foundations.
+round, built on the 0.6.0 foundations. Schema version 0.7.0; examples'
+`profile_version` 0.7.0. Seven predicate groups in all.
+
+### Phase 7.1: sites
+
+- **`site` template** (`kind: particular`) and **`SiteDefinition`** (is_a
+  `NodeDefinition`): `label`, `geometry`, `geometry_precision` (required),
+  `area`, `area_source`, `ecosystem_type`, `jurisdiction`, `tenure`, `care`.
+  Enums `GeometryPrecisionEnum`, `AreaSourceEnum`, `TenureEnum` (`unknown` a
+  sentinel). New `StatementSet.site_definitions`.
+- Sites are particulars (D7, D11): IDs under `site:`, never `node:`;
+  `expand_nodes.py --sites` writes `project/sites.ttl` with each site as an
+  `owl:NamedIndividual`, `rdf:type` its ecosystem types, its label, and its
+  jurisdiction (`warp:in_jurisdiction` an ISO 3166-2 IRI where there is a
+  code, `warp:jurisdiction_name` a literal where there is none). Geometry is
+  never exported, not even to `statements.ttl`.
+- **`scripts/check_sites.py`** in `make validate`: site IDs under `site:`
+  only; withheld precision means no geometry; GeoJSON parses; a warning for
+  exact geometry under restricted care. No geometry library is used.
+- `docs/node-templates.md`: sites as the first particular, and why they are
+  nodes anyway.
+
+### Phase 7.2: implementation group and derived projects
+
+- **New predicate group `implementation`**: `ImplementationStatement` (scope
+  always assertional), `ImplementationQualifiers` (`period`, `status`,
+  `reported_on`, `area_treated`, `implemented_by`, `funded_by`,
+  `external_ids`), `ImplementationProposition`, plus `ExternalId`
+  (`{scheme, value}`, D20), `ClaimantStatus`, `ClaimantArea`, and
+  `ImplementationPredicateEnum` / `ImplementationStatusEnum`. Registered with
+  `warp_identity_rule: warp-impl-identity/1` and `warp_derived_by:
+  derive_projects.py`. The plan document is the statement's `specified_in`.
+- **`scripts/derive_projects.py`** (run by `make derive` after propositions):
+  union-find over shared external IDs, or same subject, same site and
+  overlapping periods on normalized bounds. Each cluster gives an
+  `ImplementationProposition` (members; each claimant's latest status and
+  area, attributed; union of implementers, funders, external IDs; envelope of
+  periods; `about_project`, slot IRI `IAO:0000136`) and a project node
+  record. Candidate bad merges (two external IDs from one scheme) are
+  reported.
+- **Projects are individuals (D17, replacing D8).** `project_owl.py
+  --projects` writes `project/projects.ttl`: `proj:<id>` typed by its
+  strategy class, `RO:0001025` (located in, verified locally) its site, with
+  its period's bounds. **Decision made on your behalf:** project IDs are the
+  smallest external ID (`proj:agreement-0412`) or a hash of site, subject and
+  earliest start; when an ID moves, the old one is kept in `replaces` and
+  deprecated in OWL.
+- **RDF:** `warp:carried_out_at` declared (class to individual: reification
+  layer only); nothing projects through the gate.
+
+### Phase 7.3: criteria sets, criteria group and the Target 2 report
+
+- **`CriteriaSet`** (an information record, not a node) with every element
+  of the proposal, and enums `CriteriaConceptEnum`, `CriteriaStatusEnum`,
+  `ReferenceBasisEnum`, `EcosystemAttributeEnum` (SER's six, provisional),
+  `ThresholdKindEnum`, `AssessmentUnitEnum`, `AssessmentBasisEnum`,
+  `AssessmentMethodEnum`.
+- **Criteria concepts as SKOS**: `vocab/criteria_concepts.yaml` →
+  `gen_vocab.py --criteria` → `project/criteria_concepts.ttl`; the enum's
+  `meaning:` is the same `concept:` IRI, so each concept exists once and is
+  never an `owl:Class`.
+- **New predicate group `criteria`**: `CriteriaStatement` (subject a site or
+  project individual, required; object a concept; `direction`, the verdict,
+  required), `CriteriaQualifiers` (`criteria_set`, `assessed_period`,
+  `assessment_method`), `CriteriaProposition`. Rule
+  `warp-criteria-identity/1`, key subject, concept, criteria set and
+  assessed period. No `subject_proposition`, no `exactly_one_of` (R7, R18).
+- `check_statements.py` allows `direction` where the schema requires it (the
+  verdict) and accepts enum-valued objects; `check_sites.py` checks that the
+  criteria set operationalizes the statement's concept, that the subject is a
+  particular, and warns on assessment-unit mismatches.
+- **RDF (D16):** abstract `warp:assessed_against` with `warp:qualifies_as`
+  and `warp:does_not_qualify_as`; the exporter picks by direction, writes the
+  **criteria set** as the object, and writes no triple for a neutral
+  verdict. Nothing projects to OWL.
+- **`scripts/report_target2.py`** (`make reports`,
+  `project/reports/target2.md`): degraded sites, active projects on them,
+  effective projects, area as lower and upper bounds, and a comparison table
+  across definitions. **Three buckets (Q15a):** supported, contested,
+  unsupported. `--include-planned`, `--show-restricted`.
+- **Example** `examples/implementation_statements.yaml`: site 0412
+  (generalized geometry, 64 ha, private, restricted care) and site 0517;
+  the land trust's and funder's claims (42 vs 40 ha, shared agreement ID)
+  deriving one project; the same strategy on site 0517 as a second project;
+  three fictional criteria sets; site 0412 contested under one definition and
+  supported under the other; site 0517 qualifying under one and not the
+  other; an effective project; and a neutral rule-applied verdict by
+  EcoWeaver.
+- Docs: implementation and criteria groups in `docs/predicate-groups.md`
+  (annotator's tests, the project ID scheme); register and state of play in
+  `docs/rdf-owl.md`; open questions (Q1, Q2, Q4 to Q8) and the Lars
+  conversation (Q14) in `TODOS.md`.
+- Tests: sites as individuals, no geometry anywhere, jurisdiction IRI or
+  literal, every site check; one project from two reports, attributed areas,
+  overlap linking (including a case string order gets wrong), ID stability and
+  recorded moves, bad merges, latest status per claimant, `projects.ttl`;
+  criteria concepts, shared propositions for disagreeing assessors, verdict
+  sub-properties with the set as object, neutral verdicts, criteria checks,
+  no projection; Target 2 buckets, the effect of a definition, planned work,
+  area caps, restricted listing.
+- No existing proposition ID changed.
 
 ### Phase 3: recommendation group
 

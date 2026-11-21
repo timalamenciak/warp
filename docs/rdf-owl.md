@@ -402,8 +402,8 @@ the annotation properties `warp:action` and `warp:component_of`.
 | recommendation (built, 0.7.0) | `suggested_to` (abstract) + `recommended_to_achieve`, `advised_against_for`, `suggested_for_consideration` | class → class | `guidance`; each `GuidanceEnum` value names its sub-property (`warp_subproperty`), and each sub-property its value (`warp:selected_by`) | **Nothing**, at any scope: deontic. The causal proposition a recommendation cites may project on its own if it passes the gate |
 | tolerance (built, 0.7.0) | `tolerates`, `prefers`, `intolerant_of`; `RO:0002303` reused | class → class; object kind varies by predicate (`check_tolerance.py`) | none | `has_habitat` only, through the gate. Ranges, optima, class values and curves never: measurements across populations, not class axioms |
 | cost (built, 0.7.0) | `incurs_cost` (abstract) + `incurs_total_cost`, `incurs_labour_cost`, `incurs_capital_equipment_cost`, `incurs_consumables_cost`, `incurs_overhead_cost`; `costs_relative_to` | class → amount individual (`<statement>/predicate_qualifiers/amount`, or the first effort quantity for an effort-only costing), or class → class; checked by `check_cost.py` | the object category; each `CostCategoryEnum` value names its sub-property | **Nothing** |
-| implementation | `carried_out_at` | class → individual | none | Nothing through the gate; the project individuals are its logical-layer output, and they come from the derivation rule |
-| criteria | `assessed_against` + `qualifies_as`, `does_not_qualify_as` | individual → criteria set | `direction`; neutral exports no triple | **Nothing** |
+| implementation (built, 0.7.0) | `carried_out_at` | class → individual (site) | none | Nothing through the gate; the project individuals (`projects.ttl`) are its logical-layer output, and they come from the derivation rule. The grouping record is `IAO:0000136` (is about) its project |
+| criteria (built, 0.7.0) | `assessed_against` (abstract) + `qualifies_as`, `does_not_qualify_as` | individual (site or project) → criteria set | `direction`; neutral exports no triple, and a proposition's record names `assessed_against` | **Nothing** |
 
 Two entries in that table need their reason stated where someone will hit it:
 
@@ -458,9 +458,9 @@ robot merge warp.owl.ttl warp-relations.ttl             | validate-profile --pro
 | `scales.ttl` | Built (`gen_vocab.py`, Phase 1) |
 | `check_owl.py` | In `make validate`; clean |
 | `make owl-check` | Written; skipped with a warning where `robot` is not on PATH, which includes the machine 0.6.0 was built on. **Neither profile has been confirmed by ROBOT yet.** |
-| `sites.ttl` | Phase 7.1 |
-| `projects.ttl` | Phase 7.2 |
-| `criteria_concepts.ttl` | Phase 7.3 |
+| `sites.ttl` | Built (`expand_nodes.py --sites`, 0.7.0) |
+| `projects.ttl` | Built (`project_owl.py --projects`, from `derive_projects.py`, 0.7.0) |
+| `criteria_concepts.ttl` | Built (`gen_vocab.py --criteria`, 0.7.0) |
 | WARP IRIs for SEPIO's slots | **Done (Q13):** `slot_uri` in the profile; a SEPIO mapping file waits on SEPIO grounding its terms. SEPIO's own classes and slots still appear under `https://example.org/sepio-model/` in `warp.owl.ttl`, which carries the vendored schema as it is; `check_owl.py` refuses them in every data file. |
 
 ### 9.1 What `clean_owl.py` does

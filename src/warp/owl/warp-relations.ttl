@@ -30,8 +30,8 @@
 <https://w3id.org/ecoweaver/warp/ontology/relations> a owl:Ontology ;
     rdfs:label "WARP relations" ;
     dcterms:description "Every predicate WARP mints, declared once as an object property, and the annotation properties of WARP's reification layer." ;
-    owl:versionIRI <https://w3id.org/ecoweaver/warp/ontology/relations/0.6.0> ;
-    owl:versionInfo "0.6.0" .
+    owl:versionIRI <https://w3id.org/ecoweaver/warp/ontology/relations/0.7.0> ;
+    owl:versionInfo "0.7.0" .
 
 obo:IAO_0000115 a owl:AnnotationProperty ;
     rdfs:label "definition" .
@@ -237,4 +237,74 @@ warp:incurs_overhead_cost a owl:ObjectProperty ;
 warp:costs_relative_to a owl:ObjectProperty ;
     rdfs:label "costs relative to" ;
     obo:IAO_0000115 "The subject action costs a stated multiple of the object action, for the same objective and scale. The multiple is the statement's ratio." ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+# --- implementation (0.7.0; warp-proposals-0.4.html section 9) ----------------
+# Subject: a strategy or action node CLASS. Object: a site INDIVIDUAL. A class
+# to an individual: so it is asserted only in the reification layer
+# (statements.ttl). The claim records that a kind of work was done at a
+# particular place; the thing that happened is the project individual
+# (proj:<id>, project/projects.ttl), which comes from derive_projects.py, not
+# from this triple. No polarity in a qualifier. Projected: nothing.
+
+warp:carried_out_at a owl:ObjectProperty ;
+    rdfs:label "carried out at" ;
+    obo:IAO_0000115 "The subject strategy or action (a kind of work) was carried out at the object site (a particular piece of ground). Asserted only in the reification layer; the work itself is a project individual." ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+# On project individuals (projects.ttl): the normalized bounds of the period.
+warp:period_start a owl:AnnotationProperty ;
+    rdfs:label "period start" ;
+    obo:IAO_0000115 "The first instant of a project's period, as xsd:dateTime (the lower bound of its ISO 8601 start)." ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+warp:period_end a owl:AnnotationProperty ;
+    rdfs:label "period end" ;
+    obo:IAO_0000115 "The first instant after a project's period, as xsd:dateTime (the upper bound of its ISO 8601 end). Absent while the work is ongoing." ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+# --- sites (0.7.0) --------------------------------------------------------------
+# On site individuals (sites.ttl). A jurisdiction with an ISO 3166-2 code is an
+# IRI (in_jurisdiction); one without, as for many Indigenous territories, is a
+# literal (jurisdiction_name). Two properties, because one property cannot
+# take both an IRI and a literal in OWL.
+
+warp:in_jurisdiction a owl:ObjectProperty ;
+    rdfs:label "in jurisdiction" ;
+    obo:IAO_0000115 "The site lies in the object jurisdiction, identified by an IRI (ISO 3166-2 code)." ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+warp:jurisdiction_name a owl:AnnotationProperty ;
+    rdfs:label "jurisdiction name" ;
+    obo:IAO_0000115 "The name of the jurisdiction a site lies in, where it has no code to make an IRI of." ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+# --- criteria (0.7.0) ------------------------------------------------------------
+# Subject: a site or project INDIVIDUAL. Object in the relation layer: the
+# CRITERIA SET (crit:...), not the concept, the one place where the exported
+# object is not the annotated object. The concept is recoverable through the
+# set's operationalizes. So `site qualifies_as crit:A` and
+# `site does_not_qualify_as crit:B` are two verdicts about two definitions,
+# never a flat contradiction about one concept. Polarity: the statement's
+# direction picks the sub-property; a neutral verdict exports no triple.
+# Projected: nothing. A criteria set is a stated test, not an OWL definition.
+
+warp:assessed_against a owl:ObjectProperty ;
+    rdfs:label "assessed against" ;
+    obo:IAO_0000115 "The subject site or project was assessed against the object criteria set. Never asserted itself: the verdict is said by a sub-property." ;
+    warp:abstract_predicate true ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+warp:qualifies_as a owl:ObjectProperty ;
+    rdfs:subPropertyOf warp:assessed_against ;
+    rdfs:label "qualifies as" ;
+    obo:IAO_0000115 "The subject site or project meets the object criteria set's definition of the concept it operationalizes." ;
+    warp:selected_by <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+warp:does_not_qualify_as a owl:ObjectProperty ;
+    rdfs:subPropertyOf warp:assessed_against ;
+    rdfs:label "does not qualify as" ;
+    obo:IAO_0000115 "The subject site or project does not meet the object criteria set's definition of the concept it operationalizes." ;
+    warp:selected_by <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#disputes> ;
     rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .

@@ -51,6 +51,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import warp_schema as ws  # noqa: E402
 
 AXIOMS_ONTOLOGY = URIRef("https://w3id.org/ecoweaver/warp/ontology/axioms")
+PROJECTS_ONTOLOGY = URIRef("https://w3id.org/ecoweaver/warp/ontology/projects")
+LOCATED_IN = URIRef("http://purl.obolibrary.org/obo/RO_0001025")       # located in (checked, ENVO import)
+TERM_REPLACED_BY = URIRef("http://purl.obolibrary.org/obo/IAO_0100001")
+PERIOD_START = URIRef("https://w3id.org/ecoweaver/warp/period_start")
+PERIOD_END = URIRef("https://w3id.org/ecoweaver/warp/period_end")
 NODES_ONTOLOGY = URIRef("https://w3id.org/ecoweaver/warp/ontology/nodes")
 DERIVED_FROM = URIRef("https://w3id.org/ecoweaver/warp/derived_from")
 GATE_VERSION = "warp-projection-gate/1"
@@ -180,6 +185,57 @@ class Projector:
         return out, report
 
 
+def project_individuals(pj, sets):
+    """project/projects.ttl: one named individual per derived project
+    (decision D17), the implementation group's logical-layer output. It comes
+    from the derivation rule (derive_projects.py), not from the gate: the
+    project is an occurrent, `rdf:type` its strategy (or action) class,
+    located in (RO:0001025) its site individual, with its period's
+    normalized bounds. Superseded project IRIs are deprecated."""
+    import warp_time
+    from rdflib.namespace import XSD
+    g = Graph()
+    for p in ("proj", "site", "node"):
+        g.bind(p, pj.pm[p])
+    g.bind("warp", "https://w3id.org/ecoweaver/warp/")
+    g.add((PROJECTS_ONTOLOGY, RDF.type, OWL.Ontology))
+    g.add((PROJECTS_ONTOLOGY, RDFS.label, Literal("WARP projects (individuals)")))
+    g.add((PROJECTS_ONTOLOGY, OWL.imports, NODES_ONTOLOGY))
+    g.add((LOCATED_IN, RDF.type, OWL.ObjectProperty))
+    group = next((x for x in pj.groups if x["group"] == "implementation"), None)
+    if group is None:
+        return g, 0
+    n = 0
+    for data in sets:
+        for p in data.get(group["propositions_slot"]) or []:
+            proj = pj.iri(p["about_project"])
+            strategy, site = pj.iri(p["subject"]), pj.iri(p["object"])
+            g.add((proj, RDF.type, OWL.NamedIndividual))
+            g.add((proj, RDF.type, strategy))
+            g.add((strategy, RDF.type, OWL.Class))
+            g.add((site, RDF.type, OWL.NamedIndividual))
+            g.add((proj, LOCATED_IN, site))
+            g.add((proj, RDFS.label, Literal(p.get("propositionText", p["about_project"]))))
+            period = p.get("period") or {}
+            if period.get("start"):
+                lo, hi = warp_time.period_bounds(period["start"], period.get("end"))
+                g.add((PERIOD_START, RDF.type, OWL.AnnotationProperty))
+                g.add((proj, PERIOD_START, Literal(warp_time.xsd_datetime(lo), datatype=XSD.dateTime,
+                                                   normalize=False)))
+                if hi is not None:
+                    g.add((PERIOD_END, RDF.type, OWL.AnnotationProperty))
+                    g.add((proj, PERIOD_END, Literal(warp_time.xsd_datetime(hi), datatype=XSD.dateTime,
+                                                     normalize=False)))
+            for old in p.get("replaces") or []:
+                o = pj.iri(old)
+                g.add((o, RDF.type, OWL.NamedIndividual))
+                g.add((o, OWL.deprecated, Literal(True)))
+                g.add((o, TERM_REPLACED_BY, proj))
+                g.add((TERM_REPLACED_BY, RDF.type, OWL.AnnotationProperty))
+            n += 1
+    return g, n
+
+
 def render_report(report):
     lines = ["# Projection report", "",
              f"Gate `{GATE_VERSION}`: scope universal, not negated, every grouped statement "
@@ -221,10 +277,17 @@ def main(argv=None):
     parser.add_argument("files", type=Path, nargs="+")
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--report", type=Path)
+    parser.add_argument("--projects", type=Path, help="Turtle output for project individuals (project/projects.ttl)")
     parser.add_argument("--schema", type=Path, default=ws.DEFAULT_SCHEMA)
     args = parser.parse_args(argv)
     sets = [yaml.safe_load(f.read_text(encoding="utf-8")) or {} for f in args.files]
-    g, report = Projector(ws.load(args.schema)).run(sets)
+    pj = Projector(ws.load(args.schema))
+    g, report = pj.run(sets)
+    if args.projects:
+        pg, n = project_individuals(pj, sets)
+        args.projects.parent.mkdir(parents=True, exist_ok=True)
+        pg.serialize(args.projects, format="turtle")
+        print(f"wrote {args.projects}: {n} project individual(s)")
     args.out.parent.mkdir(parents=True, exist_ok=True)
     g.serialize(args.out, format="turtle")
     text = render_report(report)

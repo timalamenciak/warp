@@ -21,6 +21,7 @@ Exits non-zero if any definition is invalid.
 
 import argparse
 import csv
+import re
 import sys
 from collections import defaultdict
 from pathlib import Path
@@ -69,6 +70,53 @@ def check_definition(defn, template):
         if prefix not in allowed and prefix != PLACEHOLDER_PREFIX:
             problems.append(f"{node}: var '{name}' = {fs[0]['value']} must use one of {allowed}")
     return problems
+
+
+SITES_ONTOLOGY = URIRef("https://w3id.org/ecoweaver/warp/ontology/sites")
+ISO_3166_2 = re.compile(r"^[A-Z]{2}-[A-Z0-9]{1,3}$")
+WARP_NS = Namespace("https://w3id.org/ecoweaver/warp/")
+
+
+def expand_sites(sg, data, pm, problems):
+    """Write each site as an OWL named individual (decisions D7, D11): never a
+    class, under site:, typed by its ecosystem types (rdf:type: a site is an
+    instance of an ENVO environmental system), with its label and
+    jurisdiction. Geometry never goes into a generated output. Yields
+    (site id, label)."""
+    import warp_schema as ws
+    for d in data.get("site_definitions") or []:
+        sid = d["node"]
+        if not sid.startswith("site:"):
+            problems.append(f"{sid}: a site's ID must be under site:, not node: (decision D11)")
+            continue
+        try:
+            iri = URIRef(ws.expand(sid, pm))
+        except ws.CurieError as err:
+            problems.append(f"{sid}: {err}")
+            continue
+        sg.add((iri, RDF.type, OWL.NamedIndividual))
+        if d.get("label"):
+            sg.add((iri, RDFS.label, Literal(d["label"])))
+        for t in d.get("ecosystem_type") or []:
+            cls = URIRef(ws.expand(t, pm))
+            sg.add((cls, RDF.type, OWL.Class))
+            sg.add((iri, RDF.type, cls))
+        j = d.get("jurisdiction")
+        if j:
+            if ISO_3166_2.match(j):
+                target = URIRef(ws.expand(f"ISO3166-2:{j}", pm))
+            elif re.match(r"^[A-Za-z][\w.-]*:\S+$", j) and j.split(":", 1)[0] in pm:
+                target = URIRef(ws.expand(j, pm))
+            else:
+                target = None
+            if target is not None:
+                sg.add((WARP_NS.in_jurisdiction, RDF.type, OWL.ObjectProperty))
+                sg.add((target, RDF.type, OWL.NamedIndividual))
+                sg.add((iri, WARP_NS.in_jurisdiction, target))
+            else:
+                sg.add((WARP_NS.jurisdiction_name, RDF.type, OWL.AnnotationProperty))
+                sg.add((iri, WARP_NS.jurisdiction_name, Literal(j)))
+        yield sid, d.get("label", sid)
 
 
 def refinements(defn, template):
@@ -188,6 +236,7 @@ def main(argv=None):
     parser.add_argument("statement_sets", type=Path, nargs="+")
     parser.add_argument("--owl", type=Path, help="Turtle output file")
     parser.add_argument("--tsv-dir", type=Path, help="Directory for DOSDP fill tables")
+    parser.add_argument("--sites", type=Path, help="Turtle output for site individuals (project/sites.ttl)")
     args = parser.parse_args(argv)
 
     coll = load_collection(args.templates)
@@ -209,6 +258,15 @@ def main(argv=None):
     rows = defaultdict(dict)   # template -> {node: row}; deduplicates across files
     problems, count = [], 0
     seen_strategies = set()
+    import warp_schema as ws
+    pm = ws.prefix_map(ws.load())
+    sg = Graph()
+    for prefix in ("site", "ENVO", "TODO", "ISO3166-2", "warp"):
+        sg.bind(prefix, pm[prefix])
+    sg.add((SITES_ONTOLOGY, RDF.type, OWL.Ontology))
+    sg.add((SITES_ONTOLOGY, RDFS.label, Literal("WARP sites (individuals)")))
+    sg.add((SITES_ONTOLOGY, RDFS.comment, Literal(
+        "Sites are particulars: OWL named individuals, never classes. Geometry is never exported.")))
 
     for path in args.statement_sets:
         data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
@@ -271,11 +329,18 @@ def main(argv=None):
         for canon, label in expand_strategies(g, data, templates, prefixes, names, seen_strategies, problems):
             count += 1
             print(f"{canon}  ->  {label} (strategy)")
+        for sid, label in expand_sites(sg, data, pm, problems):
+            count += 1
+            print(f"{sid}  ->  {label} (site individual)")
 
     if args.owl:
         args.owl.parent.mkdir(parents=True, exist_ok=True)
         g.serialize(args.owl, format="turtle")
         print(f"wrote {args.owl} ({len(g)} triples)")
+    if args.sites:
+        args.sites.parent.mkdir(parents=True, exist_ok=True)
+        sg.serialize(args.sites, format="turtle")
+        print(f"wrote {args.sites} ({len(sg)} triples)")
     if args.tsv_dir:
         args.tsv_dir.mkdir(parents=True, exist_ok=True)
         for tid, by_node in rows.items():

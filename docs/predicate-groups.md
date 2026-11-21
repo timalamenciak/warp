@@ -236,6 +236,8 @@ proposition rather than as separate propositions.
 | recommendation | `predicate_qualifiers.guidance` |
 | tolerance | `place` |
 | cost | `place`, `predicate_qualifiers.phase`, `predicate_qualifiers.reporting_level` |
+| implementation | its own rule, `warp-impl-identity/1` (`derive_projects.py`) |
+| criteria | `predicate_qualifiers.criteria_set`, `predicate_qualifiers.assessed_period` (rule name `warp-criteria-identity/1`) |
 
 (Later groups add theirs; the register in [rdf-owl.md](rdf-owl.md) lists every
 group.)
@@ -443,3 +445,90 @@ amount a named individual a transferred cost can cite through
 against the five standards and flags unknown breakdowns, payment rates and
 missing values. Examples: `examples/cost_statements.yaml` and the generated
 `examples/cost_statements.transferred.yaml`.
+
+### implementation (0.7.0)
+
+That a strategy (or action) was carried out at a site. `ImplementationStatement`,
+one predicate `carried_out_at`; subject a strategy or action node, object a
+site (checked by `check_sites.py`), scope always `assertional`. Qualifiers:
+`period` (required; an open end means ongoing), `status` (planned,
+in_progress, completed, maintained, abandoned; required, as of
+`reported_on`), `reported_on` (an ISO 8601 date string), `area_treated`,
+`implemented_by`, `funded_by`, `external_ids` (`{scheme, value}`, not CURIEs).
+The plan document is the statement's `specified_in`.
+
+**The annotator's test: does the source say this was done, or that it should
+be done?** "We recontoured and seeded 42 ha in 2024" is implementation.
+"Recontouring is recommended for sites like this" is a recommendation.
+**Planned work is an implementation statement only when it is committed to a
+specific site**; otherwise it is guidance.
+
+**Projects are derived** (`scripts/derive_projects.py`, rule
+`warp-impl-identity/1`, named in the group's `warp_derived_by`). Two
+statements describe the same project when they share an external ID (same
+scheme and value), or have the same subject, the same site and overlapping
+periods, compared on normalized bounds, never as strings. Statements are
+clustered with union-find. Sites match only by ID; there is no spatial
+matching yet. Each project is two records (decision D17):
+
+- the **`ImplementationProposition`**, the grouping record: member statements,
+  each claimant's latest status (latest `reported_on` within that claimant
+  only) and area treated, kept and attributed (42 ha from the land trust and
+  40 ha from the funder, both shown), the union of implementers, funders and
+  external IDs, and the envelope of periods;
+- the **project individual, `proj:<id>`**, the work itself: an occurrent,
+  written to `project/projects.ttl` as an instance of its strategy class,
+  located in (`RO:0001025`) its site, with its period's bounds. The record is
+  about it (`IAO:0000136`).
+
+**Project IDs.** The record and the individual share their local ID. With
+external IDs it is the smallest of them, `proj:<scheme>-<value>`
+(`proj:agreement-0412`): a statement joining the project keeps the ID unless
+it brings an external ID that sorts first. Without external IDs it is a hash
+of the site, subject and earliest start: stable unless a newcomer starts
+earlier. No scheme is fully stable, so `derive_projects.py` compares with the
+previous derived file and records a moved ID in `replaces`; the old IRI is
+written as deprecated, replaced by the new one (both behaviours are tested). A
+cluster holding two different external IDs from one scheme is reported as a
+candidate bad merge. Criteria statements about a project name it by its
+`proj:` ID.
+
+### criteria (0.7.0)
+
+That a site or project meets a named, versioned definition, for a period.
+`CriteriaStatement`, predicate `qualifies_as`; subject a site or project
+individual (both particulars, so plainly required); object a
+`CriteriaConceptEnum` value (`degraded_area`, `effective_restoration`, SKOS
+concepts in `project/criteria_concepts.ttl`). The **verdict is the statement's
+`direction`** (supports, disputes, neutral) and is required: criteria
+statements are the one annotated statement that fills it. Qualifiers:
+`criteria_set` and `assessed_period` (both required, both in the key) and
+`assessment_method`.
+
+Definitions are **`CriteriaSet`s**, information records, not nodes: one body's
+versioned definition, described only by fixed elements (reference basis,
+baseline date, attributes assessed, threshold kind and text, whether decline
+must be human-caused, assessment unit and basis) plus the verbatim text, so a
+definition never becomes its own small graph. `check_sites.py` checks that the
+set operationalizes the statement's concept, and warns when the subject's kind
+does not match the set's assessment unit.
+
+**The annotator's test: is someone applying a named, versioned definition to
+a site or project?** "Degraded" with no definition named is context, not a
+criteria statement.
+
+Two assessors applying the same definition and disagreeing share one
+proposition, one supporting and one disputing it; "qualifies under A" and "does
+not qualify under B" are two propositions and do not contradict. In RDF the
+verdict picks `warp:qualifies_as` or `warp:does_not_qualify_as`, and the
+relation's object is the **criteria set**, not the concept. Nothing projects to
+OWL: a verdict is never inferred, which is what lets a definition change
+without any record being rewritten. A rule that proposes verdicts (SHACL,
+SPARQL) records them as criteria statements by EcoWeaver with
+`assessment_method: rule_applied`.
+
+`scripts/report_target2.py` (`make reports`) counts, for a jurisdiction and
+year, sites degraded under a definition D, projects active on them, and those
+effective under a definition E, with area as lower and upper bounds, in three
+buckets (supported, contested, unsupported), and a comparison table across
+definitions. Example: `examples/implementation_statements.yaml`.

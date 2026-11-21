@@ -196,7 +196,7 @@ def build_set(sets, selection, rule, schema=dp.DEFAULT_SCHEMA):
     derived, refused = run(sets, selection, rule)
     out = {
         "id": f"warp:statementset/cost-transfers-{slug(rule['id'])}",
-        "profile_version": sets[0].get("profile_version", "0.6.0") if sets else "0.6.0",
+        "profile_version": sets[0].get("profile_version", "0.7.0") if sets else "0.7.0",
         "agents": [{"id": ECOWEAVER, "type": "EcoAgent", "name": "EcoWeaver synthesis pipeline",
                     "subtype": "software", "agent_kind": "synthesis_pipeline"}],
         "cost_statements": derived,

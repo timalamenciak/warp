@@ -787,3 +787,18 @@ templates:
     part_property: "BFO:0000051"
     examples:
       - "earthworks (step 1) -> hand seeding (step 2, lag P2W) -> mowing (step 3, yearly x3)"
+
+  # --- Site (particular) -----------------------------------------------------
+  - id: site
+    title: Site
+    kind: particular
+    status: draft
+    description: >-
+      One piece of ground: the place a strategy is carried out, or whose
+      condition is assessed. The first node type that is a particular, not a
+      kind of thing. It is a node anyway so any group can point at it, with
+      the same CausalNode record as every other node (R12); what differs is
+      its IRI space (site:, never node:) and its OWL: a named individual in
+      project/sites.ttl, typed by its ENVO ecosystem types, never a class.
+      Defined in a StatementSet's site_definitions. Geometry is never
+      exported.

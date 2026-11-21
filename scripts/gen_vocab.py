@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Generate SKOS vocabularies from WARP's vocabulary files.
 
-    python scripts/gen_vocab.py vocab/scales.yaml --out project/scales.ttl
+    python scripts/gen_vocab.py vocab/scales.yaml --out project/scales.ttl \
+        [--criteria vocab/criteria_concepts.yaml --criteria-out project/criteria_concepts.ttl]
 
 Each scale in vocab/scales.yaml becomes a skos:ConceptScheme, and each of its
 values a skos:Concept with skos:inScheme, skos:prefLabel, skos:notation (the
@@ -24,6 +25,7 @@ from rdflib.namespace import DCTERMS, OWL, RDF, RDFS, SKOS, XSD
 
 WARP = Namespace("https://w3id.org/ecoweaver/warp/")
 SCALE = Namespace("https://w3id.org/ecoweaver/warp/scale/")
+CONCEPT = Namespace("https://w3id.org/ecoweaver/warp/concept/")
 SAFE_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
 VOCAB_VERSION = "warp-scales/1"
 
@@ -118,10 +120,44 @@ def build_graph(scales):
     return g
 
 
+def build_criteria_graph(path):
+    """vocab/criteria_concepts.yaml -> SKOS (project/criteria_concepts.ttl).
+
+    Each concept is a skos:Concept under concept:, the same IRI
+    CriteriaConceptEnum's values give as their meaning, so a concept exists
+    once; never an owl:Class (decision D14)."""
+    data = yaml.safe_load(Path(path).read_text(encoding="utf-8")) or {}
+    scheme, concepts = data.get("scheme") or {}, data.get("concepts") or []
+    if not scheme.get("id") or not concepts:
+        raise VocabError(f"{path}: needs a scheme id and at least one concept")
+    g = Graph()
+    g.bind("skos", SKOS)
+    g.bind("concept", CONCEPT)
+    onto = URIRef("https://w3id.org/ecoweaver/warp/ontology/criteria_concepts")
+    g.add((onto, RDF.type, OWL.Ontology))
+    g.add((onto, RDFS.label, Literal("WARP criteria concepts")))
+    sch = CONCEPT[scheme["id"]]
+    g.add((sch, RDF.type, SKOS.ConceptScheme))
+    g.add((sch, SKOS.prefLabel, Literal(scheme.get("label", scheme["id"]), lang="en")))
+    for c in concepts:
+        if not c.get("id") or not SAFE_ID.match(c["id"]):
+            raise VocabError(f"{path}: concept id {c.get('id')!r} is missing or not IRI-safe")
+        iri = CONCEPT[c["id"]]
+        g.add((iri, RDF.type, SKOS.Concept))
+        g.add((iri, SKOS.inScheme, sch))
+        g.add((sch, SKOS.hasTopConcept, iri))
+        g.add((iri, SKOS.prefLabel, Literal(c.get("label", c["id"]), lang="en")))
+        if c.get("definition"):
+            g.add((iri, SKOS.definition, Literal(" ".join(c["definition"].split()), lang="en")))
+    return g
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     parser.add_argument("scales", type=Path)
     parser.add_argument("--out", type=Path, required=True)
+    parser.add_argument("--criteria", type=Path, help="vocab/criteria_concepts.yaml")
+    parser.add_argument("--criteria-out", type=Path, help="project/criteria_concepts.ttl")
     args = parser.parse_args(argv)
     try:
         scales = load_scales(args.scales)
@@ -132,6 +168,14 @@ def main(argv=None):
     g.serialize(args.out, format="turtle")
     n = sum(1 for s in scales if not s.get("not_a_scale"))
     print(f"wrote {args.out}: {n} scheme(s), {len(g)} triples")
+    if args.criteria:
+        try:
+            cg = build_criteria_graph(args.criteria)
+        except VocabError as err:
+            sys.exit(f"ERROR {err}")
+        out = args.criteria_out or args.out.with_name("criteria_concepts.ttl")
+        cg.serialize(out, format="turtle")
+        print(f"wrote {out}: {len(cg)} triples")
 
 
 if __name__ == "__main__":

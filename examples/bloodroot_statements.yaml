@@ -7,7 +7,7 @@
 # design conversations; its citation, wording and data are placeholders (TODO).
 
 id: warp:statementset/bloodroot-example
-profile_version: 0.6.0
+profile_version: 0.7.0
 
 # Who makes, records and judges statements. Contributions and CARE metadata
 # refer to these by id.

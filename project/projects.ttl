@@ -1,0 +1,35 @@
+@prefix node: <https://w3id.org/causal-mosaic/node/> .
+@prefix ns1: <http://purl.obolibrary.org/obo/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix proj: <https://w3id.org/ecoweaver/warp/project/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix site: <https://w3id.org/ecoweaver/warp/site/> .
+@prefix warp: <https://w3id.org/ecoweaver/warp/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+ns1:RO_0001025 a owl:ObjectProperty .
+
+<https://w3id.org/ecoweaver/warp/ontology/projects> a owl:Ontology ;
+    rdfs:label "WARP projects (individuals)" ;
+    owl:imports <https://w3id.org/ecoweaver/warp/ontology/nodes> .
+
+warp:period_start a owl:AnnotationProperty .
+
+proj:71e3dff9f480 a owl:NamedIndividual,
+        node:strategy-f38f3a2661ee ;
+    rdfs:label "In a particular case, node:strategy-f38f3a2661ee was carried out at Site 0517." ;
+    ns1:RO_0001025 site:0517 ;
+    warp:period_start "2025-04-01T00:00:00Z"^^xsd:dateTime .
+
+proj:agreement-0412 a owl:NamedIndividual,
+        node:strategy-f38f3a2661ee ;
+    rdfs:label "In a particular case, node:strategy-f38f3a2661ee was carried out at Agreement site 0412." ;
+    ns1:RO_0001025 site:0412 ;
+    warp:period_start "2024-05-01T00:00:00Z"^^xsd:dateTime .
+
+site:0412 a owl:NamedIndividual .
+
+site:0517 a owl:NamedIndividual .
+
+node:strategy-f38f3a2661ee a owl:Class .
+

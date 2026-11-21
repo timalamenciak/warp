@@ -1,0 +1,304 @@
+# Sites, implementation and criteria: worked example (0.7.0, Phase 7).
+#
+# A land trust and its funder report grassland work on one agreement site;
+# the same strategy is carried out on a second site; assessors judge the
+# sites degraded, or not, under two different definitions, and judge one
+# project effective. derive_projects.py groups the implementation statements
+# into projects; report_target2.py counts areas under chosen definitions.
+#
+# ILLUSTRATIVE ONLY. Every ID, figure, geometry and definition is a
+# placeholder; the criteria sets are FICTIONAL definitions, not any body's
+# real one. The strategy is the canonical earthworks-seed-mow node of
+# examples/strategy_statements.yaml.
+
+id: warp:statementset/implementation-example
+profile_version: 0.7.0
+
+agents:
+  - {id: org:land-trust-a, type: EcoAgent, name: "TODO: a land trust (source A)", subtype: organization, agent_kind: organization}
+  - {id: org:funder-b, type: EcoAgent, name: "TODO: a funder", subtype: organization, agent_kind: organization}
+  - {id: org:federal-department, type: EcoAgent, name: "TODO: a federal department (fictional definition)", subtype: organization, agent_kind: organization}
+  - {id: org:provincial-agency, type: EcoAgent, name: "TODO: a provincial agency (fictional definition)", subtype: organization, agent_kind: organization}
+  - {id: org:assessor-c, type: EcoAgent, name: "TODO: assessor C", subtype: organization, agent_kind: researcher}
+  - {id: org:assessor-d, type: EcoAgent, name: "TODO: assessor D", subtype: organization, agent_kind: researcher}
+  - {id: org:assessor-e, type: EcoAgent, name: "TODO: assessor E", subtype: organization, agent_kind: researcher}
+  - {id: warp:agent/ecoweaver-synthesis, type: EcoAgent, name: EcoWeaver synthesis pipeline, subtype: software, agent_kind: synthesis_pipeline}
+  - {id: orcid:0000-0000-0000-0000, type: EcoAgent, name: "TODO: annotator", subtype: person, agent_kind: researcher}
+
+documents:
+  - {id: doc:land-trust-report-2026, type: EcoDocument, title: "TODO: land trust annual report"}
+  - {id: doc:funder-report-2026, type: EcoDocument, title: "TODO: funder's program report"}
+  - {id: doc:definition-consultation-paper, type: EcoDocument, title: "TODO: a consultation paper (fictional definitions)"}
+  - {id: doc:provincial-definition, type: EcoDocument, title: "TODO: a provincial guidance note (fictional definition)"}
+  - {id: doc:assessment-report-c, type: EcoDocument, title: "TODO: assessor C's site assessments"}
+  - {id: doc:assessment-report-d, type: EcoDocument, title: "TODO: assessor D's site assessments"}
+  - {id: doc:assessment-report-e, type: EcoDocument, title: "TODO: assessor E's site assessments"}
+
+# Sites are nodes (the CausalNode record), defined in site_definitions.
+nodes:
+  - {id: "site:0412", name: Agreement site 0412, entity_term: site}
+  - {id: "site:0517", name: Site 0517, entity_term: site}
+
+site_definitions:
+  - node: "site:0412"
+    template: site
+    label: Agreement site 0412
+    # Generalized geometry: a placeholder square, never exported.
+    geometry: '{"type": "Polygon", "coordinates": [[[-106.0, 51.0], [-105.99, 51.0], [-105.99, 51.01], [-106.0, 51.01], [-106.0, 51.0]]]}'
+    geometry_precision: generalized
+    area: {value: 64, unit: "TODO:unit_hectare"}
+    area_source: reported
+    ecosystem_type: ["TODO:grassland"]
+    jurisdiction: CA-SK
+    tenure: private
+    care: {access_level: restricted}
+  - node: "site:0517"
+    template: site
+    label: Site 0517
+    geometry_precision: withheld
+    area: {value: 30, unit: "TODO:unit_hectare"}
+    area_source: reported
+    ecosystem_type: ["TODO:grassland"]
+    jurisdiction: CA-SK
+    tenure: public
+    care: {access_level: open}
+
+implementation_statements:
+
+  # The land trust's and the funder's reports of the same agreement: one
+  # shared external ID, so one project. They disagree on the area (42 vs
+  # 40 ha); both are kept, attributed.
+  - id: stmt:land-trust-0412
+    type: ImplementationStatement
+    subject: node:strategy-f38f3a2661ee
+    predicate: carried_out_at
+    object: "site:0412"
+    scope: assertional
+    modality: observed
+    statementText: "Illustrative: the land trust began recontouring, seeding and mowing on 42 ha of site 0412 in May 2024."
+    predicate_qualifiers:
+      period: {start: "2024-05"}
+      status: in_progress
+      reported_on: "2026-03-31"
+      area_treated: {value: 42, unit: "TODO:unit_hectare"}
+      implemented_by: [org:land-trust-a]
+      external_ids: [{scheme: agreement, value: "0412"}]
+    contributions: [{id: warp:contrib/land-trust-0412-author, type: EcoContribution, role: author, contributor: org:land-trust-a}]
+    recordMetadata: {contributions: [{id: warp:contrib/land-trust-0412-annotation, type: EcoContribution, role: annotator, contributor: "orcid:0000-0000-0000-0000"}]}
+    reportedIn: [doc:land-trust-report-2026]
+  - id: stmt:funder-0412
+    type: ImplementationStatement
+    subject: node:strategy-f38f3a2661ee
+    predicate: carried_out_at
+    object: "site:0412"
+    scope: assertional
+    modality: observed
+    statementText: "Illustrative: the funder reports 40 ha under agreement 0412, June 2024 to October 2027."
+    predicate_qualifiers:
+      period: {start: "2024-06", end: "2027-10"}
+      status: in_progress
+      reported_on: "2026-01-15"
+      area_treated: {value: 40, unit: "TODO:unit_hectare"}
+      funded_by: [org:funder-b]
+      external_ids: [{scheme: agreement, value: "0412"}]
+    contributions: [{id: warp:contrib/funder-0412-author, type: EcoContribution, role: author, contributor: org:funder-b}]
+    recordMetadata: {contributions: [{id: warp:contrib/funder-0412-annotation, type: EcoContribution, role: annotator, contributor: "orcid:0000-0000-0000-0000"}]}
+    reportedIn: [doc:funder-report-2026]
+
+  # The same strategy on a different site: a separate project.
+  - id: stmt:land-trust-0517
+    type: ImplementationStatement
+    subject: node:strategy-f38f3a2661ee
+    predicate: carried_out_at
+    object: "site:0517"
+    scope: assertional
+    modality: observed
+    statementText: "Illustrative: the land trust has maintained 25 ha of site 0517 since April 2025."
+    predicate_qualifiers:
+      period: {start: "2025-04"}
+      status: maintained
+      reported_on: "2026-02-01"
+      area_treated: {value: 25, unit: "TODO:unit_hectare"}
+      implemented_by: [org:land-trust-a]
+    contributions: [{id: warp:contrib/land-trust-0517-author, type: EcoContribution, role: author, contributor: org:land-trust-a}]
+    recordMetadata: {contributions: [{id: warp:contrib/land-trust-0517-annotation, type: EcoContribution, role: annotator, contributor: "orcid:0000-0000-0000-0000"}]}
+    reportedIn: [doc:land-trust-report-2026]
+
+# Three FICTIONAL definitions. Comparing them is a query over these fields.
+criteria_sets:
+  - id: crit:degraded-area/fed-draft-1
+    operationalizes: degraded_area
+    issued_by: org:federal-department
+    version: draft-1
+    status: draft
+    specified_in: doc:definition-consultation-paper
+    criteria_text: "Fictional placeholder: an area whose condition has declined below a fraction of its condition at the baseline date, through human activity."
+    reference_basis: historical_baseline
+    baseline_date: "2000"
+    attributes_assessed: [species_composition, ecosystem_function]
+    threshold_kind: fraction_of_reference
+    threshold_text: "TODO: the threshold, verbatim from the source"
+    human_caused: true
+    assessment_unit: site
+  - id: crit:degraded-area/ref-ecosystem-1
+    operationalizes: degraded_area
+    issued_by: org:provincial-agency
+    version: "1"
+    status: adopted
+    specified_in: doc:provincial-definition
+    criteria_text: "Fictional placeholder: an area departing from its reference ecosystem, whatever the cause."
+    reference_basis: reference_ecosystem
+    attributes_assessed: [species_composition, structural_diversity]
+    threshold_kind: categorical_state
+    assessment_unit: site
+  - id: crit:effective-restoration/fed-draft-1
+    operationalizes: effective_restoration
+    issued_by: org:federal-department
+    version: draft-1
+    status: draft
+    specified_in: doc:definition-consultation-paper
+    criteria_text: "Fictional placeholder: restoration whose site is moving toward its reference condition."
+    reference_basis: reference_ecosystem
+    attributes_assessed: [species_composition, ecosystem_function]
+    assessment_unit: ecosystem_unit
+    assessment_basis: trajectory
+
+criteria_statements:
+
+  # Site 0412 under the federal draft: one assessor says degraded, another
+  # disagrees. One proposition, contested.
+  - id: stmt:assessor-c-0412-fed
+    type: CriteriaStatement
+    subject: "site:0412"
+    predicate: qualifies_as
+    object: degraded_area
+    direction: supports
+    scope: assertional
+    modality: observed
+    statementText: "Illustrative: site 0412 qualified as degraded under the federal draft definition in 2023."
+    predicate_qualifiers:
+      criteria_set: crit:degraded-area/fed-draft-1
+      assessed_period: {start: "2023", end: "2023"}
+      assessment_method: field_assessment
+    contributions: [{id: warp:contrib/assessor-c-0412-fed-author, type: EcoContribution, role: author, contributor: org:assessor-c}]
+    recordMetadata: {contributions: [{id: warp:contrib/assessor-c-0412-fed-annotation, type: EcoContribution, role: annotator, contributor: "orcid:0000-0000-0000-0000"}]}
+    reportedIn: [doc:assessment-report-c]
+    hasEvidenceLines:
+      - {id: warp:el/assessor-c-0412-fed-1, type: EcoEvidenceLine, evidence_type: observational_cross_sectional, directionOfEvidenceProvided: supports}
+  - id: stmt:assessor-e-0412-fed
+    type: CriteriaStatement
+    subject: "site:0412"
+    predicate: qualifies_as
+    object: degraded_area
+    direction: disputes
+    scope: assertional
+    modality: observed
+    statementText: "Illustrative: site 0412 did not fall below the federal draft threshold in 2023."
+    predicate_qualifiers:
+      criteria_set: crit:degraded-area/fed-draft-1
+      assessed_period: {start: "2023", end: "2023"}
+      assessment_method: remote_sensing
+    contributions: [{id: warp:contrib/assessor-e-0412-fed-author, type: EcoContribution, role: author, contributor: org:assessor-e}]
+    recordMetadata: {contributions: [{id: warp:contrib/assessor-e-0412-fed-annotation, type: EcoContribution, role: annotator, contributor: "orcid:0000-0000-0000-0000"}]}
+    reportedIn: [doc:assessment-report-e]
+    hasEvidenceLines:
+      - {id: warp:el/assessor-e-0412-fed-1, type: EcoEvidenceLine, evidence_type: observational_cross_sectional, directionOfEvidenceProvided: disputes}
+
+  # Site 0412 under the provincial definition: degraded.
+  - id: stmt:assessor-d-0412-ref
+    type: CriteriaStatement
+    subject: "site:0412"
+    predicate: qualifies_as
+    object: degraded_area
+    direction: supports
+    scope: assertional
+    modality: observed
+    statementText: "Illustrative: site 0412 departed from its reference ecosystem in 2023."
+    predicate_qualifiers:
+      criteria_set: crit:degraded-area/ref-ecosystem-1
+      assessed_period: {start: "2023", end: "2023"}
+      assessment_method: field_assessment
+    contributions: [{id: warp:contrib/assessor-d-0412-ref-author, type: EcoContribution, role: author, contributor: org:assessor-d}]
+    recordMetadata: {contributions: [{id: warp:contrib/assessor-d-0412-ref-annotation, type: EcoContribution, role: annotator, contributor: "orcid:0000-0000-0000-0000"}]}
+    reportedIn: [doc:assessment-report-d]
+    hasEvidenceLines:
+      - {id: warp:el/assessor-d-0412-ref-1, type: EcoEvidenceLine, evidence_type: observational_cross_sectional, directionOfEvidenceProvided: supports}
+
+  # Site 0517 qualifies under one definition and not the other: its decline
+  # is not human-caused, which only the federal draft requires.
+  - id: stmt:assessor-d-0517-fed
+    type: CriteriaStatement
+    subject: "site:0517"
+    predicate: qualifies_as
+    object: degraded_area
+    direction: disputes
+    scope: assertional
+    modality: observed
+    statementText: "Illustrative: site 0517's decline is not human-caused, so it does not qualify under the federal draft."
+    predicate_qualifiers:
+      criteria_set: crit:degraded-area/fed-draft-1
+      assessed_period: {start: "2023", end: "2023"}
+      assessment_method: field_assessment
+    contributions: [{id: warp:contrib/assessor-d-0517-fed-author, type: EcoContribution, role: author, contributor: org:assessor-d}]
+    recordMetadata: {contributions: [{id: warp:contrib/assessor-d-0517-fed-annotation, type: EcoContribution, role: annotator, contributor: "orcid:0000-0000-0000-0000"}]}
+    reportedIn: [doc:assessment-report-d]
+    hasEvidenceLines:
+      - {id: warp:el/assessor-d-0517-fed-1, type: EcoEvidenceLine, evidence_type: case_study, directionOfEvidenceProvided: disputes}
+  - id: stmt:assessor-d-0517-ref
+    type: CriteriaStatement
+    subject: "site:0517"
+    predicate: qualifies_as
+    object: degraded_area
+    direction: supports
+    scope: assertional
+    modality: observed
+    statementText: "Illustrative: site 0517 departed from its reference ecosystem in 2023."
+    predicate_qualifiers:
+      criteria_set: crit:degraded-area/ref-ecosystem-1
+      assessed_period: {start: "2023", end: "2023"}
+      assessment_method: field_assessment
+    contributions: [{id: warp:contrib/assessor-d-0517-ref-author, type: EcoContribution, role: author, contributor: org:assessor-d}]
+    recordMetadata: {contributions: [{id: warp:contrib/assessor-d-0517-ref-annotation, type: EcoContribution, role: annotator, contributor: "orcid:0000-0000-0000-0000"}]}
+    reportedIn: [doc:assessment-report-d]
+    hasEvidenceLines:
+      - {id: warp:el/assessor-d-0517-ref-1, type: EcoEvidenceLine, evidence_type: case_study, directionOfEvidenceProvided: supports}
+
+  # The agreement 0412 project is effective under the federal draft: a
+  # verdict about the work (proj:), not about a record of it (D17).
+  - id: stmt:assessor-c-project-0412-effective
+    type: CriteriaStatement
+    subject: "proj:agreement-0412"
+    predicate: qualifies_as
+    object: effective_restoration
+    direction: supports
+    scope: assertional
+    modality: observed
+    statementText: "Illustrative: the agreement 0412 project is moving toward its reference condition."
+    predicate_qualifiers:
+      criteria_set: crit:effective-restoration/fed-draft-1
+      assessed_period: {start: "2026", end: "2026"}
+      assessment_method: field_assessment
+    contributions: [{id: warp:contrib/assessor-c-project-0412-author, type: EcoContribution, role: author, contributor: org:assessor-c}]
+    recordMetadata: {contributions: [{id: warp:contrib/assessor-c-project-0412-annotation, type: EcoContribution, role: annotator, contributor: "orcid:0000-0000-0000-0000"}]}
+    reportedIn: [doc:assessment-report-c]
+    hasEvidenceLines:
+      - {id: warp:el/assessor-c-project-0412-1, type: EcoEvidenceLine, evidence_type: observational_longitudinal, directionOfEvidenceProvided: supports}
+
+  # A rule-applied verdict on the site 0517 project: EcoWeaver ran the
+  # definition over monitoring data and could not decide. It enters as a
+  # claim by EcoWeaver, never as an axiom; neutral exports no relation triple.
+  - id: stmt:ecoweaver-project-0517-effective
+    type: CriteriaStatement
+    subject: "proj:71e3dff9f480"
+    predicate: qualifies_as
+    object: effective_restoration
+    direction: neutral
+    scope: assertional
+    modality: inferred
+    statementText: "Illustrative: applying the federal draft effectiveness definition to the site 0517 monitoring data was inconclusive."
+    predicate_qualifiers:
+      criteria_set: crit:effective-restoration/fed-draft-1
+      assessed_period: {start: "2026", end: "2026"}
+      assessment_method: rule_applied
+    contributions: [{id: warp:contrib/ecoweaver-project-0517-author, type: EcoContribution, role: author, contributor: warp:agent/ecoweaver-synthesis}]
+    recordMetadata: {contributions: [{id: warp:contrib/ecoweaver-project-0517-record, type: EcoContribution, role: annotator, contributor: warp:agent/ecoweaver-synthesis}]}

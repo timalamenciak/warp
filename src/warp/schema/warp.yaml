@@ -40,7 +40,7 @@ description: >-
   syntheses across statements. Causal statements reuse the Causal Mosaic (CAMO) node
   shapes, predicates and causal features.
 license: CC0
-version: 0.6.0
+version: 0.7.0
 status: Draft
 
 prefixes:
@@ -585,6 +585,160 @@ enums:
       inflation:
       discounted:
 
+  # --- sites (0.7.0, Phase 7.1) ----------------------------------------------------
+
+  GeometryPrecisionEnum:
+    implements: [owl:NamedIndividual]
+    description: "How precise a site's recorded geometry is. Required: matching and area sums need to know."
+    permissible_values:
+      exact:
+      generalized:
+      centroid:
+      withheld:
+        description: "No geometry is recorded at all (under care)."
+
+  AreaSourceEnum:
+    implements: [owl:NamedIndividual]
+    description: "Whether a site's area was reported by the source or computed from its geometry."
+    permissible_values:
+      reported:
+      computed:
+
+  TenureEnum:
+    implements: [owl:NamedIndividual]
+    description: "Land tenure of a site; drives the default access level."
+    permissible_values:
+      public:
+      private:
+      indigenous:
+      mixed:
+      unknown:
+        description: "Not known. A sentinel: never exported."
+
+  # --- implementation group (0.7.0, Phase 7.2) ---------------------------------------
+
+  ImplementationPredicateEnum:
+    implements: [owl:ObjectProperty]
+    description: "The implementation group's predicate, declared in src/warp/owl/warp-relations.ttl."
+    permissible_values:
+      carried_out_at:
+        description: "The subject strategy or action was carried out at the object site."
+        meaning: warp:carried_out_at
+        annotations:
+          rosetta_template: "{subject} was carried out at {object}"
+
+  ImplementationStatusEnum:
+    implements: [owl:NamedIndividual]
+    description: "The state of the work as of reported_on. Later reports supersede, within one claimant."
+    permissible_values:
+      planned:
+        description: "Committed to a specific site but not started. Otherwise it is guidance (a recommendation)."
+      in_progress:
+      completed:
+      maintained:
+      abandoned:
+
+  # --- criteria group (0.7.0, Phase 7.3) -------------------------------------------------
+
+  CriteriaPredicateEnum:
+    implements: [owl:ObjectProperty]
+    description: >-
+      The criteria group's predicate for annotators. In the relation layer it
+      is the sub-property the verdict picks (qualifies_as, does_not_qualify_as)
+      under the abstract warp:assessed_against, and the object is the
+      criteria set (decision D16).
+    permissible_values:
+      qualifies_as:
+        description: "The subject site or project meets the criteria set's definition of the object concept."
+        meaning: warp:qualifies_as
+        annotations:
+          rosetta_template: "{subject} qualifies as {object}"
+
+  CriteriaConceptEnum:
+    implements: [owl:NamedIndividual]
+    description: >-
+      What is being defined. Each value's meaning is its SKOS concept IRI
+      (project/criteria_concepts.ttl, from vocab/criteria_concepts.yaml), so a
+      concept exists once; the concepts are skos:Concept and never owl:Class
+      (decision D14).
+    permissible_values:
+      degraded_area:
+        meaning: concept:degraded_area
+      effective_restoration:
+        meaning: concept:effective_restoration
+
+  CriteriaStatusEnum:
+    implements: [owl:NamedIndividual]
+    permissible_values:
+      draft:
+      adopted:
+      superseded:
+
+  ReferenceBasisEnum:
+    implements: [owl:NamedIndividual]
+    description: "Degraded compared with what?"
+    permissible_values:
+      reference_ecosystem:
+      historical_baseline:
+      potential_natural_state:
+      policy_target:
+
+  EcosystemAttributeEnum:
+    implements: [owl:NamedIndividual]
+    description: >-
+      Which aspects of an ecosystem a definition assesses: SER's six key
+      ecosystem attributes. PROVISIONAL (proposal Q4): the vocabulary may be
+      replaced by IUCN Red List of Ecosystems criteria, FAO FERM, or whatever
+      the federal process settles on.
+    permissible_values:
+      absence_of_threats:
+      physical_conditions:
+      species_composition:
+      structural_diversity:
+      ecosystem_function:
+      external_exchanges:
+
+  ThresholdKindEnum:
+    implements: [owl:NamedIndividual]
+    description: "How much change makes an area degraded."
+    permissible_values:
+      any_decline:
+      fraction_of_reference:
+      categorical_state:
+      expert_judgement:
+
+  AssessmentUnitEnum:
+    implements: [owl:NamedIndividual]
+    description: "What a criteria set judges: a site, an ecosystem unit, a jurisdiction."
+    permissible_values:
+      site:
+      ecosystem_unit:
+      jurisdiction:
+
+  AssessmentBasisEnum:
+    implements: [owl:NamedIndividual]
+    description: >-
+      For effectiveness: actions in place (process), moving toward the
+      reference (trajectory), or reached it (outcome).
+    permissible_values:
+      process:
+      trajectory:
+      outcome:
+
+  AssessmentMethodEnum:
+    implements: [owl:NamedIndividual]
+    description: >-
+      How a verdict was reached. rule_applied: EcoWeaver applying a criteria
+      set to data (a SHACL or SPARQL rule); such a verdict enters as a claim by
+      EcoWeaver like any other, never as an axiom.
+    permissible_values:
+      field_assessment:
+      remote_sensing:
+      rule_applied:
+      expert_judgement:
+      self_reported:
+
+
 ## =============================================================================
 ## SLOTS shared across classes
 ## =============================================================================
@@ -696,7 +850,7 @@ classes:
         required: true
       profile_version:
         description: "Version of this profile the set conforms to."
-        ifabsent: string(0.6.0)
+        ifabsent: string(0.7.0)
       agents:
         description: >-
           People, organizations, communities and software that make, record
@@ -725,6 +879,14 @@ classes:
           type designator to tell a strategy from a filled template.
           scripts/derive_strategies.py derives each one's canonical node.
         range: StrategyDefinition
+        multivalued: true
+        inlined_as_list: true
+      site_definitions:
+        description: >-
+          Sites: particulars, each one piece of ground. Emitted as OWL
+          individuals under site: in project/sites.ttl, never classes; geometry
+          is never exported. Their own list for the same reason as strategies.
+        range: SiteDefinition
         multivalued: true
         inlined_as_list: true
 
@@ -783,6 +945,34 @@ classes:
       cost_propositions:
         description: "Cost propositions (derived): one per action, predicate, object, scope, place, phase and reporting level."
         range: CostProposition
+        multivalued: true
+        inlined_as_list: true
+
+      implementation_statements:
+        description: "Implementation statements: that a strategy or action was carried out at a site."
+        range: ImplementationStatement
+        multivalued: true
+        inlined_as_list: true
+      implementation_propositions:
+        description: >-
+          Derived projects (grouping records) by scripts/derive_projects.py
+          (warp-impl-identity/1). Each is about a project individual, proj:<id>.
+        range: ImplementationProposition
+        multivalued: true
+        inlined_as_list: true
+      criteria_sets:
+        description: "Versioned definitions (degraded area, effective restoration): information records, not nodes."
+        range: CriteriaSet
+        multivalued: true
+        inlined_as_list: true
+      criteria_statements:
+        description: "Criteria statements: that a site or project meets a criteria set, with a verdict."
+        range: CriteriaStatement
+        multivalued: true
+        inlined_as_list: true
+      criteria_propositions:
+        description: "Criteria propositions (derived, warp-criteria-identity/1)."
+        range: CriteriaProposition
         multivalued: true
         inlined_as_list: true
 
@@ -1648,6 +1838,420 @@ classes:
         required: true
       basis:
         description: "What the ratio is per (per_hectare, per_site)."
+
+  # ---------------------------------------------------------------------------
+  # Sites (0.7.0, Phase 7.1; warp-proposals-0.4.html section 9)
+  # ---------------------------------------------------------------------------
+
+  SiteDefinition:
+    is_a: NodeDefinition
+    class_uri: warp:SiteDefinition
+    description: >-
+      One piece of ground: the place a strategy is carried out, or whose
+      condition is assessed. A node, so any group can point at it, but unlike
+      every other node a particular, not a kind of thing (decisions D7, D11).
+      Its ID is under site:, never node:, and it is written to OWL as a named
+      individual in project/sites.ttl, typed by its ecosystem types, with its
+      label and jurisdiction. Geometry never goes into a generated output.
+      Checked by scripts/check_sites.py.
+    slots:
+      - specified_in
+    slot_usage:
+      template:
+        equals_string: site
+    attributes:
+      label:
+        description: "The site's name as the source gives it."
+      geometry:
+        description: >-
+          GeoJSON or WKT, or a reference to one. May be generalized or withheld
+          under care. GeoJSON must parse as JSON. Never exported.
+      geometry_precision:
+        description: "exact, generalized, centroid, or withheld (then no geometry at all)."
+        range: GeometryPrecisionEnum
+        required: true
+      area:
+        description: "The site's area."
+        range: Quantity
+        inlined: true
+      area_source:
+        description: "Whether the area was reported or computed."
+        range: AreaSourceEnum
+      ecosystem_type:
+        description: >-
+          ENVO environmental system classes; mixed sites are common. Exported
+          as rdf:type: the site is an instance of each.
+        range: uriorcurie
+        multivalued: true
+        annotations:
+          warp_allowed_prefixes: "ENVO TODO"
+      jurisdiction:
+        description: >-
+          An ISO 3166-2 code (CA-SK) where one exists, exported as an IRI; or
+          text where none does, as for many Indigenous territories, exported as
+          a literal.
+      tenure:
+        description: "public, private, indigenous, mixed or unknown."
+        range: TenureEnum
+      care:
+        description: "Governance metadata: private agreements and Indigenous lands need it from the first record."
+        range: CareMetadata
+        inlined: true
+
+  # ---------------------------------------------------------------------------
+  # Predicate group: implementation (0.7.0, Phase 7.2)
+  # ---------------------------------------------------------------------------
+
+  ImplementationStatement:
+    is_a: EcoStatement
+    class_uri: warp:ImplementationStatement
+    description: >-
+      That a strategy (or action) was carried out at a site, over a period, as
+      reported by an implementer, funder, program or researcher (the
+      claimant). Scope is always assertional. Statements about the same work
+      are grouped into a derived project by scripts/derive_projects.py
+      (warp-impl-identity/1), not by the shared identity key. Annotator's
+      test: does the source say this was done, or that it should be done?
+      Planned work is an implementation statement only when committed to a
+      specific site; otherwise it is a recommendation.
+    annotations:
+      warp_group: implementation
+      warp_statements_slot: implementation_statements
+      warp_propositions_slot: implementation_propositions
+      warp_proposition_class: ImplementationProposition
+      warp_identity_rule: warp-impl-identity/1
+      warp_derived_by: derive_projects.py
+    slot_usage:
+      subject:
+        range: CausalNode
+        required: true
+        description: "A strategy node (canonical) or an action node."
+      predicate:
+        range: ImplementationPredicateEnum
+        required: true
+      object:
+        range: CausalNode
+        required: true
+        description: "A site (site:<id>), checked by scripts/check_sites.py."
+      scope:
+        equals_string: assertional
+        required: true
+    attributes:
+      predicate_qualifiers:
+        description: "Period, status, area treated, who implemented and funded it, and registry IDs."
+        range: ImplementationQualifiers
+        inlined: true
+        required: true
+
+  ImplementationQualifiers:
+    class_uri: warp:ImplementationQualifiers
+    description: >-
+      The predicate layer of an implementation statement. The plan document is
+      the statement's specified_in.
+    attributes:
+      period:
+        description: "When the work was carried out; an open end means ongoing."
+        range: Period
+        inlined: true
+        required: true
+      status:
+        description: "As of reported_on."
+        range: ImplementationStatusEnum
+        required: true
+      reported_on:
+        description: >-
+          When the claimant reported the status, as an ISO 8601 date string
+          (never LinkML date: xsd:date is not an OWL 2 datatype, D19). Later
+          reports supersede within one claimant.
+        pattern: "^[0-9]{4}(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[01]))?)?$"
+      area_treated:
+        description: "May be less than the site. Never divide a site's area among strategies."
+        range: Quantity
+        inlined: true
+      implemented_by:
+        description: "Who did the work. Distinct from the claimant."
+        range: EcoAgent
+        multivalued: true
+        inlined: false
+      funded_by:
+        description: "Who paid for it."
+        range: EcoAgent
+        multivalued: true
+        inlined: false
+      external_ids:
+        description: >-
+          Registry IDs and agreement numbers, as {scheme, value} (D20): not
+          CURIEs, because agreement:0412 is an IRI nobody can resolve, and the
+          matching rule needs the scheme. The strongest matching signal for
+          deriving projects.
+        range: ExternalId
+        multivalued: true
+        inlined_as_list: true
+
+  ExternalId:
+    class_uri: warp:ExternalId
+    description: "An identifier in some registry or agreement scheme."
+    attributes:
+      scheme:
+        description: "The registry or numbering scheme (\"agreement\", a program's registry name)."
+        required: true
+      value:
+        required: true
+
+  ClaimantStatus:
+    class_uri: warp:ClaimantStatus
+    description: "One claimant's latest reported status of a project (latest reported_on within that claimant only)."
+    attributes:
+      claimant:
+        range: EcoAgent
+        inlined: false
+        required: true
+      status:
+        range: ImplementationStatusEnum
+        required: true
+      reported_on:
+        pattern: "^[0-9]{4}(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[01]))?)?$"
+      statement:
+        description: "The statement it comes from."
+        range: ImplementationStatement
+        inlined: false
+
+  ClaimantArea:
+    class_uri: warp:ClaimantArea
+    description: "One claimant's reported area treated: disagreements are kept, attributed, not resolved."
+    attributes:
+      claimant:
+        range: EcoAgent
+        inlined: false
+        required: true
+      area:
+        range: Quantity
+        inlined: true
+        required: true
+      statement:
+        range: ImplementationStatement
+        inlined: false
+
+  ImplementationProposition:
+    is_a: EcoProposition
+    class_uri: warp:ImplementationProposition
+    description: >-
+      A derived project, as a grouping record: which implementation statements
+      describe the same work (shared external ID, or same strategy, same site
+      and overlapping periods), with each claimant's status and area kept and
+      attributed, the union of implementers and funders, and the envelope of
+      periods. It is about (IAO:0000136) the project individual, proj:<id>,
+      which is the work itself: an occurrent, typed in project/projects.ttl by
+      its strategy class and located at its site (decision D17). The record and
+      the individual share their local ID.
+    slot_usage:
+      subject:
+        range: CausalNode
+      predicate:
+        range: ImplementationPredicateEnum
+      object:
+        range: CausalNode
+    attributes:
+      about_project:
+        description: "DERIVED: the project individual, proj:<id>, this record is about."
+        slot_uri: IAO:0000136
+        range: uriorcurie
+      period:
+        description: "DERIVED: the envelope of the member statements' periods (open if any is open)."
+        range: Period
+        inlined: true
+      status_by_claimant:
+        description: "DERIVED: each claimant's latest status."
+        range: ClaimantStatus
+        multivalued: true
+        inlined_as_list: true
+      area_by_claimant:
+        description: "DERIVED: each claimant's area treated."
+        range: ClaimantArea
+        multivalued: true
+        inlined_as_list: true
+      implemented_by:
+        description: "DERIVED: the union of the member statements' implementers."
+        range: EcoAgent
+        multivalued: true
+        inlined: false
+      funded_by:
+        description: "DERIVED: the union of their funders."
+        range: EcoAgent
+        multivalued: true
+        inlined: false
+      external_ids:
+        description: "DERIVED: the union of their external IDs."
+        range: ExternalId
+        multivalued: true
+        inlined_as_list: true
+      replaces:
+        description: >-
+          DERIVED: earlier IDs of this project (when a joining statement moved
+          its anchor). Written to OWL as deprecated and replaced by this one.
+        range: uriorcurie
+        multivalued: true
+
+  # ---------------------------------------------------------------------------
+  # Criteria sets and the criteria group (0.7.0, Phase 7.3)
+  # ---------------------------------------------------------------------------
+
+  CriteriaSet:
+    class_uri: warp:CriteriaSet
+    description: >-
+      One body's versioned definition of a concept such as "degraded area": a
+      particular, but an information record, not a node. A stated, versioned
+      test that criteria statements apply, described only by a fixed set of
+      definitional elements plus its verbatim text, so a definition never
+      becomes its own small graph. Taxa, indicator variables and measured
+      values never appear here: they belong in the evidence for a criteria
+      statement. Deliberately not an OWL definition, so a verdict can never be
+      inferred, and a definition can change without any record being
+      rewritten.
+    attributes:
+      id:
+        identifier: true
+        description: "crit:<concept>/<version>, e.g. crit:degraded-area/fed-draft-1."
+      operationalizes:
+        description: "The concept this set defines."
+        range: CriteriaConceptEnum
+        required: true
+      issued_by:
+        description: "Whose definition it is."
+        range: EcoAgent
+        inlined: false
+        required: true
+      version:
+        required: true
+      status:
+        range: CriteriaStatusEnum
+      supersedes:
+        description: "The version this one replaces."
+        range: CriteriaSet
+        inlined: false
+      specified_in:
+        description: "The document the definition is written in."
+        range: EcoDocument
+        inlined: false
+      criteria_text:
+        description: "The definition, verbatim."
+      reference_basis:
+        description: "Degraded compared with what?"
+        range: ReferenceBasisEnum
+      baseline_date:
+        description: "As of when? ISO 8601 year, year-month or date."
+        pattern: "^[0-9]{4}(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[01]))?)?$"
+      attributes_assessed:
+        description: "Which aspects count (SER's six attributes; provisional)."
+        range: EcosystemAttributeEnum
+        multivalued: true
+      threshold_kind:
+        description: "How much change makes it degraded?"
+        range: ThresholdKindEnum
+      threshold_text:
+        description: "The threshold as written."
+      human_caused:
+        description: "Must the decline be caused by people?"
+        range: boolean
+      assessment_unit:
+        description: "What is judged: site, ecosystem unit, jurisdiction."
+        range: AssessmentUnitEnum
+      assessment_basis:
+        description: "For effectiveness: process, trajectory or outcome."
+        range: AssessmentBasisEnum
+
+  CriteriaStatement:
+    is_a: EcoStatement
+    class_uri: warp:CriteriaStatement
+    description: >-
+      That a site or project meets (or does not meet) a named, versioned
+      definition, for an assessed period. The subject is a particular: a site
+      individual (degradation) or a project individual (effectiveness), so no
+      subject_proposition and no exactly_one_of rule (decision D17; R7 and R18
+      go away). The verdict is the statement's evidential direction (supports,
+      disputes, neutral) and is required: criteria statements are the one
+      annotated statement that fills it. "Degraded" with no definition named
+      is context, not a criteria statement. Annotator's test: is someone
+      applying a named, versioned definition to a site or project?
+    annotations:
+      warp_group: criteria
+      warp_statements_slot: criteria_statements
+      warp_propositions_slot: criteria_propositions
+      warp_proposition_class: CriteriaProposition
+      warp_identity_rule: warp-criteria-identity/1
+      warp_identity_extras: predicate_qualifiers.criteria_set predicate_qualifiers.assessed_period
+    slot_usage:
+      subject:
+        range: CausalNode
+        required: true
+        description: "A site (site:) or project (proj:) individual."
+      predicate:
+        range: CriteriaPredicateEnum
+        required: true
+      object:
+        range: CriteriaConceptEnum
+        required: true
+        description: "The concept. In RDF the relation's object is the criteria set instead (D16)."
+      direction:
+        range: EvidenceDirectionEnum
+        required: true
+        description: "The verdict: supports (qualifies), disputes (does not qualify), neutral."
+    attributes:
+      predicate_qualifiers:
+        description: "Which definition, for which period, by which method."
+        range: CriteriaQualifiers
+        inlined: true
+        required: true
+
+  CriteriaQualifiers:
+    class_uri: warp:CriteriaQualifiers
+    attributes:
+      criteria_set:
+        description: "The definition applied. In the identity key."
+        range: CriteriaSet
+        inlined: false
+        required: true
+      assessed_period:
+        description: "The period assessed: condition changes over time. In the identity key."
+        range: Period
+        inlined: true
+        required: true
+      assessment_method:
+        description: "field_assessment, remote_sensing, rule_applied, expert_judgement, self_reported."
+        range: AssessmentMethodEnum
+
+  CriteriaIdentityQualifiers:
+    class_uri: warp:CriteriaIdentityQualifiers
+    description: "The qualifiers a criteria proposition was grouped by: criteria set and assessed period."
+    attributes:
+      criteria_set:
+        range: CriteriaSet
+        inlined: false
+      assessed_period:
+        range: Period
+        inlined: true
+
+  CriteriaProposition:
+    is_a: EcoProposition
+    class_uri: warp:CriteriaProposition
+    description: >-
+      A proposition put forward by criteria statements: this site or project,
+      this concept, this criteria set, this period. Two assessors applying the
+      same definition and disagreeing share one, one supporting and one
+      disputing; "qualifies under A" and "does not qualify under B" are two,
+      and do not contradict.
+    slot_usage:
+      subject:
+        range: CausalNode
+      predicate:
+        range: CriteriaPredicateEnum
+      object:
+        range: CriteriaConceptEnum
+    attributes:
+      predicate_qualifiers:
+        description: "The identity extras this proposition was grouped by."
+        range: CriteriaIdentityQualifiers
+        inlined: true
 
   # ---------------------------------------------------------------------------
   # Node definitions: a CAMO node filled from a node template

@@ -113,13 +113,13 @@ node:strategy-ab075dde135f a owl:Class ;
     obo:IAO_0000115 "A planned process whose required parts are, in order: step 1: Removal of invasive shrubs; step 2: Earthworks recontouring; step 3: Hand seeding of native mix A." ;
     rdfs:subClassOf [ a owl:Restriction ;
             owl:onProperty BFO:0000051 ;
-            owl:someValuesFrom node:earthworks_recontouring ],
-        [ a owl:Restriction ;
-            owl:onProperty BFO:0000051 ;
             owl:someValuesFrom node:removal_of_invasive_shrubs ],
         [ a owl:Restriction ;
             owl:onProperty BFO:0000051 ;
             owl:someValuesFrom node:hand_seeding_native_mix_a ],
+        [ a owl:Restriction ;
+            owl:onProperty BFO:0000051 ;
+            owl:someValuesFrom node:earthworks_recontouring ],
         OBI:0000011 .
 
 node:strategy-f38f3a2661ee a owl:Class ;
@@ -130,10 +130,10 @@ node:strategy-f38f3a2661ee a owl:Class ;
             owl:someValuesFrom node:hand_seeding_native_mix_a ],
         [ a owl:Restriction ;
             owl:onProperty BFO:0000051 ;
-            owl:someValuesFrom node:mowing_weed_control ],
+            owl:someValuesFrom node:earthworks_recontouring ],
         [ a owl:Restriction ;
             owl:onProperty BFO:0000051 ;
-            owl:someValuesFrom node:earthworks_recontouring ],
+            owl:someValuesFrom node:mowing_weed_control ],
         OBI:0000011 .
 
 node:strategy-f970cca73021 a owl:Class ;
@@ -141,10 +141,10 @@ node:strategy-f970cca73021 a owl:Class ;
     obo:IAO_0000115 "A planned process whose required parts are, in order: step 1: Removal of invasive shrubs; step 2: Earthworks recontouring." ;
     rdfs:subClassOf [ a owl:Restriction ;
             owl:onProperty BFO:0000051 ;
-            owl:someValuesFrom node:removal_of_invasive_shrubs ],
+            owl:someValuesFrom node:earthworks_recontouring ],
         [ a owl:Restriction ;
             owl:onProperty BFO:0000051 ;
-            owl:someValuesFrom node:earthworks_recontouring ],
+            owl:someValuesFrom node:removal_of_invasive_shrubs ],
         OBI:0000011 .
 
 node:taxon_x a owl:Class ;

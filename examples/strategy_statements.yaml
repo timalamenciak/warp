@@ -10,7 +10,7 @@
 # placeholders until ELMO terms are verified (decision D20).
 
 id: warp:statementset/strategy-example
-profile_version: 0.6.0
+profile_version: 0.7.0
 
 agents:
   - id: org:land-trust-a

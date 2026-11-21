@@ -56,7 +56,8 @@ from clean_owl import SENTINELS  # noqa: E402
 WARP = Namespace("https://w3id.org/ecoweaver/warp/")
 STATEMENTS_ONTOLOGY = URIRef("https://w3id.org/ecoweaver/warp/ontology/statements")
 EXPORT_VERSION = "warp-export-rdf/1"
-NOT_EXPORTED = {"nodes", "node_definitions"}     # nodes are classes: project/nodes.ttl
+NOT_EXPORTED = {"nodes", "node_definitions",      # nodes are classes: project/nodes.ttl
+                "site_definitions"}               # sites: project/sites.ttl, never their geometry
 COMPONENT_LISTS = {"strategy_definitions"}       # exported as their components only
 SKIP_SLOTS = {"id", "type"}
 DATE_PATTERN_MARK = "[0-9]{4}(-(0[1-9]|1[0-2])"
@@ -123,12 +124,30 @@ def cost_relation(ex, group, record, iri):
     return ex.iri(sub), o
 
 
+def criteria_relation(ex, group, record, iri):
+    """Criteria (D16): the verdict (the statement's direction) picks
+    warp:qualifies_as (supports) or warp:does_not_qualify_as (disputes), and
+    the object is the CRITERIA SET, not the concept, so verdicts under two
+    definitions never read as a contradiction about one concept. A neutral
+    verdict, and a proposition (which has no verdict of its own), names the
+    abstract warp:assessed_against in its record and has no relation triple."""
+    direction = record.get("direction")
+    crit = (record.get("predicate_qualifiers") or {}).get("criteria_set")
+    if direction == "supports":
+        return URIRef(f"{WARP}qualifies_as"), ex.iri(crit) if crit else None
+    if direction == "disputes":
+        return URIRef(f"{WARP}does_not_qualify_as"), ex.iri(crit) if crit else None
+    return URIRef(f"{WARP}assessed_against"), None
+
+
 RELATIONS = {
     # guidance do / avoid / consider -> recommended_to_achieve / advised_against_for /
     # suggested_for_consideration; the abstract warp:suggested_to is never written.
     "recommendation": qualifier_subproperty("predicate_qualifiers.guidance"),
     # incurs_cost + category -> incurs_<category>_cost, object the amount.
     "cost": cost_relation,
+    # direction supports / disputes -> qualifies_as / does_not_qualify_as, object the criteria set.
+    "criteria": criteria_relation,
 }
 
 

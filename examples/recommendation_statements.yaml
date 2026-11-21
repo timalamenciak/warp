@@ -17,7 +17,7 @@
 # question is an open question with a readable ID, written by people.
 
 id: warp:statementset/recommendation-example
-profile_version: 0.6.0
+profile_version: 0.7.0
 
 agents:
   - id: org:dfo

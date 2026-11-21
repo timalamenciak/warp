@@ -55,7 +55,8 @@ INPUTS = sorted(p for p in EXAMPLES.glob("*_statements.yaml"))
 @pytest.mark.parametrize("path", INPUTS, ids=lambda p: p.name)
 def test_every_derived_file_is_current(schemaview, path):
     """Every committed *.derived.yaml is exactly what make derive produces:
-    strategies first, then propositions."""
+    strategies first, then propositions, then projects."""
+    import derive_projects as dpj
     import derive_strategies as ds
     import derive_propositions as dp
     derived = path.with_name(path.stem + ".derived.yaml")
@@ -64,4 +65,5 @@ def test_every_derived_file_is_current(schemaview, path):
     fresh = load_yaml(path)
     ds.derive(fresh, schemaview, previous=committed)
     dp.derive_all(fresh, SCHEMA)
+    dpj.derive(fresh, previous=committed)
     assert fresh == committed, f"{derived.name} is stale: run make derive"

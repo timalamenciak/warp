@@ -1,0 +1,23 @@
+@prefix concept: <https://w3id.org/ecoweaver/warp/concept/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+
+<https://w3id.org/ecoweaver/warp/ontology/criteria_concepts> a owl:Ontology ;
+    rdfs:label "WARP criteria concepts" .
+
+concept:degraded_area a skos:Concept ;
+    skos:definition "An area whose ecological condition is judged, under some named and versioned definition, to have declined relative to a reference."@en ;
+    skos:inScheme concept:criteria-concepts ;
+    skos:prefLabel "degraded area"@en .
+
+concept:effective_restoration a skos:Concept ;
+    skos:definition "Restoration judged, under some named and versioned definition, to be achieving or to have achieved its intended recovery."@en ;
+    skos:inScheme concept:criteria-concepts ;
+    skos:prefLabel "effective restoration"@en .
+
+concept:criteria-concepts a skos:ConceptScheme ;
+    skos:hasTopConcept concept:degraded_area,
+        concept:effective_restoration ;
+    skos:prefLabel "WARP criteria concepts"@en .
+

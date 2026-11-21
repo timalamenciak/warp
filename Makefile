@@ -15,7 +15,8 @@ STATEMENTS  := examples/bloodroot_statements.yaml \
                examples/recommendation_statements.yaml \
                examples/strategy_statements.yaml \
                examples/tolerance_statements.yaml \
-               examples/cost_statements.yaml
+               examples/cost_statements.yaml \
+               examples/implementation_statements.yaml
 DERIVED     := $(STATEMENTS:.yaml=.derived.yaml)
 ASSESSMENTS := examples/bloodroot_assessment.yaml examples/kramer1995_assessment.yaml
 
@@ -71,13 +72,14 @@ patterns: templates
 
 # Source scales (and, later, criteria concepts) as SKOS.
 vocab:
-	$(PY) scripts/gen_vocab.py vocab/scales.yaml --out project/scales.ttl
+	$(PY) scripts/gen_vocab.py vocab/scales.yaml --out project/scales.ttl \
+	  --criteria vocab/criteria_concepts.yaml --criteria-out project/criteria_concepts.ttl
 
 # Expand node definitions: OWL (Turtle) + DOSDP fill tables. Reads the
 # derived sets, where canonical strategy nodes live.
 nodes: templates derive
 	$(PY) scripts/expand_nodes.py $(TEMPLATES) $(DERIVED) \
-	  --owl project/nodes.ttl --tsv-dir patterns/data
+	  --owl project/nodes.ttl --sites project/sites.ttl --tsv-dir patterns/data
 
 # Same OWL via the ODK route (needs dosdp-tools installed).
 owl-dosdp: patterns nodes
@@ -97,7 +99,8 @@ derive:
 	for f in $(STATEMENTS); do \
 	  d=$${f%.yaml}.derived.yaml; \
 	  $(PY) scripts/derive_strategies.py $$f $$d && \
-	  $(PY) scripts/derive_propositions.py $$d $$d || exit 1; \
+	  $(PY) scripts/derive_propositions.py $$d $$d && \
+	  $(PY) scripts/derive_projects.py $$d $$d || exit 1; \
 	done
 	$(PY) scripts/transfer_costs.py $(DERIVED) --select $(TRANSFER_SELECTION) --out $(TRANSFERRED)
 
@@ -110,6 +113,7 @@ validate: derive gen rdf owl
 	$(PY) scripts/check_owl.py $(OWL_FILES)
 	$(PY) scripts/check_tolerance.py $(ALL_DERIVED)
 	$(PY) scripts/check_cost.py $(ALL_DERIVED)
+	$(PY) scripts/check_sites.py $(ALL_DERIVED)
 
 # What the schema cannot express: Assertion Mode, negation, contribution
 # roles, CARE, references resolving across files (check_statements.py); and
@@ -143,7 +147,7 @@ rdf: derive
 # The logical layer: class axioms for propositions that pass the gate (D15).
 owl: derive
 	$(PY) scripts/project_owl.py $(ALL_DERIVED) $(ASSESSMENTS) --out project/axioms.ttl \
-	  --report project/reports/projection.md
+	  --report project/reports/projection.md --projects project/projects.ttl
 
 # OWL 2 profiles with ROBOT: EL for the logical layer, DL for the schema and
 # relations. Without robot on PATH this warns and succeeds (Q9); releases are
@@ -170,6 +174,9 @@ reports: derive
 	$(PY) scripts/report_tolerance.py $(ALL_DERIVED) --out project/reports/tolerance.md
 	$(PY) scripts/report_cost_completeness.py $(ALL_DERIVED) \
 	  --out project/reports/cost_completeness.md --csv project/reports/cost_completeness.csv
+	$(PY) scripts/report_target2.py $(ALL_DERIVED) --jurisdiction CA-SK --year 2026 \
+	  --degraded crit:degraded-area/fed-draft-1 --degraded crit:degraded-area/ref-ecosystem-1 \
+	  --effective crit:effective-restoration/fed-draft-1 --out project/reports/target2.md
 
 # pytest suite under tests/.
 test:

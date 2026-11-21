@@ -352,3 +352,53 @@ cm" and "pH of soil" would have the same definition and a reasoner would make
 them one class. Refined nodes are left out of the DOSDP fill tables, which can
 only write the equivalent-class form. A refinement on a template that does not
 list it is an error.
+
+### Sites: the first particular (0.7.0)
+
+Every node so far is a kind of thing: an action, a variable, a taxon, a
+strategy. A **site** is one piece of ground (agreement site 0412), the place a
+strategy is carried out or whose condition is assessed. It is the first node
+that is a **particular**.
+
+It is a node anyway, with the same `CausalNode` record as every other node,
+because every group needs to point at sites the same way it points at nodes:
+the implementation group's object, the criteria group's subject. What differs
+is everything that would otherwise make one IRI mean two things (decisions D7,
+D11):
+
+- **Its own IRI space, `site:`, never `node:`.** `node:` IRIs are classes
+  everywhere; `site:` IRIs are individuals everywhere, so `check_owl.py` can
+  catch a mistake. `check_sites.py` refuses a site under `node:`.
+- **OWL individuals, never classes.** `expand_nodes.py --sites` writes each
+  site to `project/sites.ttl` as an `owl:NamedIndividual` with its label.
+- **`ecosystem_type` is `rdf:type`**: the site is an instance of an ENVO
+  environmental system. As an object property pointing at an ENVO class it
+  would put a class where an individual belongs.
+- **Jurisdiction**: an IRI (`warp:in_jurisdiction <ISO 3166-2 CA-SK>`) where
+  the place has an ISO 3166-2 code or a CURIE; a literal
+  (`warp:jurisdiction_name`) where it has none, as for many Indigenous
+  territories. Two properties, because one OWL property cannot take both.
+- **Geometry never goes into a generated file**, not even the reification
+  layer. `geometry_precision` is required (exact, generalized, centroid,
+  withheld); withheld means no geometry is recorded at all; GeoJSON must
+  parse; exact geometry under restricted care is a warning.
+
+```yaml
+site_definitions:
+  - node: "site:0412"
+    template: site
+    label: Agreement site 0412
+    geometry_precision: generalized
+    area: {value: 64, unit: "TODO:unit_hectare"}
+    ecosystem_type: ["TODO:grassland"]
+    jurisdiction: CA-SK
+    tenure: private
+    care: {access_level: restricted}
+```
+
+Projects (`proj:`) are particulars too, but they are not defined by
+annotators: `derive_projects.py` mints them from implementation statements,
+and `project_owl.py` writes them to `project/projects.ttl` (see
+[predicate-groups.md](predicate-groups.md), the implementation group). Whether
+particulars belong in the node layer at all is an open question for Lars
+(`TODOS.md`).

@@ -1,3 +1,4 @@
+@prefix IAO: <http://purl.obolibrary.org/obo/IAO_> .
 @prefix RO: <http://purl.obolibrary.org/obo/RO_> .
 @prefix TODO: <https://w3id.org/ecoweaver/warp/TODO/> .
 @prefix camo: <https://w3id.org/camo/> .
@@ -7,9 +8,11 @@
 @prefix orcid: <https://orcid.org/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix place: <https://w3id.org/ecoweaver/warp/place/> .
+@prefix proj: <https://w3id.org/ecoweaver/warp/project/> .
 @prefix prop: <https://w3id.org/ecoweaver/warp/prop/> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix scale: <https://w3id.org/ecoweaver/warp/scale/> .
+@prefix site: <https://w3id.org/ecoweaver/warp/site/> .
 @prefix stmt: <https://w3id.org/ecoweaver/warp/statement/> .
 @prefix warp: <https://w3id.org/ecoweaver/warp/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
@@ -47,6 +50,12 @@
     warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#prototypical> ;
     warp:statementText "Restoring tidal action may reduce Aedes dorsalis larval density in marshes generally; the only evidence is one unreplicated site." ;
     warp:strength <https://w3id.org/ecoweaver/warp/CertaintyGradeEnum#very_low> .
+
+warp:baseline_date_lower_bound a owl:AnnotationProperty ;
+    rdfs:comment "Normalized xsd:dateTime bound of an ISO 8601 date (half-open: lower inclusive, upper exclusive). Written by export_rdf.py beside the verbatim string (D19)." .
+
+warp:baseline_date_upper_bound a owl:AnnotationProperty ;
+    rdfs:comment "Normalized xsd:dateTime bound of an ISO 8601 date (half-open: lower inclusive, upper exclusive). Written by export_rdf.py beside the verbatim string (D19)." .
 
 <https://w3id.org/ecoweaver/warp/component/earthworks-seed-mow/1> a warp:StrategyComponent ;
     warp:action node:earthworks_recontouring ;
@@ -158,6 +167,12 @@ prop:question-road-salt-spring-salamander a warp:CausalProposition ;
     warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#open_question> ;
     warp:subject node:road_salt_application .
 
+warp:reported_on_lower_bound a owl:AnnotationProperty ;
+    rdfs:comment "Normalized xsd:dateTime bound of an ISO 8601 date (half-open: lower inclusive, upper exclusive). Written by export_rdf.py beside the verbatim string (D19)." .
+
+warp:reported_on_upper_bound a owl:AnnotationProperty ;
+    rdfs:comment "Normalized xsd:dateTime bound of an ISO 8601 date (half-open: lower inclusive, upper exclusive). Written by export_rdf.py beside the verbatim string (D19)." .
+
 <https://w3id.org/ecoweaver/warp/result/inpa-wattle-project> a warp:EcoStudyResult ;
     warp:description "The costed wattle control work, as the evidence layer records it." ;
     warp:focus node:native_vegetation_cover_coastal_reserves ;
@@ -177,6 +192,8 @@ warp:start_upper_bound a owl:AnnotationProperty ;
 <https://w3id.org/ecoweaver/warp/statementset/cost-example> a warp:StatementSet .
 
 <https://w3id.org/ecoweaver/warp/statementset/cost-transfers-warp-cost-transfer-1> a warp:StatementSet .
+
+<https://w3id.org/ecoweaver/warp/statementset/implementation-example> a warp:StatementSet .
 
 <https://w3id.org/ecoweaver/warp/statementset/kramer1995-assessment> a warp:StatementSet .
 
@@ -208,6 +225,11 @@ warp:start_upper_bound a owl:AnnotationProperty ;
     warp:agent_subtype "organization" ;
     warp:name "TODO: a regional air quality agency" .
 
+<https://w3id.org/ecoweaver/warp/agent/org/assessor-e> a warp:EcoAgent ;
+    warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#researcher> ;
+    warp:agent_subtype "organization" ;
+    warp:name "TODO: assessor E" .
+
 <https://w3id.org/ecoweaver/warp/agent/org/consultancy-b> a warp:EcoAgent ;
     warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#organization> ;
     warp:agent_subtype "organization" ;
@@ -232,6 +254,11 @@ warp:start_upper_bound a owl:AnnotationProperty ;
     warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#researcher> ;
     warp:agent_subtype "organization" ;
     warp:name "TODO: authors of a habitat suitability model" .
+
+<https://w3id.org/ecoweaver/warp/agent/org/provincial-agency> a warp:EcoAgent ;
+    warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#organization> ;
+    warp:agent_subtype "organization" ;
+    warp:name "TODO: a provincial agency (fictional definition)" .
 
 <https://w3id.org/ecoweaver/warp/agent/org/trial-authors> a warp:EcoAgent ;
     warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#researcher> ;
@@ -273,6 +300,54 @@ warp:start_upper_bound a owl:AnnotationProperty ;
 
 <https://w3id.org/ecoweaver/warp/contrib/agency-c-maintenance-author> a warp:EcoContribution ;
     warp:contributor <https://w3id.org/ecoweaver/warp/agent/org/agency-c> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
+<https://w3id.org/ecoweaver/warp/contrib/assessor-c-0412-fed-annotation> a warp:EcoContribution ;
+    warp:contributor orcid:0000-0000-0000-0000 ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
+
+<https://w3id.org/ecoweaver/warp/contrib/assessor-c-0412-fed-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/org/assessor-c> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
+<https://w3id.org/ecoweaver/warp/contrib/assessor-c-project-0412-annotation> a warp:EcoContribution ;
+    warp:contributor orcid:0000-0000-0000-0000 ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
+
+<https://w3id.org/ecoweaver/warp/contrib/assessor-c-project-0412-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/org/assessor-c> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
+<https://w3id.org/ecoweaver/warp/contrib/assessor-d-0412-ref-annotation> a warp:EcoContribution ;
+    warp:contributor orcid:0000-0000-0000-0000 ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
+
+<https://w3id.org/ecoweaver/warp/contrib/assessor-d-0412-ref-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/org/assessor-d> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
+<https://w3id.org/ecoweaver/warp/contrib/assessor-d-0517-fed-annotation> a warp:EcoContribution ;
+    warp:contributor orcid:0000-0000-0000-0000 ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
+
+<https://w3id.org/ecoweaver/warp/contrib/assessor-d-0517-fed-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/org/assessor-d> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
+<https://w3id.org/ecoweaver/warp/contrib/assessor-d-0517-ref-annotation> a warp:EcoContribution ;
+    warp:contributor orcid:0000-0000-0000-0000 ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
+
+<https://w3id.org/ecoweaver/warp/contrib/assessor-d-0517-ref-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/org/assessor-d> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
+<https://w3id.org/ecoweaver/warp/contrib/assessor-e-0412-fed-annotation> a warp:EcoContribution ;
+    warp:contributor orcid:0000-0000-0000-0000 ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
+
+<https://w3id.org/ecoweaver/warp/contrib/assessor-e-0412-fed-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/org/assessor-e> ;
     warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
 
 <https://w3id.org/ecoweaver/warp/contrib/bloodroot-gm-1-author> a warp:EcoContribution ;
@@ -318,6 +393,14 @@ warp:start_upper_bound a owl:AnnotationProperty ;
     warp:contributor <https://w3id.org/ecoweaver/warp/agent/ecoweaver-synthesis> ;
     warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
 
+<https://w3id.org/ecoweaver/warp/contrib/ecoweaver-project-0517-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/ecoweaver-synthesis> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
+<https://w3id.org/ecoweaver/warp/contrib/ecoweaver-project-0517-record> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/ecoweaver-synthesis> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
+
 <https://w3id.org/ecoweaver/warp/contrib/eive-taxon-r-annotation> a warp:EcoContribution ;
     warp:contributor orcid:0000-0000-0000-0000 ;
     warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
@@ -348,6 +431,14 @@ warp:start_upper_bound a owl:AnnotationProperty ;
 
 <https://w3id.org/ecoweaver/warp/contrib/flora-spartina-habitat-author> a warp:EcoContribution ;
     warp:contributor <https://w3id.org/ecoweaver/warp/agent/org/flora-authors> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
+<https://w3id.org/ecoweaver/warp/contrib/funder-0412-annotation> a warp:EcoContribution ;
+    warp:contributor orcid:0000-0000-0000-0000 ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
+
+<https://w3id.org/ecoweaver/warp/contrib/funder-0412-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/org/funder-b> ;
     warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
 
 <https://w3id.org/ecoweaver/warp/contrib/fwc-invasive-program-annotation> a warp:EcoContribution ;
@@ -407,6 +498,22 @@ warp:start_upper_bound a owl:AnnotationProperty ;
 
 <https://w3id.org/ecoweaver/warp/contrib/kramer1995-c1-author> a warp:EcoContribution ;
     warp:contributor <https://w3id.org/ecoweaver/warp/agent/kramer1995-authors> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
+<https://w3id.org/ecoweaver/warp/contrib/land-trust-0412-annotation> a warp:EcoContribution ;
+    warp:contributor orcid:0000-0000-0000-0000 ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
+
+<https://w3id.org/ecoweaver/warp/contrib/land-trust-0412-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/org/land-trust-a> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
+<https://w3id.org/ecoweaver/warp/contrib/land-trust-0517-annotation> a warp:EcoContribution ;
+    warp:contributor orcid:0000-0000-0000-0000 ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
+
+<https://w3id.org/ecoweaver/warp/contrib/land-trust-0517-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/org/land-trust-a> ;
     warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
 
 <https://w3id.org/ecoweaver/warp/contrib/land-trust-follow-up-annotation> a warp:EcoContribution ;
@@ -730,8 +837,14 @@ warp:start_upper_bound a owl:AnnotationProperty ;
 doc:air-quality-guidance a warp:EcoDocument ;
     warp:title "TODO: an air quality agency's guidance on prescribed fire" .
 
+doc:assessment-report-e a warp:EcoDocument ;
+    warp:title "TODO: assessor E's site assessments" .
+
 doc:eive-1-0 a warp:EcoDocument ;
     warp:title "Dengler et al. 2023, Ecological Indicator Values for Europe (EIVE) 1.0 (TODO: verify citation)" .
+
+doc:funder-report-2026 a warp:EcoDocument ;
+    warp:title "TODO: funder's program report" .
 
 doc:fwc-program-report a warp:EcoDocument ;
     warp:title "TODO: Florida invasive plant management program allocations, 1999-2010, as reported by Iacona et al." .
@@ -772,6 +885,39 @@ doc:plants-record-bogr a warp:EcoDocument ;
 
 doc:practice-note-b a warp:EcoDocument ;
     warp:title "TODO: practice note (source B)" .
+
+doc:provincial-definition a warp:EcoDocument ;
+    warp:title "TODO: a provincial guidance note (fictional definition)" .
+
+<https://w3id.org/ecoweaver/warp/el/assessor-c-0412-fed-1> a warp:EcoEvidenceLine ;
+    warp:directionOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
+    warp:evidence_type <https://w3id.org/ecoweaver/warp/WarpEvidenceTypeEnum#observational_cross_sectional> ;
+    warp:targetProposition prop:e17519ff723f .
+
+<https://w3id.org/ecoweaver/warp/el/assessor-c-project-0412-1> a warp:EcoEvidenceLine ;
+    warp:directionOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
+    warp:evidence_type <https://w3id.org/ecoweaver/warp/WarpEvidenceTypeEnum#observational_longitudinal> ;
+    warp:targetProposition prop:bbc212383aad .
+
+<https://w3id.org/ecoweaver/warp/el/assessor-d-0412-ref-1> a warp:EcoEvidenceLine ;
+    warp:directionOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
+    warp:evidence_type <https://w3id.org/ecoweaver/warp/WarpEvidenceTypeEnum#observational_cross_sectional> ;
+    warp:targetProposition prop:a309012ef67d .
+
+<https://w3id.org/ecoweaver/warp/el/assessor-d-0517-fed-1> a warp:EcoEvidenceLine ;
+    warp:directionOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#disputes> ;
+    warp:evidence_type <https://w3id.org/ecoweaver/warp/WarpEvidenceTypeEnum#case_study> ;
+    warp:targetProposition prop:093dff0cf91f .
+
+<https://w3id.org/ecoweaver/warp/el/assessor-d-0517-ref-1> a warp:EcoEvidenceLine ;
+    warp:directionOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
+    warp:evidence_type <https://w3id.org/ecoweaver/warp/WarpEvidenceTypeEnum#case_study> ;
+    warp:targetProposition prop:9b5c70df8184 .
+
+<https://w3id.org/ecoweaver/warp/el/assessor-e-0412-fed-1> a warp:EcoEvidenceLine ;
+    warp:directionOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#disputes> ;
+    warp:evidence_type <https://w3id.org/ecoweaver/warp/WarpEvidenceTypeEnum#observational_cross_sectional> ;
+    warp:targetProposition prop:e17519ff723f .
 
 <https://w3id.org/ecoweaver/warp/el/bloodroot-gm-1-experimental> a warp:EcoEvidenceLine ;
     warp:directionOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
@@ -983,6 +1129,18 @@ doc:practice-note-b a warp:EcoDocument ;
     warp:directionOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
     warp:targetProposition prop:a36155eb3670 .
 
+<https://w3id.org/ecoweaver/warp/prop/093dff0cf91f/predicate_qualifiers> a warp:CriteriaIdentityQualifiers ;
+    warp:assessed_period <https://w3id.org/ecoweaver/warp/prop/093dff0cf91f/predicate_qualifiers/assessed_period> ;
+    warp:criteria_set <https://w3id.org/ecoweaver/warp/criteria/degraded-area/fed-draft-1> .
+
+<https://w3id.org/ecoweaver/warp/prop/093dff0cf91f/predicate_qualifiers/assessed_period> a warp:Period ;
+    warp:end "2023" ;
+    warp:end_lower_bound "2023-01-01T00:00:00Z"^^xsd:dateTime ;
+    warp:end_upper_bound "2024-01-01T00:00:00Z"^^xsd:dateTime ;
+    warp:start "2023" ;
+    warp:start_lower_bound "2023-01-01T00:00:00Z"^^xsd:dateTime ;
+    warp:start_upper_bound "2024-01-01T00:00:00Z"^^xsd:dateTime .
+
 <https://w3id.org/ecoweaver/warp/prop/0a2c8c5cbc76/predicate_qualifiers> a warp:CostIdentityQualifiers ;
     warp:phase <https://w3id.org/ecoweaver/warp/CostPhaseEnum#whole_project> ;
     warp:reporting_level <https://w3id.org/ecoweaver/warp/ReportingLevelEnum#intervention> .
@@ -1045,6 +1203,45 @@ prop:2812c13c41fc a warp:RecommendationProposition ;
 <https://w3id.org/ecoweaver/warp/prop/69ccdaf69ec4/predicate_qualifiers> a warp:RecommendationQualifiers ;
     warp:guidance <https://w3id.org/ecoweaver/warp/GuidanceEnum#avoid> .
 
+prop:71e3dff9f480 a warp:ImplementationProposition ;
+    IAO:0000136 proj:71e3dff9f480 ;
+    warp:area_by_claimant <https://w3id.org/ecoweaver/warp/prop/71e3dff9f480/area_by_claimant/0> ;
+    warp:derived_from_statements stmt:land-trust-0517 ;
+    warp:identity_key "stmt:land-trust-0517" ;
+    warp:identity_rule_version "warp-impl-identity/1" ;
+    warp:implemented_by <https://w3id.org/ecoweaver/warp/agent/org/land-trust-a> ;
+    warp:negated false ;
+    warp:object site:0517 ;
+    warp:period <https://w3id.org/ecoweaver/warp/prop/71e3dff9f480/period> ;
+    warp:predicate warp:carried_out_at ;
+    warp:propositionText "In a particular case, node:strategy-f38f3a2661ee was carried out at Site 0517." ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
+    warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
+    warp:status_by_claimant <https://w3id.org/ecoweaver/warp/prop/71e3dff9f480/status_by_claimant/0> ;
+    warp:subject node:strategy-f38f3a2661ee .
+
+<https://w3id.org/ecoweaver/warp/prop/71e3dff9f480/area_by_claimant/0> a warp:ClaimantArea ;
+    warp:area <https://w3id.org/ecoweaver/warp/prop/71e3dff9f480/area_by_claimant/0/area> ;
+    warp:claimant <https://w3id.org/ecoweaver/warp/agent/org/land-trust-a> ;
+    warp:statement stmt:land-trust-0517 .
+
+<https://w3id.org/ecoweaver/warp/prop/71e3dff9f480/area_by_claimant/0/area> a warp:Quantity ;
+    warp:unit TODO:unit_hectare ;
+    warp:value "25"^^xsd:float .
+
+<https://w3id.org/ecoweaver/warp/prop/71e3dff9f480/period> a warp:Period ;
+    warp:start "2025-04" ;
+    warp:start_lower_bound "2025-04-01T00:00:00Z"^^xsd:dateTime ;
+    warp:start_upper_bound "2025-05-01T00:00:00Z"^^xsd:dateTime .
+
+<https://w3id.org/ecoweaver/warp/prop/71e3dff9f480/status_by_claimant/0> a warp:ClaimantStatus ;
+    warp:claimant <https://w3id.org/ecoweaver/warp/agent/org/land-trust-a> ;
+    warp:reported_on "2026-02-01" ;
+    warp:reported_on_lower_bound "2026-02-01T00:00:00Z"^^xsd:dateTime ;
+    warp:reported_on_upper_bound "2026-02-02T00:00:00Z"^^xsd:dateTime ;
+    warp:statement stmt:land-trust-0517 ;
+    warp:status <https://w3id.org/ecoweaver/warp/ImplementationStatusEnum#maintained> .
+
 <https://w3id.org/ecoweaver/warp/prop/76daefe75c6e/predicate_qualifiers> a warp:CostIdentityQualifiers ;
     warp:phase <https://w3id.org/ecoweaver/warp/CostPhaseEnum#follow_up> ;
     warp:reporting_level <https://w3id.org/ecoweaver/warp/ReportingLevelEnum#intervention> .
@@ -1089,8 +1286,100 @@ prop:9797650932b3 a warp:CostProposition ;
     warp:phase <https://w3id.org/ecoweaver/warp/CostPhaseEnum#follow_up> ;
     warp:reporting_level <https://w3id.org/ecoweaver/warp/ReportingLevelEnum#intervention> .
 
+prop:98c90f1839c7 a warp:CriteriaProposition ;
+    warp:derived_from_statements stmt:ecoweaver-project-0517-effective ;
+    warp:identity_key "criteria|proj:71e3dff9f480|qualifies_as|effective_restoration|affirmed|assertional|predicate_qualifiers.criteria_set=\"crit:effective-restoration/fed-draft-1\"|predicate_qualifiers.assessed_period={\"end\":\"2026\",\"start\":\"2026\"}" ;
+    warp:identity_rule_version "warp-criteria-identity/1" ;
+    warp:negated false ;
+    warp:object <https://w3id.org/ecoweaver/warp/concept/effective_restoration> ;
+    warp:predicate warp:assessed_against ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/prop/98c90f1839c7/predicate_qualifiers> ;
+    warp:propositionText "In a particular case, proj:71e3dff9f480 qualifies as effective_restoration." ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
+    warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
+    warp:subject proj:71e3dff9f480 .
+
+<https://w3id.org/ecoweaver/warp/prop/98c90f1839c7/predicate_qualifiers> a warp:CriteriaIdentityQualifiers ;
+    warp:assessed_period <https://w3id.org/ecoweaver/warp/prop/98c90f1839c7/predicate_qualifiers/assessed_period> ;
+    warp:criteria_set <https://w3id.org/ecoweaver/warp/criteria/effective-restoration/fed-draft-1> .
+
+<https://w3id.org/ecoweaver/warp/prop/98c90f1839c7/predicate_qualifiers/assessed_period> a warp:Period ;
+    warp:end "2026" ;
+    warp:end_lower_bound "2026-01-01T00:00:00Z"^^xsd:dateTime ;
+    warp:end_upper_bound "2027-01-01T00:00:00Z"^^xsd:dateTime ;
+    warp:start "2026" ;
+    warp:start_lower_bound "2026-01-01T00:00:00Z"^^xsd:dateTime ;
+    warp:start_upper_bound "2027-01-01T00:00:00Z"^^xsd:dateTime .
+
+<https://w3id.org/ecoweaver/warp/prop/9b5c70df8184/predicate_qualifiers> a warp:CriteriaIdentityQualifiers ;
+    warp:assessed_period <https://w3id.org/ecoweaver/warp/prop/9b5c70df8184/predicate_qualifiers/assessed_period> ;
+    warp:criteria_set <https://w3id.org/ecoweaver/warp/criteria/degraded-area/ref-ecosystem-1> .
+
+<https://w3id.org/ecoweaver/warp/prop/9b5c70df8184/predicate_qualifiers/assessed_period> a warp:Period ;
+    warp:end "2023" ;
+    warp:end_lower_bound "2023-01-01T00:00:00Z"^^xsd:dateTime ;
+    warp:end_upper_bound "2024-01-01T00:00:00Z"^^xsd:dateTime ;
+    warp:start "2023" ;
+    warp:start_lower_bound "2023-01-01T00:00:00Z"^^xsd:dateTime ;
+    warp:start_upper_bound "2024-01-01T00:00:00Z"^^xsd:dateTime .
+
 <https://w3id.org/ecoweaver/warp/prop/9c043c560227/predicate_qualifiers> a warp:RecommendationQualifiers ;
     warp:guidance <https://w3id.org/ecoweaver/warp/GuidanceEnum#do> .
+
+<https://w3id.org/ecoweaver/warp/prop/a309012ef67d/predicate_qualifiers> a warp:CriteriaIdentityQualifiers ;
+    warp:assessed_period <https://w3id.org/ecoweaver/warp/prop/a309012ef67d/predicate_qualifiers/assessed_period> ;
+    warp:criteria_set <https://w3id.org/ecoweaver/warp/criteria/degraded-area/ref-ecosystem-1> .
+
+<https://w3id.org/ecoweaver/warp/prop/a309012ef67d/predicate_qualifiers/assessed_period> a warp:Period ;
+    warp:end "2023" ;
+    warp:end_lower_bound "2023-01-01T00:00:00Z"^^xsd:dateTime ;
+    warp:end_upper_bound "2024-01-01T00:00:00Z"^^xsd:dateTime ;
+    warp:start "2023" ;
+    warp:start_lower_bound "2023-01-01T00:00:00Z"^^xsd:dateTime ;
+    warp:start_upper_bound "2024-01-01T00:00:00Z"^^xsd:dateTime .
+
+<https://w3id.org/ecoweaver/warp/prop/agreement-0412/area_by_claimant/0> a warp:ClaimantArea ;
+    warp:area <https://w3id.org/ecoweaver/warp/prop/agreement-0412/area_by_claimant/0/area> ;
+    warp:claimant <https://w3id.org/ecoweaver/warp/agent/org/land-trust-a> ;
+    warp:statement stmt:land-trust-0412 .
+
+<https://w3id.org/ecoweaver/warp/prop/agreement-0412/area_by_claimant/0/area> a warp:Quantity ;
+    warp:unit TODO:unit_hectare ;
+    warp:value "42"^^xsd:float .
+
+<https://w3id.org/ecoweaver/warp/prop/agreement-0412/area_by_claimant/1> a warp:ClaimantArea ;
+    warp:area <https://w3id.org/ecoweaver/warp/prop/agreement-0412/area_by_claimant/1/area> ;
+    warp:claimant <https://w3id.org/ecoweaver/warp/agent/org/funder-b> ;
+    warp:statement stmt:funder-0412 .
+
+<https://w3id.org/ecoweaver/warp/prop/agreement-0412/area_by_claimant/1/area> a warp:Quantity ;
+    warp:unit TODO:unit_hectare ;
+    warp:value "40"^^xsd:float .
+
+<https://w3id.org/ecoweaver/warp/prop/agreement-0412/external_ids/0> a warp:ExternalId ;
+    warp:scheme "agreement" ;
+    warp:value "0412" .
+
+<https://w3id.org/ecoweaver/warp/prop/agreement-0412/period> a warp:Period ;
+    warp:start "2024-05" ;
+    warp:start_lower_bound "2024-05-01T00:00:00Z"^^xsd:dateTime ;
+    warp:start_upper_bound "2024-06-01T00:00:00Z"^^xsd:dateTime .
+
+<https://w3id.org/ecoweaver/warp/prop/agreement-0412/status_by_claimant/0> a warp:ClaimantStatus ;
+    warp:claimant <https://w3id.org/ecoweaver/warp/agent/org/funder-b> ;
+    warp:reported_on "2026-01-15" ;
+    warp:reported_on_lower_bound "2026-01-15T00:00:00Z"^^xsd:dateTime ;
+    warp:reported_on_upper_bound "2026-01-16T00:00:00Z"^^xsd:dateTime ;
+    warp:statement stmt:funder-0412 ;
+    warp:status <https://w3id.org/ecoweaver/warp/ImplementationStatusEnum#in_progress> .
+
+<https://w3id.org/ecoweaver/warp/prop/agreement-0412/status_by_claimant/1> a warp:ClaimantStatus ;
+    warp:claimant <https://w3id.org/ecoweaver/warp/agent/org/land-trust-a> ;
+    warp:reported_on "2026-03-31" ;
+    warp:reported_on_lower_bound "2026-03-31T00:00:00Z"^^xsd:dateTime ;
+    warp:reported_on_upper_bound "2026-04-01T00:00:00Z"^^xsd:dateTime ;
+    warp:statement stmt:land-trust-0412 ;
+    warp:status <https://w3id.org/ecoweaver/warp/ImplementationStatusEnum#in_progress> .
 
 prop:b8a8f3da7637 a warp:CostProposition ;
     warp:derived_from_statements stmt:land-trust-strategy-total ;
@@ -1110,6 +1399,18 @@ prop:b8a8f3da7637 a warp:CostProposition ;
     warp:phase <https://w3id.org/ecoweaver/warp/CostPhaseEnum#whole_project> ;
     warp:reporting_level <https://w3id.org/ecoweaver/warp/ReportingLevelEnum#intervention> .
 
+<https://w3id.org/ecoweaver/warp/prop/bbc212383aad/predicate_qualifiers> a warp:CriteriaIdentityQualifiers ;
+    warp:assessed_period <https://w3id.org/ecoweaver/warp/prop/bbc212383aad/predicate_qualifiers/assessed_period> ;
+    warp:criteria_set <https://w3id.org/ecoweaver/warp/criteria/effective-restoration/fed-draft-1> .
+
+<https://w3id.org/ecoweaver/warp/prop/bbc212383aad/predicate_qualifiers/assessed_period> a warp:Period ;
+    warp:end "2026" ;
+    warp:end_lower_bound "2026-01-01T00:00:00Z"^^xsd:dateTime ;
+    warp:end_upper_bound "2027-01-01T00:00:00Z"^^xsd:dateTime ;
+    warp:start "2026" ;
+    warp:start_lower_bound "2026-01-01T00:00:00Z"^^xsd:dateTime ;
+    warp:start_upper_bound "2027-01-01T00:00:00Z"^^xsd:dateTime .
+
 prop:c34ece72a226 a warp:RecommendationProposition ;
     warp:derived_from_statements stmt:burn-avoid-agency ;
     warp:identity_key "recommendation|node:prescribed_burning_of_grassland|suggested_to|node:decrease_in_shrub_cover_in_grassland|affirmed|prototypical|predicate_qualifiers.guidance=\"avoid\"" ;
@@ -1125,6 +1426,18 @@ prop:c34ece72a226 a warp:RecommendationProposition ;
 
 <https://w3id.org/ecoweaver/warp/prop/c34ece72a226/predicate_qualifiers> a warp:RecommendationQualifiers ;
     warp:guidance <https://w3id.org/ecoweaver/warp/GuidanceEnum#avoid> .
+
+<https://w3id.org/ecoweaver/warp/prop/e17519ff723f/predicate_qualifiers> a warp:CriteriaIdentityQualifiers ;
+    warp:assessed_period <https://w3id.org/ecoweaver/warp/prop/e17519ff723f/predicate_qualifiers/assessed_period> ;
+    warp:criteria_set <https://w3id.org/ecoweaver/warp/criteria/degraded-area/fed-draft-1> .
+
+<https://w3id.org/ecoweaver/warp/prop/e17519ff723f/predicate_qualifiers/assessed_period> a warp:Period ;
+    warp:end "2023" ;
+    warp:end_lower_bound "2023-01-01T00:00:00Z"^^xsd:dateTime ;
+    warp:end_upper_bound "2024-01-01T00:00:00Z"^^xsd:dateTime ;
+    warp:start "2023" ;
+    warp:start_lower_bound "2023-01-01T00:00:00Z"^^xsd:dateTime ;
+    warp:start_upper_bound "2024-01-01T00:00:00Z"^^xsd:dateTime .
 
 prop:e4c87fd740d3 a warp:CostProposition ;
     warp:derived_from_statements stmt:inpa-wattle-cost ;
@@ -1275,6 +1588,192 @@ stmt:agency-c-removal-maintenance a warp:CostStatement ;
 <https://w3id.org/ecoweaver/warp/statement/agency-c-removal-maintenance/recordMetadata> a warp:EcoRecordMetadata ;
     warp:contributions <https://w3id.org/ecoweaver/warp/contrib/agency-c-maintenance-annotation> .
 
+stmt:assessor-c-0412-fed a warp:CriteriaStatement ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/assessor-c-0412-fed-author> ;
+    warp:direction <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
+    warp:hasEvidenceLines <https://w3id.org/ecoweaver/warp/el/assessor-c-0412-fed-1> ;
+    warp:modality <https://w3id.org/ecoweaver/warp/ModalityEnum#observed> ;
+    warp:object <https://w3id.org/ecoweaver/warp/concept/degraded_area> ;
+    warp:predicate warp:qualifies_as ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/statement/assessor-c-0412-fed/predicate_qualifiers> ;
+    warp:proposition prop:e17519ff723f ;
+    warp:recordMetadata <https://w3id.org/ecoweaver/warp/statement/assessor-c-0412-fed/recordMetadata> ;
+    warp:reportedIn doc:assessment-report-c ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
+    warp:statementText "Illustrative: site 0412 qualified as degraded under the federal draft definition in 2023." ;
+    warp:subject site:0412 .
+
+<https://w3id.org/ecoweaver/warp/statement/assessor-c-0412-fed/predicate_qualifiers> a warp:CriteriaQualifiers ;
+    warp:assessed_period <https://w3id.org/ecoweaver/warp/statement/assessor-c-0412-fed/predicate_qualifiers/assessed_period> ;
+    warp:assessment_method <https://w3id.org/ecoweaver/warp/AssessmentMethodEnum#field_assessment> ;
+    warp:criteria_set <https://w3id.org/ecoweaver/warp/criteria/degraded-area/fed-draft-1> .
+
+<https://w3id.org/ecoweaver/warp/statement/assessor-c-0412-fed/predicate_qualifiers/assessed_period> a warp:Period ;
+    warp:end "2023" ;
+    warp:end_lower_bound "2023-01-01T00:00:00Z"^^xsd:dateTime ;
+    warp:end_upper_bound "2024-01-01T00:00:00Z"^^xsd:dateTime ;
+    warp:start "2023" ;
+    warp:start_lower_bound "2023-01-01T00:00:00Z"^^xsd:dateTime ;
+    warp:start_upper_bound "2024-01-01T00:00:00Z"^^xsd:dateTime .
+
+<https://w3id.org/ecoweaver/warp/statement/assessor-c-0412-fed/recordMetadata> a warp:EcoRecordMetadata ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/assessor-c-0412-fed-annotation> .
+
+stmt:assessor-c-project-0412-effective a warp:CriteriaStatement ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/assessor-c-project-0412-author> ;
+    warp:direction <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
+    warp:hasEvidenceLines <https://w3id.org/ecoweaver/warp/el/assessor-c-project-0412-1> ;
+    warp:modality <https://w3id.org/ecoweaver/warp/ModalityEnum#observed> ;
+    warp:object <https://w3id.org/ecoweaver/warp/concept/effective_restoration> ;
+    warp:predicate warp:qualifies_as ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/statement/assessor-c-project-0412-effective/predicate_qualifiers> ;
+    warp:proposition prop:bbc212383aad ;
+    warp:recordMetadata <https://w3id.org/ecoweaver/warp/statement/assessor-c-project-0412-effective/recordMetadata> ;
+    warp:reportedIn doc:assessment-report-c ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
+    warp:statementText "Illustrative: the agreement 0412 project is moving toward its reference condition." ;
+    warp:subject proj:agreement-0412 .
+
+<https://w3id.org/ecoweaver/warp/statement/assessor-c-project-0412-effective/predicate_qualifiers> a warp:CriteriaQualifiers ;
+    warp:assessed_period <https://w3id.org/ecoweaver/warp/statement/assessor-c-project-0412-effective/predicate_qualifiers/assessed_period> ;
+    warp:assessment_method <https://w3id.org/ecoweaver/warp/AssessmentMethodEnum#field_assessment> ;
+    warp:criteria_set <https://w3id.org/ecoweaver/warp/criteria/effective-restoration/fed-draft-1> .
+
+<https://w3id.org/ecoweaver/warp/statement/assessor-c-project-0412-effective/predicate_qualifiers/assessed_period> a warp:Period ;
+    warp:end "2026" ;
+    warp:end_lower_bound "2026-01-01T00:00:00Z"^^xsd:dateTime ;
+    warp:end_upper_bound "2027-01-01T00:00:00Z"^^xsd:dateTime ;
+    warp:start "2026" ;
+    warp:start_lower_bound "2026-01-01T00:00:00Z"^^xsd:dateTime ;
+    warp:start_upper_bound "2027-01-01T00:00:00Z"^^xsd:dateTime .
+
+<https://w3id.org/ecoweaver/warp/statement/assessor-c-project-0412-effective/recordMetadata> a warp:EcoRecordMetadata ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/assessor-c-project-0412-annotation> .
+
+stmt:assessor-d-0412-ref a warp:CriteriaStatement ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/assessor-d-0412-ref-author> ;
+    warp:direction <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
+    warp:hasEvidenceLines <https://w3id.org/ecoweaver/warp/el/assessor-d-0412-ref-1> ;
+    warp:modality <https://w3id.org/ecoweaver/warp/ModalityEnum#observed> ;
+    warp:object <https://w3id.org/ecoweaver/warp/concept/degraded_area> ;
+    warp:predicate warp:qualifies_as ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/statement/assessor-d-0412-ref/predicate_qualifiers> ;
+    warp:proposition prop:a309012ef67d ;
+    warp:recordMetadata <https://w3id.org/ecoweaver/warp/statement/assessor-d-0412-ref/recordMetadata> ;
+    warp:reportedIn doc:assessment-report-d ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
+    warp:statementText "Illustrative: site 0412 departed from its reference ecosystem in 2023." ;
+    warp:subject site:0412 .
+
+<https://w3id.org/ecoweaver/warp/statement/assessor-d-0412-ref/predicate_qualifiers> a warp:CriteriaQualifiers ;
+    warp:assessed_period <https://w3id.org/ecoweaver/warp/statement/assessor-d-0412-ref/predicate_qualifiers/assessed_period> ;
+    warp:assessment_method <https://w3id.org/ecoweaver/warp/AssessmentMethodEnum#field_assessment> ;
+    warp:criteria_set <https://w3id.org/ecoweaver/warp/criteria/degraded-area/ref-ecosystem-1> .
+
+<https://w3id.org/ecoweaver/warp/statement/assessor-d-0412-ref/predicate_qualifiers/assessed_period> a warp:Period ;
+    warp:end "2023" ;
+    warp:end_lower_bound "2023-01-01T00:00:00Z"^^xsd:dateTime ;
+    warp:end_upper_bound "2024-01-01T00:00:00Z"^^xsd:dateTime ;
+    warp:start "2023" ;
+    warp:start_lower_bound "2023-01-01T00:00:00Z"^^xsd:dateTime ;
+    warp:start_upper_bound "2024-01-01T00:00:00Z"^^xsd:dateTime .
+
+<https://w3id.org/ecoweaver/warp/statement/assessor-d-0412-ref/recordMetadata> a warp:EcoRecordMetadata ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/assessor-d-0412-ref-annotation> .
+
+stmt:assessor-d-0517-fed a warp:CriteriaStatement ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/assessor-d-0517-fed-author> ;
+    warp:direction <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#disputes> ;
+    warp:hasEvidenceLines <https://w3id.org/ecoweaver/warp/el/assessor-d-0517-fed-1> ;
+    warp:modality <https://w3id.org/ecoweaver/warp/ModalityEnum#observed> ;
+    warp:object <https://w3id.org/ecoweaver/warp/concept/degraded_area> ;
+    warp:predicate warp:does_not_qualify_as ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/statement/assessor-d-0517-fed/predicate_qualifiers> ;
+    warp:proposition prop:093dff0cf91f ;
+    warp:recordMetadata <https://w3id.org/ecoweaver/warp/statement/assessor-d-0517-fed/recordMetadata> ;
+    warp:reportedIn doc:assessment-report-d ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
+    warp:statementText "Illustrative: site 0517's decline is not human-caused, so it does not qualify under the federal draft." ;
+    warp:subject site:0517 .
+
+<https://w3id.org/ecoweaver/warp/statement/assessor-d-0517-fed/predicate_qualifiers> a warp:CriteriaQualifiers ;
+    warp:assessed_period <https://w3id.org/ecoweaver/warp/statement/assessor-d-0517-fed/predicate_qualifiers/assessed_period> ;
+    warp:assessment_method <https://w3id.org/ecoweaver/warp/AssessmentMethodEnum#field_assessment> ;
+    warp:criteria_set <https://w3id.org/ecoweaver/warp/criteria/degraded-area/fed-draft-1> .
+
+<https://w3id.org/ecoweaver/warp/statement/assessor-d-0517-fed/predicate_qualifiers/assessed_period> a warp:Period ;
+    warp:end "2023" ;
+    warp:end_lower_bound "2023-01-01T00:00:00Z"^^xsd:dateTime ;
+    warp:end_upper_bound "2024-01-01T00:00:00Z"^^xsd:dateTime ;
+    warp:start "2023" ;
+    warp:start_lower_bound "2023-01-01T00:00:00Z"^^xsd:dateTime ;
+    warp:start_upper_bound "2024-01-01T00:00:00Z"^^xsd:dateTime .
+
+<https://w3id.org/ecoweaver/warp/statement/assessor-d-0517-fed/recordMetadata> a warp:EcoRecordMetadata ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/assessor-d-0517-fed-annotation> .
+
+stmt:assessor-d-0517-ref a warp:CriteriaStatement ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/assessor-d-0517-ref-author> ;
+    warp:direction <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
+    warp:hasEvidenceLines <https://w3id.org/ecoweaver/warp/el/assessor-d-0517-ref-1> ;
+    warp:modality <https://w3id.org/ecoweaver/warp/ModalityEnum#observed> ;
+    warp:object <https://w3id.org/ecoweaver/warp/concept/degraded_area> ;
+    warp:predicate warp:qualifies_as ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/statement/assessor-d-0517-ref/predicate_qualifiers> ;
+    warp:proposition prop:9b5c70df8184 ;
+    warp:recordMetadata <https://w3id.org/ecoweaver/warp/statement/assessor-d-0517-ref/recordMetadata> ;
+    warp:reportedIn doc:assessment-report-d ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
+    warp:statementText "Illustrative: site 0517 departed from its reference ecosystem in 2023." ;
+    warp:subject site:0517 .
+
+<https://w3id.org/ecoweaver/warp/statement/assessor-d-0517-ref/predicate_qualifiers> a warp:CriteriaQualifiers ;
+    warp:assessed_period <https://w3id.org/ecoweaver/warp/statement/assessor-d-0517-ref/predicate_qualifiers/assessed_period> ;
+    warp:assessment_method <https://w3id.org/ecoweaver/warp/AssessmentMethodEnum#field_assessment> ;
+    warp:criteria_set <https://w3id.org/ecoweaver/warp/criteria/degraded-area/ref-ecosystem-1> .
+
+<https://w3id.org/ecoweaver/warp/statement/assessor-d-0517-ref/predicate_qualifiers/assessed_period> a warp:Period ;
+    warp:end "2023" ;
+    warp:end_lower_bound "2023-01-01T00:00:00Z"^^xsd:dateTime ;
+    warp:end_upper_bound "2024-01-01T00:00:00Z"^^xsd:dateTime ;
+    warp:start "2023" ;
+    warp:start_lower_bound "2023-01-01T00:00:00Z"^^xsd:dateTime ;
+    warp:start_upper_bound "2024-01-01T00:00:00Z"^^xsd:dateTime .
+
+<https://w3id.org/ecoweaver/warp/statement/assessor-d-0517-ref/recordMetadata> a warp:EcoRecordMetadata ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/assessor-d-0517-ref-annotation> .
+
+stmt:assessor-e-0412-fed a warp:CriteriaStatement ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/assessor-e-0412-fed-author> ;
+    warp:direction <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#disputes> ;
+    warp:hasEvidenceLines <https://w3id.org/ecoweaver/warp/el/assessor-e-0412-fed-1> ;
+    warp:modality <https://w3id.org/ecoweaver/warp/ModalityEnum#observed> ;
+    warp:object <https://w3id.org/ecoweaver/warp/concept/degraded_area> ;
+    warp:predicate warp:does_not_qualify_as ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/statement/assessor-e-0412-fed/predicate_qualifiers> ;
+    warp:proposition prop:e17519ff723f ;
+    warp:recordMetadata <https://w3id.org/ecoweaver/warp/statement/assessor-e-0412-fed/recordMetadata> ;
+    warp:reportedIn doc:assessment-report-e ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
+    warp:statementText "Illustrative: site 0412 did not fall below the federal draft threshold in 2023." ;
+    warp:subject site:0412 .
+
+<https://w3id.org/ecoweaver/warp/statement/assessor-e-0412-fed/predicate_qualifiers> a warp:CriteriaQualifiers ;
+    warp:assessed_period <https://w3id.org/ecoweaver/warp/statement/assessor-e-0412-fed/predicate_qualifiers/assessed_period> ;
+    warp:assessment_method <https://w3id.org/ecoweaver/warp/AssessmentMethodEnum#remote_sensing> ;
+    warp:criteria_set <https://w3id.org/ecoweaver/warp/criteria/degraded-area/fed-draft-1> .
+
+<https://w3id.org/ecoweaver/warp/statement/assessor-e-0412-fed/predicate_qualifiers/assessed_period> a warp:Period ;
+    warp:end "2023" ;
+    warp:end_lower_bound "2023-01-01T00:00:00Z"^^xsd:dateTime ;
+    warp:end_upper_bound "2024-01-01T00:00:00Z"^^xsd:dateTime ;
+    warp:start "2023" ;
+    warp:start_lower_bound "2023-01-01T00:00:00Z"^^xsd:dateTime ;
+    warp:start_upper_bound "2024-01-01T00:00:00Z"^^xsd:dateTime .
+
+<https://w3id.org/ecoweaver/warp/statement/assessor-e-0412-fed/recordMetadata> a warp:EcoRecordMetadata ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/assessor-e-0412-fed-annotation> .
+
 stmt:burn-avoid-agency a warp:RecommendationStatement ;
     warp:contributions <https://w3id.org/ecoweaver/warp/contrib/burn-avoid-agency-author> ;
     warp:justified_by prop:247fc9907bf5 ;
@@ -1341,6 +1840,35 @@ stmt:burn-do-practitioner a warp:RecommendationStatement ;
 
 <https://w3id.org/ecoweaver/warp/statement/burn-study-c1/recordMetadata> a warp:EcoRecordMetadata ;
     warp:contributions <https://w3id.org/ecoweaver/warp/contrib/burn-study-c1-annotation> .
+
+stmt:ecoweaver-project-0517-effective a warp:CriteriaStatement ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/ecoweaver-project-0517-author> ;
+    warp:direction <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#neutral> ;
+    warp:modality <https://w3id.org/ecoweaver/warp/ModalityEnum#inferred> ;
+    warp:object <https://w3id.org/ecoweaver/warp/concept/effective_restoration> ;
+    warp:predicate warp:assessed_against ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/statement/ecoweaver-project-0517-effective/predicate_qualifiers> ;
+    warp:proposition prop:98c90f1839c7 ;
+    warp:recordMetadata <https://w3id.org/ecoweaver/warp/statement/ecoweaver-project-0517-effective/recordMetadata> ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
+    warp:statementText "Illustrative: applying the federal draft effectiveness definition to the site 0517 monitoring data was inconclusive." ;
+    warp:subject proj:71e3dff9f480 .
+
+<https://w3id.org/ecoweaver/warp/statement/ecoweaver-project-0517-effective/predicate_qualifiers> a warp:CriteriaQualifiers ;
+    warp:assessed_period <https://w3id.org/ecoweaver/warp/statement/ecoweaver-project-0517-effective/predicate_qualifiers/assessed_period> ;
+    warp:assessment_method <https://w3id.org/ecoweaver/warp/AssessmentMethodEnum#rule_applied> ;
+    warp:criteria_set <https://w3id.org/ecoweaver/warp/criteria/effective-restoration/fed-draft-1> .
+
+<https://w3id.org/ecoweaver/warp/statement/ecoweaver-project-0517-effective/predicate_qualifiers/assessed_period> a warp:Period ;
+    warp:end "2026" ;
+    warp:end_lower_bound "2026-01-01T00:00:00Z"^^xsd:dateTime ;
+    warp:end_upper_bound "2027-01-01T00:00:00Z"^^xsd:dateTime ;
+    warp:start "2026" ;
+    warp:start_lower_bound "2026-01-01T00:00:00Z"^^xsd:dateTime ;
+    warp:start_upper_bound "2027-01-01T00:00:00Z"^^xsd:dateTime .
+
+<https://w3id.org/ecoweaver/warp/statement/ecoweaver-project-0517-effective/recordMetadata> a warp:EcoRecordMetadata ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/ecoweaver-project-0517-record> .
 
 stmt:eive-taxon-r a warp:ToleranceStatement ;
     warp:contributions <https://w3id.org/ecoweaver/warp/contrib/eive-taxon-r-author> ;
@@ -1439,6 +1967,35 @@ stmt:flora-spartina-habitat a warp:ToleranceStatement ;
 
 <https://w3id.org/ecoweaver/warp/statement/flora-spartina-habitat/recordMetadata> a warp:EcoRecordMetadata ;
     warp:contributions <https://w3id.org/ecoweaver/warp/contrib/flora-spartina-habitat-annotation> .
+
+<https://w3id.org/ecoweaver/warp/statement/funder-0412/predicate_qualifiers> a warp:ImplementationQualifiers ;
+    warp:area_treated <https://w3id.org/ecoweaver/warp/statement/funder-0412/predicate_qualifiers/area_treated> ;
+    warp:external_ids <https://w3id.org/ecoweaver/warp/statement/funder-0412/predicate_qualifiers/external_ids/0> ;
+    warp:funded_by <https://w3id.org/ecoweaver/warp/agent/org/funder-b> ;
+    warp:period <https://w3id.org/ecoweaver/warp/statement/funder-0412/predicate_qualifiers/period> ;
+    warp:reported_on "2026-01-15" ;
+    warp:reported_on_lower_bound "2026-01-15T00:00:00Z"^^xsd:dateTime ;
+    warp:reported_on_upper_bound "2026-01-16T00:00:00Z"^^xsd:dateTime ;
+    warp:status <https://w3id.org/ecoweaver/warp/ImplementationStatusEnum#in_progress> .
+
+<https://w3id.org/ecoweaver/warp/statement/funder-0412/predicate_qualifiers/area_treated> a warp:Quantity ;
+    warp:unit TODO:unit_hectare ;
+    warp:value "40"^^xsd:float .
+
+<https://w3id.org/ecoweaver/warp/statement/funder-0412/predicate_qualifiers/external_ids/0> a warp:ExternalId ;
+    warp:scheme "agreement" ;
+    warp:value "0412" .
+
+<https://w3id.org/ecoweaver/warp/statement/funder-0412/predicate_qualifiers/period> a warp:Period ;
+    warp:end "2027-10" ;
+    warp:end_lower_bound "2027-10-01T00:00:00Z"^^xsd:dateTime ;
+    warp:end_upper_bound "2027-11-01T00:00:00Z"^^xsd:dateTime ;
+    warp:start "2024-06" ;
+    warp:start_lower_bound "2024-06-01T00:00:00Z"^^xsd:dateTime ;
+    warp:start_upper_bound "2024-07-01T00:00:00Z"^^xsd:dateTime .
+
+<https://w3id.org/ecoweaver/warp/statement/funder-0412/recordMetadata> a warp:EcoRecordMetadata ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/funder-0412-annotation> .
 
 stmt:fwc-invasive-program a warp:CostStatement ;
     warp:contributions <https://w3id.org/ecoweaver/warp/contrib/fwc-invasive-program-author> ;
@@ -1594,6 +2151,53 @@ stmt:hsi-y-temperature a warp:ToleranceStatement ;
     causal_mosaic:duration_text "One mosquito season (May-October 1992) after the 6-week project ended in late 1991." ;
     causal_mosaic:observation_grain "Five 400 ml dips per inundated monitoring station after each high tide cycle" ;
     causal_mosaic:observation_seasons "May-October" .
+
+<https://w3id.org/ecoweaver/warp/statement/land-trust-0412/predicate_qualifiers> a warp:ImplementationQualifiers ;
+    warp:area_treated <https://w3id.org/ecoweaver/warp/statement/land-trust-0412/predicate_qualifiers/area_treated> ;
+    warp:external_ids <https://w3id.org/ecoweaver/warp/statement/land-trust-0412/predicate_qualifiers/external_ids/0> ;
+    warp:implemented_by <https://w3id.org/ecoweaver/warp/agent/org/land-trust-a> ;
+    warp:period <https://w3id.org/ecoweaver/warp/statement/land-trust-0412/predicate_qualifiers/period> ;
+    warp:reported_on "2026-03-31" ;
+    warp:reported_on_lower_bound "2026-03-31T00:00:00Z"^^xsd:dateTime ;
+    warp:reported_on_upper_bound "2026-04-01T00:00:00Z"^^xsd:dateTime ;
+    warp:status <https://w3id.org/ecoweaver/warp/ImplementationStatusEnum#in_progress> .
+
+<https://w3id.org/ecoweaver/warp/statement/land-trust-0412/predicate_qualifiers/area_treated> a warp:Quantity ;
+    warp:unit TODO:unit_hectare ;
+    warp:value "42"^^xsd:float .
+
+<https://w3id.org/ecoweaver/warp/statement/land-trust-0412/predicate_qualifiers/external_ids/0> a warp:ExternalId ;
+    warp:scheme "agreement" ;
+    warp:value "0412" .
+
+<https://w3id.org/ecoweaver/warp/statement/land-trust-0412/predicate_qualifiers/period> a warp:Period ;
+    warp:start "2024-05" ;
+    warp:start_lower_bound "2024-05-01T00:00:00Z"^^xsd:dateTime ;
+    warp:start_upper_bound "2024-06-01T00:00:00Z"^^xsd:dateTime .
+
+<https://w3id.org/ecoweaver/warp/statement/land-trust-0412/recordMetadata> a warp:EcoRecordMetadata ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/land-trust-0412-annotation> .
+
+<https://w3id.org/ecoweaver/warp/statement/land-trust-0517/predicate_qualifiers> a warp:ImplementationQualifiers ;
+    warp:area_treated <https://w3id.org/ecoweaver/warp/statement/land-trust-0517/predicate_qualifiers/area_treated> ;
+    warp:implemented_by <https://w3id.org/ecoweaver/warp/agent/org/land-trust-a> ;
+    warp:period <https://w3id.org/ecoweaver/warp/statement/land-trust-0517/predicate_qualifiers/period> ;
+    warp:reported_on "2026-02-01" ;
+    warp:reported_on_lower_bound "2026-02-01T00:00:00Z"^^xsd:dateTime ;
+    warp:reported_on_upper_bound "2026-02-02T00:00:00Z"^^xsd:dateTime ;
+    warp:status <https://w3id.org/ecoweaver/warp/ImplementationStatusEnum#maintained> .
+
+<https://w3id.org/ecoweaver/warp/statement/land-trust-0517/predicate_qualifiers/area_treated> a warp:Quantity ;
+    warp:unit TODO:unit_hectare ;
+    warp:value "25"^^xsd:float .
+
+<https://w3id.org/ecoweaver/warp/statement/land-trust-0517/predicate_qualifiers/period> a warp:Period ;
+    warp:start "2025-04" ;
+    warp:start_lower_bound "2025-04-01T00:00:00Z"^^xsd:dateTime ;
+    warp:start_upper_bound "2025-05-01T00:00:00Z"^^xsd:dateTime .
+
+<https://w3id.org/ecoweaver/warp/statement/land-trust-0517/recordMetadata> a warp:EcoRecordMetadata ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/land-trust-0517-annotation> .
 
 <https://w3id.org/ecoweaver/warp/statement/land-trust-strategy-follow-up-labour/predicate_qualifiers> a warp:CostQualifiers ;
     warp:cost_basis <https://w3id.org/ecoweaver/warp/CostBasisEnum#actual_expenditure> ;
@@ -2150,6 +2754,16 @@ node:water_conservation_measures_milk_river warp:recommended_to_achieve node:mai
 
 node:water_extraction_milk_river camo:prevents node:habitat_quantity_of_mountain_sucker_milk_river .
 
+<https://w3id.org/ecoweaver/warp/agent/org/assessor-c> a warp:EcoAgent ;
+    warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#researcher> ;
+    warp:agent_subtype "organization" ;
+    warp:name "TODO: assessor C" .
+
+<https://w3id.org/ecoweaver/warp/agent/org/federal-department> a warp:EcoAgent ;
+    warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#organization> ;
+    warp:agent_subtype "organization" ;
+    warp:name "TODO: a federal department (fictional definition)" .
+
 <https://w3id.org/ecoweaver/warp/agent/org/usace> a warp:EcoAgent ;
     warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#organization> ;
     warp:agent_subtype "organization" ;
@@ -2168,18 +2782,40 @@ node:water_extraction_milk_river camo:prevents node:habitat_quantity_of_mountain
 <https://w3id.org/ecoweaver/warp/dataset/murphy2005> a warp:EcoDataSet ;
     warp:version "TODO" .
 
+doc:assessment-report-c a warp:EcoDocument ;
+    warp:title "TODO: assessor C's site assessments" .
+
 doc:burn-study a warp:EcoDocument ;
     warp:title "TODO: a field study of prescribed burning and shrub cover" .
+
+doc:definition-consultation-paper a warp:EcoDocument ;
+    warp:title "TODO: a consultation paper (fictional definitions)" .
 
 doc:kramer1995 a warp:EcoDocument ;
     warp:description "Journal of the American Mosquito Control Association 11(4):389-395, 1995." ;
     warp:title "Reduction of Aedes dorsalis by enhancing tidal action in a northern California marsh" .
+
+doc:land-trust-report-2026 a warp:EcoDocument ;
+    warp:title "TODO: land trust annual report" .
 
 doc:notebook-entry-3 a warp:EcoDocument ;
     warp:subtype <https://w3id.org/ecoweaver/warp/doc/notebook-entry-3/subtype> .
 
 doc:nwpl a warp:EcoDocument ;
     warp:title "TODO: National Wetland Plant List, regional ratings" .
+
+prop:093dff0cf91f a warp:CriteriaProposition ;
+    warp:derived_from_statements stmt:assessor-d-0517-fed ;
+    warp:identity_key "criteria|site:0517|qualifies_as|degraded_area|affirmed|assertional|predicate_qualifiers.criteria_set=\"crit:degraded-area/fed-draft-1\"|predicate_qualifiers.assessed_period={\"end\":\"2023\",\"start\":\"2023\"}" ;
+    warp:identity_rule_version "warp-criteria-identity/1" ;
+    warp:negated false ;
+    warp:object <https://w3id.org/ecoweaver/warp/concept/degraded_area> ;
+    warp:predicate warp:assessed_against ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/prop/093dff0cf91f/predicate_qualifiers> ;
+    warp:propositionText "In a particular case, site 0517 qualifies as degraded_area." ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
+    warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
+    warp:subject site:0517 .
 
 prop:0a2c8c5cbc76 a warp:CostProposition ;
     warp:derived_from_statements <https://w3id.org/ecoweaver/warp/statement/transfer/warp-cost-transfer-1/land-trust-strategy-total> ;
@@ -2337,6 +2973,19 @@ prop:8bcd4cb76ab0 a warp:ToleranceProposition ;
     warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
     warp:subject node:fish_taxon_y .
 
+prop:9b5c70df8184 a warp:CriteriaProposition ;
+    warp:derived_from_statements stmt:assessor-d-0517-ref ;
+    warp:identity_key "criteria|site:0517|qualifies_as|degraded_area|affirmed|assertional|predicate_qualifiers.criteria_set=\"crit:degraded-area/ref-ecosystem-1\"|predicate_qualifiers.assessed_period={\"end\":\"2023\",\"start\":\"2023\"}" ;
+    warp:identity_rule_version "warp-criteria-identity/1" ;
+    warp:negated false ;
+    warp:object <https://w3id.org/ecoweaver/warp/concept/degraded_area> ;
+    warp:predicate warp:assessed_against ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/prop/9b5c70df8184/predicate_qualifiers> ;
+    warp:propositionText "In a particular case, site 0517 qualifies as degraded_area." ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
+    warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
+    warp:subject site:0517 .
+
 prop:9c043c560227 a warp:RecommendationProposition ;
     warp:derived_from_statements stmt:burn-do-plan,
         stmt:burn-do-practitioner ;
@@ -2350,6 +2999,19 @@ prop:9c043c560227 a warp:RecommendationProposition ;
     warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#prototypical> ;
     warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
     warp:subject node:prescribed_burning_of_grassland .
+
+prop:a309012ef67d a warp:CriteriaProposition ;
+    warp:derived_from_statements stmt:assessor-d-0412-ref ;
+    warp:identity_key "criteria|site:0412|qualifies_as|degraded_area|affirmed|assertional|predicate_qualifiers.criteria_set=\"crit:degraded-area/ref-ecosystem-1\"|predicate_qualifiers.assessed_period={\"end\":\"2023\",\"start\":\"2023\"}" ;
+    warp:identity_rule_version "warp-criteria-identity/1" ;
+    warp:negated false ;
+    warp:object <https://w3id.org/ecoweaver/warp/concept/degraded_area> ;
+    warp:predicate warp:assessed_against ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/prop/a309012ef67d/predicate_qualifiers> ;
+    warp:propositionText "In a particular case, agreement site 0412 qualifies as degraded_area." ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
+    warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
+    warp:subject site:0412 .
 
 prop:a685acd466a3 a warp:ToleranceProposition ;
     warp:derived_from_statements stmt:flora-bogr-saturation ;
@@ -2374,6 +3036,41 @@ prop:aea4ac8269ae a warp:CausalProposition ;
     warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
     warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
     warp:subject node:planting_of_sanguinaria_canadensis .
+
+prop:agreement-0412 a warp:ImplementationProposition ;
+    IAO:0000136 proj:agreement-0412 ;
+    warp:area_by_claimant <https://w3id.org/ecoweaver/warp/prop/agreement-0412/area_by_claimant/0>,
+        <https://w3id.org/ecoweaver/warp/prop/agreement-0412/area_by_claimant/1> ;
+    warp:derived_from_statements stmt:funder-0412,
+        stmt:land-trust-0412 ;
+    warp:external_ids <https://w3id.org/ecoweaver/warp/prop/agreement-0412/external_ids/0> ;
+    warp:funded_by <https://w3id.org/ecoweaver/warp/agent/org/funder-b> ;
+    warp:identity_key "stmt:funder-0412 + stmt:land-trust-0412" ;
+    warp:identity_rule_version "warp-impl-identity/1" ;
+    warp:implemented_by <https://w3id.org/ecoweaver/warp/agent/org/land-trust-a> ;
+    warp:negated false ;
+    warp:object site:0412 ;
+    warp:period <https://w3id.org/ecoweaver/warp/prop/agreement-0412/period> ;
+    warp:predicate warp:carried_out_at ;
+    warp:propositionText "In a particular case, node:strategy-f38f3a2661ee was carried out at Agreement site 0412." ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
+    warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
+    warp:status_by_claimant <https://w3id.org/ecoweaver/warp/prop/agreement-0412/status_by_claimant/0>,
+        <https://w3id.org/ecoweaver/warp/prop/agreement-0412/status_by_claimant/1> ;
+    warp:subject node:strategy-f38f3a2661ee .
+
+prop:bbc212383aad a warp:CriteriaProposition ;
+    warp:derived_from_statements stmt:assessor-c-project-0412-effective ;
+    warp:identity_key "criteria|proj:agreement-0412|qualifies_as|effective_restoration|affirmed|assertional|predicate_qualifiers.criteria_set=\"crit:effective-restoration/fed-draft-1\"|predicate_qualifiers.assessed_period={\"end\":\"2026\",\"start\":\"2026\"}" ;
+    warp:identity_rule_version "warp-criteria-identity/1" ;
+    warp:negated false ;
+    warp:object <https://w3id.org/ecoweaver/warp/concept/effective_restoration> ;
+    warp:predicate warp:assessed_against ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/prop/bbc212383aad/predicate_qualifiers> ;
+    warp:propositionText "In a particular case, proj:agreement-0412 qualifies as effective_restoration." ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
+    warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
+    warp:subject proj:agreement-0412 .
 
 prop:e73587275d57 a warp:CausalProposition ;
     warp:derived_from_statements stmt:inpa-wattle-seedlings-persist ;
@@ -2557,21 +3254,26 @@ node:tidal_restoration_of_marsh camo:prevents node:volumetric_density_of_ochlero
     warp:agent_subtype "organization" ;
     warp:name "TODO: a regional conservation agency" .
 
+<https://w3id.org/ecoweaver/warp/agent/org/assessor-d> a warp:EcoAgent ;
+    warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#researcher> ;
+    warp:agent_subtype "organization" ;
+    warp:name "TODO: assessor D" .
+
 <https://w3id.org/ecoweaver/warp/agent/org/israel-nature-parks-authority> a warp:EcoAgent ;
     warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#organization> ;
     warp:agent_subtype "organization" ;
     warp:name "Israel Nature and Parks Authority" .
 
-<https://w3id.org/ecoweaver/warp/agent/org/land-trust-a> a warp:EcoAgent ;
-    warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#organization> ;
-    warp:agent_subtype "organization" ;
-    warp:name "TODO: a land trust (source A)" .
-
 doc:agency-c-costings a warp:EcoDocument ;
     warp:title "TODO: an agency's wattle removal costings" .
 
+doc:assessment-report-d a warp:EcoDocument ;
+    warp:title "TODO: assessor D's site assessments" .
+
 doc:project-report-x a warp:EcoDocument ;
     warp:title "TODO: project report X (source A)" .
+
+proj:agreement-0412 warp:qualifies_as <https://w3id.org/ecoweaver/warp/criteria/effective-restoration/fed-draft-1> .
 
 prop:4f9905a0d7a2 a warp:CausalProposition ;
     warp:derived_from_statements stmt:ms-11-causal ;
@@ -2634,6 +3336,19 @@ prop:c16be9de6aa6 a warp:CausalProposition ;
     warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
     warp:subject node:water_extraction_milk_river .
 
+stmt:funder-0412 a warp:ImplementationStatement ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/funder-0412-author> ;
+    warp:modality <https://w3id.org/ecoweaver/warp/ModalityEnum#observed> ;
+    warp:object site:0412 ;
+    warp:predicate warp:carried_out_at ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/statement/funder-0412/predicate_qualifiers> ;
+    warp:proposition prop:agreement-0412 ;
+    warp:recordMetadata <https://w3id.org/ecoweaver/warp/statement/funder-0412/recordMetadata> ;
+    warp:reportedIn doc:funder-report-2026 ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
+    warp:statementText "Illustrative: the funder reports 40 ha under agreement 0412, June 2024 to October 2027." ;
+    warp:subject node:strategy-f38f3a2661ee .
+
 stmt:inpa-wattle-cost a warp:CostStatement ;
     warp:contributions <https://w3id.org/ecoweaver/warp/contrib/inpa-wattle-cost-author> ;
     warp:object <https://w3id.org/ecoweaver/warp/CostCategoryEnum#total> ;
@@ -2654,6 +3369,32 @@ stmt:inpa-wattle-cost a warp:CostStatement ;
     warp:currency "ILS" ;
     warp:price_year 2008 ;
     warp:value 17600.0 .
+
+stmt:land-trust-0412 a warp:ImplementationStatement ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/land-trust-0412-author> ;
+    warp:modality <https://w3id.org/ecoweaver/warp/ModalityEnum#observed> ;
+    warp:object site:0412 ;
+    warp:predicate warp:carried_out_at ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/statement/land-trust-0412/predicate_qualifiers> ;
+    warp:proposition prop:agreement-0412 ;
+    warp:recordMetadata <https://w3id.org/ecoweaver/warp/statement/land-trust-0412/recordMetadata> ;
+    warp:reportedIn doc:land-trust-report-2026 ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
+    warp:statementText "Illustrative: the land trust began recontouring, seeding and mowing on 42 ha of site 0412 in May 2024." ;
+    warp:subject node:strategy-f38f3a2661ee .
+
+stmt:land-trust-0517 a warp:ImplementationStatement ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/land-trust-0517-author> ;
+    warp:modality <https://w3id.org/ecoweaver/warp/ModalityEnum#observed> ;
+    warp:object site:0517 ;
+    warp:predicate warp:carried_out_at ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/statement/land-trust-0517/predicate_qualifiers> ;
+    warp:proposition prop:71e3dff9f480 ;
+    warp:recordMetadata <https://w3id.org/ecoweaver/warp/statement/land-trust-0517/recordMetadata> ;
+    warp:reportedIn doc:land-trust-report-2026 ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
+    warp:statementText "Illustrative: the land trust has maintained 25 ha of site 0517 since April 2025." ;
+    warp:subject node:strategy-f38f3a2661ee .
 
 stmt:land-trust-strategy-follow-up-labour a warp:CostStatement ;
     warp:contributions <https://w3id.org/ecoweaver/warp/contrib/land-trust-follow-up-author> ;
@@ -2733,9 +3474,41 @@ prop:83d87b9d22ad a warp:CausalProposition ;
     warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
     warp:subject node:strategy-f38f3a2661ee .
 
+prop:e17519ff723f a warp:CriteriaProposition ;
+    warp:derived_from_statements stmt:assessor-c-0412-fed,
+        stmt:assessor-e-0412-fed ;
+    warp:identity_key "criteria|site:0412|qualifies_as|degraded_area|affirmed|assertional|predicate_qualifiers.criteria_set=\"crit:degraded-area/fed-draft-1\"|predicate_qualifiers.assessed_period={\"end\":\"2023\",\"start\":\"2023\"}" ;
+    warp:identity_rule_version "warp-criteria-identity/1" ;
+    warp:negated false ;
+    warp:object <https://w3id.org/ecoweaver/warp/concept/degraded_area> ;
+    warp:predicate warp:assessed_against ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/prop/e17519ff723f/predicate_qualifiers> ;
+    warp:propositionText "In a particular case, agreement site 0412 qualifies as degraded_area." ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
+    warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
+    warp:subject site:0412 .
+
 node:manual_removal_of_acacia_saligna warp:incurs_total_cost <https://w3id.org/ecoweaver/warp/statement/agency-c-removal-initial-1/predicate_qualifiers/amount>,
         <https://w3id.org/ecoweaver/warp/statement/agency-c-removal-initial-2/predicate_qualifiers/amount>,
         <https://w3id.org/ecoweaver/warp/statement/agency-c-removal-maintenance/predicate_qualifiers/amount> .
+
+<https://w3id.org/ecoweaver/warp/agent/org/funder-b> a warp:EcoAgent ;
+    warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#organization> ;
+    warp:agent_subtype "organization" ;
+    warp:name "TODO: a funder" .
+
+<https://w3id.org/ecoweaver/warp/criteria/effective-restoration/fed-draft-1> a warp:CriteriaSet ;
+    warp:assessment_basis <https://w3id.org/ecoweaver/warp/AssessmentBasisEnum#trajectory> ;
+    warp:assessment_unit <https://w3id.org/ecoweaver/warp/AssessmentUnitEnum#ecosystem_unit> ;
+    warp:attributes_assessed <https://w3id.org/ecoweaver/warp/EcosystemAttributeEnum#ecosystem_function>,
+        <https://w3id.org/ecoweaver/warp/EcosystemAttributeEnum#species_composition> ;
+    warp:criteria_text "Fictional placeholder: restoration whose site is moving toward its reference condition." ;
+    warp:issued_by <https://w3id.org/ecoweaver/warp/agent/org/federal-department> ;
+    warp:operationalizes <https://w3id.org/ecoweaver/warp/concept/effective_restoration> ;
+    warp:reference_basis <https://w3id.org/ecoweaver/warp/ReferenceBasisEnum#reference_ecosystem> ;
+    warp:specified_in doc:definition-consultation-paper ;
+    warp:status <https://w3id.org/ecoweaver/warp/CriteriaStatusEnum#draft> ;
+    warp:version "draft-1" .
 
 doc:dfo-mountain-sucker-recovery-strategy a warp:EcoDocument ;
     warp:title "TODO: Recovery Strategy for the Mountain Sucker (Catostomus platyrhynchus), Milk River populations" .
@@ -2755,6 +3528,19 @@ prop:question-bloodroot-garlic-mustard a warp:CausalProposition ;
 
 node:bouteloua_gracilis warp:intolerant_of node:wetness_of_soil ;
     warp:tolerates node:ph_of_soil_0_15cm .
+
+<https://w3id.org/ecoweaver/warp/criteria/degraded-area/ref-ecosystem-1> a warp:CriteriaSet ;
+    warp:assessment_unit <https://w3id.org/ecoweaver/warp/AssessmentUnitEnum#site> ;
+    warp:attributes_assessed <https://w3id.org/ecoweaver/warp/EcosystemAttributeEnum#species_composition>,
+        <https://w3id.org/ecoweaver/warp/EcosystemAttributeEnum#structural_diversity> ;
+    warp:criteria_text "Fictional placeholder: an area departing from its reference ecosystem, whatever the cause." ;
+    warp:issued_by <https://w3id.org/ecoweaver/warp/agent/org/provincial-agency> ;
+    warp:operationalizes <https://w3id.org/ecoweaver/warp/concept/degraded_area> ;
+    warp:reference_basis <https://w3id.org/ecoweaver/warp/ReferenceBasisEnum#reference_ecosystem> ;
+    warp:specified_in doc:provincial-definition ;
+    warp:status <https://w3id.org/ecoweaver/warp/CriteriaStatusEnum#adopted> ;
+    warp:threshold_kind <https://w3id.org/ecoweaver/warp/ThresholdKindEnum#categorical_state> ;
+    warp:version "1" .
 
 prop:247fc9907bf5 a warp:CausalProposition ;
     warp:derived_from_statements stmt:burn-study-c1 ;
@@ -2787,22 +3573,54 @@ node:prescribed_burning_of_grassland camo:prevents node:shrub_cover_in_grassland
     warp:advised_against_for node:decrease_in_shrub_cover_in_grassland ;
     warp:recommended_to_achieve node:decrease_in_shrub_cover_in_grassland .
 
+site:0517 warp:does_not_qualify_as <https://w3id.org/ecoweaver/warp/criteria/degraded-area/fed-draft-1> ;
+    warp:qualifies_as <https://w3id.org/ecoweaver/warp/criteria/degraded-area/ref-ecosystem-1> .
+
 node:cut_treat_acacia_saligna_coastal_reserves camo:causes node:native_vegetation_cover_coastal_reserves ;
     warp:incurs_total_cost <https://w3id.org/ecoweaver/warp/statement/inpa-wattle-cost/predicate_qualifiers/amount>,
         <https://w3id.org/ecoweaver/warp/statement/transfer/warp-cost-transfer-1/inpa-wattle-cost/predicate_qualifiers/amount> .
+
+<https://w3id.org/ecoweaver/warp/criteria/degraded-area/fed-draft-1> a warp:CriteriaSet ;
+    warp:assessment_unit <https://w3id.org/ecoweaver/warp/AssessmentUnitEnum#site> ;
+    warp:attributes_assessed <https://w3id.org/ecoweaver/warp/EcosystemAttributeEnum#ecosystem_function>,
+        <https://w3id.org/ecoweaver/warp/EcosystemAttributeEnum#species_composition> ;
+    warp:baseline_date "2000" ;
+    warp:baseline_date_lower_bound "2000-01-01T00:00:00Z"^^xsd:dateTime ;
+    warp:baseline_date_upper_bound "2001-01-01T00:00:00Z"^^xsd:dateTime ;
+    warp:criteria_text "Fictional placeholder: an area whose condition has declined below a fraction of its condition at the baseline date, through human activity." ;
+    warp:human_caused true ;
+    warp:issued_by <https://w3id.org/ecoweaver/warp/agent/org/federal-department> ;
+    warp:operationalizes <https://w3id.org/ecoweaver/warp/concept/degraded_area> ;
+    warp:reference_basis <https://w3id.org/ecoweaver/warp/ReferenceBasisEnum#historical_baseline> ;
+    warp:specified_in doc:definition-consultation-paper ;
+    warp:status <https://w3id.org/ecoweaver/warp/CriteriaStatusEnum#draft> ;
+    warp:threshold_kind <https://w3id.org/ecoweaver/warp/ThresholdKindEnum#fraction_of_reference> ;
+    warp:threshold_text "TODO: the threshold, verbatim from the source" ;
+    warp:version "draft-1" .
+
+site:0412 warp:does_not_qualify_as <https://w3id.org/ecoweaver/warp/criteria/degraded-area/fed-draft-1> ;
+    warp:qualifies_as <https://w3id.org/ecoweaver/warp/criteria/degraded-area/fed-draft-1>,
+        <https://w3id.org/ecoweaver/warp/criteria/degraded-area/ref-ecosystem-1> .
+
+node:spartina_pectinata RO:0002303 node:wet_meadow ;
+    warp:intolerant_of node:texture_class_of_soil ;
+    warp:prefers node:wetness_of_soil .
 
 <https://w3id.org/ecoweaver/warp/agent/ecoweaver-synthesis> a warp:EcoAgent ;
     warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#synthesis_pipeline> ;
     warp:agent_subtype "software" ;
     warp:name "EcoWeaver synthesis pipeline" .
 
-node:spartina_pectinata RO:0002303 node:wet_meadow ;
-    warp:intolerant_of node:texture_class_of_soil ;
-    warp:prefers node:wetness_of_soil .
-
 node:wetness_of_soil camo:causes node:root_anoxia_of_bouteloua_gracilis .
 
+<https://w3id.org/ecoweaver/warp/agent/org/land-trust-a> a warp:EcoAgent ;
+    warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#organization> ;
+    warp:agent_subtype "organization" ;
+    warp:name "TODO: a land trust (source A)" .
+
 node:strategy-f38f3a2661ee camo:causes node:native_plant_cover ;
+    warp:carried_out_at site:0412,
+        site:0517 ;
     warp:incurs_labour_cost <https://w3id.org/ecoweaver/warp/statement/land-trust-strategy-follow-up-labour/predicate_qualifiers/effort/0>,
         <https://w3id.org/ecoweaver/warp/statement/transfer/warp-cost-transfer-1/land-trust-strategy-follow-up-labour/predicate_qualifiers/amount> ;
     warp:incurs_total_cost <https://w3id.org/ecoweaver/warp/statement/land-trust-strategy-total/predicate_qualifiers/amount>,

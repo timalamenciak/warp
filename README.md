@@ -7,7 +7,7 @@ Core Information Model and reuses the
 [Causal Mosaic (CAMO)](https://github.com/timalamenciak/causalmosaic) for
 causal statements.
 
-Status: draft 0.6.0. The worked example is illustrative; its citation, quotes
+Status: draft 0.7.0. The worked example is illustrative; its citation, quotes
 and numbers are placeholders.
 
 **How-to guides**

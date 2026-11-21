@@ -566,3 +566,48 @@ job in `scripts/clean_owl.py`; when one is fixed upstream, delete the job.
       scales, `TODO:protected_area`, `TODO:place_project_x_site`,
       `place:mediterranean-coastal-israel`, and the full citations of Oron and
       Hamod 2008 and the Florida allocations.
+
+### 8.9 Sites, implementation and definitions (proposal section 9)
+
+- [ ] **Q1 Particulars in the node layer, for Lars.** D11 answers the
+      mechanical half: particulars are individuals under their own prefixes
+      (`site:`, `proj:`), never classes, and `check_owl.py` enforces it. What
+      is left for him is the modelling half: whether sites belong in the node
+      layer at all, or in a separate collection like documents. Ask first
+      (it is the only Lars question that could cause rework).
+- [ ] **Q2 Spatial identity.** When do two site records describe the same
+      place? v1 matches shared site IDs and external IDs only. A candidate
+      report for overlapping exact geometries needs a geometry library, which
+      is not a dependency: ask before adding one.
+- [ ] **Q4 Element vocabulary.** `EcosystemAttributeEnum` uses SER's six
+      attributes and is marked provisional: IUCN Red List of Ecosystems
+      criteria, FAO FERM, or whatever the federal process settles on?
+- [ ] **Q5 Counting rules.** Does planned work count as "under
+      restoration" (`--include-planned`)? Area treated or site area? Should
+      contested sites count (`report_target2.py` reports the bucket)?
+- [ ] **Q6 Automated verdicts.** How they enter is settled (a criteria
+      statement by EcoWeaver, `assessment_method: rule_applied`, never an
+      axiom). Whether a reporting policy counts them, or uses them only to
+      flag candidates, is not ours to settle.
+- [ ] **Q7 FERM and CMP.** Map to FERM and CMP Open Standards so registries
+      can be imported.
+- [ ] **Q8 Reporting without exposure.** Roll-ups over restricted records:
+      `report_target2.py` counts them and lists them only with
+      `--show-restricted`. Who authorizes that under CARE?
+- [ ] **Phase 7 placeholders.** `TODO:grassland` (an ENVO grassland term),
+      the site geometry (a placeholder square), the three FICTIONAL criteria
+      sets and their `TODO` threshold text, and every agent and document in
+      `examples/implementation_statements.yaml`.
+
+### 8.10 Lars: one conversation, after Phase 7 (Q14)
+
+Send `docs/rdf-owl.md` and the generated Turtle (`project/nodes.ttl`,
+`sites.ttl`, `projects.ttl`, `axioms.ttl`), not the proposals. In this order:
+
+1. Particulars in the node layer (8.9 Q1).
+2. Tolerance as a BFO disposition (8.7 Q2).
+3. Part-to-part `precedes` relations on strategies (8.6 Q6).
+4. Scope of forward-looking guidance (8.5 Q5).
+
+Do not put "should prototypical project to OWL" on the list: OWL 2 has no
+defaults, so the answer is settled.
