@@ -8,10 +8,14 @@ slot and enum is `warp-0.4-reference.html`; the graph contract is
 
 ## Running the build
 
-- `make all` runs templates → patterns → nodes → derive → validate → check →
-  gen → test. It takes a few minutes, mostly `gen-owl` and `gen-json-schema`.
-- `make test` runs the pytest suite in `tests/` (about ten seconds plus one
-  schema load).
+- `make all` runs patterns → vocab → derive → nodes → gen → rdf → owl →
+  validate → check → owl-check → reports → test. It takes five to nine
+  minutes on the development machine.
+- `make test` runs the pytest suite in `tests/` (one to two minutes; some
+  tests read the generated files in `project/`, so run `make all` first after
+  changing the schema).
+- Edit the `Makefile` with a file editor, not a shell heredoc: heredocs in
+  this environment have folded its backslash line continuations.
 - Windows: GNU make is not in Git Bash. Rtools ships one: put
   `/c/rtools45/usr/bin` on `PATH` (`export PATH="$PATH:/c/rtools45/usr/bin"`).
 - `robot` is not on `PATH` on the development machine. `make owl-check` warns
@@ -178,6 +182,35 @@ pipeline, as claimant of `SynthesisAssessment`s, is the agent
 - New slot names: if a slot name already exists elsewhere with a different
   kind of value (literal vs IRI), give the new one its own `slot_uri`, or
   `check_owl.py` will report the IRI as two kinds.
+
+### Derivation (0.7.0)
+
+`make derive`, per statement set: `derive_strategies.py IN OUT` (canonical
+strategies, references rewritten; superseded IDs in `replaces`) →
+`derive_propositions.py OUT OUT` (every group not `warp_derived_by` another
+script) → `derive_projects.py OUT OUT` (implementation group: projects, with
+`proj:` node records). Then `transfer_costs.py` writes
+`examples/cost_statements.transferred.yaml`. Derived IDs that annotators must
+cite (a causal proposition in `justified_by`, a project in a criteria
+statement) are computed by running derivation once and pasting the ID, as the
+examples do. `tests/test_derived_ids.py` fails if any committed derived file
+is stale.
+
+### Group-specific scripts (0.7.0)
+
+- Checks, in `make validate`: `check_tolerance.py` (object kind per
+  predicate, curves), `check_cost.py` (per-predicate cost rules),
+  `check_sites.py` (sites, implementation objects, criteria statements).
+- Reports, in `make reports`: `report_guidance.py`, `report_tolerance.py`,
+  `report_cost_completeness.py`, `report_target2.py`.
+- `expand_nodes.py` also writes strategies (subclass axioms) and, with
+  `--sites`, site individuals; `project_owl.py --projects` writes project
+  individuals.
+- Templates have a `kind` (class_expression, composite, particular) and may
+  list `refinements` (depth, season); `templates_lib.check_template` enforces
+  what each kind needs.
+- `check_statements.py` allows `direction` on a statement class whose schema
+  requires it (criteria verdicts) and enum-valued subjects or objects.
 
 ### Where each kind of OWL entity came from (0.5.0, before the contract)
 

@@ -134,15 +134,22 @@ them. Not verified:
 - [ ] **Windows `make` install commands** (`choco install make`,
       `winget install GnuWin32.Make`): untested. Test one or replace
       with "install GNU make".
-- [ ] **ROBOT EL check** in "Compiling a full database":
-      `robot validate-profile --profile EL --input project/nodes.ttl --output …`.
-      The README says nodes.ttl was checked with ROBOT but not how; run
-      it once and confirm the command.
+- [ ] **ROBOT EL check** in "Compiling a full database". Since 0.6.0 the
+      commands are `make owl-check` (EL for nodes, axioms, sites and projects;
+      DL for the schema and relations). Run it once with ROBOT installed
+      (section 8.3) and update the page to point at the target.
 - [ ] **"Compiling a full database"** describes a merge step that doesn't
       exist (see 7.1). That section is a design proposal. Agree with it
       or rewrite it before anyone follows it.
 - [ ] **"Gotchas"**: confirm each one is a known limitation and not a
       bug you'd rather fix (several are now items in section 7).
+
+### 0.4b Bring the HTML pages up to 0.7.0
+
+The pages in `docs/html/` were written for 0.5.0. They describe two predicate
+groups, rule v3, literal enum values and no RDF output. Update them (or mark
+them as describing 0.5.0) using `README.md`, `docs/predicate-groups.md`,
+`docs/annotation-tests.md` and `docs/rdf-owl.md`, per the table in 0.5.
 
 ### 0.5 Publish
 
@@ -292,7 +299,10 @@ evidence. Revisit if finer terms would change any output.
 - [ ] Confirm semantic unit definitions (assertional, contingent,
       prototypical, universal) against Vogt's own; update `SemanticUnitScopeEnum`.
 - [ ] Identity rule: should any context (ecosystem type, comparator) be part
-      of proposition identity? Bump `RULE_VERSION` if so.
+      of proposition identity? Since 0.6.0 a group can add fields to its key
+      by annotation (`warp_identity_extras`); causal and interaction add none
+      (D1), so their IDs are unchanged. Adding one to them is now a schema
+      change, not a code change, but it moves their IDs.
 - [ ] BFO review of the `quality_of_process_of_population` template
       (PATO quality of a process vs BFO 2020 process profiles).
 - [ ] SSSOM crosswalk between Wikidata QIDs (CAMO `entity_term`) and
@@ -367,6 +377,9 @@ example; a real database needs statements from many sources grouped together.
 
 ### 7.2 Smaller fixes
 
+- [x] **Derivation across groups and files.** `make derive` now derives
+      every set (and strategies, projects, transfers); cross-file references
+      resolve when the files are checked together (0.6.0, 0.7.0).
 - [ ] **Hand-written propositions vanish.** Derivation silently drops any
       existing proposition that isn't `open_question` / `raised_as_question`.
       Warn on stderr, or refuse.
@@ -378,10 +391,15 @@ example; a real database needs statements from many sources grouped together.
       `yaml.safe_dump`, dropping YAML comments. Either accept it and say
       so in the annotation guidance, or switch to `ruamel.yaml`.
 - [ ] **Capitals mid-sentence.** Proposition text inserts node `name`s
-      verbatim ("…prevents Population growth rate…"). Lowercase the first
-      letter of non-proper names, or use the template-generated label.
+      verbatim ("…prevents Population growth rate…"), and lowercases the first
+      letter of a sentence that starts with one, which breaks genus names
+      ("spartina pectinata prefers…"). Use the template-generated label, or a
+      flag on the node for proper names. Changing it changes `propositionText`
+      in every derived file, not any ID.
 - [ ] **Duplicate ids across files.** `check_statements.py` compares
-      duplicate ids within a file only. Compare across all files given.
+      duplicate ids within a file only. Compare across all files given. (The
+      0.7.0 examples repeat a few agents and the EcoWeaver agent identically
+      across files, which a cross-file check should accept.)
 - [ ] **Windows.** `make` is not in Git Bash. Rtools' GNU make works
       (`/c/rtools45/usr/bin`, noted in `CLAUDE.md`); document it for
       contributors in `mechanic.html`, or add a small Python task runner.
@@ -396,18 +414,44 @@ questions" in `warp-proposals-0.4.html`.
 
 ### 8.1 Placeholders to fill (Q12)
 
-Nothing below sits under a real ontology's prefix; `check_values.py` would
-refuse it if it did. Replace each everywhere at once, so one quantity keeps
-one IRI.
+Every `TODO:` placeholder left in `examples/`, `templates/` and the schema
+after 0.7.0. Nothing sits under a real ontology's prefix; `check_values.py`
+would refuse it if it did. Replace each everywhere at once (search the
+repository), so one quantity keeps one IRI.
 
-| Placeholder | What it stands for | Where |
+| Placeholder | Stands for | Where |
 |---|---|---|
+| `TODO:unit_hectare` | hectare (a UO term, else QUDT `unit:HA`) | cost, implementation examples (12 uses) |
+| `TODO:unit_person_day` | person-day of labour | cost example, transfer rule |
+| `TODO:unit_pH` | pH (UO) | tolerance example |
+| `TODO:unit_centimetre` | centimetre (UO) | tolerance example (depth) |
+| `TODO:unit_degree_celsius` | degree Celsius (UO) | tolerance example (HSI curve) |
 | `TODO:planting` | ELMO planting action | bloodroot example, templates |
 | `TODO:tidal_restoration` | ELMO tidal restoration action | Kramer example |
-| `TODO:unit_hectare` | hectare (UO term, else QUDT `unit:HA`) | `docs/values.md`; used from Phase 6 on |
-| `TODO:unit_person_day` | person-day of labour | `docs/values.md`; cost examples |
-| `TODO:unit_pH` | pH (UO) | `docs/values.md`; tolerance examples |
-| `TODO:unit_centimetre` | centimetre (UO) | `docs/values.md`; depth intervals |
+| `TODO:earthworks`, `TODO:hand_seeding`, `TODO:mowing` | ELMO action terms | strategy example |
+| `TODO:native_seed_mix_a`, `TODO:weedy_vegetation` | a seed mix class (under `node:`), a target | strategy example |
+| `TODO:ph`, `TODO:soil_texture` | PATO qualities | tolerance example |
+| `TODO:wet_meadow`, `TODO:grassland` | ENVO habitat and ecosystem terms | tolerance, implementation examples |
+| `TODO:taxon_bouteloua_gracilis`, `TODO:taxon_spartina_pectinata`, `TODO:taxon_x`, `TODO:taxon_y` | NCBITaxon IDs | tolerance example |
+| `TODO:protected_area` | the kind of thing counted (a node or ENVO term) | cost example |
+| `TODO:place_milk_river_drainage`, `TODO:place_project_x_site` | place IRIs (Wikidata or a gazetteer) | recommendation, cost examples |
+
+Locally minted places, to replace with registered IRIs where they exist
+(`docs/values.md`): `place:europe`, `place:mediterranean-coastal-israel`,
+`place:northern-great-plains`, `place:nwpl-great-plains`, `place:nwpl-midwest`.
+
+Free-text `TODO` values (wording, citations, names) are marked in each
+example's comments and agents; they are not CURIEs and are not listed here.
+
+### 8.1b Phase 9 (not in this release, Q15c)
+
+- [ ] **9.1 Feedback-model additions** (lag, measurable state variables,
+      quantitative effect size, self-regulation): touches the causal
+      qualifiers; its own proposal and release.
+- [ ] **9.2 `ThreatAssessment`** and **9.3 rate-of-interaction template**:
+      small and additive, any time.
+- [ ] **9.4 Tolerance importer**: gated on source licences (USDA PLANTS,
+      EIVE, Ellenberg-type values).
 
 ### 8.2 Shared foundations
 

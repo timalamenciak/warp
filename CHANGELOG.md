@@ -14,6 +14,34 @@ The five new predicate groups and three node templates of the 0.4 proposal
 round, built on the 0.6.0 foundations. Schema version 0.7.0; examples'
 `profile_version` 0.7.0. Seven predicate groups in all.
 
+### Phase 8: consolidation
+
+- **README** rewritten for seven predicate groups, management strategies and
+  sites, criteria sets, all four derivation rules (a table of rule, script,
+  key and what is not keyed), the seven example sets, the five reports, the
+  full output table with the IRI spaces, and the layout. Removed claims the
+  work made untrue (two predicate groups; node classes checked with ROBOT).
+- **`docs/annotation-tests.md`**: the annotator's test for every group and for
+  strategies, in one place, with one example each.
+- **`TODOS.md`**: the complete list of `TODO:` placeholders and locally minted
+  places (8.1), Phase 9 recorded as not in this release (Q15c), items this
+  work settled closed or reworded, and an item to bring `docs/html/` up to
+  0.7.0. Open questions stay grouped by proposal with their question numbers
+  (8.5 to 8.9), the Lars conversation in order (8.10), and the candidate
+  LinkML issues behind `clean_owl.py` (8.4).
+- **`CLAUDE.md`**: the derivation chain, the group-specific scripts and the
+  build order as they now are.
+- **Release note.** This round changes what WARP emits as RDF (see 0.6.0):
+  four IRI spaces (`node:` classes; `site:` and `proj:` individuals; the
+  reification layer's `stmt:`, `prop:`, `doc:`, `crit:`, `comp:`, `warp:el/`
+  individuals), WARP IRIs for SEPIO's slots, enum values as IRIs, and
+  `warp:prop/<hash>` with a slash in its local part (write it in full, or as
+  `prop:<hash>`, in hand-written Turtle and SPARQL). The guide's "bump the
+  schema version to 0.4.0" was not done: the work shipped as 0.6.0 and 0.7.0
+  (Q15b).
+- Verified with `make clean` and `make all` on a fresh clone of the branch.
+  ROBOT profile checks were skipped there too (not installed).
+
 ### Phase 7.1: sites
 
 - **`site` template** (`kind: particular`) and **`SiteDefinition`** (is_a
