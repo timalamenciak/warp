@@ -538,3 +538,31 @@ job in `scripts/clean_owl.py`; when one is fixed upstream, delete the job.
       `place:nwpl-great-plains`, `place:nwpl-midwest` in
       `examples/tolerance_statements.yaml`. Every figure there is a
       placeholder.
+
+### 8.8 Cost group (proposal section 8)
+
+- [ ] **Q1 Opportunity and transaction costs.** For conservation agreements
+      a landowner's foregone income is often the largest cost. Add a
+      `cost_type` (financial, opportunity, transaction), or a separate
+      predicate?
+- [ ] **Q2 Confidentiality.** `care` already exists on every statement;
+      decide whether its access levels are enough for a cost to enter a
+      synthesis without being shown.
+- [ ] **Q3 The Iacona workbook.** Compare its fields (Appendix S1) line by
+      line with `CostQualifiers` and `report_cost_completeness.py`'s
+      required / recommended split.
+- [ ] **Q4 Transfer series.** Which price indices, exchange rates and
+      regional wage series (e.g. Statistics Canada CPI and wage series for
+      Canadian transfers)? `config/cost_transfer/warp-cost-transfer-1.yaml`
+      ships obviously fake placeholder tables.
+- [ ] **Q5 Payments as costs.** Evidence of cost to the landowner, or only of
+      what the program pays? The completeness report flags `payment_rate`.
+- [ ] **Q6 Existing protocols.** Align with Cook et al. (2017) and Miradi
+      budget fields.
+- [ ] **A valuation group** (a separate proposal): what an outcome is worth,
+      and to whom.
+- [ ] **Cost placeholders.** The Florida program amount and price year
+      (`stmt:fwc-invasive-program`), the agency C costings' amounts and
+      scales, `TODO:protected_area`, `TODO:place_project_x_site`,
+      `place:mediterranean-coastal-israel`, and the full citations of Oron and
+      Hamod 2008 and the Florida allocations.

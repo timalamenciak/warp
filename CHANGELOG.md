@@ -159,6 +159,83 @@ round, built on the 0.6.0 foundations.
 - New test: every committed `*.derived.yaml` equals a fresh derivation.
 - No existing proposition ID changed.
 
+### Phase 6.1: cost group
+
+- **New predicate group `cost`** (proposal section 8): `CostStatement`,
+  `CostQualifiers`, `CostProposition` (with `CostIdentityQualifiers` for its
+  keyed fields), `MonetaryAmount`, `CostRatio`, and `StatementSet` lists
+  `cost_statements` / `cost_propositions`. Identity extras: `place`,
+  `predicate_qualifiers.phase`, `predicate_qualifiers.reporting_level`.
+- Enums `CostPredicateEnum` (`incurs_cost`, `costs_relative_to`),
+  `CostCategoryEnum` (total, labour, capital_equipment, consumables, overhead,
+  and the sentinel unknown), `CostBehaviourEnum`, `CostPhaseEnum`,
+  `ReportingLevelEnum`, `CostBasisEnum`, `CostAdjustmentEnum`.
+- **Object** is `any_of` a cost category or a node (R16), with no `costcat:`
+  IRIs. `MonetaryAmount` adds `adjustment_base_year` (R5) and
+  `derived_from_amount`; currency is ISO 4217 (`^[A-Z]{3}$`); price year an
+  integer. `CostQualifiers` requires one of amount, effort or ratio (R3);
+  `scale` is required only for `incurs_cost` (R4), in `check_cost.py`.
+  Statement-level `period`, `outcome_reported`, `starting_conditions`,
+  `cost_bearer`, `transferred_from`, `transfer_rule`, `transfer_steps`.
+  `stated_goal` stays on `EcoStudyResult`.
+- **Decision made on your behalf:** an amount with a value needs its price
+  year (error), but an amount with no value is allowed as a record of a
+  figure not yet transcribed, so the Florida budget can say "TODO" without
+  inventing a number. The completeness report flags it and transfer refuses
+  it.
+- **`scripts/check_cost.py`** in `make validate`: the per-predicate rules
+  (incurs_cost needs amount or effort, scale and phase; totals need
+  `includes_categories`; costs_relative_to needs a ratio and a node; amount
+  rules; transfer rule; `covers_roles` against the subject strategy's
+  component roles).
+- **RDF (D16):** `warp:incurs_cost` is abstract, with five category
+  sub-properties carrying `warp:selected_by` their category; the exporter
+  writes `<action> warp:incurs_<category>_cost <amount>`, the amount a named
+  individual (`<statement>/predicate_qualifiers/amount`), and the category IRI
+  as the record's `warp:object`. `export_rdf.py` now handles `any_of` slot
+  values and relation hooks that return a predicate without a triple
+  (propositions). Nothing projects to OWL.
+- `check_statements.py` accepts an enum value as a subject or object where
+  the group's slot allows one (a cost category).
+- **Example** `examples/cost_statements.yaml`: the INPA golden wreath wattle
+  costing with `outcome_reported` (two same-source causal statements, one
+  negated) and `stated_goal` on its study result; the Florida program budget
+  (amount and price year TODO; 46 protected areas as a `Count`); the
+  practitioner's drill-seeding-to-plugs ratio; a whole-project cost on the
+  Phase 4 strategy and a phase-level labour cost with `covers_roles`; and two
+  initial costings that derive one proposition, with a maintenance costing
+  that does not join it.
+
+### Phase 6.2: completeness report and explicit transfer
+
+- **`scripts/report_cost_completeness.py`** (`make reports`):
+  `project/reports/cost_completeness.md` and `.csv`, each cost statement
+  checked against Iacona's five standards plus reporting level and basis,
+  required and recommended fields, a score, and flags for
+  `includes_categories [unknown]`, `payment_rate` (with or without a
+  `cost_bearer`), missing values and transferred statements. `stated_goal`
+  is found through `reportedIn` and the study results.
+- **`scripts/transfer_costs.py`** with the rule
+  `config/cost_transfer/warp-cost-transfer-1.yaml` (obviously fake
+  placeholder price indices, exchange rates and labour rate) and a selection
+  file: new derived cost statements in
+  `examples/cost_statements.transferred.yaml` (claimant EcoWeaver,
+  `modality: inferred`, `transferred_from`, `transfer_rule`,
+  `transfer_steps`, the target `place`, and an amount citing its source
+  amount). Labour is re-priced from effort; other categories indexed or left
+  unchanged per the rule; sources are never modified; costs without a value,
+  currency or price year are refused and reported. IDs carry the rule ID, so
+  a new rule version regenerates them. `make derive` runs it.
+- Docs: the cost group in `docs/predicate-groups.md`; open questions Q1 to
+  Q6 and the valuation group in `TODOS.md`.
+- Tests: identity, every `check_cost` rule, schema validation (one of
+  amount, effort or ratio; ISO currency), the RDF shape (category in the
+  predicate, named amount, no `costcat:`, no `unknown`, transferred amount
+  citing its source), no projection, CPI-only transfer, currency conversion,
+  labour re-pricing, refusals, sources untouched, rule versioning, the
+  generated file current, and the completeness report.
+- No existing proposition ID changed.
+
 ## 0.6.0 (unreleased)
 
 Shared foundations, the identity engine and the RDF/OWL contract, with the two

@@ -14,9 +14,16 @@ STATEMENTS  := examples/bloodroot_statements.yaml \
                examples/kramer1995_statements.yaml \
                examples/recommendation_statements.yaml \
                examples/strategy_statements.yaml \
-               examples/tolerance_statements.yaml
+               examples/tolerance_statements.yaml \
+               examples/cost_statements.yaml
 DERIVED     := $(STATEMENTS:.yaml=.derived.yaml)
 ASSESSMENTS := examples/bloodroot_assessment.yaml examples/kramer1995_assessment.yaml
+
+# Explicit cost transfers (transfer_costs.py): a versioned rule and a
+# selection of source statements, giving a generated set of derived costs.
+TRANSFER_SELECTION := config/cost_transfer/selection.yaml
+TRANSFERRED := examples/cost_statements.transferred.yaml
+ALL_DERIVED  = $(DERIVED) $(TRANSFERRED)
 
 # Enum values are OWL individuals unless an enum says otherwise with
 # `implements:` (predicate enums say owl:ObjectProperty). The flag covers the
@@ -92,22 +99,25 @@ derive:
 	  $(PY) scripts/derive_strategies.py $$f $$d && \
 	  $(PY) scripts/derive_propositions.py $$d $$d || exit 1; \
 	done
+	$(PY) scripts/transfer_costs.py $(DERIVED) --select $(TRANSFER_SELECTION) --out $(TRANSFERRED)
 
-# Shapes and enums (LinkML), every reference resolving (check_refs.py), and
-# the OWL lint over every generated Turtle file (check_owl.py).
+# Shapes and enums (LinkML), every reference resolving (check_refs.py), the
+# OWL lint over every generated Turtle file (check_owl.py), and the groups'
+# own rules (check_tolerance.py, check_cost.py).
 validate: derive gen rdf owl
-	linkml-validate -s $(SCHEMA) -C StatementSet $(STATEMENTS) $(DERIVED) $(ASSESSMENTS)
-	$(PY) scripts/check_refs.py $(STATEMENTS) $(DERIVED) $(ASSESSMENTS)
+	linkml-validate -s $(SCHEMA) -C StatementSet $(STATEMENTS) $(ALL_DERIVED) $(ASSESSMENTS)
+	$(PY) scripts/check_refs.py $(STATEMENTS) $(ALL_DERIVED) $(ASSESSMENTS)
 	$(PY) scripts/check_owl.py $(OWL_FILES)
-	$(PY) scripts/check_tolerance.py $(DERIVED)
+	$(PY) scripts/check_tolerance.py $(ALL_DERIVED)
+	$(PY) scripts/check_cost.py $(ALL_DERIVED)
 
 # What the schema cannot express: Assertion Mode, negation, contribution
 # roles, CARE, references resolving across files (check_statements.py); and
 # identifiers, units, places, scales and dates (check_values.py). Pass files
 # that cite each other together.
 check: derive
-	$(PY) scripts/check_statements.py $(DERIVED) $(ASSESSMENTS)
-	$(PY) scripts/check_values.py $(STATEMENTS) $(DERIVED) $(ASSESSMENTS)
+	$(PY) scripts/check_statements.py $(ALL_DERIVED) $(ASSESSMENTS)
+	$(PY) scripts/check_values.py $(STATEMENTS) $(ALL_DERIVED) $(ASSESSMENTS)
 
 # Warnings about camelCase slot names come from upstream SEPIO and are expected.
 lint:
@@ -128,11 +138,11 @@ gen:
 
 # The reification layer: every statement, proposition, evidence line, ...
 rdf: derive
-	$(PY) scripts/export_rdf.py $(DERIVED) $(ASSESSMENTS) --out project/statements.ttl
+	$(PY) scripts/export_rdf.py $(ALL_DERIVED) $(ASSESSMENTS) --out project/statements.ttl
 
 # The logical layer: class axioms for propositions that pass the gate (D15).
 owl: derive
-	$(PY) scripts/project_owl.py $(DERIVED) $(ASSESSMENTS) --out project/axioms.ttl \
+	$(PY) scripts/project_owl.py $(ALL_DERIVED) $(ASSESSMENTS) --out project/axioms.ttl \
 	  --report project/reports/projection.md
 
 # OWL 2 profiles with ROBOT: EL for the logical layer, DL for the schema and
@@ -155,9 +165,11 @@ owl-check:
 
 # Findings, not validation: project/reports/.
 reports: derive
-	$(PY) scripts/report_guidance.py $(DERIVED) $(ASSESSMENTS) \
+	$(PY) scripts/report_guidance.py $(ALL_DERIVED) $(ASSESSMENTS) \
 	  --out project/reports/guidance.md --csv project/reports/guidance.csv
-	$(PY) scripts/report_tolerance.py $(DERIVED) --out project/reports/tolerance.md
+	$(PY) scripts/report_tolerance.py $(ALL_DERIVED) --out project/reports/tolerance.md
+	$(PY) scripts/report_cost_completeness.py $(ALL_DERIVED) \
+	  --out project/reports/cost_completeness.md --csv project/reports/cost_completeness.csv
 
 # pytest suite under tests/.
 test:

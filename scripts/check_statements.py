@@ -69,9 +69,12 @@ def as_list(value):
 
 
 class Checker:
-    def __init__(self, known_ids, agents):
+    def __init__(self, known_ids, agents, values=frozenset()):
         self.known = known_ids
         self.agents = agents
+        # Enum values a subject or object may be instead of a record id (a
+        # cost statement's object is a cost category or a node).
+        self.values = values
         self.errors = []
         self.warnings = []
 
@@ -142,8 +145,24 @@ class Checker:
         self.refs(sid, "proposition", s.get("proposition"))
         self.refs(sid, "reportedIn", s.get("reportedIn"))
         for f in ("subject", "object"):
-            self.refs(sid, f, s.get(f))
+            if s.get(f) not in self.values:
+                self.refs(sid, f, s.get(f))
         self.evidence_lines(sid, s.get("hasEvidenceLines"))
+
+
+def object_enum_values(schema, groups):
+    """Values of enums that a group's subject or object may take through an
+    any_of range (CostStatement.object: CostCategoryEnum or a node)."""
+    from linkml_runtime.utils.schemaview import SchemaView
+    sv = SchemaView(str(schema))
+    values = set()
+    for g in groups:
+        for f in ("subject", "object"):
+            slot = sv.induced_slot(f, g["statement_class"])
+            for alt in slot.any_of or []:
+                if alt.range in sv.all_enums():
+                    values |= set(sv.get_enum(alt.range).permissible_values)
+    return frozenset(values)
 
 
 def main(argv=None):
@@ -167,7 +186,7 @@ def main(argv=None):
         for a in data.get("agents") or []:
             agents[a["id"]] = a
 
-    checker = Checker(known, agents)
+    checker = Checker(known, agents, object_enum_values(args.schema, groups))
     checker.errors += dupes
     for _, data in sets:
         for g in groups:
@@ -175,7 +194,8 @@ def main(argv=None):
                 checker.statement(s, annotated=True)
             for p in data.get(g["propositions_slot"]) or []:
                 for f in ("subject", "object"):
-                    checker.refs(p.get("id", "?"), f, p.get(f))
+                    if p.get(f) not in checker.values:
+                        checker.refs(p.get("id", "?"), f, p.get(f))
         for a in data.get("assessments") or []:
             checker.statement(a, annotated=False)
 

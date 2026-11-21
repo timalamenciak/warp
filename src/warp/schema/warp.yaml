@@ -480,6 +480,113 @@ enums:
       survival:
       reproduction:
 
+  # --- cost group (0.7.0, Phase 6) ------------------------------------------------
+
+  CostPredicateEnum:
+    implements: [owl:ObjectProperty]
+    description: >-
+      Predicates for cost statements. warp:incurs_cost is abstract in the
+      relation layer: the exporter writes one sub-property per cost category
+      (incurs_total_cost, incurs_labour_cost, ...), with the amount as the
+      object (decision D16). Declared in src/warp/owl/warp-relations.ttl.
+    permissible_values:
+      incurs_cost:
+        description: >-
+          Carrying out the subject action, under the stated context and
+          scale, used the stated resources in the object category.
+        meaning: warp:incurs_cost
+        annotations:
+          rosetta_template: "{subject} incurs {object} cost"
+      costs_relative_to:
+        description: >-
+          The subject action costs a stated multiple of the object action, for
+          the same objective and scale.
+        meaning: warp:costs_relative_to
+        annotations:
+          rosetta_template: "{subject} costs relative to {object}"
+
+  CostCategoryEnum:
+    implements: [owl:NamedIndividual]
+    description: >-
+      What a cost covers. The object of incurs_cost, and the values of
+      includes_categories. Not IRIs of their own in the relation layer: each
+      category names the sub-property of warp:incurs_cost the exporter writes
+      (warp_subproperty). `unknown` is a sentinel: valid in
+      includes_categories (common for program budgets), never an object, never
+      exported.
+    permissible_values:
+      total:
+        annotations:
+          warp_subproperty: warp:incurs_total_cost
+      labour:
+        annotations:
+          warp_subproperty: warp:incurs_labour_cost
+      capital_equipment:
+        annotations:
+          warp_subproperty: warp:incurs_capital_equipment_cost
+      consumables:
+        annotations:
+          warp_subproperty: warp:incurs_consumables_cost
+      overhead:
+        annotations:
+          warp_subproperty: warp:incurs_overhead_cost
+      unknown:
+        description: "The breakdown of a total is not known. A sentinel: never an object, never exported."
+
+  CostBehaviourEnum:
+    implements: [owl:NamedIndividual]
+    description: "How a cost varies with scale; needed to estimate economies of scale."
+    permissible_values:
+      fixed:
+      variable:
+      mixed:
+
+  CostPhaseEnum:
+    implements: [owl:NamedIndividual]
+    description: >-
+      The phase of the work a cost belongs to. In the identity key: initial and
+      maintenance costs never merge. Strategy roles map onto these
+      (StrategyRoleEnum's warp_cost_phase).
+    permissible_values:
+      initial:
+      follow_up:
+      maintenance:
+      monitoring:
+      whole_project:
+
+  ReportingLevelEnum:
+    implements: [owl:NamedIndividual]
+    description: >-
+      Whose costs: the action's own, a share of a program's, or of an
+      organization's. In the identity key.
+    permissible_values:
+      intervention:
+      program:
+      organization:
+
+  CostBasisEnum:
+    implements: [owl:NamedIndividual]
+    description: >-
+      What kind of figure it is; plays the role evidence type plays elsewhere.
+      A payment_rate is what a program pays, not necessarily what the work
+      cost: check cost_bearer.
+    permissible_values:
+      actual_expenditure:
+      budget_allocation:
+      estimate:
+      quote:
+      payment_rate:
+
+  CostAdjustmentEnum:
+    implements: [owl:NamedIndividual]
+    description: "Whether the source already standardized the figure."
+    permissible_values:
+      none:
+      inflation:
+      discounted:
+
+## =============================================================================
+## SLOTS shared across classes
 ## =============================================================================
 
 slots:
@@ -568,6 +675,8 @@ slots:
     multivalued: true
     inlined: false
 
+## =============================================================================
+## CLASSES
 ## =============================================================================
 
 classes:
@@ -663,6 +772,17 @@ classes:
       tolerance_propositions:
         description: "Tolerance propositions (derived): one per organism, predicate, variable, scope and place."
         range: ToleranceProposition
+        multivalued: true
+        inlined_as_list: true
+
+      cost_statements:
+        description: "Cost statements: what carrying out an action took."
+        range: CostStatement
+        multivalued: true
+        inlined_as_list: true
+      cost_propositions:
+        description: "Cost propositions (derived): one per action, predicate, object, scope, place, phase and reporting level."
+        range: CostProposition
         multivalued: true
         inlined_as_list: true
 
@@ -1284,6 +1404,252 @@ classes:
         range: CausalNode
 
   # ---------------------------------------------------------------------------
+  # Predicate group: cost (0.7.0, Phase 6; warp-proposals-0.4.html section 8)
+  # Qualifiers follow the five cost reporting standards of Iacona et al. 2018.
+  # ---------------------------------------------------------------------------
+
+  CostStatement:
+    is_a: EcoStatement
+    class_uri: warp:CostStatement
+    description: >-
+      What carrying out an action took (money, staff and volunteer time,
+      equipment and materials) with the context needed to read the number.
+      Subject: an action or strategy node, the same kind of node the
+      recommendation group uses, so a recommendation and the cost of
+      following it meet. Object: a cost category for incurs_cost, an action or
+      strategy node for costs_relative_to (checked by scripts/check_cost.py).
+      A source reporting one total gives one statement with object total; a
+      breakdown gives one statement per category. Annotator's test: is the
+      source saying what an action took, or what it did?
+    annotations:
+      warp_group: cost
+      warp_statements_slot: cost_statements
+      warp_propositions_slot: cost_propositions
+      warp_proposition_class: CostProposition
+      warp_identity_extras: place predicate_qualifiers.phase predicate_qualifiers.reporting_level
+    slot_usage:
+      subject:
+        range: CausalNode
+        required: true
+        description: "The action or strategy node."
+      predicate:
+        range: CostPredicateEnum
+        required: true
+      object:
+        required: true
+        description: >-
+          A CostCategoryEnum value (not unknown) for incurs_cost; an action or
+          strategy node for costs_relative_to. No costcat: IRIs: the category
+          reaches RDF through the predicate (R16).
+        any_of:
+          - range: CostCategoryEnum
+          - range: CausalNode
+      place:
+        description: >-
+          In the identity key for this group: costs from different regions
+          never merge silently. The region, not the functional group.
+    attributes:
+      predicate_qualifiers:
+        description: "Amount, effort or ratio, with scale, phase, level, categories and basis."
+        range: CostQualifiers
+        inlined: true
+        required: true
+      period:
+        description: "When the costs were incurred (ISO 8601 start and optional end)."
+        range: Period
+        inlined: true
+      outcome_reported:
+        description: >-
+          Causal statements from the same source about what the spending
+          achieved: the bridge to cost-effectiveness. By reference.
+        range: EcoStatement
+        multivalued: true
+        inlined: false
+      starting_conditions:
+        description: "Initial abundance or cover, as the source gives it."
+      cost_bearer:
+        description: "Who paid. May not be the claimant."
+        range: EcoAgent
+        inlined: false
+      transferred_from:
+        description: >-
+          DERIVED by scripts/transfer_costs.py: the cost statement this one
+          was adjusted from (to another place, year or currency). Requires
+          transfer_rule.
+        range: CostStatement
+        inlined: false
+      transfer_rule:
+        description: "DERIVED: the versioned transfer rule that adjusted it, e.g. warp-cost-transfer/1."
+      transfer_steps:
+        description: >-
+          DERIVED: the steps the transfer applied, in order ("indexed ILS 2008
+          to 2026", "converted ILS to CAD", "labour re-priced from effort").
+        multivalued: true
+
+  CostQualifiers:
+    class_uri: warp:CostQualifiers
+    description: >-
+      The predicate layer of a cost statement. One of amount, effort or ratio
+      is required; the rules that depend on the predicate (incurs_cost needs
+      amount or effort, plus scale and phase; costs_relative_to needs ratio)
+      are in scripts/check_cost.py, because a LinkML rule on CostStatement
+      cannot test slots inside predicate_qualifiers (R3, R4).
+    any_of:
+      - slot_conditions:
+          amount:
+            required: true
+      - slot_conditions:
+          effort:
+            required: true
+      - slot_conditions:
+          ratio:
+            required: true
+    attributes:
+      amount:
+        description: "Standard 4/5: the money, in its original currency and price year."
+        range: MonetaryAmount
+        inlined: true
+      effort:
+        description: >-
+          Standard 4: person-days, litres, machine hours. The most transferable
+          part of a costing: labour can be re-priced at local rates.
+        range: Quantity
+        multivalued: true
+        inlined_as_list: true
+      volunteer_effort:
+        description: "Volunteer time: valuable and often uncounted."
+        range: Quantity
+        inlined: true
+      ratio:
+        description: "For costs_relative_to: the multiple, and what it is per."
+        range: CostRatio
+        inlined: true
+      includes_categories:
+        description: >-
+          Standard 4: which categories a total includes. Required for totals
+          (check_cost.py); unknown is valid and common.
+        range: CostCategoryEnum
+        multivalued: true
+      cost_behaviour:
+        description: "Fixed, variable or mixed."
+        range: CostBehaviourEnum
+      scale:
+        description: >-
+          Standard 3: the scale the total is for (area, length treated).
+          Required for incurs_cost. Always the total with its scale; per-hectare
+          figures are derived, because costs rarely scale linearly.
+        range: Quantity
+        multivalued: true
+        inlined_as_list: true
+      count:
+        description: "Standard 3, when the scale is a number of things (46 protected areas): a Count, not a unit."
+        range: Count
+        multivalued: true
+        inlined_as_list: true
+      intensity:
+        description: "Standard 2: how intensively (\"two herbicide passes per year\")."
+      phase:
+        description: "Standard 2: the phase. Required; in the identity key."
+        range: CostPhaseEnum
+        required: true
+      covers_roles:
+        description: >-
+          For a phase-level cost of a strategy: which components (by role) the
+          cost covers.
+        range: StrategyRoleEnum
+        multivalued: true
+      reporting_level:
+        description: "The action's own cost, a program share, or an organization's. In the identity key."
+        range: ReportingLevelEnum
+      cost_basis:
+        description: "Actual expenditure, budget allocation, estimate, quote or payment rate."
+        range: CostBasisEnum
+
+  CostIdentityQualifiers:
+    class_uri: warp:CostIdentityQualifiers
+    description: >-
+      The qualifiers a cost proposition was grouped by (its identity extras):
+      phase and reporting level. Amounts, efforts and scales stay on the
+      statements, where they vary.
+    attributes:
+      phase:
+        range: CostPhaseEnum
+      reporting_level:
+        range: ReportingLevelEnum
+
+  CostProposition:
+    is_a: EcoProposition
+    class_uri: warp:CostProposition
+    description: >-
+      A proposition put forward by cost statements: this action, this
+      category or comparison, at this scope, place, phase and reporting level.
+      Two costings of initial wattle removal in one region at intervention
+      level share one, with two amounts; a synthesis reports their spread.
+    slots:
+      - place
+    slot_usage:
+      subject:
+        range: CausalNode
+      predicate:
+        range: CostPredicateEnum
+      object:
+        any_of:
+          - range: CostCategoryEnum
+          - range: CausalNode
+    attributes:
+      predicate_qualifiers:
+        description: "The identity extras this proposition was grouped by."
+        range: CostIdentityQualifiers
+        inlined: true
+
+  MonetaryAmount:
+    class_uri: warp:MonetaryAmount
+    description: >-
+      Standard 5: money in its original currency and price year. Exported as
+      a named individual (not a blank node), because a transferred cost cites
+      the amount it was computed from. An amount with a value needs currency
+      and price year (check_cost.py); one with no value yet records that the
+      source gives a figure not yet transcribed (TODO), and is flagged by the
+      completeness report and refused by transfer.
+    attributes:
+      value:
+        range: decimal
+      currency:
+        description: "ISO 4217 code, always the original currency."
+        pattern: "^[A-Z]{3}$"
+        required: true
+      price_year:
+        description: "The year the costs were incurred (an integer, never xsd:gYear)."
+        range: integer
+      adjustment:
+        description: "Whether the source already adjusted the figure."
+        range: CostAdjustmentEnum
+      adjustment_rate:
+        description: "The rate of that adjustment, as a fraction."
+        range: decimal
+      adjustment_base_year:
+        description: "The base year of that adjustment (missing from the proposal sketch; R5)."
+        range: integer
+      conversion_rate:
+        description: "The exchange rate applied, if the figure was converted (target units per source unit)."
+        range: decimal
+      derived_from_amount:
+        description: >-
+          DERIVED by transfer_costs.py: the IRI of the amount this one was
+          computed from, `<source statement>/predicate_qualifiers/amount`.
+        range: uriorcurie
+
+  CostRatio:
+    class_uri: warp:CostRatio
+    description: "\"A costs about a third of B, per hectare.\""
+    attributes:
+      value:
+        range: decimal
+        required: true
+      basis:
+        description: "What the ratio is per (per_hectare, per_site)."
+
+  # ---------------------------------------------------------------------------
   # Node definitions: a CAMO node filled from a node template
   # ---------------------------------------------------------------------------
 
@@ -1601,6 +1967,12 @@ classes:
         slot_uri: warp:sourceDataSet
         range: EcoDataSet
         inlined_as_list: true
+      reportedIn:
+        slot_uri: warp:reportedIn
+        description: "The documents the study result is reported in, by id."
+        range: EcoDocument
+        inlined: false
+        multivalued: true
       description:
         slot_uri: warp:description
     attributes:

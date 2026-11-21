@@ -180,3 +180,61 @@ warp:intolerant_of a owl:ObjectProperty ;
     rdfs:label "intolerant of" ;
     obo:IAO_0000115 "The organism fails to establish, persist or reproduce when the environmental variable is within the stated range." ;
     rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+# --- cost (0.7.0; warp-proposals-0.4.html section 8) --------------------------
+# A cost is three things at once: an action, a category and an amount. The
+# only relation among them is action-to-amount, so the category moves into the
+# predicate and the amount is the object (D16):
+#   <action> warp:incurs_<category>_cost <amount individual> .
+# Subject: an action or strategy node class. Object of the sub-properties: a
+# MonetaryAmount (or effort Quantity) individual of the reification layer.
+# Object of costs_relative_to: another action or strategy node class. The
+# object kind varies by predicate: scripts/check_cost.py enforces it (R16, R17).
+# There is no incurs_unknown_cost: `unknown` is a sentinel. No costcat: IRIs.
+# Projected to OWL: nothing. A cost is a fact about one episode of work.
+
+warp:incurs_cost a owl:ObjectProperty ;
+    rdfs:label "incurs cost" ;
+    obo:IAO_0000115 "Carrying out the subject action, under the stated context and scale, used the stated resources in a cost category. Never asserted itself: the category is said by a sub-property, and the object is the amount." ;
+    warp:abstract_predicate true ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+warp:incurs_total_cost a owl:ObjectProperty ;
+    rdfs:subPropertyOf warp:incurs_cost ;
+    rdfs:label "incurs total cost" ;
+    obo:IAO_0000115 "Carrying out the subject action used the object amount as the total cost of carrying out the subject action." ;
+    warp:selected_by <https://w3id.org/ecoweaver/warp/CostCategoryEnum#total> ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+warp:incurs_labour_cost a owl:ObjectProperty ;
+    rdfs:subPropertyOf warp:incurs_cost ;
+    rdfs:label "incurs labour cost" ;
+    obo:IAO_0000115 "Carrying out the subject action used the object amount as the labour cost." ;
+    warp:selected_by <https://w3id.org/ecoweaver/warp/CostCategoryEnum#labour> ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+warp:incurs_capital_equipment_cost a owl:ObjectProperty ;
+    rdfs:subPropertyOf warp:incurs_cost ;
+    rdfs:label "incurs capital and equipment cost" ;
+    obo:IAO_0000115 "Carrying out the subject action used the object amount as the capital and equipment cost." ;
+    warp:selected_by <https://w3id.org/ecoweaver/warp/CostCategoryEnum#capital_equipment> ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+warp:incurs_consumables_cost a owl:ObjectProperty ;
+    rdfs:subPropertyOf warp:incurs_cost ;
+    rdfs:label "incurs consumables cost" ;
+    obo:IAO_0000115 "Carrying out the subject action used the object amount as the cost of consumables." ;
+    warp:selected_by <https://w3id.org/ecoweaver/warp/CostCategoryEnum#consumables> ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+warp:incurs_overhead_cost a owl:ObjectProperty ;
+    rdfs:subPropertyOf warp:incurs_cost ;
+    rdfs:label "incurs overhead cost" ;
+    obo:IAO_0000115 "Carrying out the subject action used the object amount as the overhead cost." ;
+    warp:selected_by <https://w3id.org/ecoweaver/warp/CostCategoryEnum#overhead> ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+warp:costs_relative_to a owl:ObjectProperty ;
+    rdfs:label "costs relative to" ;
+    obo:IAO_0000115 "The subject action costs a stated multiple of the object action, for the same objective and scale. The multiple is the statement's ratio." ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .

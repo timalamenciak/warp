@@ -71,8 +71,10 @@ def is_date_slot(slot):
 # --- relation triples, per group (D16) -------------------------------------------
 # Each function takes (exporter, group, record, record IRI) and returns
 # (predicate IRI, object IRI) for the relation triple, or None for none. The
-# default writes the predicate's own IRI between subject and object. Later
-# groups register theirs here.
+# predicate also replaces the enum value in the record's warp:predicate; an
+# object of None means a record with no relation triple (a proposition with
+# no amount, say). The default writes the predicate's own IRI between
+# subject and object. Groups register theirs in RELATIONS.
 
 def default_relation(ex, group, record, iri):
     p = ex.predicate_iri(group, record)
@@ -98,10 +100,35 @@ def qualifier_subproperty(path):
     return relation
 
 
+def cost_relation(ex, group, record, iri):
+    """Cost (D16): the category moves into the predicate and the amount is the
+    object, `<action> warp:incurs_<category>_cost <amount>`. The amount is the
+    named individual `<statement>/predicate_qualifiers/amount` (or, for an
+    effort-only costing, its first effort quantity). costs_relative_to relates
+    two action nodes as usual. Propositions carry no amount: they get the
+    sub-property in their record and no relation triple."""
+    if record.get("predicate") != "incurs_cost":
+        return default_relation(ex, group, record, iri)
+    pv = ex.sv.get_enum("CostCategoryEnum").permissible_values.get(record.get("object"))
+    sub = ws.annotation(pv, "warp_subproperty") if pv is not None else None
+    if not sub:
+        return None
+    q = record.get("predicate_qualifiers") or {}
+    if q.get("amount"):
+        o = URIRef(f"{iri}/predicate_qualifiers/amount")
+    elif q.get("effort"):
+        o = URIRef(f"{iri}/predicate_qualifiers/effort/0")
+    else:
+        o = None
+    return ex.iri(sub), o
+
+
 RELATIONS = {
     # guidance do / avoid / consider -> recommended_to_achieve / advised_against_for /
     # suggested_for_consideration; the abstract warp:suggested_to is never written.
     "recommendation": qualifier_subproperty("predicate_qualifiers.guidance"),
+    # incurs_cost + category -> incurs_<category>_cost, object the amount.
+    "cost": cost_relation,
 }
 
 
@@ -173,8 +200,25 @@ class Exporter:
             self.g.add((owner, p, Literal(warp_time.xsd_datetime(dt), datatype=XSD.dateTime,
                                           normalize=False)))
 
+    def any_of_value(self, slot, value):
+        """A value of a slot whose range is `any_of` (a cost's object: a
+        category or a node): an enum value IRI if it is one, else the IRI of
+        a CURIE under a declared prefix, else a literal."""
+        for alt in slot.any_of:
+            if alt.range in self.sv.all_enums() and value in self.sv.get_enum(alt.range).permissible_values:
+                return self.enum_value_iri(alt.range, value)
+        for alt in slot.any_of:
+            if (ws.is_class(self.sv, alt.range) or alt.range in ws.CURIE_RANGES) and isinstance(value, str):
+                try:
+                    return self.iri(value)
+                except ws.CurieError:
+                    pass
+        return Literal(str(value))
+
     def value(self, owner, slot, value, child_iri):
         rng = slot.range
+        if slot.any_of and not isinstance(value, dict):
+            return self.any_of_value(slot, value)
         if ws.is_class(self.sv, rng):
             if isinstance(value, dict):
                 rid = value.get("id")
@@ -217,7 +261,7 @@ class Exporter:
         fn = RELATIONS.get(group["group"], default_relation)
         rel = fn(self, group, record, iri)
         pred_slot = self.slot_iri(self.sv.induced_slot("predicate", group["statement_class"]))
-        if rel is not None:
+        if rel is not None and rel[0] is not None:
             p, o = rel
             # The record names the polarity-bearing predicate too (D16).
             self.g.remove((iri, pred_slot, None))
@@ -227,7 +271,7 @@ class Exporter:
         if record.get("negated"):
             self.counts["negated"] += 1
             return
-        if rel is not None and record.get("subject"):
+        if rel is not None and rel[1] is not None and record.get("subject"):
             p, o = rel
             self.g.add((self.iri(record["subject"]), p, o))
             self.counts["relations"] += 1

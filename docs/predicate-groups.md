@@ -235,6 +235,7 @@ proposition rather than as separate propositions.
 | interaction | none |
 | recommendation | `predicate_qualifiers.guidance` |
 | tolerance | `place` |
+| cost | `place`, `predicate_qualifiers.phase`, `predicate_qualifiers.reporting_level` |
 
 (Later groups add theirs; the register in [rdf-owl.md](rdf-owl.md) lists every
 group.)
@@ -377,3 +378,68 @@ only through the gate; ranges, optima, class values and curves never do.
 `scripts/report_tolerance.py` (`make reports`) lists each proposition's ranges
 by claimant and response, flags non-overlapping ranges and unit mismatches,
 and never aggregates or converts. Example: `examples/tolerance_statements.yaml`.
+
+### cost (0.7.0)
+
+What carrying out an action took (money, staff and volunteer time,
+equipment, materials) with the context needed to read the number.
+`CostStatement`, two predicates: `incurs_cost` and `costs_relative_to`. The
+qualifiers follow the five cost reporting standards of Iacona et al. (2018):
+objective and outcome; context and method; when, where and scale; cost
+categories; currency and date.
+
+- **Subject**: an action or strategy node, the same kind of node the
+  recommendation group uses, so a recommendation and the cost of following it
+  meet. Strategy costs use the canonical strategy node.
+- **Object**: for `incurs_cost` a cost category (`total`, `labour`,
+  `capital_equipment`, `consumables`, `overhead`); for `costs_relative_to`
+  another action or strategy node. The slot is `any_of` the two, and
+  `scripts/check_cost.py` enforces which goes with which. A source reporting
+  one total gives one statement with object `total`; a breakdown gives one
+  statement per category. `unknown` is only for `includes_categories`.
+- **Qualifiers**: `amount` (`MonetaryAmount`: value, ISO 4217 currency, price
+  year, adjustment), `effort` and `volunteer_effort` (`Quantity`s, e.g.
+  person-days), `ratio` (`CostRatio`), `scale` (always the total with its
+  scale), `count` (a number of things, not a unit), `intensity`, `phase`
+  (required), `covers_roles` (which strategy components a phase-level cost
+  covers), `includes_categories`, `cost_behaviour`, `reporting_level`,
+  `cost_basis`. Statement level: `period`, `outcome_reported` (same-source
+  causal statements about what was achieved), `starting_conditions`,
+  `cost_bearer`. The aim stays in the evidence layer, as the source's
+  `EcoStudyResult.stated_goal`, never on the cost statement.
+- **Identity**: `place`, `phase` and `reporting_level` are in the key, so
+  costs from different regions, initial and maintenance costs, and an
+  action's own cost and a program share never merge. Amounts, scales and years
+  are not: two costings of the same work derive one proposition with two
+  amounts, and a synthesis reports their spread.
+
+`check_cost.py` (in `make validate`): `incurs_cost` needs amount or effort,
+plus scale and phase; a total needs `includes_categories`; `costs_relative_to`
+needs a ratio and a node; an amount with a value needs its price year (an
+amount with no value records a figure not yet transcribed); `transferred_from`
+needs `transfer_rule`; `covers_roles` must be roles of the subject strategy's
+components.
+
+**The annotator's test: is the source saying what an action took, or what it
+did?** "Treating 600 ha took two seasons and cost NIS 17,600" is cost.
+"Treatment led to regeneration of native vegetation" is causal. The cost
+statement points at the causal statements through `outcome_reported`.
+
+**Transfer is explicit.** Re-using a cost in another place, year or currency
+creates a new derived cost statement, claimed by EcoWeaver, with
+`transferred_from`, `transfer_rule` and `transfer_steps`
+(`scripts/transfer_costs.py`, rule files in `config/cost_transfer/`). Labour
+is re-priced from effort at a regional rate rather than scaling a dollar
+total; other categories are indexed or left unchanged, as the rule says.
+Source statements are never modified, and a cost without a value, currency or
+price year is refused and reported. The shipped rule's tables are obviously
+fake placeholders.
+
+In RDF the category moves into the predicate: `<action>
+warp:incurs_total_cost <amount>` (one sub-property per category), with the
+amount a named individual a transferred cost can cite through
+`derived_from_amount`. Nothing in this group projects to OWL.
+`scripts/report_cost_completeness.py` (`make reports`) scores each costing
+against the five standards and flags unknown breakdowns, payment rates and
+missing values. Examples: `examples/cost_statements.yaml` and the generated
+`examples/cost_statements.transferred.yaml`.

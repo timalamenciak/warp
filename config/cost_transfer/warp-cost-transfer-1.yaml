@@ -1,0 +1,48 @@
+# Cost transfer rule warp-cost-transfer/1 (0.7.0, Phase 6.2).
+#
+# How scripts/transfer_costs.py re-states a cost in another place, price year
+# and currency. Changing anything here is a new rule: bump `id`, and the
+# derived statements are regenerated with new IDs.
+#
+# !!! PLACEHOLDER VALUES !!! Every number below is a round, obviously fake
+# figure for testing the mechanism. None is a real price index, exchange rate
+# or wage. Which series to use (e.g. Statistics Canada CPI and wage series)
+# is an open question: TODOS.md, cost Q4.
+
+id: warp-cost-transfer/1
+description: >-
+  Illustrative rule: re-state costs for Saskatchewan in 2026 Canadian dollars.
+  Labour is re-priced from effort in person-days at a regional rate; totals,
+  capital and overhead are indexed by the source currency's price index, then
+  converted; consumables are converted but not indexed.
+
+target_place: "ISO3166-2:CA-SK"
+target_price_year: 2026
+target_currency: CAD
+
+# Price index per currency, by year (any base). PLACEHOLDER VALUES.
+price_indices:
+  CAD: {2008: 100.0, 2019: 120.0, 2025: 150.0, 2026: 153.0}
+  ILS: {2008: 100.0, 2026: 150.0}
+  USD: {2008: 100.0, 2010: 105.0, 2026: 160.0}
+
+# Target-currency units per source-currency unit, at the target year.
+# PLACEHOLDER VALUES.
+exchange_rates:
+  ILS: 0.5
+  USD: 1.5
+
+# Labour rate per person-day at the target place, in the target currency and
+# year. PLACEHOLDER VALUE.
+labour_rates:
+  "ISO3166-2:CA-SK": {rate: 400.0, unit: "TODO:unit_person_day"}
+
+# Per cost category: reprice (labour from effort; falls back to index when
+# there is no effort in the labour unit), index (price index then currency),
+# or unchanged (currency conversion only, no indexing).
+categories:
+  total: index
+  labour: reprice
+  capital_equipment: index
+  consumables: unchanged
+  overhead: index

@@ -136,6 +136,12 @@ warp:date_upper_bound a owl:AnnotationProperty ;
 doc:eccc-spring-salamander-recovery-strategy a warp:EcoDocument ;
     warp:title "TODO: Recovery Strategy for the Spring Salamander (Gyrinophilus porphyriticus), Adirondack / Appalachian population (proposed)" .
 
+warp:end_lower_bound a owl:AnnotationProperty ;
+    rdfs:comment "Normalized xsd:dateTime bound of an ISO 8601 date (half-open: lower inclusive, upper exclusive). Written by export_rdf.py beside the verbatim string (D19)." .
+
+warp:end_upper_bound a owl:AnnotationProperty ;
+    rdfs:comment "Normalized xsd:dateTime bound of an ISO 8601 date (half-open: lower inclusive, upper exclusive). Written by export_rdf.py beside the verbatim string (D19)." .
+
 <https://w3id.org/ecoweaver/warp/ontology/statements> a owl:Ontology ;
     rdfs:label "WARP statements (reification layer)" ;
     rdfs:comment "Who said what, on what basis. Nothing here is asserted as true of the world, and relation triples may have a node class as subject: query with SPARQL, never merge into the logical layer for reasoning. See docs/rdf-owl.md." ;
@@ -152,9 +158,25 @@ prop:question-road-salt-spring-salamander a warp:CausalProposition ;
     warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#open_question> ;
     warp:subject node:road_salt_application .
 
+<https://w3id.org/ecoweaver/warp/result/inpa-wattle-project> a warp:EcoStudyResult ;
+    warp:description "The costed wattle control work, as the evidence layer records it." ;
+    warp:focus node:native_vegetation_cover_coastal_reserves ;
+    warp:reportedIn doc:oron-hamod-2008 ;
+    warp:stated_goal "TODO: the project's aim, in Oron and Hamod's words" .
+
+warp:start_lower_bound a owl:AnnotationProperty ;
+    rdfs:comment "Normalized xsd:dateTime bound of an ISO 8601 date (half-open: lower inclusive, upper exclusive). Written by export_rdf.py beside the verbatim string (D19)." .
+
+warp:start_upper_bound a owl:AnnotationProperty ;
+    rdfs:comment "Normalized xsd:dateTime bound of an ISO 8601 date (half-open: lower inclusive, upper exclusive). Written by export_rdf.py beside the verbatim string (D19)." .
+
 <https://w3id.org/ecoweaver/warp/statementset/bloodroot-assessment> a warp:StatementSet .
 
 <https://w3id.org/ecoweaver/warp/statementset/bloodroot-example> a warp:StatementSet .
+
+<https://w3id.org/ecoweaver/warp/statementset/cost-example> a warp:StatementSet .
+
+<https://w3id.org/ecoweaver/warp/statementset/cost-transfers-warp-cost-transfer-1> a warp:StatementSet .
 
 <https://w3id.org/ecoweaver/warp/statementset/kramer1995-assessment> a warp:StatementSet .
 
@@ -196,6 +218,11 @@ prop:question-road-salt-spring-salamander a warp:CausalProposition ;
     warp:agent_subtype "organization" ;
     warp:name "TODO: EIVE consortium (placeholder record)" .
 
+<https://w3id.org/ecoweaver/warp/agent/org/florida-fwc> a warp:EcoAgent ;
+    warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#organization> ;
+    warp:agent_subtype "organization" ;
+    warp:name "Florida Fish and Wildlife Conservation Commission" .
+
 <https://w3id.org/ecoweaver/warp/agent/org/grassland-plan-authors> a warp:EcoAgent ;
     warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#organization> ;
     warp:agent_subtype "organization" ;
@@ -205,11 +232,6 @@ prop:question-road-salt-spring-salamander a warp:CausalProposition ;
     warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#researcher> ;
     warp:agent_subtype "organization" ;
     warp:name "TODO: authors of a habitat suitability model" .
-
-<https://w3id.org/ecoweaver/warp/agent/org/land-trust-a> a warp:EcoAgent ;
-    warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#organization> ;
-    warp:agent_subtype "organization" ;
-    warp:name "TODO: a land trust (source A)" .
 
 <https://w3id.org/ecoweaver/warp/agent/org/trial-authors> a warp:EcoAgent ;
     warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#researcher> ;
@@ -228,6 +250,30 @@ prop:question-road-salt-spring-salamander a warp:CausalProposition ;
 <https://w3id.org/ecoweaver/warp/component/recontour-seed-mow-b/3/repeat> a warp:Recurrence ;
     warp:every "P1Y" ;
     warp:until "native cover exceeds 50%" .
+
+<https://w3id.org/ecoweaver/warp/contrib/agency-c-initial-1-annotation> a warp:EcoContribution ;
+    warp:contributor orcid:0000-0000-0000-0000 ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
+
+<https://w3id.org/ecoweaver/warp/contrib/agency-c-initial-1-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/org/agency-c> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
+<https://w3id.org/ecoweaver/warp/contrib/agency-c-initial-2-annotation> a warp:EcoContribution ;
+    warp:contributor orcid:0000-0000-0000-0000 ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
+
+<https://w3id.org/ecoweaver/warp/contrib/agency-c-initial-2-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/org/agency-c> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
+<https://w3id.org/ecoweaver/warp/contrib/agency-c-maintenance-annotation> a warp:EcoContribution ;
+    warp:contributor orcid:0000-0000-0000-0000 ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
+
+<https://w3id.org/ecoweaver/warp/contrib/agency-c-maintenance-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/org/agency-c> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
 
 <https://w3id.org/ecoweaver/warp/contrib/bloodroot-gm-1-author> a warp:EcoContribution ;
     warp:contributor <https://w3id.org/ecoweaver/warp/agent/ecoweaver-synthesis> ;
@@ -304,12 +350,44 @@ prop:question-road-salt-spring-salamander a warp:CausalProposition ;
     warp:contributor <https://w3id.org/ecoweaver/warp/agent/org/flora-authors> ;
     warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
 
+<https://w3id.org/ecoweaver/warp/contrib/fwc-invasive-program-annotation> a warp:EcoContribution ;
+    warp:contributor orcid:0000-0000-0000-0000 ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
+
+<https://w3id.org/ecoweaver/warp/contrib/fwc-invasive-program-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/org/florida-fwc> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
 <https://w3id.org/ecoweaver/warp/contrib/hsi-y-temperature-annotation> a warp:EcoContribution ;
     warp:contributor orcid:0000-0000-0000-0000 ;
     warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
 
 <https://w3id.org/ecoweaver/warp/contrib/hsi-y-temperature-author> a warp:EcoContribution ;
     warp:contributor <https://w3id.org/ecoweaver/warp/agent/org/hsi-model-authors> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
+<https://w3id.org/ecoweaver/warp/contrib/inpa-natives-annotation> a warp:EcoContribution ;
+    warp:contributor orcid:0000-0000-0000-0000 ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
+
+<https://w3id.org/ecoweaver/warp/contrib/inpa-natives-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/org/israel-nature-parks-authority> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
+<https://w3id.org/ecoweaver/warp/contrib/inpa-seedlings-annotation> a warp:EcoContribution ;
+    warp:contributor orcid:0000-0000-0000-0000 ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
+
+<https://w3id.org/ecoweaver/warp/contrib/inpa-seedlings-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/org/israel-nature-parks-authority> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
+<https://w3id.org/ecoweaver/warp/contrib/inpa-wattle-cost-annotation> a warp:EcoContribution ;
+    warp:contributor orcid:0000-0000-0000-0000 ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
+
+<https://w3id.org/ecoweaver/warp/contrib/inpa-wattle-cost-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/org/israel-nature-parks-authority> ;
     warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
 
 <https://w3id.org/ecoweaver/warp/contrib/kramer1995-c1-1-assessment> a warp:EcoContribution ;
@@ -329,6 +407,22 @@ prop:question-road-salt-spring-salamander a warp:CausalProposition ;
 
 <https://w3id.org/ecoweaver/warp/contrib/kramer1995-c1-author> a warp:EcoContribution ;
     warp:contributor <https://w3id.org/ecoweaver/warp/agent/kramer1995-authors> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
+<https://w3id.org/ecoweaver/warp/contrib/land-trust-follow-up-annotation> a warp:EcoContribution ;
+    warp:contributor orcid:0000-0000-0000-0000 ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
+
+<https://w3id.org/ecoweaver/warp/contrib/land-trust-follow-up-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/org/land-trust-a> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
+<https://w3id.org/ecoweaver/warp/contrib/land-trust-strategy-total-annotation> a warp:EcoContribution ;
+    warp:contributor orcid:0000-0000-0000-0000 ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
+
+<https://w3id.org/ecoweaver/warp/contrib/land-trust-strategy-total-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/org/land-trust-a> ;
     warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
 
 <https://w3id.org/ecoweaver/warp/contrib/ms-09-causal-annotation> a warp:EcoContribution ;
@@ -410,6 +504,14 @@ prop:question-road-salt-spring-salamander a warp:CausalProposition ;
     warp:contributor <https://w3id.org/ecoweaver/warp/agent/org/usace> ;
     warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
 
+<https://w3id.org/ecoweaver/warp/contrib/practitioner-drill-vs-plugs-annotation> a warp:EcoContribution ;
+    warp:contributor orcid:0000-0000-0000-0000 ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
+
+<https://w3id.org/ecoweaver/warp/contrib/practitioner-drill-vs-plugs-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/person/practitioner-b> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
 <https://w3id.org/ecoweaver/warp/contrib/practitioner-spartina-sand-annotation> a warp:EcoContribution ;
     warp:contributor orcid:0000-0000-0000-0000 ;
     warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
@@ -456,6 +558,30 @@ prop:question-road-salt-spring-salamander a warp:CausalProposition ;
     warp:date_lower_bound "2026-10-27T00:00:00Z"^^xsd:dateTime ;
     warp:date_upper_bound "2026-10-28T00:00:00Z"^^xsd:dateTime ;
     warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
+<https://w3id.org/ecoweaver/warp/contrib/transfer/warp-cost-transfer-1/inpa-wattle-cost-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/ecoweaver-synthesis> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
+<https://w3id.org/ecoweaver/warp/contrib/transfer/warp-cost-transfer-1/inpa-wattle-cost-record> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/ecoweaver-synthesis> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
+
+<https://w3id.org/ecoweaver/warp/contrib/transfer/warp-cost-transfer-1/land-trust-strategy-follow-up-labour-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/ecoweaver-synthesis> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
+<https://w3id.org/ecoweaver/warp/contrib/transfer/warp-cost-transfer-1/land-trust-strategy-follow-up-labour-record> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/ecoweaver-synthesis> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
+
+<https://w3id.org/ecoweaver/warp/contrib/transfer/warp-cost-transfer-1/land-trust-strategy-total-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/ecoweaver-synthesis> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
+<https://w3id.org/ecoweaver/warp/contrib/transfer/warp-cost-transfer-1/land-trust-strategy-total-record> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/ecoweaver-synthesis> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
 
 <https://w3id.org/ecoweaver/warp/contrib/trial-bogr-ph-annotation> a warp:EcoContribution ;
     warp:contributor orcid:0000-0000-0000-0000 ;
@@ -607,6 +733,9 @@ doc:air-quality-guidance a warp:EcoDocument ;
 doc:eive-1-0 a warp:EcoDocument ;
     warp:title "Dengler et al. 2023, Ecological Indicator Values for Europe (EIVE) 1.0 (TODO: verify citation)" .
 
+doc:fwc-program-report a warp:EcoDocument ;
+    warp:title "TODO: Florida invasive plant management program allocations, 1999-2010, as reported by Iacona et al." .
+
 doc:germination-trial a warp:EcoDocument ;
     warp:title "TODO: a germination trial across a pH gradient" .
 
@@ -632,14 +761,17 @@ doc:notebook-entry-2 a warp:EcoDocument ;
 <https://w3id.org/ecoweaver/warp/doc/notebook-entry-3/subtype> a warp:EcoCoding ;
     warp:label "field notebook" .
 
+doc:notebook-entry-4 a warp:EcoDocument ;
+    warp:subtype <https://w3id.org/ecoweaver/warp/doc/notebook-entry-4/subtype> .
+
+<https://w3id.org/ecoweaver/warp/doc/notebook-entry-4/subtype> a warp:EcoCoding ;
+    warp:label "field notebook" .
+
 doc:plants-record-bogr a warp:EcoDocument ;
     warp:title "TODO: plant database record for Bouteloua gracilis" .
 
 doc:practice-note-b a warp:EcoDocument ;
     warp:title "TODO: practice note (source B)" .
-
-doc:project-report-x a warp:EcoDocument ;
-    warp:title "TODO: project report X (source A)" .
 
 <https://w3id.org/ecoweaver/warp/el/bloodroot-gm-1-experimental> a warp:EcoEvidenceLine ;
     warp:directionOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
@@ -703,6 +835,16 @@ doc:project-report-x a warp:EcoDocument ;
     warp:evidence_item_refs <https://w3id.org/ecoweaver/warp/result/hsi-model-temperature> ;
     warp:evidence_type <https://w3id.org/ecoweaver/warp/WarpEvidenceTypeEnum#modeling_simulation> ;
     warp:targetProposition prop:8bcd4cb76ab0 .
+
+<https://w3id.org/ecoweaver/warp/el/inpa-natives-1> a warp:EcoEvidenceLine ;
+    warp:directionOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
+    warp:evidence_type <https://w3id.org/ecoweaver/warp/WarpEvidenceTypeEnum#case_study> ;
+    warp:targetProposition prop:5a6e55a1a03c .
+
+<https://w3id.org/ecoweaver/warp/el/inpa-seedlings-1> a warp:EcoEvidenceLine ;
+    warp:directionOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
+    warp:evidence_type <https://w3id.org/ecoweaver/warp/WarpEvidenceTypeEnum#case_study> ;
+    warp:targetProposition prop:e73587275d57 .
 
 <https://w3id.org/ecoweaver/warp/el/kramer1995-c1-1> a warp:EcoEvidenceLine ;
     warp:contributions <https://w3id.org/ecoweaver/warp/contrib/kramer1995-c1-1-assessment> ;
@@ -814,6 +956,24 @@ doc:project-report-x a warp:EcoDocument ;
     warp:strengthOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceStrengthEnum#weak> ;
     warp:targetProposition prop:question-tidal-restoration-aedes-dorsalis .
 
+<https://w3id.org/ecoweaver/warp/el/transfer/warp-cost-transfer-1/inpa-wattle-cost> a warp:EcoEvidenceLine ;
+    warp:directionOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
+    warp:evidence_item_refs stmt:inpa-wattle-cost ;
+    warp:evidence_type <https://w3id.org/ecoweaver/warp/WarpEvidenceTypeEnum#modeling_simulation> ;
+    warp:targetProposition prop:5e77695b6702 .
+
+<https://w3id.org/ecoweaver/warp/el/transfer/warp-cost-transfer-1/land-trust-strategy-follow-up-labour> a warp:EcoEvidenceLine ;
+    warp:directionOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
+    warp:evidence_item_refs stmt:land-trust-strategy-follow-up-labour ;
+    warp:evidence_type <https://w3id.org/ecoweaver/warp/WarpEvidenceTypeEnum#modeling_simulation> ;
+    warp:targetProposition prop:76daefe75c6e .
+
+<https://w3id.org/ecoweaver/warp/el/transfer/warp-cost-transfer-1/land-trust-strategy-total> a warp:EcoEvidenceLine ;
+    warp:directionOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
+    warp:evidence_item_refs stmt:land-trust-strategy-total ;
+    warp:evidence_type <https://w3id.org/ecoweaver/warp/WarpEvidenceTypeEnum#modeling_simulation> ;
+    warp:targetProposition prop:0a2c8c5cbc76 .
+
 <https://w3id.org/ecoweaver/warp/el/trial-bogr-ph-1> a warp:EcoEvidenceLine ;
     warp:directionOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
     warp:evidence_type <https://w3id.org/ecoweaver/warp/WarpEvidenceTypeEnum#randomized_experiment> ;
@@ -822,6 +982,45 @@ doc:project-report-x a warp:EcoDocument ;
 <https://w3id.org/ecoweaver/warp/el/usda-bogr-ph-1> a warp:EcoEvidenceLine ;
     warp:directionOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
     warp:targetProposition prop:a36155eb3670 .
+
+<https://w3id.org/ecoweaver/warp/prop/0a2c8c5cbc76/predicate_qualifiers> a warp:CostIdentityQualifiers ;
+    warp:phase <https://w3id.org/ecoweaver/warp/CostPhaseEnum#whole_project> ;
+    warp:reporting_level <https://w3id.org/ecoweaver/warp/ReportingLevelEnum#intervention> .
+
+prop:2526825eea7e a warp:CostProposition ;
+    warp:derived_from_statements stmt:practitioner-drill-vs-plugs ;
+    warp:identity_key "cost|node:drill_seeding_native_grassland_mix|costs_relative_to|node:planting_plugs_native_grassland|affirmed|contingent|place=[\"place:northern-great-plains\"]|predicate_qualifiers.phase=\"initial\"|predicate_qualifiers.reporting_level=null" ;
+    warp:identity_rule_version "warp-prop-identity/4" ;
+    warp:negated false ;
+    warp:object node:planting_plugs_native_grassland ;
+    warp:place place:northern-great-plains ;
+    warp:predicate warp:costs_relative_to ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/prop/2526825eea7e/predicate_qualifiers> ;
+    warp:propositionText "Sometimes, drill seeding of a native grassland mix costs relative to Planting native grassland plugs." ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#contingent> ;
+    warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
+    warp:subject node:drill_seeding_native_grassland_mix .
+
+<https://w3id.org/ecoweaver/warp/prop/2526825eea7e/predicate_qualifiers> a warp:CostIdentityQualifiers ;
+    warp:phase <https://w3id.org/ecoweaver/warp/CostPhaseEnum#initial> .
+
+prop:2541d8c17181 a warp:CostProposition ;
+    warp:derived_from_statements stmt:agency-c-removal-maintenance ;
+    warp:identity_key "cost|node:manual_removal_of_acacia_saligna|incurs_cost|total|affirmed|assertional|place=[\"place:mediterranean-coastal-israel\"]|predicate_qualifiers.phase=\"maintenance\"|predicate_qualifiers.reporting_level=\"intervention\"" ;
+    warp:identity_rule_version "warp-prop-identity/4" ;
+    warp:negated false ;
+    warp:object <https://w3id.org/ecoweaver/warp/CostCategoryEnum#total> ;
+    warp:place place:mediterranean-coastal-israel ;
+    warp:predicate warp:incurs_total_cost ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/prop/2541d8c17181/predicate_qualifiers> ;
+    warp:propositionText "In a particular case, manual removal of Acacia saligna incurs total cost." ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
+    warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
+    warp:subject node:manual_removal_of_acacia_saligna .
+
+<https://w3id.org/ecoweaver/warp/prop/2541d8c17181/predicate_qualifiers> a warp:CostIdentityQualifiers ;
+    warp:phase <https://w3id.org/ecoweaver/warp/CostPhaseEnum#maintenance> ;
+    warp:reporting_level <https://w3id.org/ecoweaver/warp/ReportingLevelEnum#intervention> .
 
 prop:2812c13c41fc a warp:RecommendationProposition ;
     warp:derived_from_statements stmt:ms-09-rec ;
@@ -839,11 +1038,77 @@ prop:2812c13c41fc a warp:RecommendationProposition ;
 <https://w3id.org/ecoweaver/warp/prop/2812c13c41fc/predicate_qualifiers> a warp:RecommendationQualifiers ;
     warp:guidance <https://w3id.org/ecoweaver/warp/GuidanceEnum#do> .
 
+<https://w3id.org/ecoweaver/warp/prop/5e77695b6702/predicate_qualifiers> a warp:CostIdentityQualifiers ;
+    warp:phase <https://w3id.org/ecoweaver/warp/CostPhaseEnum#whole_project> ;
+    warp:reporting_level <https://w3id.org/ecoweaver/warp/ReportingLevelEnum#intervention> .
+
 <https://w3id.org/ecoweaver/warp/prop/69ccdaf69ec4/predicate_qualifiers> a warp:RecommendationQualifiers ;
     warp:guidance <https://w3id.org/ecoweaver/warp/GuidanceEnum#avoid> .
 
+<https://w3id.org/ecoweaver/warp/prop/76daefe75c6e/predicate_qualifiers> a warp:CostIdentityQualifiers ;
+    warp:phase <https://w3id.org/ecoweaver/warp/CostPhaseEnum#follow_up> ;
+    warp:reporting_level <https://w3id.org/ecoweaver/warp/ReportingLevelEnum#intervention> .
+
+<https://w3id.org/ecoweaver/warp/prop/80f68139f485/predicate_qualifiers> a warp:CostIdentityQualifiers ;
+    warp:phase <https://w3id.org/ecoweaver/warp/CostPhaseEnum#initial> ;
+    warp:reporting_level <https://w3id.org/ecoweaver/warp/ReportingLevelEnum#intervention> .
+
+prop:8c9fe6c7764a a warp:CostProposition ;
+    warp:derived_from_statements stmt:fwc-invasive-program ;
+    warp:identity_key "cost|node:herbicide_mechanical_control_invasive_plants_florida_pa|incurs_cost|total|affirmed|assertional|place=[\"ISO3166-2:US-FL\"]|predicate_qualifiers.phase=\"maintenance\"|predicate_qualifiers.reporting_level=\"program\"" ;
+    warp:identity_rule_version "warp-prop-identity/4" ;
+    warp:negated false ;
+    warp:object <https://w3id.org/ecoweaver/warp/CostCategoryEnum#total> ;
+    warp:place <https://www.iso.org/obp/ui/#iso:code:3166:US-FL> ;
+    warp:predicate warp:incurs_total_cost ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/prop/8c9fe6c7764a/predicate_qualifiers> ;
+    warp:propositionText "In a particular case, herbicide and mechanical control of invasive plants in Florida protected areas incurs total cost." ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
+    warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
+    warp:subject node:herbicide_mechanical_control_invasive_plants_florida_pa .
+
+<https://w3id.org/ecoweaver/warp/prop/8c9fe6c7764a/predicate_qualifiers> a warp:CostIdentityQualifiers ;
+    warp:phase <https://w3id.org/ecoweaver/warp/CostPhaseEnum#maintenance> ;
+    warp:reporting_level <https://w3id.org/ecoweaver/warp/ReportingLevelEnum#program> .
+
+prop:9797650932b3 a warp:CostProposition ;
+    warp:derived_from_statements stmt:land-trust-strategy-follow-up-labour ;
+    warp:identity_key "cost|node:strategy-f38f3a2661ee|incurs_cost|labour|affirmed|assertional|place=[\"TODO:place_project_x_site\"]|predicate_qualifiers.phase=\"follow_up\"|predicate_qualifiers.reporting_level=\"intervention\"" ;
+    warp:identity_rule_version "warp-prop-identity/4" ;
+    warp:negated false ;
+    warp:object <https://w3id.org/ecoweaver/warp/CostCategoryEnum#labour> ;
+    warp:place TODO:place_project_x_site ;
+    warp:predicate warp:incurs_labour_cost ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/prop/9797650932b3/predicate_qualifiers> ;
+    warp:propositionText "In a particular case, node:strategy-f38f3a2661ee incurs labour cost." ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
+    warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
+    warp:subject node:strategy-f38f3a2661ee .
+
+<https://w3id.org/ecoweaver/warp/prop/9797650932b3/predicate_qualifiers> a warp:CostIdentityQualifiers ;
+    warp:phase <https://w3id.org/ecoweaver/warp/CostPhaseEnum#follow_up> ;
+    warp:reporting_level <https://w3id.org/ecoweaver/warp/ReportingLevelEnum#intervention> .
+
 <https://w3id.org/ecoweaver/warp/prop/9c043c560227/predicate_qualifiers> a warp:RecommendationQualifiers ;
     warp:guidance <https://w3id.org/ecoweaver/warp/GuidanceEnum#do> .
+
+prop:b8a8f3da7637 a warp:CostProposition ;
+    warp:derived_from_statements stmt:land-trust-strategy-total ;
+    warp:identity_key "cost|node:strategy-f38f3a2661ee|incurs_cost|total|affirmed|assertional|place=[\"TODO:place_project_x_site\"]|predicate_qualifiers.phase=\"whole_project\"|predicate_qualifiers.reporting_level=\"intervention\"" ;
+    warp:identity_rule_version "warp-prop-identity/4" ;
+    warp:negated false ;
+    warp:object <https://w3id.org/ecoweaver/warp/CostCategoryEnum#total> ;
+    warp:place TODO:place_project_x_site ;
+    warp:predicate warp:incurs_total_cost ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/prop/b8a8f3da7637/predicate_qualifiers> ;
+    warp:propositionText "In a particular case, node:strategy-f38f3a2661ee incurs total cost." ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
+    warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
+    warp:subject node:strategy-f38f3a2661ee .
+
+<https://w3id.org/ecoweaver/warp/prop/b8a8f3da7637/predicate_qualifiers> a warp:CostIdentityQualifiers ;
+    warp:phase <https://w3id.org/ecoweaver/warp/CostPhaseEnum#whole_project> ;
+    warp:reporting_level <https://w3id.org/ecoweaver/warp/ReportingLevelEnum#intervention> .
 
 prop:c34ece72a226 a warp:RecommendationProposition ;
     warp:derived_from_statements stmt:burn-avoid-agency ;
@@ -860,6 +1125,24 @@ prop:c34ece72a226 a warp:RecommendationProposition ;
 
 <https://w3id.org/ecoweaver/warp/prop/c34ece72a226/predicate_qualifiers> a warp:RecommendationQualifiers ;
     warp:guidance <https://w3id.org/ecoweaver/warp/GuidanceEnum#avoid> .
+
+prop:e4c87fd740d3 a warp:CostProposition ;
+    warp:derived_from_statements stmt:inpa-wattle-cost ;
+    warp:identity_key "cost|node:cut_treat_acacia_saligna_coastal_reserves|incurs_cost|total|affirmed|assertional|place=[\"place:mediterranean-coastal-israel\"]|predicate_qualifiers.phase=\"whole_project\"|predicate_qualifiers.reporting_level=\"intervention\"" ;
+    warp:identity_rule_version "warp-prop-identity/4" ;
+    warp:negated false ;
+    warp:object <https://w3id.org/ecoweaver/warp/CostCategoryEnum#total> ;
+    warp:place place:mediterranean-coastal-israel ;
+    warp:predicate warp:incurs_total_cost ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/prop/e4c87fd740d3/predicate_qualifiers> ;
+    warp:propositionText "In a particular case, cutting, stump treatment and seedling control of Acacia saligna in coastal protected areas incurs total cost." ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
+    warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
+    warp:subject node:cut_treat_acacia_saligna_coastal_reserves .
+
+<https://w3id.org/ecoweaver/warp/prop/e4c87fd740d3/predicate_qualifiers> a warp:CostIdentityQualifiers ;
+    warp:phase <https://w3id.org/ecoweaver/warp/CostPhaseEnum#whole_project> ;
+    warp:reporting_level <https://w3id.org/ecoweaver/warp/ReportingLevelEnum#intervention> .
 
 <https://w3id.org/ecoweaver/warp/result/hsi-model-temperature> a warp:EcoStudyResult ;
     warp:dataItems <https://w3id.org/ecoweaver/warp/data/hsi-model-combination-rule> ;
@@ -905,6 +1188,92 @@ prop:c34ece72a226 a warp:RecommendationProposition ;
         <https://w3id.org/ecoweaver/warp/data/murphy2005-planted-sd> ;
     warp:focus node:rate_of_population_growth_of_alliaria_petiolata ;
     warp:sourceDataSet <https://w3id.org/ecoweaver/warp/dataset/murphy2005> .
+
+stmt:agency-c-removal-initial-1 a warp:CostStatement ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/agency-c-initial-1-author> ;
+    warp:object <https://w3id.org/ecoweaver/warp/CostCategoryEnum#total> ;
+    warp:place place:mediterranean-coastal-israel ;
+    warp:predicate warp:incurs_total_cost ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/statement/agency-c-removal-initial-1/predicate_qualifiers> ;
+    warp:proposition prop:80f68139f485 ;
+    warp:recordMetadata <https://w3id.org/ecoweaver/warp/statement/agency-c-removal-initial-1/recordMetadata> ;
+    warp:reportedIn doc:agency-c-costings ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
+    warp:statementText "Placeholder: an initial costing of manual wattle removal (site 1)." ;
+    warp:subject node:manual_removal_of_acacia_saligna .
+
+<https://w3id.org/ecoweaver/warp/statement/agency-c-removal-initial-1/predicate_qualifiers> a warp:CostQualifiers ;
+    warp:amount <https://w3id.org/ecoweaver/warp/statement/agency-c-removal-initial-1/predicate_qualifiers/amount> ;
+    warp:cost_basis <https://w3id.org/ecoweaver/warp/CostBasisEnum#actual_expenditure> ;
+    warp:includes_categories <https://w3id.org/ecoweaver/warp/CostCategoryEnum#consumables>,
+        <https://w3id.org/ecoweaver/warp/CostCategoryEnum#labour> ;
+    warp:phase <https://w3id.org/ecoweaver/warp/CostPhaseEnum#initial> ;
+    warp:reporting_level <https://w3id.org/ecoweaver/warp/ReportingLevelEnum#intervention> ;
+    warp:scale <https://w3id.org/ecoweaver/warp/statement/agency-c-removal-initial-1/predicate_qualifiers/scale/0> .
+
+<https://w3id.org/ecoweaver/warp/statement/agency-c-removal-initial-1/predicate_qualifiers/scale/0> a warp:Quantity ;
+    warp:unit TODO:unit_hectare ;
+    warp:value "100"^^xsd:float .
+
+<https://w3id.org/ecoweaver/warp/statement/agency-c-removal-initial-1/recordMetadata> a warp:EcoRecordMetadata ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/agency-c-initial-1-annotation> .
+
+stmt:agency-c-removal-initial-2 a warp:CostStatement ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/agency-c-initial-2-author> ;
+    warp:object <https://w3id.org/ecoweaver/warp/CostCategoryEnum#total> ;
+    warp:place place:mediterranean-coastal-israel ;
+    warp:predicate warp:incurs_total_cost ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/statement/agency-c-removal-initial-2/predicate_qualifiers> ;
+    warp:proposition prop:80f68139f485 ;
+    warp:recordMetadata <https://w3id.org/ecoweaver/warp/statement/agency-c-removal-initial-2/recordMetadata> ;
+    warp:reportedIn doc:agency-c-costings ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
+    warp:statementText "Placeholder: an initial costing of manual wattle removal (site 2)." ;
+    warp:subject node:manual_removal_of_acacia_saligna .
+
+<https://w3id.org/ecoweaver/warp/statement/agency-c-removal-initial-2/predicate_qualifiers> a warp:CostQualifiers ;
+    warp:amount <https://w3id.org/ecoweaver/warp/statement/agency-c-removal-initial-2/predicate_qualifiers/amount> ;
+    warp:cost_basis <https://w3id.org/ecoweaver/warp/CostBasisEnum#actual_expenditure> ;
+    warp:includes_categories <https://w3id.org/ecoweaver/warp/CostCategoryEnum#consumables>,
+        <https://w3id.org/ecoweaver/warp/CostCategoryEnum#labour> ;
+    warp:phase <https://w3id.org/ecoweaver/warp/CostPhaseEnum#initial> ;
+    warp:reporting_level <https://w3id.org/ecoweaver/warp/ReportingLevelEnum#intervention> ;
+    warp:scale <https://w3id.org/ecoweaver/warp/statement/agency-c-removal-initial-2/predicate_qualifiers/scale/0> .
+
+<https://w3id.org/ecoweaver/warp/statement/agency-c-removal-initial-2/predicate_qualifiers/scale/0> a warp:Quantity ;
+    warp:unit TODO:unit_hectare ;
+    warp:value "50"^^xsd:float .
+
+<https://w3id.org/ecoweaver/warp/statement/agency-c-removal-initial-2/recordMetadata> a warp:EcoRecordMetadata ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/agency-c-initial-2-annotation> .
+
+stmt:agency-c-removal-maintenance a warp:CostStatement ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/agency-c-maintenance-author> ;
+    warp:object <https://w3id.org/ecoweaver/warp/CostCategoryEnum#total> ;
+    warp:place place:mediterranean-coastal-israel ;
+    warp:predicate warp:incurs_total_cost ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/statement/agency-c-removal-maintenance/predicate_qualifiers> ;
+    warp:proposition prop:2541d8c17181 ;
+    warp:recordMetadata <https://w3id.org/ecoweaver/warp/statement/agency-c-removal-maintenance/recordMetadata> ;
+    warp:reportedIn doc:agency-c-costings ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
+    warp:statementText "Placeholder: a maintenance costing of manual wattle removal." ;
+    warp:subject node:manual_removal_of_acacia_saligna .
+
+<https://w3id.org/ecoweaver/warp/statement/agency-c-removal-maintenance/predicate_qualifiers> a warp:CostQualifiers ;
+    warp:amount <https://w3id.org/ecoweaver/warp/statement/agency-c-removal-maintenance/predicate_qualifiers/amount> ;
+    warp:cost_basis <https://w3id.org/ecoweaver/warp/CostBasisEnum#actual_expenditure> ;
+    warp:includes_categories <https://w3id.org/ecoweaver/warp/CostCategoryEnum#labour> ;
+    warp:phase <https://w3id.org/ecoweaver/warp/CostPhaseEnum#maintenance> ;
+    warp:reporting_level <https://w3id.org/ecoweaver/warp/ReportingLevelEnum#intervention> ;
+    warp:scale <https://w3id.org/ecoweaver/warp/statement/agency-c-removal-maintenance/predicate_qualifiers/scale/0> .
+
+<https://w3id.org/ecoweaver/warp/statement/agency-c-removal-maintenance/predicate_qualifiers/scale/0> a warp:Quantity ;
+    warp:unit TODO:unit_hectare ;
+    warp:value "100"^^xsd:float .
+
+<https://w3id.org/ecoweaver/warp/statement/agency-c-removal-maintenance/recordMetadata> a warp:EcoRecordMetadata ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/agency-c-maintenance-annotation> .
 
 stmt:burn-avoid-agency a warp:RecommendationStatement ;
     warp:contributions <https://w3id.org/ecoweaver/warp/contrib/burn-avoid-agency-author> ;
@@ -1071,6 +1440,47 @@ stmt:flora-spartina-habitat a warp:ToleranceStatement ;
 <https://w3id.org/ecoweaver/warp/statement/flora-spartina-habitat/recordMetadata> a warp:EcoRecordMetadata ;
     warp:contributions <https://w3id.org/ecoweaver/warp/contrib/flora-spartina-habitat-annotation> .
 
+stmt:fwc-invasive-program a warp:CostStatement ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/fwc-invasive-program-author> ;
+    warp:object <https://w3id.org/ecoweaver/warp/CostCategoryEnum#total> ;
+    warp:period <https://w3id.org/ecoweaver/warp/statement/fwc-invasive-program/period> ;
+    warp:place <https://www.iso.org/obp/ui/#iso:code:3166:US-FL> ;
+    warp:predicate warp:incurs_total_cost ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/statement/fwc-invasive-program/predicate_qualifiers> ;
+    warp:proposition prop:8c9fe6c7764a ;
+    warp:recordMetadata <https://w3id.org/ecoweaver/warp/statement/fwc-invasive-program/recordMetadata> ;
+    warp:reportedIn doc:fwc-program-report ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
+    warp:statementText "Florida allocated funds for invasive plant management on 46 protected areas, about 70,000 ha, from 1999 to 2010." ;
+    warp:subject node:herbicide_mechanical_control_invasive_plants_florida_pa .
+
+<https://w3id.org/ecoweaver/warp/statement/fwc-invasive-program/period> a warp:Period ;
+    warp:end "2010" ;
+    warp:end_lower_bound "2010-01-01T00:00:00Z"^^xsd:dateTime ;
+    warp:end_upper_bound "2011-01-01T00:00:00Z"^^xsd:dateTime ;
+    warp:start "1999" ;
+    warp:start_lower_bound "1999-01-01T00:00:00Z"^^xsd:dateTime ;
+    warp:start_upper_bound "2000-01-01T00:00:00Z"^^xsd:dateTime .
+
+<https://w3id.org/ecoweaver/warp/statement/fwc-invasive-program/predicate_qualifiers> a warp:CostQualifiers ;
+    warp:amount <https://w3id.org/ecoweaver/warp/statement/fwc-invasive-program/predicate_qualifiers/amount> ;
+    warp:cost_basis <https://w3id.org/ecoweaver/warp/CostBasisEnum#budget_allocation> ;
+    warp:count <https://w3id.org/ecoweaver/warp/statement/fwc-invasive-program/predicate_qualifiers/count/0> ;
+    warp:phase <https://w3id.org/ecoweaver/warp/CostPhaseEnum#maintenance> ;
+    warp:reporting_level <https://w3id.org/ecoweaver/warp/ReportingLevelEnum#program> ;
+    warp:scale <https://w3id.org/ecoweaver/warp/statement/fwc-invasive-program/predicate_qualifiers/scale/0> .
+
+<https://w3id.org/ecoweaver/warp/statement/fwc-invasive-program/predicate_qualifiers/count/0> a warp:Count ;
+    warp:entity TODO:protected_area ;
+    warp:value 46 .
+
+<https://w3id.org/ecoweaver/warp/statement/fwc-invasive-program/predicate_qualifiers/scale/0> a warp:Quantity ;
+    warp:unit TODO:unit_hectare ;
+    warp:value "69996"^^xsd:float .
+
+<https://w3id.org/ecoweaver/warp/statement/fwc-invasive-program/recordMetadata> a warp:EcoRecordMetadata ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/fwc-invasive-program-annotation> .
+
 stmt:hsi-y-temperature a warp:ToleranceStatement ;
     warp:contributions <https://w3id.org/ecoweaver/warp/contrib/hsi-y-temperature-author> ;
     warp:hasEvidenceLines <https://w3id.org/ecoweaver/warp/el/hsi-y-temperature-1> ;
@@ -1115,6 +1525,26 @@ stmt:hsi-y-temperature a warp:ToleranceStatement ;
 
 <https://w3id.org/ecoweaver/warp/statement/hsi-y-temperature/recordMetadata> a warp:EcoRecordMetadata ;
     warp:contributions <https://w3id.org/ecoweaver/warp/contrib/hsi-y-temperature-annotation> .
+
+<https://w3id.org/ecoweaver/warp/statement/inpa-wattle-cost/predicate_qualifiers> a warp:CostQualifiers ;
+    warp:amount <https://w3id.org/ecoweaver/warp/statement/inpa-wattle-cost/predicate_qualifiers/amount> ;
+    warp:cost_basis <https://w3id.org/ecoweaver/warp/CostBasisEnum#actual_expenditure> ;
+    warp:phase <https://w3id.org/ecoweaver/warp/CostPhaseEnum#whole_project> ;
+    warp:reporting_level <https://w3id.org/ecoweaver/warp/ReportingLevelEnum#intervention> ;
+    warp:scale <https://w3id.org/ecoweaver/warp/statement/inpa-wattle-cost/predicate_qualifiers/scale/0> .
+
+<https://w3id.org/ecoweaver/warp/statement/inpa-wattle-cost/predicate_qualifiers/scale/0> a warp:Quantity ;
+    warp:unit TODO:unit_hectare ;
+    warp:value "600"^^xsd:float .
+
+<https://w3id.org/ecoweaver/warp/statement/inpa-wattle-cost/recordMetadata> a warp:EcoRecordMetadata ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/inpa-wattle-cost-annotation> .
+
+<https://w3id.org/ecoweaver/warp/statement/inpa-wattle-natives-regenerate/recordMetadata> a warp:EcoRecordMetadata ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/inpa-natives-annotation> .
+
+<https://w3id.org/ecoweaver/warp/statement/inpa-wattle-seedlings-persist/recordMetadata> a warp:EcoRecordMetadata ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/inpa-seedlings-annotation> .
 
 <https://w3id.org/ecoweaver/warp/statement/kramer1995-c1/comparator/0> a causal_mosaic:ComparatorAnnotation ;
     causal_mosaic:comparator_description "Same site and monitoring stations in 1991, before tidal enhancement." ;
@@ -1164,6 +1594,35 @@ stmt:hsi-y-temperature a warp:ToleranceStatement ;
     causal_mosaic:duration_text "One mosquito season (May-October 1992) after the 6-week project ended in late 1991." ;
     causal_mosaic:observation_grain "Five 400 ml dips per inundated monitoring station after each high tide cycle" ;
     causal_mosaic:observation_seasons "May-October" .
+
+<https://w3id.org/ecoweaver/warp/statement/land-trust-strategy-follow-up-labour/predicate_qualifiers> a warp:CostQualifiers ;
+    warp:cost_basis <https://w3id.org/ecoweaver/warp/CostBasisEnum#actual_expenditure> ;
+    warp:covers_roles <https://w3id.org/ecoweaver/warp/StrategyRoleEnum#follow_up> ;
+    warp:effort <https://w3id.org/ecoweaver/warp/statement/land-trust-strategy-follow-up-labour/predicate_qualifiers/effort/0> ;
+    warp:phase <https://w3id.org/ecoweaver/warp/CostPhaseEnum#follow_up> ;
+    warp:reporting_level <https://w3id.org/ecoweaver/warp/ReportingLevelEnum#intervention> ;
+    warp:scale <https://w3id.org/ecoweaver/warp/statement/land-trust-strategy-follow-up-labour/predicate_qualifiers/scale/0> .
+
+<https://w3id.org/ecoweaver/warp/statement/land-trust-strategy-follow-up-labour/predicate_qualifiers/scale/0> a warp:Quantity ;
+    warp:unit TODO:unit_hectare ;
+    warp:value "42"^^xsd:float .
+
+<https://w3id.org/ecoweaver/warp/statement/land-trust-strategy-follow-up-labour/recordMetadata> a warp:EcoRecordMetadata ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/land-trust-follow-up-annotation> .
+
+<https://w3id.org/ecoweaver/warp/statement/land-trust-strategy-total/predicate_qualifiers> a warp:CostQualifiers ;
+    warp:amount <https://w3id.org/ecoweaver/warp/statement/land-trust-strategy-total/predicate_qualifiers/amount> ;
+    warp:cost_basis <https://w3id.org/ecoweaver/warp/CostBasisEnum#actual_expenditure> ;
+    warp:phase <https://w3id.org/ecoweaver/warp/CostPhaseEnum#whole_project> ;
+    warp:reporting_level <https://w3id.org/ecoweaver/warp/ReportingLevelEnum#intervention> ;
+    warp:scale <https://w3id.org/ecoweaver/warp/statement/land-trust-strategy-total/predicate_qualifiers/scale/0> .
+
+<https://w3id.org/ecoweaver/warp/statement/land-trust-strategy-total/predicate_qualifiers/scale/0> a warp:Quantity ;
+    warp:unit TODO:unit_hectare ;
+    warp:value "42"^^xsd:float .
+
+<https://w3id.org/ecoweaver/warp/statement/land-trust-strategy-total/recordMetadata> a warp:EcoRecordMetadata ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/land-trust-strategy-total-annotation> .
 
 stmt:ms-09-causal a warp:CausalStatement ;
     warp:causal_language <https://w3id.org/ecoweaver/warp/ClaimStrengthEnum#uncertain_causal> ;
@@ -1385,6 +1844,37 @@ stmt:nwpl-spartina-midwest a warp:ToleranceStatement ;
 <https://w3id.org/ecoweaver/warp/statement/nwpl-spartina-midwest/recordMetadata> a warp:EcoRecordMetadata ;
     warp:contributions <https://w3id.org/ecoweaver/warp/contrib/nwpl-spartina-midwest-annotation> .
 
+stmt:practitioner-drill-vs-plugs a warp:CostStatement ;
+    warp:care <https://w3id.org/ecoweaver/warp/statement/practitioner-drill-vs-plugs/care> ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/practitioner-drill-vs-plugs-author> ;
+    warp:object node:planting_plugs_native_grassland ;
+    warp:original_text "TODO: notebook wording" ;
+    warp:place place:northern-great-plains ;
+    warp:predicate warp:costs_relative_to ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/statement/practitioner-drill-vs-plugs/predicate_qualifiers> ;
+    warp:proposition prop:2526825eea7e ;
+    warp:recordMetadata <https://w3id.org/ecoweaver/warp/statement/practitioner-drill-vs-plugs/recordMetadata> ;
+    warp:reportedIn doc:notebook-entry-4 ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#contingent> ;
+    warp:statementText "Drill seeding a native mix costs about a third of planting plugs, per hectare." ;
+    warp:subject node:drill_seeding_native_grassland_mix .
+
+<https://w3id.org/ecoweaver/warp/statement/practitioner-drill-vs-plugs/care> a warp:CareMetadata ;
+    warp:access_level <https://w3id.org/ecoweaver/warp/AccessLevelEnum#attribution_required> ;
+    warp:knowledge_holders <https://w3id.org/ecoweaver/warp/agent/person/practitioner-b> .
+
+<https://w3id.org/ecoweaver/warp/statement/practitioner-drill-vs-plugs/predicate_qualifiers> a warp:CostQualifiers ;
+    warp:cost_basis <https://w3id.org/ecoweaver/warp/CostBasisEnum#estimate> ;
+    warp:phase <https://w3id.org/ecoweaver/warp/CostPhaseEnum#initial> ;
+    warp:ratio <https://w3id.org/ecoweaver/warp/statement/practitioner-drill-vs-plugs/predicate_qualifiers/ratio> .
+
+<https://w3id.org/ecoweaver/warp/statement/practitioner-drill-vs-plugs/predicate_qualifiers/ratio> a warp:CostRatio ;
+    warp:basis "per_hectare" ;
+    warp:value 0.33 .
+
+<https://w3id.org/ecoweaver/warp/statement/practitioner-drill-vs-plugs/recordMetadata> a warp:EcoRecordMetadata ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/practitioner-drill-vs-plugs-annotation> .
+
 stmt:practitioner-spartina-sand a warp:ToleranceStatement ;
     warp:care <https://w3id.org/ecoweaver/warp/statement/practitioner-spartina-sand/care> ;
     warp:contributions <https://w3id.org/ecoweaver/warp/contrib/practitioner-spartina-sand-author> ;
@@ -1496,6 +1986,106 @@ stmt:strategy-b-native-cover a warp:CausalStatement ;
 <https://w3id.org/ecoweaver/warp/statement/strategy-b-native-cover/recordMetadata> a warp:EcoRecordMetadata ;
     warp:contributions <https://w3id.org/ecoweaver/warp/contrib/strategy-b-native-cover-annotation> .
 
+<https://w3id.org/ecoweaver/warp/statement/transfer/warp-cost-transfer-1/inpa-wattle-cost> a warp:CostStatement ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/transfer/warp-cost-transfer-1/inpa-wattle-cost-author> ;
+    warp:hasEvidenceLines <https://w3id.org/ecoweaver/warp/el/transfer/warp-cost-transfer-1/inpa-wattle-cost> ;
+    warp:modality <https://w3id.org/ecoweaver/warp/ModalityEnum#inferred> ;
+    warp:object <https://w3id.org/ecoweaver/warp/CostCategoryEnum#total> ;
+    warp:place <https://www.iso.org/obp/ui/#iso:code:3166:CA-SK> ;
+    warp:predicate warp:incurs_total_cost ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/statement/transfer/warp-cost-transfer-1/inpa-wattle-cost/predicate_qualifiers> ;
+    warp:proposition prop:5e77695b6702 ;
+    warp:recordMetadata <https://w3id.org/ecoweaver/warp/statement/transfer/warp-cost-transfer-1/inpa-wattle-cost/recordMetadata> ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
+    warp:statementText "Treating about 600 ha of golden wreath wattle cost about NIS 17,600. Re-stated for ISO3166-2:CA-SK in 2026 CAD under warp-cost-transfer/1." ;
+    warp:subject node:cut_treat_acacia_saligna_coastal_reserves ;
+    warp:transfer_rule "warp-cost-transfer/1" ;
+    warp:transfer_steps "converted ILS to CAD at 0.5",
+        "indexed ILS 2008 to 2026 (x1.5000)" ;
+    warp:transferred_from stmt:inpa-wattle-cost .
+
+<https://w3id.org/ecoweaver/warp/statement/transfer/warp-cost-transfer-1/inpa-wattle-cost/predicate_qualifiers> a warp:CostQualifiers ;
+    warp:amount <https://w3id.org/ecoweaver/warp/statement/transfer/warp-cost-transfer-1/inpa-wattle-cost/predicate_qualifiers/amount> ;
+    warp:cost_basis <https://w3id.org/ecoweaver/warp/CostBasisEnum#actual_expenditure> ;
+    warp:phase <https://w3id.org/ecoweaver/warp/CostPhaseEnum#whole_project> ;
+    warp:reporting_level <https://w3id.org/ecoweaver/warp/ReportingLevelEnum#intervention> ;
+    warp:scale <https://w3id.org/ecoweaver/warp/statement/transfer/warp-cost-transfer-1/inpa-wattle-cost/predicate_qualifiers/scale/0> .
+
+<https://w3id.org/ecoweaver/warp/statement/transfer/warp-cost-transfer-1/inpa-wattle-cost/predicate_qualifiers/scale/0> a warp:Quantity ;
+    warp:unit TODO:unit_hectare ;
+    warp:value "600"^^xsd:float .
+
+<https://w3id.org/ecoweaver/warp/statement/transfer/warp-cost-transfer-1/inpa-wattle-cost/recordMetadata> a warp:EcoRecordMetadata ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/transfer/warp-cost-transfer-1/inpa-wattle-cost-record> .
+
+<https://w3id.org/ecoweaver/warp/statement/transfer/warp-cost-transfer-1/land-trust-strategy-follow-up-labour> a warp:CostStatement ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/transfer/warp-cost-transfer-1/land-trust-strategy-follow-up-labour-author> ;
+    warp:hasEvidenceLines <https://w3id.org/ecoweaver/warp/el/transfer/warp-cost-transfer-1/land-trust-strategy-follow-up-labour> ;
+    warp:modality <https://w3id.org/ecoweaver/warp/ModalityEnum#inferred> ;
+    warp:object <https://w3id.org/ecoweaver/warp/CostCategoryEnum#labour> ;
+    warp:place <https://www.iso.org/obp/ui/#iso:code:3166:CA-SK> ;
+    warp:predicate warp:incurs_labour_cost ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/statement/transfer/warp-cost-transfer-1/land-trust-strategy-follow-up-labour/predicate_qualifiers> ;
+    warp:proposition prop:76daefe75c6e ;
+    warp:recordMetadata <https://w3id.org/ecoweaver/warp/statement/transfer/warp-cost-transfer-1/land-trust-strategy-follow-up-labour/recordMetadata> ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
+    warp:statementText "Illustrative: the three years of mowing took 12 person-days of labour. Re-stated for ISO3166-2:CA-SK in 2026 CAD under warp-cost-transfer/1." ;
+    warp:subject node:strategy-f38f3a2661ee ;
+    warp:transfer_rule "warp-cost-transfer/1" ;
+    warp:transfer_steps "labour re-priced from effort: 12 person-days x 400 CAD (ISO3166-2:CA-SK, 2026)" ;
+    warp:transferred_from stmt:land-trust-strategy-follow-up-labour .
+
+<https://w3id.org/ecoweaver/warp/statement/transfer/warp-cost-transfer-1/land-trust-strategy-follow-up-labour/predicate_qualifiers> a warp:CostQualifiers ;
+    warp:amount <https://w3id.org/ecoweaver/warp/statement/transfer/warp-cost-transfer-1/land-trust-strategy-follow-up-labour/predicate_qualifiers/amount> ;
+    warp:cost_basis <https://w3id.org/ecoweaver/warp/CostBasisEnum#actual_expenditure> ;
+    warp:covers_roles <https://w3id.org/ecoweaver/warp/StrategyRoleEnum#follow_up> ;
+    warp:effort <https://w3id.org/ecoweaver/warp/statement/transfer/warp-cost-transfer-1/land-trust-strategy-follow-up-labour/predicate_qualifiers/effort/0> ;
+    warp:phase <https://w3id.org/ecoweaver/warp/CostPhaseEnum#follow_up> ;
+    warp:reporting_level <https://w3id.org/ecoweaver/warp/ReportingLevelEnum#intervention> ;
+    warp:scale <https://w3id.org/ecoweaver/warp/statement/transfer/warp-cost-transfer-1/land-trust-strategy-follow-up-labour/predicate_qualifiers/scale/0> .
+
+<https://w3id.org/ecoweaver/warp/statement/transfer/warp-cost-transfer-1/land-trust-strategy-follow-up-labour/predicate_qualifiers/effort/0> a warp:Quantity ;
+    warp:unit TODO:unit_person_day ;
+    warp:value "12"^^xsd:float .
+
+<https://w3id.org/ecoweaver/warp/statement/transfer/warp-cost-transfer-1/land-trust-strategy-follow-up-labour/predicate_qualifiers/scale/0> a warp:Quantity ;
+    warp:unit TODO:unit_hectare ;
+    warp:value "42"^^xsd:float .
+
+<https://w3id.org/ecoweaver/warp/statement/transfer/warp-cost-transfer-1/land-trust-strategy-follow-up-labour/recordMetadata> a warp:EcoRecordMetadata ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/transfer/warp-cost-transfer-1/land-trust-strategy-follow-up-labour-record> .
+
+<https://w3id.org/ecoweaver/warp/statement/transfer/warp-cost-transfer-1/land-trust-strategy-total> a warp:CostStatement ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/transfer/warp-cost-transfer-1/land-trust-strategy-total-author> ;
+    warp:hasEvidenceLines <https://w3id.org/ecoweaver/warp/el/transfer/warp-cost-transfer-1/land-trust-strategy-total> ;
+    warp:modality <https://w3id.org/ecoweaver/warp/ModalityEnum#inferred> ;
+    warp:object <https://w3id.org/ecoweaver/warp/CostCategoryEnum#total> ;
+    warp:place <https://www.iso.org/obp/ui/#iso:code:3166:CA-SK> ;
+    warp:predicate warp:incurs_total_cost ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/statement/transfer/warp-cost-transfer-1/land-trust-strategy-total/predicate_qualifiers> ;
+    warp:proposition prop:0a2c8c5cbc76 ;
+    warp:recordMetadata <https://w3id.org/ecoweaver/warp/statement/transfer/warp-cost-transfer-1/land-trust-strategy-total/recordMetadata> ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
+    warp:statementText "Illustrative: recontouring, seeding and three years of mowing on 42 ha cost $48,000. Re-stated for ISO3166-2:CA-SK in 2026 CAD under warp-cost-transfer/1." ;
+    warp:subject node:strategy-f38f3a2661ee ;
+    warp:transfer_rule "warp-cost-transfer/1" ;
+    warp:transfer_steps "indexed CAD 2025 to 2026 (x1.0200)" ;
+    warp:transferred_from stmt:land-trust-strategy-total .
+
+<https://w3id.org/ecoweaver/warp/statement/transfer/warp-cost-transfer-1/land-trust-strategy-total/predicate_qualifiers> a warp:CostQualifiers ;
+    warp:amount <https://w3id.org/ecoweaver/warp/statement/transfer/warp-cost-transfer-1/land-trust-strategy-total/predicate_qualifiers/amount> ;
+    warp:cost_basis <https://w3id.org/ecoweaver/warp/CostBasisEnum#actual_expenditure> ;
+    warp:phase <https://w3id.org/ecoweaver/warp/CostPhaseEnum#whole_project> ;
+    warp:reporting_level <https://w3id.org/ecoweaver/warp/ReportingLevelEnum#intervention> ;
+    warp:scale <https://w3id.org/ecoweaver/warp/statement/transfer/warp-cost-transfer-1/land-trust-strategy-total/predicate_qualifiers/scale/0> .
+
+<https://w3id.org/ecoweaver/warp/statement/transfer/warp-cost-transfer-1/land-trust-strategy-total/predicate_qualifiers/scale/0> a warp:Quantity ;
+    warp:unit TODO:unit_hectare ;
+    warp:value "42"^^xsd:float .
+
+<https://w3id.org/ecoweaver/warp/statement/transfer/warp-cost-transfer-1/land-trust-strategy-total/recordMetadata> a warp:EcoRecordMetadata ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/transfer/warp-cost-transfer-1/land-trust-strategy-total-record> .
+
 stmt:trial-bogr-ph a warp:ToleranceStatement ;
     warp:contributions <https://w3id.org/ecoweaver/warp/contrib/trial-bogr-ph-author> ;
     warp:hasEvidenceLines <https://w3id.org/ecoweaver/warp/el/trial-bogr-ph-1> ;
@@ -1548,7 +2138,11 @@ stmt:usda-bogr-ph a warp:ToleranceStatement ;
 <https://w3id.org/ecoweaver/warp/statement/usda-bogr-ph/recordMetadata> a warp:EcoRecordMetadata ;
     warp:contributions <https://w3id.org/ecoweaver/warp/contrib/usda-bogr-ph-annotation> .
 
+node:drill_seeding_native_grassland_mix warp:costs_relative_to node:planting_plugs_native_grassland .
+
 node:fish_taxon_y warp:tolerates node:temperature_of_water .
+
+node:herbicide_mechanical_control_invasive_plants_florida_pa warp:incurs_total_cost <https://w3id.org/ecoweaver/warp/statement/fwc-invasive-program/predicate_qualifiers/amount> .
 
 node:taxon_x warp:prefers node:ph_of_soil .
 
@@ -1562,6 +2156,11 @@ node:water_extraction_milk_river camo:prevents node:habitat_quantity_of_mountain
     warp:name "TODO: National Wetland Plant List (placeholder record)" .
 
 <https://w3id.org/ecoweaver/warp/agent/person/practitioner-2> a warp:EcoAgent ;
+    warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#practitioner> ;
+    warp:agent_subtype "person" ;
+    warp:name "TODO: practitioner name or pseudonym" .
+
+<https://w3id.org/ecoweaver/warp/agent/person/practitioner-b> a warp:EcoAgent ;
     warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#practitioner> ;
     warp:agent_subtype "person" ;
     warp:name "TODO: practitioner name or pseudonym" .
@@ -1582,6 +2181,20 @@ doc:notebook-entry-3 a warp:EcoDocument ;
 doc:nwpl a warp:EcoDocument ;
     warp:title "TODO: National Wetland Plant List, regional ratings" .
 
+prop:0a2c8c5cbc76 a warp:CostProposition ;
+    warp:derived_from_statements <https://w3id.org/ecoweaver/warp/statement/transfer/warp-cost-transfer-1/land-trust-strategy-total> ;
+    warp:identity_key "cost|node:strategy-f38f3a2661ee|incurs_cost|total|affirmed|assertional|place=[\"ISO3166-2:CA-SK\"]|predicate_qualifiers.phase=\"whole_project\"|predicate_qualifiers.reporting_level=\"intervention\"" ;
+    warp:identity_rule_version "warp-prop-identity/4" ;
+    warp:negated false ;
+    warp:object <https://w3id.org/ecoweaver/warp/CostCategoryEnum#total> ;
+    warp:place <https://www.iso.org/obp/ui/#iso:code:3166:CA-SK> ;
+    warp:predicate warp:incurs_total_cost ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/prop/0a2c8c5cbc76/predicate_qualifiers> ;
+    warp:propositionText "In a particular case, node:strategy-f38f3a2661ee incurs total cost." ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
+    warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
+    warp:subject node:strategy-f38f3a2661ee .
+
 prop:3cee880350a6 a warp:ToleranceProposition ;
     warp:derived_from_statements stmt:practitioner-spartina-sand ;
     warp:identity_key "tolerance|node:spartina_pectinata|intolerant_of|node:texture_class_of_soil|affirmed|contingent|place=null" ;
@@ -1593,6 +2206,32 @@ prop:3cee880350a6 a warp:ToleranceProposition ;
     warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#contingent> ;
     warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
     warp:subject node:spartina_pectinata .
+
+prop:5a6e55a1a03c a warp:CausalProposition ;
+    warp:derived_from_statements stmt:inpa-wattle-natives-regenerate ;
+    warp:identity_key "causal|node:cut_treat_acacia_saligna_coastal_reserves|causes|node:native_vegetation_cover_coastal_reserves|affirmed|assertional" ;
+    warp:identity_rule_version "warp-prop-identity/4" ;
+    warp:negated false ;
+    warp:object node:native_vegetation_cover_coastal_reserves ;
+    warp:predicate camo:causes ;
+    warp:propositionText "In a particular case, cutting, stump treatment and seedling control of Acacia saligna in coastal protected areas causes Native vegetation cover in the coastal protected areas." ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
+    warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
+    warp:subject node:cut_treat_acacia_saligna_coastal_reserves .
+
+prop:5e77695b6702 a warp:CostProposition ;
+    warp:derived_from_statements <https://w3id.org/ecoweaver/warp/statement/transfer/warp-cost-transfer-1/inpa-wattle-cost> ;
+    warp:identity_key "cost|node:cut_treat_acacia_saligna_coastal_reserves|incurs_cost|total|affirmed|assertional|place=[\"ISO3166-2:CA-SK\"]|predicate_qualifiers.phase=\"whole_project\"|predicate_qualifiers.reporting_level=\"intervention\"" ;
+    warp:identity_rule_version "warp-prop-identity/4" ;
+    warp:negated false ;
+    warp:object <https://w3id.org/ecoweaver/warp/CostCategoryEnum#total> ;
+    warp:place <https://www.iso.org/obp/ui/#iso:code:3166:CA-SK> ;
+    warp:predicate warp:incurs_total_cost ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/prop/5e77695b6702/predicate_qualifiers> ;
+    warp:propositionText "In a particular case, node:cut_treat_acacia_saligna_coastal_reserves incurs total cost." ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
+    warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
+    warp:subject node:cut_treat_acacia_saligna_coastal_reserves .
 
 prop:69ccdaf69ec4 a warp:RecommendationProposition ;
     warp:derived_from_statements stmt:ms-11-rec ;
@@ -1619,6 +2258,20 @@ prop:6ac6fc0d7703 a warp:InteractionProposition ;
     warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
     warp:subject node:population_of_odocoileus_virginianus .
 
+prop:76daefe75c6e a warp:CostProposition ;
+    warp:derived_from_statements <https://w3id.org/ecoweaver/warp/statement/transfer/warp-cost-transfer-1/land-trust-strategy-follow-up-labour> ;
+    warp:identity_key "cost|node:strategy-f38f3a2661ee|incurs_cost|labour|affirmed|assertional|place=[\"ISO3166-2:CA-SK\"]|predicate_qualifiers.phase=\"follow_up\"|predicate_qualifiers.reporting_level=\"intervention\"" ;
+    warp:identity_rule_version "warp-prop-identity/4" ;
+    warp:negated false ;
+    warp:object <https://w3id.org/ecoweaver/warp/CostCategoryEnum#labour> ;
+    warp:place <https://www.iso.org/obp/ui/#iso:code:3166:CA-SK> ;
+    warp:predicate warp:incurs_labour_cost ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/prop/76daefe75c6e/predicate_qualifiers> ;
+    warp:propositionText "In a particular case, node:strategy-f38f3a2661ee incurs labour cost." ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
+    warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
+    warp:subject node:strategy-f38f3a2661ee .
+
 prop:7e7264c393d3 a warp:ToleranceProposition ;
     warp:derived_from_statements stmt:nwpl-spartina-great-plains ;
     warp:identity_key "tolerance|node:spartina_pectinata|prefers|node:wetness_of_soil|affirmed|prototypical|place=[\"place:nwpl-great-plains\"]" ;
@@ -1631,6 +2284,21 @@ prop:7e7264c393d3 a warp:ToleranceProposition ;
     warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#prototypical> ;
     warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
     warp:subject node:spartina_pectinata .
+
+prop:80f68139f485 a warp:CostProposition ;
+    warp:derived_from_statements stmt:agency-c-removal-initial-1,
+        stmt:agency-c-removal-initial-2 ;
+    warp:identity_key "cost|node:manual_removal_of_acacia_saligna|incurs_cost|total|affirmed|assertional|place=[\"place:mediterranean-coastal-israel\"]|predicate_qualifiers.phase=\"initial\"|predicate_qualifiers.reporting_level=\"intervention\"" ;
+    warp:identity_rule_version "warp-prop-identity/4" ;
+    warp:negated false ;
+    warp:object <https://w3id.org/ecoweaver/warp/CostCategoryEnum#total> ;
+    warp:place place:mediterranean-coastal-israel ;
+    warp:predicate warp:incurs_total_cost ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/prop/80f68139f485/predicate_qualifiers> ;
+    warp:propositionText "In a particular case, manual removal of Acacia saligna incurs total cost." ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
+    warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
+    warp:subject node:manual_removal_of_acacia_saligna .
 
 prop:8754905f709c a warp:ToleranceProposition ;
     warp:derived_from_statements stmt:nwpl-spartina-midwest ;
@@ -1707,6 +2375,18 @@ prop:aea4ac8269ae a warp:CausalProposition ;
     warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
     warp:subject node:planting_of_sanguinaria_canadensis .
 
+prop:e73587275d57 a warp:CausalProposition ;
+    warp:derived_from_statements stmt:inpa-wattle-seedlings-persist ;
+    warp:identity_key "causal|node:cut_treat_acacia_saligna_coastal_reserves|prevents|node:abundance_of_acacia_saligna_seedlings|negated|assertional" ;
+    warp:identity_rule_version "warp-prop-identity/4" ;
+    warp:negated true ;
+    warp:object node:abundance_of_acacia_saligna_seedlings ;
+    warp:predicate camo:prevents ;
+    warp:propositionText "In a particular case, it is not the case that Cutting, stump treatment and seedling control of Acacia saligna in coastal protected areas prevents Abundance of Acacia saligna seedlings." ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
+    warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
+    warp:subject node:cut_treat_acacia_saligna_coastal_reserves .
+
 prop:f1a52b9a290c a warp:ToleranceProposition ;
     warp:derived_from_statements stmt:practitioner-spartina-wet ;
     warp:identity_key "tolerance|node:spartina_pectinata|prefers|node:wetness_of_soil|affirmed|contingent|place=null" ;
@@ -1730,6 +2410,15 @@ prop:question-tidal-restoration-aedes-dorsalis a warp:CausalProposition ;
     warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#open_question> ;
     warp:subject node:tidal_restoration_of_marsh .
 
+<https://w3id.org/ecoweaver/warp/statement/agency-c-removal-initial-1/predicate_qualifiers/amount> a warp:MonetaryAmount ;
+    warp:currency "ILS" .
+
+<https://w3id.org/ecoweaver/warp/statement/agency-c-removal-initial-2/predicate_qualifiers/amount> a warp:MonetaryAmount ;
+    warp:currency "ILS" .
+
+<https://w3id.org/ecoweaver/warp/statement/agency-c-removal-maintenance/predicate_qualifiers/amount> a warp:MonetaryAmount ;
+    warp:currency "ILS" .
+
 stmt:burn-study-c1 a warp:CausalStatement ;
     warp:causal_language <https://w3id.org/ecoweaver/warp/ClaimStrengthEnum#direct_causal> ;
     warp:contributions <https://w3id.org/ecoweaver/warp/contrib/burn-study-c1-author> ;
@@ -1744,6 +2433,40 @@ stmt:burn-study-c1 a warp:CausalStatement ;
     warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#prototypical> ;
     warp:statementText "Prescribed burning reduces shrub cover in grassland." ;
     warp:subject node:prescribed_burning_of_grassland .
+
+<https://w3id.org/ecoweaver/warp/statement/fwc-invasive-program/predicate_qualifiers/amount> a warp:MonetaryAmount ;
+    warp:currency "USD" .
+
+stmt:inpa-wattle-natives-regenerate a warp:CausalStatement ;
+    warp:causal_language <https://w3id.org/ecoweaver/warp/ClaimStrengthEnum#associational> ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/inpa-natives-author> ;
+    warp:hasEvidenceLines <https://w3id.org/ecoweaver/warp/el/inpa-natives-1> ;
+    warp:modality <https://w3id.org/ecoweaver/warp/ModalityEnum#observed> ;
+    warp:object node:native_vegetation_cover_coastal_reserves ;
+    warp:place place:mediterranean-coastal-israel ;
+    warp:predicate camo:causes ;
+    warp:proposition prop:5a6e55a1a03c ;
+    warp:recordMetadata <https://w3id.org/ecoweaver/warp/statement/inpa-wattle-natives-regenerate/recordMetadata> ;
+    warp:reportedIn doc:oron-hamod-2008 ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
+    warp:statementText "After treatment, native vegetation regenerated in the treated areas." ;
+    warp:subject node:cut_treat_acacia_saligna_coastal_reserves .
+
+stmt:inpa-wattle-seedlings-persist a warp:CausalStatement ;
+    warp:causal_language <https://w3id.org/ecoweaver/warp/ClaimStrengthEnum#no_relationship> ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/inpa-seedlings-author> ;
+    warp:hasEvidenceLines <https://w3id.org/ecoweaver/warp/el/inpa-seedlings-1> ;
+    warp:modality <https://w3id.org/ecoweaver/warp/ModalityEnum#observed> ;
+    warp:negated true ;
+    warp:object node:abundance_of_acacia_saligna_seedlings ;
+    warp:place place:mediterranean-coastal-israel ;
+    warp:predicate camo:prevents ;
+    warp:proposition prop:e73587275d57 ;
+    warp:recordMetadata <https://w3id.org/ecoweaver/warp/statement/inpa-wattle-seedlings-persist/recordMetadata> ;
+    warp:reportedIn doc:oron-hamod-2008 ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
+    warp:statementText "Treatment did not prevent wattle seedlings from persisting." ;
+    warp:subject node:cut_treat_acacia_saligna_coastal_reserves .
 
 stmt:kramer1995-c1 a warp:CausalStatement ;
     warp:causal_language <https://w3id.org/ecoweaver/warp/ClaimStrengthEnum#direct_causal> ;
@@ -1767,6 +2490,10 @@ stmt:kramer1995-c1 a warp:CausalStatement ;
     warp:statementText "Restoring full tidal action to the project marsh reduced Aedes dorsalis larval density by about 98.7%." ;
     warp:subject node:tidal_restoration_of_marsh ;
     warp:temporal_extent <https://w3id.org/ecoweaver/warp/statement/kramer1995-c1/temporal_extent> .
+
+<https://w3id.org/ecoweaver/warp/statement/land-trust-strategy-follow-up-labour/predicate_qualifiers/effort/0> a warp:Quantity ;
+    warp:unit TODO:unit_person_day ;
+    warp:value "12"^^xsd:float .
 
 stmt:murphy2005-c1 a warp:CausalStatement ;
     warp:causal_language <https://w3id.org/ecoweaver/warp/ClaimStrengthEnum#direct_causal> ;
@@ -1802,12 +2529,49 @@ stmt:notebook-c1 a warp:CausalStatement ;
     warp:statementText "After bloodroot was planted by the path, there was less garlic mustard the following year." ;
     warp:subject node:planting_of_sanguinaria_canadensis .
 
+<https://w3id.org/ecoweaver/warp/statement/transfer/warp-cost-transfer-1/inpa-wattle-cost/predicate_qualifiers/amount> a warp:MonetaryAmount ;
+    warp:adjustment <https://w3id.org/ecoweaver/warp/CostAdjustmentEnum#inflation> ;
+    warp:conversion_rate 0.5 ;
+    warp:currency "CAD" ;
+    warp:derived_from_amount <https://w3id.org/ecoweaver/warp/statement/inpa-wattle-cost/predicate_qualifiers/amount> ;
+    warp:price_year 2026 ;
+    warp:value 13200.0 .
+
+<https://w3id.org/ecoweaver/warp/statement/transfer/warp-cost-transfer-1/land-trust-strategy-follow-up-labour/predicate_qualifiers/amount> a warp:MonetaryAmount ;
+    warp:adjustment <https://w3id.org/ecoweaver/warp/CostAdjustmentEnum#none> ;
+    warp:currency "CAD" ;
+    warp:price_year 2026 ;
+    warp:value 4800.0 .
+
+<https://w3id.org/ecoweaver/warp/statement/transfer/warp-cost-transfer-1/land-trust-strategy-total/predicate_qualifiers/amount> a warp:MonetaryAmount ;
+    warp:adjustment <https://w3id.org/ecoweaver/warp/CostAdjustmentEnum#inflation> ;
+    warp:currency "CAD" ;
+    warp:derived_from_amount <https://w3id.org/ecoweaver/warp/statement/land-trust-strategy-total/predicate_qualifiers/amount> ;
+    warp:price_year 2026 ;
+    warp:value 48960.0 .
+
 node:tidal_restoration_of_marsh camo:prevents node:volumetric_density_of_ochlerotatus_dorsalis_population_at_larval_stage .
 
-<https://w3id.org/ecoweaver/warp/agent/ecoweaver-synthesis> a warp:EcoAgent ;
-    warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#synthesis_pipeline> ;
-    warp:agent_subtype "software" ;
-    warp:name "EcoWeaver synthesis pipeline" .
+<https://w3id.org/ecoweaver/warp/agent/org/agency-c> a warp:EcoAgent ;
+    warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#organization> ;
+    warp:agent_subtype "organization" ;
+    warp:name "TODO: a regional conservation agency" .
+
+<https://w3id.org/ecoweaver/warp/agent/org/israel-nature-parks-authority> a warp:EcoAgent ;
+    warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#organization> ;
+    warp:agent_subtype "organization" ;
+    warp:name "Israel Nature and Parks Authority" .
+
+<https://w3id.org/ecoweaver/warp/agent/org/land-trust-a> a warp:EcoAgent ;
+    warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#organization> ;
+    warp:agent_subtype "organization" ;
+    warp:name "TODO: a land trust (source A)" .
+
+doc:agency-c-costings a warp:EcoDocument ;
+    warp:title "TODO: an agency's wattle removal costings" .
+
+doc:project-report-x a warp:EcoDocument ;
+    warp:title "TODO: project report X (source A)" .
 
 prop:4f9905a0d7a2 a warp:CausalProposition ;
     warp:derived_from_statements stmt:ms-11-causal ;
@@ -1870,6 +2634,58 @@ prop:c16be9de6aa6 a warp:CausalProposition ;
     warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
     warp:subject node:water_extraction_milk_river .
 
+stmt:inpa-wattle-cost a warp:CostStatement ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/inpa-wattle-cost-author> ;
+    warp:object <https://w3id.org/ecoweaver/warp/CostCategoryEnum#total> ;
+    warp:outcome_reported stmt:inpa-wattle-natives-regenerate,
+        stmt:inpa-wattle-seedlings-persist ;
+    warp:place place:mediterranean-coastal-israel ;
+    warp:predicate warp:incurs_total_cost ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/statement/inpa-wattle-cost/predicate_qualifiers> ;
+    warp:proposition prop:e4c87fd740d3 ;
+    warp:recordMetadata <https://w3id.org/ecoweaver/warp/statement/inpa-wattle-cost/recordMetadata> ;
+    warp:reportedIn doc:oron-hamod-2008 ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
+    warp:statementText "Treating about 600 ha of golden wreath wattle cost about NIS 17,600." ;
+    warp:subject node:cut_treat_acacia_saligna_coastal_reserves .
+
+<https://w3id.org/ecoweaver/warp/statement/inpa-wattle-cost/predicate_qualifiers/amount> a warp:MonetaryAmount ;
+    warp:adjustment <https://w3id.org/ecoweaver/warp/CostAdjustmentEnum#none> ;
+    warp:currency "ILS" ;
+    warp:price_year 2008 ;
+    warp:value 17600.0 .
+
+stmt:land-trust-strategy-follow-up-labour a warp:CostStatement ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/land-trust-follow-up-author> ;
+    warp:object <https://w3id.org/ecoweaver/warp/CostCategoryEnum#labour> ;
+    warp:place TODO:place_project_x_site ;
+    warp:predicate warp:incurs_labour_cost ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/statement/land-trust-strategy-follow-up-labour/predicate_qualifiers> ;
+    warp:proposition prop:9797650932b3 ;
+    warp:recordMetadata <https://w3id.org/ecoweaver/warp/statement/land-trust-strategy-follow-up-labour/recordMetadata> ;
+    warp:reportedIn doc:project-report-x ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
+    warp:statementText "Illustrative: the three years of mowing took 12 person-days of labour." ;
+    warp:subject node:strategy-f38f3a2661ee .
+
+stmt:land-trust-strategy-total a warp:CostStatement ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/land-trust-strategy-total-author> ;
+    warp:object <https://w3id.org/ecoweaver/warp/CostCategoryEnum#total> ;
+    warp:place TODO:place_project_x_site ;
+    warp:predicate warp:incurs_total_cost ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/statement/land-trust-strategy-total/predicate_qualifiers> ;
+    warp:proposition prop:b8a8f3da7637 ;
+    warp:recordMetadata <https://w3id.org/ecoweaver/warp/statement/land-trust-strategy-total/recordMetadata> ;
+    warp:reportedIn doc:project-report-x ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
+    warp:statementText "Illustrative: recontouring, seeding and three years of mowing on 42 ha cost $48,000." ;
+    warp:subject node:strategy-f38f3a2661ee .
+
+<https://w3id.org/ecoweaver/warp/statement/land-trust-strategy-total/predicate_qualifiers/amount> a warp:MonetaryAmount ;
+    warp:currency "CAD" ;
+    warp:price_year 2025 ;
+    warp:value 48000.0 .
+
 node:planting_of_sanguinaria_canadensis camo:prevents node:rate_of_population_growth_of_alliaria_petiolata .
 
 node:stocking_of_predacious_sportfish_milk_river camo:prevents node:abundance_of_mountain_sucker_milk_river ;
@@ -1898,6 +2714,9 @@ node:stocking_of_predacious_sportfish_milk_river camo:prevents node:abundance_of
 doc:notebook-entry-1 a warp:EcoDocument ;
     warp:subtype <https://w3id.org/ecoweaver/warp/doc/notebook-entry-1/subtype> .
 
+doc:oron-hamod-2008 a warp:EcoDocument ;
+    warp:title "Oron and Hamod 2008, golden wreath wattle control on Israel's coast, as reported in Iacona et al. 2018 (TODO: full citation)" .
+
 doc:regional-flora a warp:EcoDocument ;
     warp:title "TODO: a regional flora" .
 
@@ -1913,6 +2732,10 @@ prop:83d87b9d22ad a warp:CausalProposition ;
     warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
     warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
     warp:subject node:strategy-f38f3a2661ee .
+
+node:manual_removal_of_acacia_saligna warp:incurs_total_cost <https://w3id.org/ecoweaver/warp/statement/agency-c-removal-initial-1/predicate_qualifiers/amount>,
+        <https://w3id.org/ecoweaver/warp/statement/agency-c-removal-initial-2/predicate_qualifiers/amount>,
+        <https://w3id.org/ecoweaver/warp/statement/agency-c-removal-maintenance/predicate_qualifiers/amount> .
 
 doc:dfo-mountain-sucker-recovery-strategy a warp:EcoDocument ;
     warp:title "TODO: Recovery Strategy for the Mountain Sucker (Catostomus platyrhynchus), Milk River populations" .
@@ -1964,13 +2787,26 @@ node:prescribed_burning_of_grassland camo:prevents node:shrub_cover_in_grassland
     warp:advised_against_for node:decrease_in_shrub_cover_in_grassland ;
     warp:recommended_to_achieve node:decrease_in_shrub_cover_in_grassland .
 
-node:strategy-f38f3a2661ee camo:causes node:native_plant_cover .
+node:cut_treat_acacia_saligna_coastal_reserves camo:causes node:native_vegetation_cover_coastal_reserves ;
+    warp:incurs_total_cost <https://w3id.org/ecoweaver/warp/statement/inpa-wattle-cost/predicate_qualifiers/amount>,
+        <https://w3id.org/ecoweaver/warp/statement/transfer/warp-cost-transfer-1/inpa-wattle-cost/predicate_qualifiers/amount> .
+
+<https://w3id.org/ecoweaver/warp/agent/ecoweaver-synthesis> a warp:EcoAgent ;
+    warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#synthesis_pipeline> ;
+    warp:agent_subtype "software" ;
+    warp:name "EcoWeaver synthesis pipeline" .
 
 node:spartina_pectinata RO:0002303 node:wet_meadow ;
     warp:intolerant_of node:texture_class_of_soil ;
     warp:prefers node:wetness_of_soil .
 
 node:wetness_of_soil camo:causes node:root_anoxia_of_bouteloua_gracilis .
+
+node:strategy-f38f3a2661ee camo:causes node:native_plant_cover ;
+    warp:incurs_labour_cost <https://w3id.org/ecoweaver/warp/statement/land-trust-strategy-follow-up-labour/predicate_qualifiers/effort/0>,
+        <https://w3id.org/ecoweaver/warp/statement/transfer/warp-cost-transfer-1/land-trust-strategy-follow-up-labour/predicate_qualifiers/amount> ;
+    warp:incurs_total_cost <https://w3id.org/ecoweaver/warp/statement/land-trust-strategy-total/predicate_qualifiers/amount>,
+        <https://w3id.org/ecoweaver/warp/statement/transfer/warp-cost-transfer-1/land-trust-strategy-total/predicate_qualifiers/amount> .
 
 orcid:0000-0000-0000-0000 a warp:EcoAgent ;
     warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#researcher> ;
