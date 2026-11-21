@@ -513,3 +513,28 @@ job in `scripts/clean_owl.py`; when one is fixed upstream, delete the job.
 - [ ] **Strategy placeholders.** `TODO:earthworks`, `TODO:hand_seeding`,
       `TODO:native_seed_mix_a`, `TODO:mowing`, `TODO:weedy_vegetation` in
       `examples/strategy_statements.yaml`, and the TODO-named sources.
+
+### 8.7 Tolerance group (proposal section 7)
+
+- [ ] **Q1 Name.** Tolerance, niche, or habitat requirement?
+- [ ] **Q2 Tolerance as a BFO disposition, for Lars.** Narrower than it was:
+      ranges stay in the reification layer and only `has_habitat` projects. A
+      disposition rendering would need the range as a datatype facet on a
+      quality, which leaves OWL 2 EL and gains nothing a query over the
+      reification layer does not already give. Start the conversation from
+      what the two layers give today.
+- [ ] **Q3 Aggregating ranges.** Union, intersection, or an envelope weighted
+      by evidence type? `report_tolerance.py` deliberately lists ranges and
+      does not aggregate. Decide with the evidence weighting rules (section 6).
+- [ ] **Q4 Provenance of bulk imports.** Claimant the database, the compiled
+      source, or both? Statements, or propositions with evidence lines?
+- [ ] **Q6 Default scope for database records.** Prototypical and flagged
+      for review?
+- [ ] **Tolerance placeholders.** `TODO:ph`, `TODO:soil_texture`,
+      `TODO:wet_meadow`, `TODO:taxon_bouteloua_gracilis`, `TODO:taxon_x`,
+      `TODO:taxon_spartina_pectinata`, `TODO:taxon_y`,
+      `TODO:unit_degree_celsius`, and the local places
+      `place:northern-great-plains`, `place:europe`,
+      `place:nwpl-great-plains`, `place:nwpl-midwest` in
+      `examples/tolerance_statements.yaml`. Every figure there is a
+      placeholder.

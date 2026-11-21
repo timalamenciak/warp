@@ -153,3 +153,30 @@ warp:suggested_for_consideration a owl:ObjectProperty ;
 #   <strategy> rdfs:subClassOf OBI:0000011 (planned process) ,
 #                             [ owl:onProperty BFO:0000051 ; owl:someValuesFrom <action> ] .
 # Subclass, never equivalent class (D6): see docs/rdf-owl.md section 8.
+
+# --- tolerance (0.7.0; warp-proposals-0.4.html section 7) ---------------------
+# Subject: an organism node class (taxon, population or life stage).
+# Object: the kind VARIES BY PREDICATE, so no range is declared here:
+# tolerates, prefers and intolerant_of take a quality_of_environmental_material
+# node; RO:0002303 has habitat takes an ENVO habitat or environment node.
+# scripts/check_tolerance.py enforces it (R17).
+# RO:0002303 is reused exactly as RO publishes it and is NOT re-declared here.
+# Polarity: none in a qualifier. tolerates and intolerant_of are recorded as
+# stated and never derived from each other.
+# Projected to OWL: has_habitat only, through the gate. Ranges, optima, class
+# values and curves never enter OWL.
+
+warp:tolerates a owl:ObjectProperty ;
+    rdfs:label "tolerates" ;
+    obo:IAO_0000115 "The organism establishes, persists or reproduces when the environmental variable is within the stated range. One-sided ranges allowed." ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+warp:prefers a owl:ObjectProperty ;
+    rdfs:label "prefers" ;
+    obo:IAO_0000115 "The organism performs best, or occurs most often, at or around the stated value or class of the environmental variable." ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+warp:intolerant_of a owl:ObjectProperty ;
+    rdfs:label "intolerant of" ;
+    obo:IAO_0000115 "The organism fails to establish, persist or reproduce when the environmental variable is within the stated range." ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .

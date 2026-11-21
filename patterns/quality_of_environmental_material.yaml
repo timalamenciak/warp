@@ -1,0 +1,28 @@
+# GENERATED from templates/node_templates.yaml by scripts/gen_dosdp.py. Do not edit.
+pattern_name: quality_of_environmental_material
+pattern_iri: https://w3id.org/ecoweaver/patterns/quality_of_environmental_material.yaml
+description: 'The object of a tolerance statement: a quality (PATO) of an environmental material or medium (ENVO): pH of soil, temperature of water, salinity of water, depth or velocity of water, temperature of air. Not only soil: water and climate variables use the same shape, with water or air as the material. Optionally narrowed by a depth interval (0 to 15 cm) and a season, given on the node definition (refinements), not as variables: neither has an ontology class, so a refined node is a SUBCLASS of the expression, never equivalent to it. The range a source gives belongs on the statement, not the node, so every source''s range for "pH of soil" meets at one node. Same logical shape as attribute_of_environmental_material, which stays for causal outcomes.'
+status: development
+classes:
+  material entity: BFO:0000040
+  quality: PATO:0000001
+relations:
+  characteristic of: RO:0000052
+vars:
+  quality: '''quality'''
+  material: '''material entity'''
+name:
+  text: '%s of %s'
+  vars:
+  - quality
+  - material
+def:
+  text: The %s of %s.
+  vars:
+  - quality
+  - material
+equivalentTo:
+  text: '%s and (''characteristic of'' some %s)'
+  vars:
+  - quality
+  - material

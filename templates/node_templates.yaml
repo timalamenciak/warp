@@ -721,6 +721,44 @@ templates:
     examples:
       - "trait=TO:<vegetative spread> value=PATO:<rhizomatous>"
 
+  # --- Tolerance objects (0.7.0) ----------------------------------------------
+  - id: quality_of_environmental_material
+    title: Quality of an environmental material or medium (tolerance object)
+    status: draft
+    description: >-
+      The object of a tolerance statement: a quality (PATO) of an environmental
+      material or medium (ENVO): pH of soil, temperature of water, salinity of
+      water, depth or velocity of water, temperature of air. Not only soil:
+      water and climate variables use the same shape, with water or air as
+      the material. Optionally narrowed by a depth interval (0 to 15 cm) and a
+      season, given on the node definition (refinements), not as variables:
+      neither has an ontology class, so a refined node is a SUBCLASS of the
+      expression, never equivalent to it. The range a source gives belongs on
+      the statement, not the node, so every source's range for "pH of soil"
+      meets at one node. Same logical shape as
+      attribute_of_environmental_material, which stays for causal outcomes.
+    camo_entity_type: environmental_variable
+    vars:
+      - name: quality
+        range: "PATO:0000001"
+        allowed_prefixes: [PATO]
+        description: "pH, temperature, salinity, wetness, water potential, velocity."
+      - name: material
+        range: "BFO:0000040"
+        allowed_prefixes: [ENVO]
+        description: "An ENVO material or medium: soil, liquid water, air."
+    name: "{quality} of {material}"
+    definition: "The {quality} of {material}."
+    equivalent_to:
+      var: quality
+      restrictions:
+        - property: "RO:0000052"
+          filler: {var: material}
+    refinements: [depth, season]
+    examples:
+      - "quality=PATO:0000146 material=ENVO:00002006 (temperature of liquid water)"
+      - "quality=TODO:ph material=ENVO:00001998 depth={min: 0, max: 15, unit: TODO:unit_centimetre}"
+
   # ===========================================================================
   # 0.7.0 templates whose OWL does not come from a class expression.
   # ===========================================================================

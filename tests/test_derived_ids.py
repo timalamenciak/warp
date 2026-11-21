@@ -47,3 +47,21 @@ def test_committed_derived_file_is_current(name):
     committed = load_yaml(EXAMPLES / f"{name}.derived.yaml")
     for slot in EXPECTED[name]:
         assert copy.deepcopy(fresh.get(slot)) == committed.get(slot), f"re-run make derive ({slot})"
+
+
+INPUTS = sorted(p for p in EXAMPLES.glob("*_statements.yaml"))
+
+
+@pytest.mark.parametrize("path", INPUTS, ids=lambda p: p.name)
+def test_every_derived_file_is_current(schemaview, path):
+    """Every committed *.derived.yaml is exactly what make derive produces:
+    strategies first, then propositions."""
+    import derive_strategies as ds
+    import derive_propositions as dp
+    derived = path.with_name(path.stem + ".derived.yaml")
+    assert derived.exists(), f"missing {derived.name}: run make derive"
+    committed = load_yaml(derived)
+    fresh = load_yaml(path)
+    ds.derive(fresh, schemaview, previous=committed)
+    dp.derive_all(fresh, SCHEMA)
+    assert fresh == committed, f"{derived.name} is stale: run make derive"

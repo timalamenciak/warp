@@ -327,3 +327,28 @@ because a published class IRI that silently moves is worse than one that is
 formally retired.
 
 Worked example: `examples/strategy_statements.yaml`.
+
+### Refinements: depth and season (0.7.0)
+
+`quality_of_environmental_material` (the object of tolerance statements:
+pH of soil, temperature of water, wetness of soil) lists `refinements: [depth,
+season]`. A refinement narrows a node but has no ontology class, so it is a
+field of the node definition, not a template variable:
+
+```yaml
+node_definitions:
+  - node: node:ph_of_soil_0_15cm
+    template: quality_of_environmental_material
+    fillers:
+      - {var: quality, value: "TODO:ph", label: pH}
+      - {var: material, value: "ENVO:00001998", label: soil}
+    depth: {min: 0, max: 15, unit: "TODO:unit_centimetre"}
+```
+
+A node with a refinement is written as a **subclass** of the template's
+expression, with the refinement in its label, definition and an
+`rdfs:comment`, never as an equivalent class: otherwise "pH of soil, 0 to 15
+cm" and "pH of soil" would have the same definition and a reasoner would make
+them one class. Refined nodes are left out of the DOSDP fill tables, which can
+only write the equivalent-class form. A refinement on a template that does not
+list it is an error.

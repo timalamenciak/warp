@@ -18,6 +18,37 @@ obo:IAO_0000115 a owl:AnnotationProperty .
 
 dcterms:conformsTo a owl:AnnotationProperty .
 
+node:bouteloua_gracilis a owl:Class ;
+    rdfs:label "Bouteloua gracilis" ;
+    obo:IAO_0000115 "An organism of Bouteloua gracilis." ;
+    dcterms:conformsTo <https://w3id.org/ecoweaver/patterns/taxon.yaml> ;
+    owl:equivalentClass TODO:taxon_bouteloua_gracilis .
+
+node:fish_taxon_y a owl:Class ;
+    rdfs:label "fish taxon Y" ;
+    obo:IAO_0000115 "An organism of fish taxon Y." ;
+    dcterms:conformsTo <https://w3id.org/ecoweaver/patterns/taxon.yaml> ;
+    owl:equivalentClass TODO:taxon_y .
+
+node:ph_of_soil a owl:Class ;
+    rdfs:label "pH of soil" ;
+    obo:IAO_0000115 "The pH of soil." ;
+    dcterms:conformsTo <https://w3id.org/ecoweaver/patterns/quality_of_environmental_material.yaml> ;
+    owl:equivalentClass [ a owl:Class ;
+            owl:intersectionOf ( TODO:ph [ a owl:Restriction ;
+                        owl:onProperty RO:0000052 ;
+                        owl:someValuesFrom ENVO:00001998 ] ) ] .
+
+node:ph_of_soil_0_15cm a owl:Class ;
+    rdfs:label "pH of soil, depth 0 to 15 TODO:unit_centimetre" ;
+    obo:IAO_0000115 "The pH of soil, depth 0 to 15 TODO:unit_centimetre." ;
+    dcterms:conformsTo <https://w3id.org/ecoweaver/patterns/quality_of_environmental_material.yaml> ;
+    rdfs:comment "Refined by depth 0 to 15 TODO:unit_centimetre; not rendered in the logical definition." ;
+    rdfs:subClassOf [ a owl:Class ;
+            owl:intersectionOf ( TODO:ph [ a owl:Restriction ;
+                        owl:onProperty RO:0000052 ;
+                        owl:someValuesFrom ENVO:00001998 ] ) ] .
+
 node:planting_of_sanguinaria_canadensis a owl:Class ;
     rdfs:label "planting of Sanguinaria canadensis" ;
     obo:IAO_0000115 "A planting process in which organisms of Sanguinaria canadensis participate." ;
@@ -60,15 +91,21 @@ node:rate_of_population_growth_of_alliaria_petiolata a owl:Class ;
                                                                 owl:onProperty RO:0002351 ;
                                                                 owl:someValuesFrom NCBITaxon:126270 ] ) ] ] ) ] ] ) ] .
 
+node:spartina_pectinata a owl:Class ;
+    rdfs:label "Spartina pectinata" ;
+    obo:IAO_0000115 "An organism of Spartina pectinata." ;
+    dcterms:conformsTo <https://w3id.org/ecoweaver/patterns/taxon.yaml> ;
+    owl:equivalentClass TODO:taxon_spartina_pectinata .
+
 node:strategy-3adb20db5eef a owl:Class ;
     rdfs:label "Fill removal and plug planting with spot spraying if needed" ;
     obo:IAO_0000115 "A planned process whose required parts are, in order: step 1: Fill removal; step 1: Planting sedge meadow plugs." ;
     rdfs:subClassOf [ a owl:Restriction ;
             owl:onProperty BFO:0000051 ;
-            owl:someValuesFrom node:fill_removal ],
+            owl:someValuesFrom node:planting_plugs_sedge_meadow ],
         [ a owl:Restriction ;
             owl:onProperty BFO:0000051 ;
-            owl:someValuesFrom node:planting_plugs_sedge_meadow ],
+            owl:someValuesFrom node:fill_removal ],
         OBI:0000011 .
 
 node:strategy-ab075dde135f a owl:Class ;
@@ -76,13 +113,13 @@ node:strategy-ab075dde135f a owl:Class ;
     obo:IAO_0000115 "A planned process whose required parts are, in order: step 1: Removal of invasive shrubs; step 2: Earthworks recontouring; step 3: Hand seeding of native mix A." ;
     rdfs:subClassOf [ a owl:Restriction ;
             owl:onProperty BFO:0000051 ;
+            owl:someValuesFrom node:removal_of_invasive_shrubs ],
+        [ a owl:Restriction ;
+            owl:onProperty BFO:0000051 ;
             owl:someValuesFrom node:hand_seeding_native_mix_a ],
         [ a owl:Restriction ;
             owl:onProperty BFO:0000051 ;
             owl:someValuesFrom node:earthworks_recontouring ],
-        [ a owl:Restriction ;
-            owl:onProperty BFO:0000051 ;
-            owl:someValuesFrom node:removal_of_invasive_shrubs ],
         OBI:0000011 .
 
 node:strategy-f38f3a2661ee a owl:Class ;
@@ -90,13 +127,13 @@ node:strategy-f38f3a2661ee a owl:Class ;
     obo:IAO_0000115 "A planned process whose required parts are, in order: step 1: Earthworks recontouring; step 2: Hand seeding of native mix A; step 3: Mowing for weed control." ;
     rdfs:subClassOf [ a owl:Restriction ;
             owl:onProperty BFO:0000051 ;
-            owl:someValuesFrom node:hand_seeding_native_mix_a ],
-        [ a owl:Restriction ;
-            owl:onProperty BFO:0000051 ;
             owl:someValuesFrom node:mowing_weed_control ],
         [ a owl:Restriction ;
             owl:onProperty BFO:0000051 ;
             owl:someValuesFrom node:earthworks_recontouring ],
+        [ a owl:Restriction ;
+            owl:onProperty BFO:0000051 ;
+            owl:someValuesFrom node:hand_seeding_native_mix_a ],
         OBI:0000011 .
 
 node:strategy-f970cca73021 a owl:Class ;
@@ -109,6 +146,30 @@ node:strategy-f970cca73021 a owl:Class ;
             owl:onProperty BFO:0000051 ;
             owl:someValuesFrom node:removal_of_invasive_shrubs ],
         OBI:0000011 .
+
+node:taxon_x a owl:Class ;
+    rdfs:label "taxon X" ;
+    obo:IAO_0000115 "An organism of taxon X." ;
+    dcterms:conformsTo <https://w3id.org/ecoweaver/patterns/taxon.yaml> ;
+    owl:equivalentClass TODO:taxon_x .
+
+node:temperature_of_water a owl:Class ;
+    rdfs:label "temperature of liquid water" ;
+    obo:IAO_0000115 "The temperature of liquid water." ;
+    dcterms:conformsTo <https://w3id.org/ecoweaver/patterns/quality_of_environmental_material.yaml> ;
+    owl:equivalentClass [ a owl:Class ;
+            owl:intersectionOf ( PATO:0000146 [ a owl:Restriction ;
+                        owl:onProperty RO:0000052 ;
+                        owl:someValuesFrom ENVO:00002006 ] ) ] .
+
+node:texture_class_of_soil a owl:Class ;
+    rdfs:label "texture of soil" ;
+    obo:IAO_0000115 "The texture of soil." ;
+    dcterms:conformsTo <https://w3id.org/ecoweaver/patterns/quality_of_environmental_material.yaml> ;
+    owl:equivalentClass [ a owl:Class ;
+            owl:intersectionOf ( TODO:soil_texture [ a owl:Restriction ;
+                        owl:onProperty RO:0000052 ;
+                        owl:someValuesFrom ENVO:00001998 ] ) ] .
 
 node:tidal_restoration_of_marsh a owl:Class ;
     rdfs:label "tidal restoration of marsh" ;
@@ -134,10 +195,27 @@ node:volumetric_density_of_ochlerotatus_dorsalis_population_at_larval_stage a ow
                                                                 owl:onProperty RO:0002491 ;
                                                                 owl:someValuesFrom UBERON:0000069 ] ) ] ] ) ] ] ) ] .
 
+node:wet_meadow a owl:Class ;
+    rdfs:label "wet meadow" ;
+    obo:IAO_0000115 "A wet meadow." ;
+    dcterms:conformsTo <https://w3id.org/ecoweaver/patterns/environment_type.yaml> ;
+    owl:equivalentClass TODO:wet_meadow .
+
+node:wetness_of_soil a owl:Class ;
+    rdfs:label "wetness of soil" ;
+    obo:IAO_0000115 "The wetness of soil." ;
+    dcterms:conformsTo <https://w3id.org/ecoweaver/patterns/quality_of_environmental_material.yaml> ;
+    owl:equivalentClass [ a owl:Class ;
+            owl:intersectionOf ( PATO:0001822 [ a owl:Restriction ;
+                        owl:onProperty RO:0000052 ;
+                        owl:someValuesFrom ENVO:00001998 ] ) ] .
+
 <https://w3id.org/ecoweaver/warp/ontology/nodes> a owl:Ontology ;
     rdfs:label "WARP node classes" .
 
 ENVO:00000035 a owl:Class .
+
+ENVO:00002006 a owl:Class .
 
 NCBITaxon:3472 a owl:Class .
 
@@ -145,9 +223,13 @@ NCBITaxon:663928 a owl:Class .
 
 NCBITaxon:9874 a owl:Class .
 
+PATO:0000146 a owl:Class .
+
 PATO:0000161 a owl:Class .
 
 PATO:0001353 a owl:Class .
+
+PATO:0001822 a owl:Class .
 
 PCO:0000011 a owl:Class .
 
@@ -180,15 +262,23 @@ TODO:native_seed_mix_a a owl:Class .
 
 TODO:planting a owl:Class .
 
+TODO:soil_texture a owl:Class .
+
+TODO:taxon_bouteloua_gracilis a owl:Class .
+
+TODO:taxon_spartina_pectinata a owl:Class .
+
+TODO:taxon_x a owl:Class .
+
+TODO:taxon_y a owl:Class .
+
 TODO:tidal_restoration a owl:Class .
 
 TODO:weedy_vegetation a owl:Class .
 
-ENVO:00001998 a owl:Class .
+TODO:wet_meadow a owl:Class .
 
 NCBITaxon:126270 a owl:Class .
-
-RO:0000052 a owl:ObjectProperty .
 
 node:hand_seeding_native_mix_a a owl:Class ;
     rdfs:label "hand seeding of soil with native seed mix A" ;
@@ -202,6 +292,8 @@ node:hand_seeding_native_mix_a a owl:Class ;
                         owl:someValuesFrom TODO:native_seed_mix_a ] ) ] .
 
 node:removal_of_invasive_shrubs a owl:Class .
+
+TODO:ph a owl:Class .
 
 node:earthworks_recontouring a owl:Class ;
     rdfs:label "earthworks of soil" ;
@@ -218,7 +310,11 @@ PCO:0000001 a owl:Class .
 
 RO:0002351 a owl:ObjectProperty .
 
+ENVO:00001998 a owl:Class .
+
 RO:0000057 a owl:ObjectProperty .
+
+RO:0000052 a owl:ObjectProperty .
 
 BFO:0000051 a owl:ObjectProperty,
         owl:TransitiveProperty .

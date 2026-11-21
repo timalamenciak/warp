@@ -71,6 +71,20 @@ def check_definition(defn, template):
     return problems
 
 
+def refinements(defn, template):
+    """Text for a node definition's refinements (depth, season), or ''."""
+    parts = []
+    depth = defn.get("depth")
+    if depth:
+        lo, hi, unit = depth.get("min"), depth.get("max"), depth.get("unit", "")
+        span = f"{lo:g} to {hi:g}" if lo is not None and hi is not None else (
+            f"from {lo:g}" if lo is not None else f"to {hi:g}")
+        parts.append(f"depth {span} {unit}".strip())
+    if defn.get("season"):
+        parts.append(f"season {defn['season']}")
+    return "; ".join(parts)
+
+
 def expand_strategies(g, data, templates, prefixes, names, seen, problems):
     """Write each canonical management strategy as an OWL class (Phase 4).
 
@@ -221,20 +235,35 @@ def main(argv=None):
             names = {f["var"]: f.get("label") or f["value"] for f in defn["fillers"]}
             label = fill_text(template["name"], names)
             definition = " ".join(fill_text(template["definition"], names).split())
+            refined = refinements(defn, template)
+            unknown = [r for r in ("depth", "season") if defn.get(r) and r not in (template.get("refinements") or [])]
+            if unknown:
+                problems.append(f"{defn['node']}: template {template['id']} has no refinement {unknown}")
+                continue
+            if refined:
+                label = f"{label}, {refined}"
+                definition = f"{definition[:-1] if definition.endswith('.') else definition}, {refined}."
 
             cls = URIRef(expand_curie(defn["node"], prefixes))
             g.add((cls, RDF.type, OWL.Class))
             g.add((cls, RDFS.label, Literal(label)))
             g.add((cls, DEFINITION, Literal(definition)))
             g.add((cls, DCTERMS.conformsTo, URIRef(f"{PATTERN_BASE}{template['id']}.yaml")))
-            g.add((cls, OWL.equivalentClass,
-                   build_expression(g, template["equivalent_to"], values, prefixes)))
+            expression = build_expression(g, template["equivalent_to"], values, prefixes)
+            if refined:
+                # A refinement narrows the node but has no logical rendering:
+                # subclass, so it is never the same class as the unrefined node.
+                g.add((cls, RDFS.subClassOf, expression))
+                g.add((cls, RDFS.comment, Literal(f"Refined by {refined}; not rendered in the logical definition.")))
+            else:
+                g.add((cls, OWL.equivalentClass, expression))
 
             row = {"defined_class": defn["node"], "defined_class_label": label}
             for v in template["vars"]:
                 row[v["name"]] = values[v["name"]]
                 row[f"{v['name']}_label"] = names[v["name"]]
-            rows[template["id"]][defn["node"]] = row
+            if not refined:   # the DOSDP route can only write the equivalent-class form
+                rows[template["id"]][defn["node"]] = row
             count += 1
             print(f"{defn['node']}  ->  {label}")
 

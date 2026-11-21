@@ -124,6 +124,15 @@ classes:
         description: "The logical definition, as a nested class expression. Required for class_expression templates."
         range: ClassExpression
         inlined: true
+      refinements:
+        description: >-
+          Optional fields of a node definition (NodeDefinition attributes, such
+          as depth and season) that narrow the node without a logical
+          rendering. A node with any of them filled is written as a SUBCLASS of
+          the template's expression, with the refinement in its label,
+          definition and an rdfs:comment, never as an equivalent class: two
+          nodes differing only by depth must not become the same class.
+        multivalued: true
       examples:
         description: "Example fillings, as var=CURIE strings, for documentation."
         multivalued: true

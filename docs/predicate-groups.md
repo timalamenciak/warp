@@ -234,6 +234,7 @@ proposition rather than as separate propositions.
 | causal | none |
 | interaction | none |
 | recommendation | `predicate_qualifiers.guidance` |
+| tolerance | `place` |
 
 (Later groups add theirs; the register in [rdf-owl.md](rdf-owl.md) lists every
 group.)
@@ -333,3 +334,46 @@ abstract `warp:suggested_to`, so the relation layer cannot turn "avoid" into
 self-supporting guidance (cited propositions resting only on the same
 claimant's assertion or expert judgment), and the assessed strength of what
 each recommendation cites. Example: `examples/recommendation_statements.yaml`.
+
+### tolerance (0.7.0)
+
+The conditions under which an organism establishes, persists or performs: the
+soil pH it tolerates, the moisture regime it prefers, the salinity that
+excludes it. `ToleranceStatement`, four predicates: `tolerates`, `prefers` and
+`intolerant_of` (minted in `warp:`) and `has_habitat` (RO:0002303, reused).
+
+- **Subject**: an organism node (a taxon, population or life stage:
+  `taxon`, `population_of_taxon` or `taxon_at_life_stage`).
+- **Object**: a `quality_of_environmental_material` node (pH of soil,
+  temperature of water), or for `has_habitat` an ENVO habitat or environment
+  node (`environment_type`). The kind varies by predicate, so
+  `scripts/check_tolerance.py` (in `make validate`) checks it.
+- **Qualifiers**: `range` (`QuantityRange`), `optimum` (`Quantity`),
+  `class_value` (`ScaledValue`: Ellenberg, EIVE, USDA ratings, wetland
+  indicator status), `response` (occurrence, germination, establishment,
+  growth, survival, reproduction), `response_curve` (habitat suitability
+  breakpoints, x strictly increasing, suitability in [0, 1]).
+- **`explained_by`**: propositions giving the mechanism, usually causal.
+- **`place` is in the identity key**: indicator ratings are assigned by region,
+  so a species rated FACW in one region and FAC in another is two
+  propositions, not a contradiction. The range is **not** in the key: two
+  sources giving pH 6.0 to 8.5 and 6.5 to 8.0 agree that pH limits the species
+  and differ on where, so they derive one proposition with two ranges.
+
+**The annotator's test: is the source saying under what conditions the
+organism can live, or what changes what?** "Grows on soils of pH 5.5 to 8" is
+tolerance. "Compaction reduces root penetration" is causal. A tolerance
+explained by a mechanism links to the causal proposition through
+`explained_by`.
+
+**`tolerates` and `intolerant_of` are recorded as stated and never derived
+from each other.** A source that gives a tolerated range has not said the
+organism is intolerant of everything outside it.
+
+A habitat suitability model's **combination rule** (geometric mean, minimum,
+weighted sum) is not a statement: it belongs to the model, on the source
+document or an `EcoStudyResult`. Only `has_habitat` can project to OWL, and
+only through the gate; ranges, optima, class values and curves never do.
+`scripts/report_tolerance.py` (`make reports`) lists each proposition's ranges
+by claimant and response, flags non-overlapping ranges and unit mismatches,
+and never aggregates or converts. Example: `examples/tolerance_statements.yaml`.

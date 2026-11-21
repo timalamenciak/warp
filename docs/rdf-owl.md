@@ -400,7 +400,7 @@ the annotation properties `warp:action` and `warp:component_of`.
 | causal | CAMO (`camo:causes`, `camo:prevents`, …) | class → class | `negated`: no triple | Existential subsumption, through the gate |
 | interaction | RO (`RO:0002470`, …), reused | class → class | `negated`: no triple | Existential subsumption, through the gate |
 | recommendation (built, 0.7.0) | `suggested_to` (abstract) + `recommended_to_achieve`, `advised_against_for`, `suggested_for_consideration` | class → class | `guidance`; each `GuidanceEnum` value names its sub-property (`warp_subproperty`), and each sub-property its value (`warp:selected_by`) | **Nothing**, at any scope: deontic. The causal proposition a recommendation cites may project on its own if it passes the gate |
-| tolerance | `tolerates`, `prefers`, `intolerant_of`; `RO:0002303` reused | class → class; object kind varies by predicate (`check_tolerance.py`) | none | `has_habitat` only, through the gate |
+| tolerance (built, 0.7.0) | `tolerates`, `prefers`, `intolerant_of`; `RO:0002303` reused | class → class; object kind varies by predicate (`check_tolerance.py`) | none | `has_habitat` only, through the gate. Ranges, optima, class values and curves never: measurements across populations, not class axioms |
 | cost | `incurs_cost` + 5 sub-properties; `costs_relative_to` | class → amount individual, or class → class | the object category | **Nothing** |
 | implementation | `carried_out_at` | class → individual | none | Nothing through the gate; the project individuals are its logical-layer output, and they come from the derivation rule |
 | criteria | `assessed_against` + `qualifies_as`, `does_not_qualify_as` | individual → criteria set | `direction`; neutral exports no triple | **Nothing** |

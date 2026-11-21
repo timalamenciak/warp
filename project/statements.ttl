@@ -6,6 +6,7 @@
 @prefix node: <https://w3id.org/causal-mosaic/node/> .
 @prefix orcid: <https://orcid.org/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix place: <https://w3id.org/ecoweaver/warp/place/> .
 @prefix prop: <https://w3id.org/ecoweaver/warp/prop/> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix scale: <https://w3id.org/ecoweaver/warp/scale/> .
@@ -163,6 +164,8 @@ prop:question-road-salt-spring-salamander a warp:CausalProposition ;
 
 <https://w3id.org/ecoweaver/warp/statementset/strategy-example> a warp:StatementSet .
 
+<https://w3id.org/ecoweaver/warp/statementset/tolerance-example> a warp:StatementSet .
+
 <https://w3id.org/ecoweaver/warp/agent/burn-study-authors> a warp:EcoAgent ;
     warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#researcher> ;
     warp:agent_subtype "organization" ;
@@ -188,15 +191,35 @@ prop:question-road-salt-spring-salamander a warp:CausalProposition ;
     warp:agent_subtype "organization" ;
     warp:name "TODO: a restoration consultancy (source B)" .
 
+<https://w3id.org/ecoweaver/warp/agent/org/eive-consortium> a warp:EcoAgent ;
+    warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#researcher> ;
+    warp:agent_subtype "organization" ;
+    warp:name "TODO: EIVE consortium (placeholder record)" .
+
 <https://w3id.org/ecoweaver/warp/agent/org/grassland-plan-authors> a warp:EcoAgent ;
     warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#organization> ;
     warp:agent_subtype "organization" ;
     warp:name "TODO: authors of a grassland management plan" .
 
+<https://w3id.org/ecoweaver/warp/agent/org/hsi-model-authors> a warp:EcoAgent ;
+    warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#researcher> ;
+    warp:agent_subtype "organization" ;
+    warp:name "TODO: authors of a habitat suitability model" .
+
 <https://w3id.org/ecoweaver/warp/agent/org/land-trust-a> a warp:EcoAgent ;
     warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#organization> ;
     warp:agent_subtype "organization" ;
     warp:name "TODO: a land trust (source A)" .
+
+<https://w3id.org/ecoweaver/warp/agent/org/trial-authors> a warp:EcoAgent ;
+    warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#researcher> ;
+    warp:agent_subtype "organization" ;
+    warp:name "TODO: authors of a germination trial" .
+
+<https://w3id.org/ecoweaver/warp/agent/org/usda-nrcs> a warp:EcoAgent ;
+    warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#organization> ;
+    warp:agent_subtype "organization" ;
+    warp:name "TODO: USDA NRCS PLANTS (placeholder record)" .
 
 <https://w3id.org/ecoweaver/warp/component/earthworks-seed-mow/3/repeat> a warp:Recurrence ;
     warp:every "P1Y" ;
@@ -247,6 +270,46 @@ prop:question-road-salt-spring-salamander a warp:CausalProposition ;
 
 <https://w3id.org/ecoweaver/warp/contrib/burning-shrub-cover-1-author> a warp:EcoContribution ;
     warp:contributor <https://w3id.org/ecoweaver/warp/agent/ecoweaver-synthesis> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
+<https://w3id.org/ecoweaver/warp/contrib/eive-taxon-r-annotation> a warp:EcoContribution ;
+    warp:contributor orcid:0000-0000-0000-0000 ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
+
+<https://w3id.org/ecoweaver/warp/contrib/eive-taxon-r-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/org/eive-consortium> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
+<https://w3id.org/ecoweaver/warp/contrib/flora-bogr-ph-annotation> a warp:EcoContribution ;
+    warp:contributor orcid:0000-0000-0000-0000 ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
+
+<https://w3id.org/ecoweaver/warp/contrib/flora-bogr-ph-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/org/flora-authors> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
+<https://w3id.org/ecoweaver/warp/contrib/flora-bogr-saturation-annotation> a warp:EcoContribution ;
+    warp:contributor orcid:0000-0000-0000-0000 ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
+
+<https://w3id.org/ecoweaver/warp/contrib/flora-bogr-saturation-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/org/flora-authors> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
+<https://w3id.org/ecoweaver/warp/contrib/flora-spartina-habitat-annotation> a warp:EcoContribution ;
+    warp:contributor orcid:0000-0000-0000-0000 ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
+
+<https://w3id.org/ecoweaver/warp/contrib/flora-spartina-habitat-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/org/flora-authors> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
+<https://w3id.org/ecoweaver/warp/contrib/hsi-y-temperature-annotation> a warp:EcoContribution ;
+    warp:contributor orcid:0000-0000-0000-0000 ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
+
+<https://w3id.org/ecoweaver/warp/contrib/hsi-y-temperature-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/org/hsi-model-authors> ;
     warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
 
 <https://w3id.org/ecoweaver/warp/contrib/kramer1995-c1-1-assessment> a warp:EcoContribution ;
@@ -331,6 +394,46 @@ prop:question-road-salt-spring-salamander a warp:CausalProposition ;
     warp:contributor <https://w3id.org/ecoweaver/warp/agent/practitioner-1> ;
     warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
 
+<https://w3id.org/ecoweaver/warp/contrib/nwpl-spartina-great-plains-annotation> a warp:EcoContribution ;
+    warp:contributor orcid:0000-0000-0000-0000 ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
+
+<https://w3id.org/ecoweaver/warp/contrib/nwpl-spartina-great-plains-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/org/usace> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
+<https://w3id.org/ecoweaver/warp/contrib/nwpl-spartina-midwest-annotation> a warp:EcoContribution ;
+    warp:contributor orcid:0000-0000-0000-0000 ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
+
+<https://w3id.org/ecoweaver/warp/contrib/nwpl-spartina-midwest-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/org/usace> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
+<https://w3id.org/ecoweaver/warp/contrib/practitioner-spartina-sand-annotation> a warp:EcoContribution ;
+    warp:contributor orcid:0000-0000-0000-0000 ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
+
+<https://w3id.org/ecoweaver/warp/contrib/practitioner-spartina-sand-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/person/practitioner-a> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
+<https://w3id.org/ecoweaver/warp/contrib/practitioner-spartina-wet-annotation> a warp:EcoContribution ;
+    warp:contributor orcid:0000-0000-0000-0000 ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
+
+<https://w3id.org/ecoweaver/warp/contrib/practitioner-spartina-wet-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/person/practitioner-a> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
+<https://w3id.org/ecoweaver/warp/contrib/saturation-root-anoxia-annotation> a warp:EcoContribution ;
+    warp:contributor orcid:0000-0000-0000-0000 ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
+
+<https://w3id.org/ecoweaver/warp/contrib/saturation-root-anoxia-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/org/flora-authors> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
 <https://w3id.org/ecoweaver/warp/contrib/strategy-a-native-cover-annotation> a warp:EcoContribution ;
     warp:contributor orcid:0000-0000-0000-0000 ;
     warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
@@ -353,6 +456,29 @@ prop:question-road-salt-spring-salamander a warp:CausalProposition ;
     warp:date_lower_bound "2026-10-27T00:00:00Z"^^xsd:dateTime ;
     warp:date_upper_bound "2026-10-28T00:00:00Z"^^xsd:dateTime ;
     warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
+<https://w3id.org/ecoweaver/warp/contrib/trial-bogr-ph-annotation> a warp:EcoContribution ;
+    warp:contributor orcid:0000-0000-0000-0000 ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
+
+<https://w3id.org/ecoweaver/warp/contrib/trial-bogr-ph-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/org/trial-authors> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
+<https://w3id.org/ecoweaver/warp/contrib/usda-bogr-ph-annotation> a warp:EcoContribution ;
+    warp:contributor orcid:0000-0000-0000-0000 ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#annotator> .
+
+<https://w3id.org/ecoweaver/warp/contrib/usda-bogr-ph-author> a warp:EcoContribution ;
+    warp:contributor <https://w3id.org/ecoweaver/warp/agent/org/usda-nrcs> ;
+    warp:role <https://w3id.org/ecoweaver/warp/ContributionRoleEnum#author> .
+
+<https://w3id.org/ecoweaver/warp/data/hsi-model-combination-rule> a warp:EcoDataItem ;
+    warp:subtype <https://w3id.org/ecoweaver/warp/data/hsi-model-combination-rule/subtype> ;
+    warp:value "geometric mean of the variable suitability indices" .
+
+<https://w3id.org/ecoweaver/warp/data/hsi-model-combination-rule/subtype> a warp:EcoCoding ;
+    warp:label "combination rule" .
 
 <https://w3id.org/ecoweaver/warp/data/kramer1995-reference-1991-mean> a warp:EcoDataItem ;
     warp:subtype <https://w3id.org/ecoweaver/warp/data/kramer1995-reference-1991-mean/subtype> ;
@@ -478,8 +604,17 @@ prop:question-road-salt-spring-salamander a warp:CausalProposition ;
 doc:air-quality-guidance a warp:EcoDocument ;
     warp:title "TODO: an air quality agency's guidance on prescribed fire" .
 
+doc:eive-1-0 a warp:EcoDocument ;
+    warp:title "Dengler et al. 2023, Ecological Indicator Values for Europe (EIVE) 1.0 (TODO: verify citation)" .
+
+doc:germination-trial a warp:EcoDocument ;
+    warp:title "TODO: a germination trial across a pH gradient" .
+
 doc:grassland-plan a warp:EcoDocument ;
     warp:title "TODO: a grassland management plan" .
+
+doc:hsi-model a warp:EcoDocument ;
+    warp:title "TODO: a habitat suitability index model" .
 
 doc:murphy2005 a warp:EcoDocument ;
     warp:doi "TODO" ;
@@ -493,6 +628,12 @@ doc:notebook-entry-2 a warp:EcoDocument ;
 
 <https://w3id.org/ecoweaver/warp/doc/notebook-entry-2/subtype> a warp:EcoCoding ;
     warp:label "field notebook" .
+
+<https://w3id.org/ecoweaver/warp/doc/notebook-entry-3/subtype> a warp:EcoCoding ;
+    warp:label "field notebook" .
+
+doc:plants-record-bogr a warp:EcoDocument ;
+    warp:title "TODO: plant database record for Bouteloua gracilis" .
 
 doc:practice-note-b a warp:EcoDocument ;
     warp:title "TODO: practice note (source B)" .
@@ -531,6 +672,37 @@ doc:project-report-x a warp:EcoDocument ;
     warp:evidence_type <https://w3id.org/ecoweaver/warp/WarpEvidenceTypeEnum#randomized_experiment> ;
     warp:strengthOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceStrengthEnum#moderate> ;
     warp:targetProposition prop:247fc9907bf5 .
+
+<https://w3id.org/ecoweaver/warp/el/eive-taxon-r-1> a warp:EcoEvidenceLine ;
+    warp:directionOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
+    warp:evidence_type <https://w3id.org/ecoweaver/warp/WarpEvidenceTypeEnum#expert_judgment> ;
+    warp:targetProposition prop:64861871b8fb .
+
+<https://w3id.org/ecoweaver/warp/el/eive-taxon-r-2> a warp:EcoEvidenceLine ;
+    warp:directionOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
+    warp:evidence_type <https://w3id.org/ecoweaver/warp/WarpEvidenceTypeEnum#observational_cross_sectional> ;
+    warp:targetProposition prop:64861871b8fb .
+
+<https://w3id.org/ecoweaver/warp/el/flora-bogr-ph-1> a warp:EcoEvidenceLine ;
+    warp:directionOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
+    warp:evidence_type <https://w3id.org/ecoweaver/warp/WarpEvidenceTypeEnum#expert_judgment> ;
+    warp:targetProposition prop:a36155eb3670 .
+
+<https://w3id.org/ecoweaver/warp/el/flora-bogr-saturation-1> a warp:EcoEvidenceLine ;
+    warp:directionOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
+    warp:evidence_type <https://w3id.org/ecoweaver/warp/WarpEvidenceTypeEnum#expert_judgment> ;
+    warp:targetProposition prop:a685acd466a3 .
+
+<https://w3id.org/ecoweaver/warp/el/flora-spartina-habitat-1> a warp:EcoEvidenceLine ;
+    warp:directionOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
+    warp:evidence_type <https://w3id.org/ecoweaver/warp/WarpEvidenceTypeEnum#expert_judgment> ;
+    warp:targetProposition prop:876e82c18c36 .
+
+<https://w3id.org/ecoweaver/warp/el/hsi-y-temperature-1> a warp:EcoEvidenceLine ;
+    warp:directionOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
+    warp:evidence_item_refs <https://w3id.org/ecoweaver/warp/result/hsi-model-temperature> ;
+    warp:evidence_type <https://w3id.org/ecoweaver/warp/WarpEvidenceTypeEnum#modeling_simulation> ;
+    warp:targetProposition prop:8bcd4cb76ab0 .
 
 <https://w3id.org/ecoweaver/warp/el/kramer1995-c1-1> a warp:EcoEvidenceLine ;
     warp:contributions <https://w3id.org/ecoweaver/warp/contrib/kramer1995-c1-1-assessment> ;
@@ -597,6 +769,31 @@ doc:project-report-x a warp:EcoDocument ;
     warp:strengthOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceStrengthEnum#weak> ;
     warp:targetProposition prop:6ac6fc0d7703 .
 
+<https://w3id.org/ecoweaver/warp/el/nwpl-spartina-great-plains-1> a warp:EcoEvidenceLine ;
+    warp:directionOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
+    warp:evidence_type <https://w3id.org/ecoweaver/warp/WarpEvidenceTypeEnum#expert_judgment> ;
+    warp:targetProposition prop:7e7264c393d3 .
+
+<https://w3id.org/ecoweaver/warp/el/nwpl-spartina-midwest-1> a warp:EcoEvidenceLine ;
+    warp:directionOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
+    warp:evidence_type <https://w3id.org/ecoweaver/warp/WarpEvidenceTypeEnum#expert_judgment> ;
+    warp:targetProposition prop:8754905f709c .
+
+<https://w3id.org/ecoweaver/warp/el/practitioner-spartina-sand-1> a warp:EcoEvidenceLine ;
+    warp:directionOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
+    warp:evidence_type <https://w3id.org/ecoweaver/warp/WarpEvidenceTypeEnum#practitioner_experience> ;
+    warp:targetProposition prop:3cee880350a6 .
+
+<https://w3id.org/ecoweaver/warp/el/practitioner-spartina-wet-1> a warp:EcoEvidenceLine ;
+    warp:directionOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
+    warp:evidence_type <https://w3id.org/ecoweaver/warp/WarpEvidenceTypeEnum#practitioner_experience> ;
+    warp:targetProposition prop:f1a52b9a290c .
+
+<https://w3id.org/ecoweaver/warp/el/saturation-root-anoxia-1> a warp:EcoEvidenceLine ;
+    warp:directionOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
+    warp:evidence_type <https://w3id.org/ecoweaver/warp/WarpEvidenceTypeEnum#theoretical> ;
+    warp:targetProposition prop:73cb84fbf99d .
+
 <https://w3id.org/ecoweaver/warp/el/strategy-a-native-cover-1> a warp:EcoEvidenceLine ;
     warp:directionOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
     warp:evidence_type <https://w3id.org/ecoweaver/warp/WarpEvidenceTypeEnum#case_study> ;
@@ -616,6 +813,15 @@ doc:project-report-x a warp:EcoDocument ;
     warp:evidence_type <https://w3id.org/ecoweaver/warp/WarpEvidenceTypeEnum#quasi_experiment> ;
     warp:strengthOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceStrengthEnum#weak> ;
     warp:targetProposition prop:question-tidal-restoration-aedes-dorsalis .
+
+<https://w3id.org/ecoweaver/warp/el/trial-bogr-ph-1> a warp:EcoEvidenceLine ;
+    warp:directionOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
+    warp:evidence_type <https://w3id.org/ecoweaver/warp/WarpEvidenceTypeEnum#randomized_experiment> ;
+    warp:targetProposition prop:a36155eb3670 .
+
+<https://w3id.org/ecoweaver/warp/el/usda-bogr-ph-1> a warp:EcoEvidenceLine ;
+    warp:directionOfEvidenceProvided <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
+    warp:targetProposition prop:a36155eb3670 .
 
 prop:2812c13c41fc a warp:RecommendationProposition ;
     warp:derived_from_statements stmt:ms-09-rec ;
@@ -654,6 +860,12 @@ prop:c34ece72a226 a warp:RecommendationProposition ;
 
 <https://w3id.org/ecoweaver/warp/prop/c34ece72a226/predicate_qualifiers> a warp:RecommendationQualifiers ;
     warp:guidance <https://w3id.org/ecoweaver/warp/GuidanceEnum#avoid> .
+
+<https://w3id.org/ecoweaver/warp/result/hsi-model-temperature> a warp:EcoStudyResult ;
+    warp:dataItems <https://w3id.org/ecoweaver/warp/data/hsi-model-combination-rule> ;
+    warp:description "TODO: suitability index for water temperature, one variable of an HSI model." ;
+    warp:focus node:temperature_of_water ;
+    warp:stated_goal "TODO: to rate habitat suitability for fish taxon Y" .
 
 <https://w3id.org/ecoweaver/warp/result/kramer1995-reference-1991> a warp:EcoStudyResult ;
     warp:dataItems <https://w3id.org/ecoweaver/warp/data/kramer1995-reference-1991-mean> ;
@@ -760,6 +972,149 @@ stmt:burn-do-practitioner a warp:RecommendationStatement ;
 
 <https://w3id.org/ecoweaver/warp/statement/burn-study-c1/recordMetadata> a warp:EcoRecordMetadata ;
     warp:contributions <https://w3id.org/ecoweaver/warp/contrib/burn-study-c1-annotation> .
+
+stmt:eive-taxon-r a warp:ToleranceStatement ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/eive-taxon-r-author> ;
+    warp:hasEvidenceLines <https://w3id.org/ecoweaver/warp/el/eive-taxon-r-1>,
+        <https://w3id.org/ecoweaver/warp/el/eive-taxon-r-2> ;
+    warp:object node:ph_of_soil ;
+    warp:place place:europe ;
+    warp:predicate warp:prefers ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/statement/eive-taxon-r/predicate_qualifiers> ;
+    warp:proposition prop:64861871b8fb ;
+    warp:recordMetadata <https://w3id.org/ecoweaver/warp/statement/eive-taxon-r/recordMetadata> ;
+    warp:reportedIn doc:eive-1-0 ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#prototypical> ;
+    warp:statementText "Placeholder: taxon X has an EIVE reaction position of 6.8." ;
+    warp:subject node:taxon_x .
+
+<https://w3id.org/ecoweaver/warp/statement/eive-taxon-r/predicate_qualifiers> a warp:ToleranceQualifiers ;
+    warp:class_value <https://w3id.org/ecoweaver/warp/statement/eive-taxon-r/predicate_qualifiers/class_value> ;
+    warp:range <https://w3id.org/ecoweaver/warp/statement/eive-taxon-r/predicate_qualifiers/range> ;
+    warp:response <https://w3id.org/ecoweaver/warp/ToleranceResponseEnum#occurrence> .
+
+<https://w3id.org/ecoweaver/warp/statement/eive-taxon-r/predicate_qualifiers/class_value> a warp:ScaledValue ;
+    warp:concept <https://w3id.org/ecoweaver/warp/scale/eive-1.0-reaction/6-8> ;
+    warp:scale scale:eive-1.0-reaction ;
+    warp:value "6.8" .
+
+<https://w3id.org/ecoweaver/warp/statement/eive-taxon-r/predicate_qualifiers/range> a warp:QuantityRange ;
+    warp:max "7.7"^^xsd:float ;
+    warp:min "5.9"^^xsd:float ;
+    warp:unit scale:eive-1.0-reaction .
+
+<https://w3id.org/ecoweaver/warp/statement/eive-taxon-r/recordMetadata> a warp:EcoRecordMetadata ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/eive-taxon-r-annotation> .
+
+stmt:flora-bogr-ph a warp:ToleranceStatement ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/flora-bogr-ph-author> ;
+    warp:hasEvidenceLines <https://w3id.org/ecoweaver/warp/el/flora-bogr-ph-1> ;
+    warp:object node:ph_of_soil_0_15cm ;
+    warp:place place:northern-great-plains ;
+    warp:predicate warp:tolerates ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/statement/flora-bogr-ph/predicate_qualifiers> ;
+    warp:proposition prop:a36155eb3670 ;
+    warp:recordMetadata <https://w3id.org/ecoweaver/warp/statement/flora-bogr-ph/recordMetadata> ;
+    warp:reportedIn doc:regional-flora ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#prototypical> ;
+    warp:statementText "Placeholder: Bouteloua gracilis grows on soils of pH 6.5 to 8.0." ;
+    warp:subject node:bouteloua_gracilis .
+
+<https://w3id.org/ecoweaver/warp/statement/flora-bogr-ph/predicate_qualifiers> a warp:ToleranceQualifiers ;
+    warp:range <https://w3id.org/ecoweaver/warp/statement/flora-bogr-ph/predicate_qualifiers/range> ;
+    warp:response <https://w3id.org/ecoweaver/warp/ToleranceResponseEnum#growth> .
+
+<https://w3id.org/ecoweaver/warp/statement/flora-bogr-ph/predicate_qualifiers/range> a warp:QuantityRange ;
+    warp:max "8.0"^^xsd:float ;
+    warp:min "6.5"^^xsd:float ;
+    warp:unit TODO:unit_pH .
+
+<https://w3id.org/ecoweaver/warp/statement/flora-bogr-ph/recordMetadata> a warp:EcoRecordMetadata ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/flora-bogr-ph-annotation> .
+
+stmt:flora-bogr-saturation a warp:ToleranceStatement ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/flora-bogr-saturation-author> ;
+    warp:explained_by prop:73cb84fbf99d ;
+    warp:hasEvidenceLines <https://w3id.org/ecoweaver/warp/el/flora-bogr-saturation-1> ;
+    warp:object node:wetness_of_soil ;
+    warp:predicate warp:intolerant_of ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/statement/flora-bogr-saturation/predicate_qualifiers> ;
+    warp:proposition prop:a685acd466a3 ;
+    warp:recordMetadata <https://w3id.org/ecoweaver/warp/statement/flora-bogr-saturation/recordMetadata> ;
+    warp:reportedIn doc:regional-flora ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#prototypical> ;
+    warp:statementText "Placeholder: Bouteloua gracilis does not survive saturated soils." ;
+    warp:subject node:bouteloua_gracilis .
+
+<https://w3id.org/ecoweaver/warp/statement/flora-bogr-saturation/predicate_qualifiers> a warp:ToleranceQualifiers ;
+    warp:class_value <https://w3id.org/ecoweaver/warp/statement/flora-bogr-saturation/predicate_qualifiers/class_value> ;
+    warp:response <https://w3id.org/ecoweaver/warp/ToleranceResponseEnum#survival> .
+
+<https://w3id.org/ecoweaver/warp/statement/flora-bogr-saturation/predicate_qualifiers/class_value> a warp:ScaledValue ;
+    warp:value "saturated" .
+
+<https://w3id.org/ecoweaver/warp/statement/flora-bogr-saturation/recordMetadata> a warp:EcoRecordMetadata ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/flora-bogr-saturation-annotation> .
+
+stmt:flora-spartina-habitat a warp:ToleranceStatement ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/flora-spartina-habitat-author> ;
+    warp:hasEvidenceLines <https://w3id.org/ecoweaver/warp/el/flora-spartina-habitat-1> ;
+    warp:object node:wet_meadow ;
+    warp:predicate RO:0002303 ;
+    warp:proposition prop:876e82c18c36 ;
+    warp:recordMetadata <https://w3id.org/ecoweaver/warp/statement/flora-spartina-habitat/recordMetadata> ;
+    warp:reportedIn doc:regional-flora ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#prototypical> ;
+    warp:statementText "Placeholder: Spartina pectinata grows in wet meadows." ;
+    warp:subject node:spartina_pectinata .
+
+<https://w3id.org/ecoweaver/warp/statement/flora-spartina-habitat/recordMetadata> a warp:EcoRecordMetadata ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/flora-spartina-habitat-annotation> .
+
+stmt:hsi-y-temperature a warp:ToleranceStatement ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/hsi-y-temperature-author> ;
+    warp:hasEvidenceLines <https://w3id.org/ecoweaver/warp/el/hsi-y-temperature-1> ;
+    warp:object node:temperature_of_water ;
+    warp:predicate warp:tolerates ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/statement/hsi-y-temperature/predicate_qualifiers> ;
+    warp:proposition prop:8bcd4cb76ab0 ;
+    warp:recordMetadata <https://w3id.org/ecoweaver/warp/statement/hsi-y-temperature/recordMetadata> ;
+    warp:reportedIn doc:hsi-model ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#prototypical> ;
+    warp:statementText "Placeholder: suitability for fish taxon Y rises from 5 to 12 degrees and falls to zero at 26." ;
+    warp:subject node:fish_taxon_y .
+
+<https://w3id.org/ecoweaver/warp/statement/hsi-y-temperature/predicate_qualifiers> a warp:ToleranceQualifiers ;
+    warp:range <https://w3id.org/ecoweaver/warp/statement/hsi-y-temperature/predicate_qualifiers/range> ;
+    warp:response <https://w3id.org/ecoweaver/warp/ToleranceResponseEnum#survival> ;
+    warp:response_curve <https://w3id.org/ecoweaver/warp/statement/hsi-y-temperature/predicate_qualifiers/response_curve/0>,
+        <https://w3id.org/ecoweaver/warp/statement/hsi-y-temperature/predicate_qualifiers/response_curve/1>,
+        <https://w3id.org/ecoweaver/warp/statement/hsi-y-temperature/predicate_qualifiers/response_curve/2>,
+        <https://w3id.org/ecoweaver/warp/statement/hsi-y-temperature/predicate_qualifiers/response_curve/3> .
+
+<https://w3id.org/ecoweaver/warp/statement/hsi-y-temperature/predicate_qualifiers/range> a warp:QuantityRange ;
+    warp:max "26"^^xsd:float ;
+    warp:min "5"^^xsd:float ;
+    warp:unit TODO:unit_degree_celsius .
+
+<https://w3id.org/ecoweaver/warp/statement/hsi-y-temperature/predicate_qualifiers/response_curve/0> a warp:CurvePoint ;
+    warp:suitability "0.0"^^xsd:float ;
+    warp:x "5"^^xsd:float .
+
+<https://w3id.org/ecoweaver/warp/statement/hsi-y-temperature/predicate_qualifiers/response_curve/1> a warp:CurvePoint ;
+    warp:suitability "1.0"^^xsd:float ;
+    warp:x "12"^^xsd:float .
+
+<https://w3id.org/ecoweaver/warp/statement/hsi-y-temperature/predicate_qualifiers/response_curve/2> a warp:CurvePoint ;
+    warp:suitability "1.0"^^xsd:float ;
+    warp:x "20"^^xsd:float .
+
+<https://w3id.org/ecoweaver/warp/statement/hsi-y-temperature/predicate_qualifiers/response_curve/3> a warp:CurvePoint ;
+    warp:suitability "0.0"^^xsd:float ;
+    warp:x "26"^^xsd:float .
+
+<https://w3id.org/ecoweaver/warp/statement/hsi-y-temperature/recordMetadata> a warp:EcoRecordMetadata ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/hsi-y-temperature-annotation> .
 
 <https://w3id.org/ecoweaver/warp/statement/kramer1995-c1/comparator/0> a causal_mosaic:ComparatorAnnotation ;
     causal_mosaic:comparator_description "Same site and monitoring stations in 1991, before tidal enhancement." ;
@@ -978,6 +1333,135 @@ stmt:notebook-i1 a warp:InteractionStatement ;
 <https://w3id.org/ecoweaver/warp/statement/notebook-i1/recordMetadata> a warp:EcoRecordMetadata ;
     warp:contributions <https://w3id.org/ecoweaver/warp/contrib/notebook-i1-annotation> .
 
+stmt:nwpl-spartina-great-plains a warp:ToleranceStatement ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/nwpl-spartina-great-plains-author> ;
+    warp:hasEvidenceLines <https://w3id.org/ecoweaver/warp/el/nwpl-spartina-great-plains-1> ;
+    warp:object node:wetness_of_soil ;
+    warp:place place:nwpl-great-plains ;
+    warp:predicate warp:prefers ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/statement/nwpl-spartina-great-plains/predicate_qualifiers> ;
+    warp:proposition prop:7e7264c393d3 ;
+    warp:recordMetadata <https://w3id.org/ecoweaver/warp/statement/nwpl-spartina-great-plains/recordMetadata> ;
+    warp:reportedIn doc:nwpl ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#prototypical> ;
+    warp:statementText "Placeholder: Spartina pectinata is rated FACW in the Great Plains region." ;
+    warp:subject node:spartina_pectinata .
+
+<https://w3id.org/ecoweaver/warp/statement/nwpl-spartina-great-plains/predicate_qualifiers> a warp:ToleranceQualifiers ;
+    warp:class_value <https://w3id.org/ecoweaver/warp/statement/nwpl-spartina-great-plains/predicate_qualifiers/class_value> ;
+    warp:response <https://w3id.org/ecoweaver/warp/ToleranceResponseEnum#occurrence> .
+
+<https://w3id.org/ecoweaver/warp/statement/nwpl-spartina-great-plains/predicate_qualifiers/class_value> a warp:ScaledValue ;
+    warp:concept <https://w3id.org/ecoweaver/warp/scale/wetland-indicator-status/FACW> ;
+    warp:scale scale:wetland-indicator-status ;
+    warp:value "FACW" .
+
+<https://w3id.org/ecoweaver/warp/statement/nwpl-spartina-great-plains/recordMetadata> a warp:EcoRecordMetadata ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/nwpl-spartina-great-plains-annotation> .
+
+stmt:nwpl-spartina-midwest a warp:ToleranceStatement ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/nwpl-spartina-midwest-author> ;
+    warp:hasEvidenceLines <https://w3id.org/ecoweaver/warp/el/nwpl-spartina-midwest-1> ;
+    warp:object node:wetness_of_soil ;
+    warp:place place:nwpl-midwest ;
+    warp:predicate warp:prefers ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/statement/nwpl-spartina-midwest/predicate_qualifiers> ;
+    warp:proposition prop:8754905f709c ;
+    warp:recordMetadata <https://w3id.org/ecoweaver/warp/statement/nwpl-spartina-midwest/recordMetadata> ;
+    warp:reportedIn doc:nwpl ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#prototypical> ;
+    warp:statementText "Placeholder: Spartina pectinata is rated FAC in the Midwest region." ;
+    warp:subject node:spartina_pectinata .
+
+<https://w3id.org/ecoweaver/warp/statement/nwpl-spartina-midwest/predicate_qualifiers> a warp:ToleranceQualifiers ;
+    warp:class_value <https://w3id.org/ecoweaver/warp/statement/nwpl-spartina-midwest/predicate_qualifiers/class_value> ;
+    warp:response <https://w3id.org/ecoweaver/warp/ToleranceResponseEnum#occurrence> .
+
+<https://w3id.org/ecoweaver/warp/statement/nwpl-spartina-midwest/predicate_qualifiers/class_value> a warp:ScaledValue ;
+    warp:concept <https://w3id.org/ecoweaver/warp/scale/wetland-indicator-status/FAC> ;
+    warp:scale scale:wetland-indicator-status ;
+    warp:value "FAC" .
+
+<https://w3id.org/ecoweaver/warp/statement/nwpl-spartina-midwest/recordMetadata> a warp:EcoRecordMetadata ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/nwpl-spartina-midwest-annotation> .
+
+stmt:practitioner-spartina-sand a warp:ToleranceStatement ;
+    warp:care <https://w3id.org/ecoweaver/warp/statement/practitioner-spartina-sand/care> ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/practitioner-spartina-sand-author> ;
+    warp:hasEvidenceLines <https://w3id.org/ecoweaver/warp/el/practitioner-spartina-sand-1> ;
+    warp:object node:texture_class_of_soil ;
+    warp:original_text "TODO: notebook wording" ;
+    warp:predicate warp:intolerant_of ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/statement/practitioner-spartina-sand/predicate_qualifiers> ;
+    warp:proposition prop:3cee880350a6 ;
+    warp:recordMetadata <https://w3id.org/ecoweaver/warp/statement/practitioner-spartina-sand/recordMetadata> ;
+    warp:reportedIn doc:notebook-entry-3 ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#contingent> ;
+    warp:statementText "Prairie cordgrass won't take hold on sandy ridges." ;
+    warp:subject node:spartina_pectinata .
+
+<https://w3id.org/ecoweaver/warp/statement/practitioner-spartina-sand/care> a warp:CareMetadata ;
+    warp:access_level <https://w3id.org/ecoweaver/warp/AccessLevelEnum#attribution_required> ;
+    warp:knowledge_holders <https://w3id.org/ecoweaver/warp/agent/person/practitioner-a> .
+
+<https://w3id.org/ecoweaver/warp/statement/practitioner-spartina-sand/predicate_qualifiers> a warp:ToleranceQualifiers ;
+    warp:class_value <https://w3id.org/ecoweaver/warp/statement/practitioner-spartina-sand/predicate_qualifiers/class_value> ;
+    warp:response <https://w3id.org/ecoweaver/warp/ToleranceResponseEnum#establishment> .
+
+<https://w3id.org/ecoweaver/warp/statement/practitioner-spartina-sand/predicate_qualifiers/class_value> a warp:ScaledValue ;
+    warp:concept <https://w3id.org/ecoweaver/warp/scale/usda-texture-class/sand> ;
+    warp:scale scale:usda-texture-class ;
+    warp:value "sand" .
+
+<https://w3id.org/ecoweaver/warp/statement/practitioner-spartina-sand/recordMetadata> a warp:EcoRecordMetadata ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/practitioner-spartina-sand-annotation> .
+
+stmt:practitioner-spartina-wet a warp:ToleranceStatement ;
+    warp:care <https://w3id.org/ecoweaver/warp/statement/practitioner-spartina-wet/care> ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/practitioner-spartina-wet-author> ;
+    warp:hasEvidenceLines <https://w3id.org/ecoweaver/warp/el/practitioner-spartina-wet-1> ;
+    warp:object node:wetness_of_soil ;
+    warp:original_text "TODO: notebook wording" ;
+    warp:predicate warp:prefers ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/statement/practitioner-spartina-wet/predicate_qualifiers> ;
+    warp:proposition prop:f1a52b9a290c ;
+    warp:recordMetadata <https://w3id.org/ecoweaver/warp/statement/practitioner-spartina-wet/recordMetadata> ;
+    warp:reportedIn doc:notebook-entry-3 ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#contingent> ;
+    warp:statementText "Prairie cordgrass does fine in heavy wet clay." ;
+    warp:subject node:spartina_pectinata .
+
+<https://w3id.org/ecoweaver/warp/statement/practitioner-spartina-wet/care> a warp:CareMetadata ;
+    warp:access_level <https://w3id.org/ecoweaver/warp/AccessLevelEnum#attribution_required> ;
+    warp:knowledge_holders <https://w3id.org/ecoweaver/warp/agent/person/practitioner-a> .
+
+<https://w3id.org/ecoweaver/warp/statement/practitioner-spartina-wet/predicate_qualifiers> a warp:ToleranceQualifiers ;
+    warp:class_value <https://w3id.org/ecoweaver/warp/statement/practitioner-spartina-wet/predicate_qualifiers/class_value> ;
+    warp:response <https://w3id.org/ecoweaver/warp/ToleranceResponseEnum#establishment> .
+
+<https://w3id.org/ecoweaver/warp/statement/practitioner-spartina-wet/predicate_qualifiers/class_value> a warp:ScaledValue ;
+    warp:value "wet" .
+
+<https://w3id.org/ecoweaver/warp/statement/practitioner-spartina-wet/recordMetadata> a warp:EcoRecordMetadata ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/practitioner-spartina-wet-annotation> .
+
+stmt:saturation-root-anoxia a warp:CausalStatement ;
+    warp:causal_language <https://w3id.org/ecoweaver/warp/ClaimStrengthEnum#uncertain_causal> ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/saturation-root-anoxia-author> ;
+    warp:hasEvidenceLines <https://w3id.org/ecoweaver/warp/el/saturation-root-anoxia-1> ;
+    warp:modality <https://w3id.org/ecoweaver/warp/ModalityEnum#inferred> ;
+    warp:object node:root_anoxia_of_bouteloua_gracilis ;
+    warp:predicate camo:causes ;
+    warp:proposition prop:73cb84fbf99d ;
+    warp:recordMetadata <https://w3id.org/ecoweaver/warp/statement/saturation-root-anoxia/recordMetadata> ;
+    warp:reportedIn doc:regional-flora ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#prototypical> ;
+    warp:statementText "TODO: saturated soils cause root anoxia in Bouteloua gracilis." ;
+    warp:subject node:wetness_of_soil .
+
+<https://w3id.org/ecoweaver/warp/statement/saturation-root-anoxia/recordMetadata> a warp:EcoRecordMetadata ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/saturation-root-anoxia-annotation> .
+
 stmt:strategy-a-native-cover a warp:CausalStatement ;
     warp:causal_language <https://w3id.org/ecoweaver/warp/ClaimStrengthEnum#associational> ;
     warp:contributions <https://w3id.org/ecoweaver/warp/contrib/strategy-a-native-cover-author> ;
@@ -1012,9 +1496,70 @@ stmt:strategy-b-native-cover a warp:CausalStatement ;
 <https://w3id.org/ecoweaver/warp/statement/strategy-b-native-cover/recordMetadata> a warp:EcoRecordMetadata ;
     warp:contributions <https://w3id.org/ecoweaver/warp/contrib/strategy-b-native-cover-annotation> .
 
+stmt:trial-bogr-ph a warp:ToleranceStatement ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/trial-bogr-ph-author> ;
+    warp:hasEvidenceLines <https://w3id.org/ecoweaver/warp/el/trial-bogr-ph-1> ;
+    warp:object node:ph_of_soil_0_15cm ;
+    warp:place place:northern-great-plains ;
+    warp:predicate warp:tolerates ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/statement/trial-bogr-ph/predicate_qualifiers> ;
+    warp:proposition prop:a36155eb3670 ;
+    warp:recordMetadata <https://w3id.org/ecoweaver/warp/statement/trial-bogr-ph/recordMetadata> ;
+    warp:reportedIn doc:germination-trial ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#prototypical> ;
+    warp:statementText "Placeholder: Bouteloua gracilis seedlings establish between pH 4.8 and 5.8." ;
+    warp:subject node:bouteloua_gracilis .
+
+<https://w3id.org/ecoweaver/warp/statement/trial-bogr-ph/predicate_qualifiers> a warp:ToleranceQualifiers ;
+    warp:range <https://w3id.org/ecoweaver/warp/statement/trial-bogr-ph/predicate_qualifiers/range> ;
+    warp:response <https://w3id.org/ecoweaver/warp/ToleranceResponseEnum#establishment> .
+
+<https://w3id.org/ecoweaver/warp/statement/trial-bogr-ph/predicate_qualifiers/range> a warp:QuantityRange ;
+    warp:max "5.8"^^xsd:float ;
+    warp:min "4.8"^^xsd:float ;
+    warp:unit TODO:unit_pH .
+
+<https://w3id.org/ecoweaver/warp/statement/trial-bogr-ph/recordMetadata> a warp:EcoRecordMetadata ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/trial-bogr-ph-annotation> .
+
+stmt:usda-bogr-ph a warp:ToleranceStatement ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/usda-bogr-ph-author> ;
+    warp:hasEvidenceLines <https://w3id.org/ecoweaver/warp/el/usda-bogr-ph-1> ;
+    warp:object node:ph_of_soil_0_15cm ;
+    warp:place place:northern-great-plains ;
+    warp:predicate warp:tolerates ;
+    warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/statement/usda-bogr-ph/predicate_qualifiers> ;
+    warp:proposition prop:a36155eb3670 ;
+    warp:recordMetadata <https://w3id.org/ecoweaver/warp/statement/usda-bogr-ph/recordMetadata> ;
+    warp:reportedIn doc:plants-record-bogr ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#prototypical> ;
+    warp:statementText "Placeholder: Bouteloua gracilis tolerates soil pH 6.0 to 8.5." ;
+    warp:subject node:bouteloua_gracilis .
+
+<https://w3id.org/ecoweaver/warp/statement/usda-bogr-ph/predicate_qualifiers> a warp:ToleranceQualifiers ;
+    warp:range <https://w3id.org/ecoweaver/warp/statement/usda-bogr-ph/predicate_qualifiers/range> ;
+    warp:response <https://w3id.org/ecoweaver/warp/ToleranceResponseEnum#growth> .
+
+<https://w3id.org/ecoweaver/warp/statement/usda-bogr-ph/predicate_qualifiers/range> a warp:QuantityRange ;
+    warp:max "8.5"^^xsd:float ;
+    warp:min "6.0"^^xsd:float ;
+    warp:unit TODO:unit_pH .
+
+<https://w3id.org/ecoweaver/warp/statement/usda-bogr-ph/recordMetadata> a warp:EcoRecordMetadata ;
+    warp:contributions <https://w3id.org/ecoweaver/warp/contrib/usda-bogr-ph-annotation> .
+
+node:fish_taxon_y warp:tolerates node:temperature_of_water .
+
+node:taxon_x warp:prefers node:ph_of_soil .
+
 node:water_conservation_measures_milk_river warp:recommended_to_achieve node:maintained_habitat_quantity_of_mountain_sucker_milk_river .
 
 node:water_extraction_milk_river camo:prevents node:habitat_quantity_of_mountain_sucker_milk_river .
+
+<https://w3id.org/ecoweaver/warp/agent/org/usace> a warp:EcoAgent ;
+    warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#organization> ;
+    warp:agent_subtype "organization" ;
+    warp:name "TODO: National Wetland Plant List (placeholder record)" .
 
 <https://w3id.org/ecoweaver/warp/agent/person/practitioner-2> a warp:EcoAgent ;
     warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#practitioner> ;
@@ -1030,6 +1575,24 @@ doc:burn-study a warp:EcoDocument ;
 doc:kramer1995 a warp:EcoDocument ;
     warp:description "Journal of the American Mosquito Control Association 11(4):389-395, 1995." ;
     warp:title "Reduction of Aedes dorsalis by enhancing tidal action in a northern California marsh" .
+
+doc:notebook-entry-3 a warp:EcoDocument ;
+    warp:subtype <https://w3id.org/ecoweaver/warp/doc/notebook-entry-3/subtype> .
+
+doc:nwpl a warp:EcoDocument ;
+    warp:title "TODO: National Wetland Plant List, regional ratings" .
+
+prop:3cee880350a6 a warp:ToleranceProposition ;
+    warp:derived_from_statements stmt:practitioner-spartina-sand ;
+    warp:identity_key "tolerance|node:spartina_pectinata|intolerant_of|node:texture_class_of_soil|affirmed|contingent|place=null" ;
+    warp:identity_rule_version "warp-prop-identity/4" ;
+    warp:negated false ;
+    warp:object node:texture_class_of_soil ;
+    warp:predicate warp:intolerant_of ;
+    warp:propositionText "Sometimes, spartina pectinata is intolerant of Texture class of soil." ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#contingent> ;
+    warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
+    warp:subject node:spartina_pectinata .
 
 prop:69ccdaf69ec4 a warp:RecommendationProposition ;
     warp:derived_from_statements stmt:ms-11-rec ;
@@ -1056,6 +1619,56 @@ prop:6ac6fc0d7703 a warp:InteractionProposition ;
     warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
     warp:subject node:population_of_odocoileus_virginianus .
 
+prop:7e7264c393d3 a warp:ToleranceProposition ;
+    warp:derived_from_statements stmt:nwpl-spartina-great-plains ;
+    warp:identity_key "tolerance|node:spartina_pectinata|prefers|node:wetness_of_soil|affirmed|prototypical|place=[\"place:nwpl-great-plains\"]" ;
+    warp:identity_rule_version "warp-prop-identity/4" ;
+    warp:negated false ;
+    warp:object node:wetness_of_soil ;
+    warp:place place:nwpl-great-plains ;
+    warp:predicate warp:prefers ;
+    warp:propositionText "Typically, spartina pectinata prefers Wetness of soil." ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#prototypical> ;
+    warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
+    warp:subject node:spartina_pectinata .
+
+prop:8754905f709c a warp:ToleranceProposition ;
+    warp:derived_from_statements stmt:nwpl-spartina-midwest ;
+    warp:identity_key "tolerance|node:spartina_pectinata|prefers|node:wetness_of_soil|affirmed|prototypical|place=[\"place:nwpl-midwest\"]" ;
+    warp:identity_rule_version "warp-prop-identity/4" ;
+    warp:negated false ;
+    warp:object node:wetness_of_soil ;
+    warp:place place:nwpl-midwest ;
+    warp:predicate warp:prefers ;
+    warp:propositionText "Typically, spartina pectinata prefers Wetness of soil." ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#prototypical> ;
+    warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
+    warp:subject node:spartina_pectinata .
+
+prop:876e82c18c36 a warp:ToleranceProposition ;
+    warp:derived_from_statements stmt:flora-spartina-habitat ;
+    warp:identity_key "tolerance|node:spartina_pectinata|has_habitat|node:wet_meadow|affirmed|prototypical|place=null" ;
+    warp:identity_rule_version "warp-prop-identity/4" ;
+    warp:negated false ;
+    warp:object node:wet_meadow ;
+    warp:predicate RO:0002303 ;
+    warp:propositionText "Typically, spartina pectinata has habitat Wet meadow." ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#prototypical> ;
+    warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
+    warp:subject node:spartina_pectinata .
+
+prop:8bcd4cb76ab0 a warp:ToleranceProposition ;
+    warp:derived_from_statements stmt:hsi-y-temperature ;
+    warp:identity_key "tolerance|node:fish_taxon_y|tolerates|node:temperature_of_water|affirmed|prototypical|place=null" ;
+    warp:identity_rule_version "warp-prop-identity/4" ;
+    warp:negated false ;
+    warp:object node:temperature_of_water ;
+    warp:predicate warp:tolerates ;
+    warp:propositionText "Typically, fish taxon Y (TODO: a fish taxon) tolerates Temperature of water." ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#prototypical> ;
+    warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
+    warp:subject node:fish_taxon_y .
+
 prop:9c043c560227 a warp:RecommendationProposition ;
     warp:derived_from_statements stmt:burn-do-plan,
         stmt:burn-do-practitioner ;
@@ -1070,6 +1683,18 @@ prop:9c043c560227 a warp:RecommendationProposition ;
     warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
     warp:subject node:prescribed_burning_of_grassland .
 
+prop:a685acd466a3 a warp:ToleranceProposition ;
+    warp:derived_from_statements stmt:flora-bogr-saturation ;
+    warp:identity_key "tolerance|node:bouteloua_gracilis|intolerant_of|node:wetness_of_soil|affirmed|prototypical|place=null" ;
+    warp:identity_rule_version "warp-prop-identity/4" ;
+    warp:negated false ;
+    warp:object node:wetness_of_soil ;
+    warp:predicate warp:intolerant_of ;
+    warp:propositionText "Typically, bouteloua gracilis is intolerant of Wetness of soil." ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#prototypical> ;
+    warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
+    warp:subject node:bouteloua_gracilis .
+
 prop:aea4ac8269ae a warp:CausalProposition ;
     warp:derived_from_statements stmt:notebook-c1 ;
     warp:identity_key "causal|node:planting_of_sanguinaria_canadensis|prevents|node:rate_of_population_growth_of_alliaria_petiolata|affirmed|assertional" ;
@@ -1081,6 +1706,18 @@ prop:aea4ac8269ae a warp:CausalProposition ;
     warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
     warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
     warp:subject node:planting_of_sanguinaria_canadensis .
+
+prop:f1a52b9a290c a warp:ToleranceProposition ;
+    warp:derived_from_statements stmt:practitioner-spartina-wet ;
+    warp:identity_key "tolerance|node:spartina_pectinata|prefers|node:wetness_of_soil|affirmed|contingent|place=null" ;
+    warp:identity_rule_version "warp-prop-identity/4" ;
+    warp:negated false ;
+    warp:object node:wetness_of_soil ;
+    warp:predicate warp:prefers ;
+    warp:propositionText "Sometimes, spartina pectinata prefers Wetness of soil." ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#contingent> ;
+    warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
+    warp:subject node:spartina_pectinata .
 
 prop:question-tidal-restoration-aedes-dorsalis a warp:CausalProposition ;
     warp:identity_key "causal|node:tidal_restoration_of_marsh|prevents|node:volumetric_density_of_ochlerotatus_dorsalis_population_at_larval_stage|affirmed|prototypical" ;
@@ -1184,6 +1821,31 @@ prop:4f9905a0d7a2 a warp:CausalProposition ;
     warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
     warp:subject node:stocking_of_predacious_sportfish_milk_river .
 
+prop:64861871b8fb a warp:ToleranceProposition ;
+    warp:derived_from_statements stmt:eive-taxon-r ;
+    warp:identity_key "tolerance|node:taxon_x|prefers|node:ph_of_soil|affirmed|prototypical|place=[\"place:europe\"]" ;
+    warp:identity_rule_version "warp-prop-identity/4" ;
+    warp:negated false ;
+    warp:object node:ph_of_soil ;
+    warp:place place:europe ;
+    warp:predicate warp:prefers ;
+    warp:propositionText "Typically, taxon X (TODO: a European taxon) prefers pH of soil." ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#prototypical> ;
+    warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
+    warp:subject node:taxon_x .
+
+prop:73cb84fbf99d a warp:CausalProposition ;
+    warp:derived_from_statements stmt:saturation-root-anoxia ;
+    warp:identity_key "causal|node:wetness_of_soil|causes|node:root_anoxia_of_bouteloua_gracilis|affirmed|prototypical" ;
+    warp:identity_rule_version "warp-prop-identity/4" ;
+    warp:negated false ;
+    warp:object node:root_anoxia_of_bouteloua_gracilis ;
+    warp:predicate camo:causes ;
+    warp:propositionText "Typically, wetness of soil causes Root anoxia in Bouteloua gracilis." ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#prototypical> ;
+    warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
+    warp:subject node:wetness_of_soil .
+
 prop:9f0b068ca33b a warp:CausalProposition ;
     warp:derived_from_statements stmt:kramer1995-c1 ;
     warp:identity_key "causal|node:tidal_restoration_of_marsh|prevents|node:volumetric_density_of_ochlerotatus_dorsalis_population_at_larval_stage|affirmed|assertional" ;
@@ -1218,6 +1880,16 @@ node:stocking_of_predacious_sportfish_milk_river camo:prevents node:abundance_of
     warp:agent_subtype "organization" ;
     warp:name "Fisheries and Oceans Canada" .
 
+<https://w3id.org/ecoweaver/warp/agent/org/flora-authors> a warp:EcoAgent ;
+    warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#researcher> ;
+    warp:agent_subtype "organization" ;
+    warp:name "TODO: authors of a regional flora" .
+
+<https://w3id.org/ecoweaver/warp/agent/person/practitioner-a> a warp:EcoAgent ;
+    warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#practitioner> ;
+    warp:agent_subtype "person" ;
+    warp:name "TODO: practitioner name or pseudonym" .
+
 <https://w3id.org/ecoweaver/warp/agent/practitioner-1> a warp:EcoAgent ;
     warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#practitioner> ;
     warp:agent_subtype "person" ;
@@ -1225,6 +1897,9 @@ node:stocking_of_predacious_sportfish_milk_river camo:prevents node:abundance_of
 
 doc:notebook-entry-1 a warp:EcoDocument ;
     warp:subtype <https://w3id.org/ecoweaver/warp/doc/notebook-entry-1/subtype> .
+
+doc:regional-flora a warp:EcoDocument ;
+    warp:title "TODO: a regional flora" .
 
 prop:83d87b9d22ad a warp:CausalProposition ;
     warp:derived_from_statements stmt:strategy-a-native-cover,
@@ -1255,6 +1930,9 @@ prop:question-bloodroot-garlic-mustard a warp:CausalProposition ;
     warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
     warp:subject node:planting_of_sanguinaria_canadensis .
 
+node:bouteloua_gracilis warp:intolerant_of node:wetness_of_soil ;
+    warp:tolerates node:ph_of_soil_0_15cm .
+
 prop:247fc9907bf5 a warp:CausalProposition ;
     warp:derived_from_statements stmt:burn-study-c1 ;
     warp:identity_key "causal|node:prescribed_burning_of_grassland|prevents|node:shrub_cover_in_grassland|affirmed|prototypical" ;
@@ -1267,11 +1945,32 @@ prop:247fc9907bf5 a warp:CausalProposition ;
     warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
     warp:subject node:prescribed_burning_of_grassland .
 
+prop:a36155eb3670 a warp:ToleranceProposition ;
+    warp:derived_from_statements stmt:flora-bogr-ph,
+        stmt:trial-bogr-ph,
+        stmt:usda-bogr-ph ;
+    warp:identity_key "tolerance|node:bouteloua_gracilis|tolerates|node:ph_of_soil_0_15cm|affirmed|prototypical|place=[\"place:northern-great-plains\"]" ;
+    warp:identity_rule_version "warp-prop-identity/4" ;
+    warp:negated false ;
+    warp:object node:ph_of_soil_0_15cm ;
+    warp:place place:northern-great-plains ;
+    warp:predicate warp:tolerates ;
+    warp:propositionText "Typically, bouteloua gracilis tolerates pH of soil, 0 to 15 cm." ;
+    warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#prototypical> ;
+    warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
+    warp:subject node:bouteloua_gracilis .
+
 node:prescribed_burning_of_grassland camo:prevents node:shrub_cover_in_grassland ;
     warp:advised_against_for node:decrease_in_shrub_cover_in_grassland ;
     warp:recommended_to_achieve node:decrease_in_shrub_cover_in_grassland .
 
 node:strategy-f38f3a2661ee camo:causes node:native_plant_cover .
+
+node:spartina_pectinata RO:0002303 node:wet_meadow ;
+    warp:intolerant_of node:texture_class_of_soil ;
+    warp:prefers node:wetness_of_soil .
+
+node:wetness_of_soil camo:causes node:root_anoxia_of_bouteloua_gracilis .
 
 orcid:0000-0000-0000-0000 a warp:EcoAgent ;
     warp:agent_kind <https://w3id.org/ecoweaver/warp/AgentKindEnum#researcher> ;

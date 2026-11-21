@@ -68,9 +68,21 @@ def existential(pj, group, prop):
     return [(pj.iri(prop["subject"]), p, pj.iri(prop["object"]))]
 
 
+def has_habitat_only(pj, group, prop):
+    """Tolerance: only has_habitat (RO:0002303) projects, as
+    <taxon> rdfs:subClassOf [ owl:onProperty RO:0002303 ; owl:someValuesFrom <habitat> ].
+    tolerates, prefers and intolerant_of never do: their content is a range,
+    a measurement across populations, not a class axiom."""
+    if prop.get("predicate") != "has_habitat":
+        return []
+    return existential(pj, group, prop)
+
+
 PROJECTIONS = {
     "causal": existential,
     "interaction": existential,
+    "tolerance": has_habitat_only,
+    # recommendation: nothing, at any scope (deontic)
 }
 
 

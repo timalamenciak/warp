@@ -427,9 +427,59 @@ enums:
         annotations:
           warp_cost_phase: monitoring
 
+  # --- tolerance group (0.7.0, Phase 5) -------------------------------------------
 
-## =============================================================================
-## SLOTS shared across classes
+  TolerancePredicateEnum:
+    implements: [owl:ObjectProperty]
+    description: >-
+      Predicates for tolerance statements: under what conditions an organism
+      establishes, persists or performs. Three minted in warp: (declared in
+      src/warp/owl/warp-relations.ttl), one reused from RO. The object's kind
+      varies by predicate (checked by scripts/check_tolerance.py, R17).
+    permissible_values:
+      tolerates:
+        description: >-
+          The organism establishes, persists or reproduces when the variable is
+          within the stated range. One-sided ranges allowed.
+        meaning: warp:tolerates
+        annotations:
+          rosetta_template: "{subject} tolerates {object}"
+      prefers:
+        description: >-
+          The organism performs best, or occurs most often, at or around the
+          stated value or class.
+        meaning: warp:prefers
+        annotations:
+          rosetta_template: "{subject} prefers {object}"
+      intolerant_of:
+        description: >-
+          The organism fails to establish, persist or reproduce when the
+          variable is within the stated range. Recorded as stated: never
+          derived from tolerates, nor tolerates from it.
+        meaning: warp:intolerant_of
+        annotations:
+          rosetta_template: "{subject} is intolerant of {object}"
+      has_habitat:
+        description: >-
+          RO has habitat, reused as RO publishes it (ID checked in the local
+          ENVO import, 2026-11-20), for categorical habitat statements. The
+          object is an ENVO habitat or environment node, not a quality node.
+          The only tolerance predicate that can project to OWL.
+        meaning: RO:0002303
+        annotations:
+          rosetta_template: "{subject} has habitat {object}"
+
+  ToleranceResponseEnum:
+    implements: [owl:NamedIndividual]
+    description: "What a tolerance range was judged against."
+    permissible_values:
+      occurrence:
+      germination:
+      establishment:
+      growth:
+      survival:
+      reproduction:
+
 ## =============================================================================
 
 slots:
@@ -509,9 +559,15 @@ slots:
     multivalued: true
     inlined: false
 
+  explained_by:
+    description: >-
+      Propositions giving the mechanism behind a tolerance, usually causal
+      (saturated soils cause root anoxia, so the species is intolerant of
+      saturation). By reference.
+    range: EcoProposition
+    multivalued: true
+    inlined: false
 
-## =============================================================================
-## CLASSES
 ## =============================================================================
 
 classes:
@@ -596,6 +652,17 @@ classes:
       recommendation_propositions:
         description: "Recommendation propositions (derived): one per action, outcome, scope and guidance."
         range: RecommendationProposition
+        multivalued: true
+        inlined_as_list: true
+
+      tolerance_statements:
+        description: "Tolerance statements: the conditions under which an organism lives."
+        range: ToleranceStatement
+        multivalued: true
+        inlined_as_list: true
+      tolerance_propositions:
+        description: "Tolerance propositions (derived): one per organism, predicate, variable, scope and place."
+        range: ToleranceProposition
         multivalued: true
         inlined_as_list: true
 
@@ -1112,6 +1179,111 @@ classes:
         inlined: true
 
   # ---------------------------------------------------------------------------
+  # Predicate group: tolerance (0.7.0, Phase 5;
+  # warp-proposals-0.4.html section 7)
+  # ---------------------------------------------------------------------------
+
+  ToleranceStatement:
+    is_a: EcoStatement
+    class_uri: warp:ToleranceStatement
+    description: >-
+      The conditions under which a taxon establishes, persists or performs: the
+      soil pH it tolerates, the moisture regime it prefers, the salinity that
+      excludes it. A disposition of the organism, not a change in one thing
+      bringing a change in another, which is why it is not a causal
+      statement. Subject: a taxon, population or life stage node. Object: a
+      quality_of_environmental_material node, or for has_habitat an ENVO
+      habitat or environment node (scripts/check_tolerance.py). The range,
+      optimum, class value and curve are qualifiers, not in the identity key,
+      so every source's range for "pH of soil" meets in one proposition.
+      Annotator's test: is the source saying under what conditions the
+      organism can live, or what changes what?
+    annotations:
+      warp_group: tolerance
+      warp_statements_slot: tolerance_statements
+      warp_propositions_slot: tolerance_propositions
+      warp_proposition_class: ToleranceProposition
+      warp_identity_extras: place
+    slots:
+      - explained_by
+    slot_usage:
+      subject:
+        range: CausalNode
+        required: true
+        description: "The organism: a taxon, population or life stage node."
+      predicate:
+        range: TolerancePredicateEnum
+        required: true
+      object:
+        range: CausalNode
+        required: true
+        description: "A quality_of_environmental_material node, or an ENVO habitat node for has_habitat."
+      place:
+        description: >-
+          In the identity key for this group: indicator ratings are assigned by
+          region, so a species rated differently in two regions is two
+          propositions, not a contradiction.
+    attributes:
+      predicate_qualifiers:
+        description: "Range, optimum, class value, response and curve."
+        range: ToleranceQualifiers
+        inlined: true
+
+  ToleranceQualifiers:
+    class_uri: warp:ToleranceQualifiers
+    description: >-
+      The predicate layer of a tolerance statement. None of it is in the
+      identity key: two sources giving pH 6.0 to 8.5 and 6.5 to 8.0 agree that
+      pH limits the species and differ on where, so they derive one
+      proposition with two ranges. Never converted between units silently.
+    attributes:
+      range:
+        description: "The range of the variable. Either end may be open."
+        range: QuantityRange
+        inlined: true
+      optimum:
+        description: "The optimum value, mostly with prefers."
+        range: Quantity
+        inlined: true
+      class_value:
+        description: >-
+          A value on the source's own scale (Ellenberg R, EIVE, USDA
+          low / medium / high, wetland indicator OBL to UPL), with scale and
+          concept IRIs from vocab/scales.yaml; a practitioner's "wet" has a
+          value and no scale.
+        range: ScaledValue
+        inlined: true
+      response:
+        description: "What the range was judged against: occurrence, germination, establishment, growth, survival, reproduction."
+        range: ToleranceResponseEnum
+      response_curve:
+        description: >-
+          Habitat suitability breakpoints, in order: x strictly increasing
+          (checked by scripts/check_tolerance.py), suitability in [0, 1], x in
+          the unit of `range`. A model's combination rule (geometric mean,
+          minimum) is not a statement: record it on the EcoStudyResult.
+        range: CurvePoint
+        multivalued: true
+        inlined_as_list: true
+        list_elements_ordered: true
+
+  ToleranceProposition:
+    is_a: EcoProposition
+    class_uri: warp:ToleranceProposition
+    description: >-
+      A proposition put forward by tolerance statements: this organism, this
+      predicate, this variable, at this scope, in this place.
+    slots:
+      - place
+    slot_usage:
+      subject:
+        range: CausalNode
+      predicate:
+        range: TolerancePredicateEnum
+      object:
+        range: CausalNode
+
+  # ---------------------------------------------------------------------------
   # Node definitions: a CAMO node filled from a node template
   # ---------------------------------------------------------------------------
 
@@ -1136,6 +1308,19 @@ classes:
         range: TemplateFiller
         multivalued: true
         inlined_as_list: true
+      depth:
+        description: >-
+          A refinement (templates' `refinements`): the depth interval the node
+          is about, e.g. 0 to 15 cm. Part of what the node is, but with no
+          ontology class, so the node is a subclass of the template's
+          expression rather than equivalent to it. Only for templates that
+          list it (quality_of_environmental_material).
+        range: QuantityRange
+        inlined: true
+      season:
+        description: >-
+          A refinement: the season the node is about ("growing season",
+          "spring freshet"). As for depth.
 
   StrategyDefinition:
     is_a: NodeDefinition

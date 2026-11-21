@@ -13,7 +13,8 @@ export PYTHONUTF8 := 1
 STATEMENTS  := examples/bloodroot_statements.yaml \
                examples/kramer1995_statements.yaml \
                examples/recommendation_statements.yaml \
-               examples/strategy_statements.yaml
+               examples/strategy_statements.yaml \
+               examples/tolerance_statements.yaml
 DERIVED     := $(STATEMENTS:.yaml=.derived.yaml)
 ASSESSMENTS := examples/bloodroot_assessment.yaml examples/kramer1995_assessment.yaml
 
@@ -98,6 +99,7 @@ validate: derive gen rdf owl
 	linkml-validate -s $(SCHEMA) -C StatementSet $(STATEMENTS) $(DERIVED) $(ASSESSMENTS)
 	$(PY) scripts/check_refs.py $(STATEMENTS) $(DERIVED) $(ASSESSMENTS)
 	$(PY) scripts/check_owl.py $(OWL_FILES)
+	$(PY) scripts/check_tolerance.py $(DERIVED)
 
 # What the schema cannot express: Assertion Mode, negation, contribution
 # roles, CARE, references resolving across files (check_statements.py); and
@@ -155,6 +157,7 @@ owl-check:
 reports: derive
 	$(PY) scripts/report_guidance.py $(DERIVED) $(ASSESSMENTS) \
 	  --out project/reports/guidance.md --csv project/reports/guidance.csv
+	$(PY) scripts/report_tolerance.py $(DERIVED) --out project/reports/tolerance.md
 
 # pytest suite under tests/.
 test:

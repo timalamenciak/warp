@@ -111,6 +111,54 @@ round, built on the 0.6.0 foundations.
   OWL, component export, and validation (two components, ISO lag).
 - No existing proposition ID changed.
 
+### Phase 5: tolerance group
+
+- **New predicate group `tolerance`** (proposal section 7):
+  `ToleranceStatement`, `ToleranceQualifiers`, `ToleranceProposition` (which
+  carries `place`), and `StatementSet` lists `tolerance_statements` /
+  `tolerance_propositions`, with `warp_identity_extras: place` (decision D18:
+  `place`, not `ecosystem_context`). Ranges, optima and class values are not
+  in the key.
+- `TolerancePredicateEnum`: `tolerates`, `prefers`, `intolerant_of` (minted,
+  declared in `warp-relations.ttl` with the proposal's definitions) and
+  `has_habitat` (`RO:0002303`, verified in the local ENVO import, reused and
+  never re-declared). `ToleranceResponseEnum`. Qualifiers: `range`,
+  `optimum`, `class_value`, `response`, `response_curve` (ordered).
+  New shared slot **`explained_by`**.
+- **New node template `quality_of_environmental_material`** (quality of a
+  material or medium: soil, water, air), with **refinements**: optional
+  `depth` and `season` on the node definition. New template field
+  `refinements` and `NodeDefinition.depth` / `season`. A refined node is
+  written as a subclass of the expression, never an equivalent class, and is
+  left out of the DOSDP fill tables. Subjects use the existing `taxon`,
+  `population_of_taxon` and `taxon_at_life_stage` templates.
+- **`scripts/check_tolerance.py`** in `make validate`: the object's kind per
+  predicate (habitat node for `has_habitat`, quality node for the rest; R17),
+  objects without node definitions, and response curves (x strictly
+  increasing, suitability in [0, 1]).
+- **OWL:** `project_owl.py` projects `has_habitat` only, through the gate,
+  as `<taxon> rdfs:subClassOf [ owl:onProperty RO:0002303 ;
+  owl:someValuesFrom <habitat> ]`. Prototypical statements, and ranges,
+  optima, class values and curves at any scope, never project.
+- **Example** `examples/tolerance_statements.yaml`: a database pH range
+  (not_stated) plus two more sources on the same range (one proposition, one
+  of them non-overlapping), an EIVE-style niche position with class value and
+  a range on the EIVE scale, the practitioner's prairie cordgrass pair
+  (contingent; "wet" on no scale, "sand" a USDA texture class), two regional
+  wetland indicator ratings (two propositions), an HSI curve with the
+  combination rule on an `EcoStudyResult`, a tolerance `explained_by` a
+  causal proposition, and a `has_habitat` statement. All figures placeholders.
+- **`scripts/report_tolerance.py`** (`make reports`):
+  `project/reports/tolerance.md`, ranges per proposition by claimant and
+  response; flags non-overlapping ranges and unit mismatches; never
+  aggregates or converts.
+- Docs: the tolerance group and its annotator's test in
+  `docs/predicate-groups.md`; refinements in `docs/node-templates.md`. Open
+  questions Q1 to Q6 in `TODOS.md`, with Q2 (BFO disposition) recorded as
+  narrowed.
+- New test: every committed `*.derived.yaml` equals a fresh derivation.
+- No existing proposition ID changed.
+
 ## 0.6.0 (unreleased)
 
 Shared foundations, the identity engine and the RDF/OWL contract, with the two

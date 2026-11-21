@@ -1,0 +1,334 @@
+# Tolerance group: worked example (0.7.0, Phase 5).
+#
+# Under what conditions organisms live: a database pH range, two more sources
+# on the same range, an EIVE-style niche position, a practitioner's
+# knowledge, regional wetland indicator ratings, a habitat suitability curve,
+# a tolerance explained by a mechanism, and a habitat statement.
+#
+# ILLUSTRATIVE ONLY. Every figure is a placeholder shaped like the proposal's
+# examples (warp-proposals-0.4.html, section 7), not a value from the named
+# kinds of source. Taxa and most terms are TODO: placeholders until their IDs
+# are verified; units are the TODO: units of docs/values.md.
+
+id: warp:statementset/tolerance-example
+profile_version: 0.6.0
+
+agents:
+  - {id: org:usda-nrcs, type: EcoAgent, name: "TODO: USDA NRCS PLANTS (placeholder record)", subtype: organization, agent_kind: organization}
+  - {id: org:flora-authors, type: EcoAgent, name: "TODO: authors of a regional flora", subtype: organization, agent_kind: researcher}
+  - {id: org:trial-authors, type: EcoAgent, name: "TODO: authors of a germination trial", subtype: organization, agent_kind: researcher}
+  - {id: org:eive-consortium, type: EcoAgent, name: "TODO: EIVE consortium (placeholder record)", subtype: organization, agent_kind: researcher}
+  - {id: org:usace, type: EcoAgent, name: "TODO: National Wetland Plant List (placeholder record)", subtype: organization, agent_kind: organization}
+  - {id: org:hsi-model-authors, type: EcoAgent, name: "TODO: authors of a habitat suitability model", subtype: organization, agent_kind: researcher}
+  - {id: person:practitioner-a, type: EcoAgent, name: "TODO: practitioner name or pseudonym", subtype: person, agent_kind: practitioner}
+  - {id: orcid:0000-0000-0000-0000, type: EcoAgent, name: "TODO: annotator", subtype: person, agent_kind: researcher}
+
+documents:
+  - {id: doc:plants-record-bogr, type: EcoDocument, title: "TODO: plant database record for Bouteloua gracilis"}
+  - {id: doc:regional-flora, type: EcoDocument, title: "TODO: a regional flora"}
+  - {id: doc:germination-trial, type: EcoDocument, title: "TODO: a germination trial across a pH gradient"}
+  - {id: doc:eive-1-0, type: EcoDocument, title: "Dengler et al. 2023, Ecological Indicator Values for Europe (EIVE) 1.0 (TODO: verify citation)"}
+  - {id: doc:nwpl, type: EcoDocument, title: "TODO: National Wetland Plant List, regional ratings"}
+  - {id: doc:hsi-model, type: EcoDocument, title: "TODO: a habitat suitability index model"}
+  - {id: doc:notebook-entry-3, type: EcoDocument, subtype: {label: field notebook}}
+
+nodes:
+  # Organisms (subjects).
+  - {id: node:bouteloua_gracilis, name: Bouteloua gracilis, entity_type: taxon, entity_term: "TODO: Bouteloua gracilis"}
+  - {id: node:taxon_x, name: "Taxon X (TODO: a European taxon)", entity_type: taxon, entity_term: "TODO: taxon"}
+  - {id: node:spartina_pectinata, name: Spartina pectinata, entity_type: taxon, entity_term: "TODO: Spartina pectinata"}
+  - {id: node:fish_taxon_y, name: "Fish taxon Y (TODO: a fish taxon)", entity_type: taxon, entity_term: "TODO: taxon"}
+  # Environmental variables (objects): quality_of_environmental_material.
+  - {id: node:ph_of_soil, name: pH of soil, entity_type: environmental_variable, entity_term: soil pH}
+  - {id: node:ph_of_soil_0_15cm, name: "pH of soil, 0 to 15 cm", entity_type: environmental_variable, entity_term: soil pH}
+  - {id: node:wetness_of_soil, name: Wetness of soil, entity_type: environmental_variable, entity_term: soil moisture}
+  - {id: node:texture_class_of_soil, name: Texture class of soil, entity_type: environmental_variable, entity_term: soil texture}
+  - {id: node:temperature_of_water, name: Temperature of water, entity_type: environmental_variable, entity_term: water temperature}
+  # A habitat (object of has_habitat).
+  - {id: node:wet_meadow, name: Wet meadow, entity_type: environmental_variable, entity_term: "TODO: wet meadow"}
+  # A mechanism node, for explained_by.
+  - {id: node:root_anoxia_of_bouteloua_gracilis, name: Root anoxia in Bouteloua gracilis, entity_type: taxon, entity_term: "TODO: root anoxia"}
+
+node_definitions:
+  - node: node:bouteloua_gracilis
+    template: taxon
+    fillers: [{var: taxon, value: "TODO:taxon_bouteloua_gracilis", label: Bouteloua gracilis}]
+  - node: node:taxon_x
+    template: taxon
+    fillers: [{var: taxon, value: "TODO:taxon_x", label: taxon X}]
+  - node: node:spartina_pectinata
+    template: taxon
+    fillers: [{var: taxon, value: "TODO:taxon_spartina_pectinata", label: Spartina pectinata}]
+  - node: node:fish_taxon_y
+    template: taxon
+    fillers: [{var: taxon, value: "TODO:taxon_y", label: fish taxon Y}]
+  - node: node:ph_of_soil
+    template: quality_of_environmental_material
+    fillers:
+      - {var: quality, value: "TODO:ph", label: pH}
+      - {var: material, value: "ENVO:00001998", label: soil}
+  # The same variable at a stated depth: a subclass of pH of soil, not the
+  # same class (the depth is a refinement with no ontology class).
+  - node: node:ph_of_soil_0_15cm
+    template: quality_of_environmental_material
+    fillers:
+      - {var: quality, value: "TODO:ph", label: pH}
+      - {var: material, value: "ENVO:00001998", label: soil}
+    depth: {min: 0, max: 15, unit: "TODO:unit_centimetre"}
+  - node: node:wetness_of_soil
+    template: quality_of_environmental_material
+    fillers:
+      - {var: quality, value: "PATO:0001822", label: wetness}
+      - {var: material, value: "ENVO:00001998", label: soil}
+  - node: node:texture_class_of_soil
+    template: quality_of_environmental_material
+    fillers:
+      - {var: quality, value: "TODO:soil_texture", label: texture}
+      - {var: material, value: "ENVO:00001998", label: soil}
+  - node: node:temperature_of_water
+    template: quality_of_environmental_material
+    fillers:
+      - {var: quality, value: "PATO:0000146", label: temperature}
+      - {var: material, value: "ENVO:00002006", label: liquid water}
+  - node: node:wet_meadow
+    template: environment_type
+    fillers: [{var: environment, value: "TODO:wet_meadow", label: wet meadow}]
+
+# A habitat suitability model's combination rule is not a statement: it
+# belongs to the model, recorded here as study result metadata.
+study_results:
+  - id: warp:result/hsi-model-temperature
+    type: EcoStudyResult
+    focus: node:temperature_of_water
+    description: "TODO: suitability index for water temperature, one variable of an HSI model."
+    stated_goal: "TODO: to rate habitat suitability for fish taxon Y"
+    dataItems:
+      - {id: warp:data/hsi-model-combination-rule, type: EcoDataItem, subtype: {label: combination rule}, value: geometric mean of the variable suitability indices}
+
+causal_statements:
+  # The mechanism a tolerance statement cites through explained_by.
+  - id: stmt:saturation-root-anoxia
+    type: CausalStatement
+    subject: node:wetness_of_soil
+    predicate: causes
+    object: node:root_anoxia_of_bouteloua_gracilis
+    scope: prototypical
+    modality: inferred
+    causal_language: uncertain_causal
+    statementText: "TODO: saturated soils cause root anoxia in Bouteloua gracilis."
+    contributions:
+      - {id: warp:contrib/saturation-root-anoxia-author, type: EcoContribution, role: author, contributor: org:flora-authors}
+    recordMetadata:
+      contributions: [{id: warp:contrib/saturation-root-anoxia-annotation, type: EcoContribution, role: annotator, contributor: "orcid:0000-0000-0000-0000"}]
+    reportedIn: [doc:regional-flora]
+    hasEvidenceLines:
+      - {id: warp:el/saturation-root-anoxia-1, type: EcoEvidenceLine, evidence_type: theoretical, directionOfEvidenceProvided: supports}
+
+tolerance_statements:
+
+  # A plant database's pH range: tolerates, response growth, no basis given.
+  - id: stmt:usda-bogr-ph
+    type: ToleranceStatement
+    subject: node:bouteloua_gracilis
+    predicate: tolerates
+    object: node:ph_of_soil_0_15cm
+    scope: prototypical
+    place: ["place:northern-great-plains"]
+    statementText: "Placeholder: Bouteloua gracilis tolerates soil pH 6.0 to 8.5."
+    predicate_qualifiers:
+      range: {min: 6.0, max: 8.5, unit: "TODO:unit_pH"}
+      response: growth
+    contributions: [{id: warp:contrib/usda-bogr-ph-author, type: EcoContribution, role: author, contributor: org:usda-nrcs}]
+    recordMetadata:
+      contributions: [{id: warp:contrib/usda-bogr-ph-annotation, type: EcoContribution, role: annotator, contributor: "orcid:0000-0000-0000-0000"}]
+    reportedIn: [doc:plants-record-bogr]
+    hasEvidenceLines:
+      - {id: warp:el/usda-bogr-ph-1, type: EcoEvidenceLine, evidence_type: not_stated, directionOfEvidenceProvided: supports}
+
+  # A second source, a different range for the same thing: the same
+  # proposition, two ranges to compare, not two propositions.
+  - id: stmt:flora-bogr-ph
+    type: ToleranceStatement
+    subject: node:bouteloua_gracilis
+    predicate: tolerates
+    object: node:ph_of_soil_0_15cm
+    scope: prototypical
+    place: ["place:northern-great-plains"]
+    statementText: "Placeholder: Bouteloua gracilis grows on soils of pH 6.5 to 8.0."
+    predicate_qualifiers:
+      range: {min: 6.5, max: 8.0, unit: "TODO:unit_pH"}
+      response: growth
+    contributions: [{id: warp:contrib/flora-bogr-ph-author, type: EcoContribution, role: author, contributor: org:flora-authors}]
+    recordMetadata: {contributions: [{id: warp:contrib/flora-bogr-ph-annotation, type: EcoContribution, role: annotator, contributor: "orcid:0000-0000-0000-0000"}]}
+    reportedIn: [doc:regional-flora]
+    hasEvidenceLines:
+      - {id: warp:el/flora-bogr-ph-1, type: EcoEvidenceLine, evidence_type: expert_judgment, directionOfEvidenceProvided: supports}
+
+  # A third, judged against establishment, whose range does not overlap the
+  # others: report_tolerance.py flags it (disagreement is often about response).
+  - id: stmt:trial-bogr-ph
+    type: ToleranceStatement
+    subject: node:bouteloua_gracilis
+    predicate: tolerates
+    object: node:ph_of_soil_0_15cm
+    scope: prototypical
+    place: ["place:northern-great-plains"]
+    statementText: "Placeholder: Bouteloua gracilis seedlings establish between pH 4.8 and 5.8."
+    predicate_qualifiers:
+      range: {min: 4.8, max: 5.8, unit: "TODO:unit_pH"}
+      response: establishment
+    contributions: [{id: warp:contrib/trial-bogr-ph-author, type: EcoContribution, role: author, contributor: org:trial-authors}]
+    recordMetadata: {contributions: [{id: warp:contrib/trial-bogr-ph-annotation, type: EcoContribution, role: annotator, contributor: "orcid:0000-0000-0000-0000"}]}
+    reportedIn: [doc:germination-trial]
+    hasEvidenceLines:
+      - {id: warp:el/trial-bogr-ph-1, type: EcoEvidenceLine, evidence_type: randomized_experiment, directionOfEvidenceProvided: supports}
+
+  # EIVE-style niche position: prefers, with a class value and a range on the
+  # EIVE scale (a scale IRI as unit, not a UO unit).
+  - id: stmt:eive-taxon-r
+    type: ToleranceStatement
+    subject: node:taxon_x
+    predicate: prefers
+    object: node:ph_of_soil
+    scope: prototypical
+    place: ["place:europe"]
+    statementText: "Placeholder: taxon X has an EIVE reaction position of 6.8."
+    predicate_qualifiers:
+      class_value: {value: "6.8", scale: "scale:eive-1.0-reaction", concept: "scale:eive-1.0-reaction/6-8"}
+      range: {min: 5.9, max: 7.7, unit: "scale:eive-1.0-reaction"}
+      response: occurrence
+    contributions: [{id: warp:contrib/eive-taxon-r-author, type: EcoContribution, role: author, contributor: org:eive-consortium}]
+    recordMetadata: {contributions: [{id: warp:contrib/eive-taxon-r-annotation, type: EcoContribution, role: annotator, contributor: "orcid:0000-0000-0000-0000"}]}
+    reportedIn: [doc:eive-1-0]
+    hasEvidenceLines:
+      - {id: warp:el/eive-taxon-r-1, type: EcoEvidenceLine, evidence_type: expert_judgment, directionOfEvidenceProvided: supports}
+      - {id: warp:el/eive-taxon-r-2, type: EcoEvidenceLine, evidence_type: observational_cross_sectional, directionOfEvidenceProvided: supports}
+
+  # A practitioner: "prairie cordgrass does fine in heavy wet clay but won't
+  # take hold on sandy ridges." Contingent; "wet" is on no scale, "sand" is a
+  # USDA texture class.
+  - id: stmt:practitioner-spartina-wet
+    type: ToleranceStatement
+    subject: node:spartina_pectinata
+    predicate: prefers
+    object: node:wetness_of_soil
+    scope: contingent
+    statementText: Prairie cordgrass does fine in heavy wet clay.
+    original_text: "TODO: notebook wording"
+    predicate_qualifiers:
+      class_value: {value: wet}
+      response: establishment
+    contributions: [{id: warp:contrib/practitioner-spartina-wet-author, type: EcoContribution, role: author, contributor: person:practitioner-a}]
+    recordMetadata: {contributions: [{id: warp:contrib/practitioner-spartina-wet-annotation, type: EcoContribution, role: annotator, contributor: "orcid:0000-0000-0000-0000"}]}
+    reportedIn: [doc:notebook-entry-3]
+    care: {knowledge_holders: [person:practitioner-a], access_level: attribution_required}
+    hasEvidenceLines:
+      - {id: warp:el/practitioner-spartina-wet-1, type: EcoEvidenceLine, evidence_type: practitioner_experience, directionOfEvidenceProvided: supports}
+  - id: stmt:practitioner-spartina-sand
+    type: ToleranceStatement
+    subject: node:spartina_pectinata
+    predicate: intolerant_of
+    object: node:texture_class_of_soil
+    scope: contingent
+    statementText: Prairie cordgrass won't take hold on sandy ridges.
+    original_text: "TODO: notebook wording"
+    predicate_qualifiers:
+      class_value: {value: sand, scale: "scale:usda-texture-class", concept: "scale:usda-texture-class/sand"}
+      response: establishment
+    contributions: [{id: warp:contrib/practitioner-spartina-sand-author, type: EcoContribution, role: author, contributor: person:practitioner-a}]
+    recordMetadata: {contributions: [{id: warp:contrib/practitioner-spartina-sand-annotation, type: EcoContribution, role: annotator, contributor: "orcid:0000-0000-0000-0000"}]}
+    reportedIn: [doc:notebook-entry-3]
+    care: {knowledge_holders: [person:practitioner-a], access_level: attribution_required}
+    hasEvidenceLines:
+      - {id: warp:el/practitioner-spartina-sand-1, type: EcoEvidenceLine, evidence_type: practitioner_experience, directionOfEvidenceProvided: supports}
+
+  # Wetland indicator ratings are assigned by region: two places, two
+  # propositions, not a contradiction.
+  - id: stmt:nwpl-spartina-great-plains
+    type: ToleranceStatement
+    subject: node:spartina_pectinata
+    predicate: prefers
+    object: node:wetness_of_soil
+    scope: prototypical
+    place: ["place:nwpl-great-plains"]
+    statementText: "Placeholder: Spartina pectinata is rated FACW in the Great Plains region."
+    predicate_qualifiers:
+      class_value: {value: FACW, scale: "scale:wetland-indicator-status", concept: "scale:wetland-indicator-status/FACW"}
+      response: occurrence
+    contributions: [{id: warp:contrib/nwpl-spartina-great-plains-author, type: EcoContribution, role: author, contributor: org:usace}]
+    recordMetadata: {contributions: [{id: warp:contrib/nwpl-spartina-great-plains-annotation, type: EcoContribution, role: annotator, contributor: "orcid:0000-0000-0000-0000"}]}
+    reportedIn: [doc:nwpl]
+    hasEvidenceLines:
+      - {id: warp:el/nwpl-spartina-great-plains-1, type: EcoEvidenceLine, evidence_type: expert_judgment, directionOfEvidenceProvided: supports}
+  - id: stmt:nwpl-spartina-midwest
+    type: ToleranceStatement
+    subject: node:spartina_pectinata
+    predicate: prefers
+    object: node:wetness_of_soil
+    scope: prototypical
+    place: ["place:nwpl-midwest"]
+    statementText: "Placeholder: Spartina pectinata is rated FAC in the Midwest region."
+    predicate_qualifiers:
+      class_value: {value: FAC, scale: "scale:wetland-indicator-status", concept: "scale:wetland-indicator-status/FAC"}
+      response: occurrence
+    contributions: [{id: warp:contrib/nwpl-spartina-midwest-author, type: EcoContribution, role: author, contributor: org:usace}]
+    recordMetadata: {contributions: [{id: warp:contrib/nwpl-spartina-midwest-annotation, type: EcoContribution, role: annotator, contributor: "orcid:0000-0000-0000-0000"}]}
+    reportedIn: [doc:nwpl]
+    hasEvidenceLines:
+      - {id: warp:el/nwpl-spartina-midwest-1, type: EcoEvidenceLine, evidence_type: expert_judgment, directionOfEvidenceProvided: supports}
+
+  # A habitat suitability curve for one variable (breakpoints in the unit of
+  # the range). The model's combination rule is on its study result.
+  - id: stmt:hsi-y-temperature
+    type: ToleranceStatement
+    subject: node:fish_taxon_y
+    predicate: tolerates
+    object: node:temperature_of_water
+    scope: prototypical
+    statementText: "Placeholder: suitability for fish taxon Y rises from 5 to 12 degrees and falls to zero at 26."
+    predicate_qualifiers:
+      range: {min: 5, max: 26, unit: "TODO:unit_degree_celsius"}
+      response: survival
+      response_curve:
+        - {x: 5, suitability: 0.0}
+        - {x: 12, suitability: 1.0}
+        - {x: 20, suitability: 1.0}
+        - {x: 26, suitability: 0.0}
+    contributions: [{id: warp:contrib/hsi-y-temperature-author, type: EcoContribution, role: author, contributor: org:hsi-model-authors}]
+    recordMetadata: {contributions: [{id: warp:contrib/hsi-y-temperature-annotation, type: EcoContribution, role: annotator, contributor: "orcid:0000-0000-0000-0000"}]}
+    reportedIn: [doc:hsi-model]
+    hasEvidenceLines:
+      - {id: warp:el/hsi-y-temperature-1, type: EcoEvidenceLine, evidence_type: modeling_simulation, directionOfEvidenceProvided: supports, evidence_item_refs: [warp:result/hsi-model-temperature]}
+
+  # A tolerance explained by a mechanism: intolerance of saturation, because
+  # saturated soils cause root anoxia (the causal proposition above).
+  - id: stmt:flora-bogr-saturation
+    type: ToleranceStatement
+    subject: node:bouteloua_gracilis
+    predicate: intolerant_of
+    object: node:wetness_of_soil
+    scope: prototypical
+    statementText: "Placeholder: Bouteloua gracilis does not survive saturated soils."
+    predicate_qualifiers:
+      class_value: {value: saturated}
+      response: survival
+    explained_by: [warp:prop/73cb84fbf99d]          # derived from stmt:saturation-root-anoxia
+    contributions: [{id: warp:contrib/flora-bogr-saturation-author, type: EcoContribution, role: author, contributor: org:flora-authors}]
+    recordMetadata: {contributions: [{id: warp:contrib/flora-bogr-saturation-annotation, type: EcoContribution, role: annotator, contributor: "orcid:0000-0000-0000-0000"}]}
+    reportedIn: [doc:regional-flora]
+    hasEvidenceLines:
+      - {id: warp:el/flora-bogr-saturation-1, type: EcoEvidenceLine, evidence_type: expert_judgment, directionOfEvidenceProvided: supports}
+
+  # A categorical habitat statement: RO has habitat, an ENVO habitat node.
+  - id: stmt:flora-spartina-habitat
+    type: ToleranceStatement
+    subject: node:spartina_pectinata
+    predicate: has_habitat
+    object: node:wet_meadow
+    scope: prototypical
+    statementText: "Placeholder: Spartina pectinata grows in wet meadows."
+    contributions: [{id: warp:contrib/flora-spartina-habitat-author, type: EcoContribution, role: author, contributor: org:flora-authors}]
+    recordMetadata: {contributions: [{id: warp:contrib/flora-spartina-habitat-annotation, type: EcoContribution, role: annotator, contributor: "orcid:0000-0000-0000-0000"}]}
+    reportedIn: [doc:regional-flora]
+    hasEvidenceLines:
+      - {id: warp:el/flora-spartina-habitat-1, type: EcoEvidenceLine, evidence_type: expert_judgment, directionOfEvidenceProvided: supports}
