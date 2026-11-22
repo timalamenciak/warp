@@ -176,7 +176,7 @@ cost_propositions:
   predicate_qualifiers:
     phase: whole_project
     reporting_level: intervention
-  propositionText: In a particular case, node:strategy-f38f3a2661ee incurs total cost.
+  propositionText: In a particular case, earthworks then seeding then mowing incurs total cost.
   derived_from_statements:
   - stmt:transfer/warp-cost-transfer-1/land-trust-strategy-total
   status: asserted
@@ -194,7 +194,8 @@ cost_propositions:
   predicate_qualifiers:
     phase: whole_project
     reporting_level: intervention
-  propositionText: In a particular case, node:cut_treat_acacia_saligna_coastal_reserves incurs total cost.
+  propositionText: In a particular case, cutting, stump treatment and seedling control of Acacia saligna
+    in coastal protected areas incurs total cost.
   derived_from_statements:
   - stmt:transfer/warp-cost-transfer-1/inpa-wattle-cost
   status: asserted
@@ -212,7 +213,7 @@ cost_propositions:
   predicate_qualifiers:
     phase: follow_up
     reporting_level: intervention
-  propositionText: In a particular case, node:strategy-f38f3a2661ee incurs labour cost.
+  propositionText: In a particular case, earthworks then seeding then mowing incurs labour cost.
   derived_from_statements:
   - stmt:transfer/warp-cost-transfer-1/land-trust-strategy-follow-up-labour
   status: asserted

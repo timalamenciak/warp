@@ -425,7 +425,7 @@ example; a real database needs statements from many sources grouped together.
       in every derived file, not any ID. The statement sentences
       (`render_statements.py`) insert names as written and have the same
       problem; fix both together.
-- [ ] **Proposition and project text shows raw IDs across files.**
+- [x] **Proposition and project text shows raw IDs across files.**
       `derive_propositions.py` looks node names up in the file being derived
       only, so cost and implementation propositions read
       "node:strategy-f38f3a2661ee incurs labour cost" (the name is in
@@ -434,7 +434,9 @@ example; a real database needs statements from many sources grouped together.
       node:strategy-…"). It also leaves enum-valued objects as names
       ("qualifies as degraded_area"). `render_statements.py` resolves labels
       across all files given; derivation could do the same. Changes
-      `propositionText`, not IDs.
+      `propositionText`, not IDs. Done: `--names` on `derive_propositions.py`
+      and `derive_projects.py`, derivation in three passes, non-CURIE values
+      with spaces for underscores.
 - [ ] **Duplicate ids across files.** `check_statements.py` compares
       duplicate ids within a file only. Compare across all files given. (The
       examples repeat a few agents and the EcoWeaver agent identically

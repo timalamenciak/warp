@@ -559,7 +559,7 @@ cost_propositions:
   predicate_qualifiers:
     phase: follow_up
     reporting_level: intervention
-  propositionText: In a particular case, node:strategy-f38f3a2661ee incurs labour cost.
+  propositionText: In a particular case, earthworks then seeding then mowing incurs labour cost.
   derived_from_statements:
   - stmt:land-trust-strategy-follow-up-labour
   status: asserted
@@ -577,7 +577,7 @@ cost_propositions:
   predicate_qualifiers:
     phase: whole_project
     reporting_level: intervention
-  propositionText: In a particular case, node:strategy-f38f3a2661ee incurs total cost.
+  propositionText: In a particular case, earthworks then seeding then mowing incurs total cost.
   derived_from_statements:
   - stmt:land-trust-strategy-total
   status: asserted

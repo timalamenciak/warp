@@ -17,13 +17,13 @@ warp:period_start a owl:AnnotationProperty .
 
 proj:71e3dff9f480 a owl:NamedIndividual,
         node:strategy-f38f3a2661ee ;
-    rdfs:label "In a particular case, node:strategy-f38f3a2661ee was carried out at Site 0517." ;
+    rdfs:label "In a particular case, earthworks then seeding then mowing was carried out at Site 0517." ;
     ns1:RO_0001025 site:0517 ;
     warp:period_start "2025-04-01T00:00:00Z"^^xsd:dateTime .
 
 proj:agreement-0412 a owl:NamedIndividual,
         node:strategy-f38f3a2661ee ;
-    rdfs:label "In a particular case, node:strategy-f38f3a2661ee was carried out at Agreement site 0412." ;
+    rdfs:label "In a particular case, earthworks then seeding then mowing was carried out at Agreement site 0412." ;
     ns1:RO_0001025 site:0412 ;
     warp:period_start "2024-05-01T00:00:00Z"^^xsd:dateTime .
 

@@ -209,7 +209,10 @@ def test_new_rule_version_means_new_ids(derived, rule):
 
 def test_transferred_file_is_current(derived, rule):
     selection = load_yaml(ROOT / "config" / "cost_transfer" / "selection.yaml")
-    out, _ = tc.build_set([derived], selection, rule)
+    # As make derive runs it: every derived set, which also names the
+    # strategies the costs are about.
+    others = [load_yaml(p) for p in sorted(EXAMPLES.glob("*_statements.derived.yaml"))]
+    out, _ = tc.build_set(others, selection, rule)
     assert out == load_yaml(EXAMPLES / "cost_statements.transferred.yaml"), "run make derive"
 
 

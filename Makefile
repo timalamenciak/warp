@@ -96,15 +96,21 @@ owl-dosdp: patterns nodes
 
 # --- Statements ------------------------------------------------------------------
 
-# Derive, one set at a time: canonical strategies first (references to local
-# strategy IDs are rewritten), then propositions for every registered
-# predicate group, so statements about one strategy meet in one proposition.
+# Derive in three passes over every set: canonical strategies first
+# (references to local strategy IDs are rewritten), then projects, then
+# propositions for every registered predicate group, so statements about one
+# strategy meet in one proposition. Each pass finishes every set before the
+# next starts, so when text is written every node it names exists: --names
+# lets a set name a strategy, site or project defined in another file.
 derive:
 	for f in $(STATEMENTS); do \
-	  d=$${f%.yaml}.derived.yaml; \
-	  $(PY) scripts/derive_strategies.py $$f $$d && \
-	  $(PY) scripts/derive_propositions.py $$d $$d && \
-	  $(PY) scripts/derive_projects.py $$d $$d || exit 1; \
+	  $(PY) scripts/derive_strategies.py $$f $${f%.yaml}.derived.yaml || exit 1; \
+	done
+	for d in $(DERIVED); do \
+	  $(PY) scripts/derive_projects.py $$d $$d --names $(DERIVED) || exit 1; \
+	done
+	for d in $(DERIVED); do \
+	  $(PY) scripts/derive_propositions.py $$d $$d --names $(DERIVED) || exit 1; \
 	done
 	$(PY) scripts/transfer_costs.py $(DERIVED) --select $(TRANSFER_SELECTION) --out $(TRANSFERRED)
 

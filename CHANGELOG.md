@@ -110,6 +110,19 @@ First public release. Schema version 0.7.0; examples' `profile_version`
   template naming a missing slot, a predicate with no tenses, or a value the
   sentence leaves out. See `docs/rosetta.md`. No schema change; no derived ID
   changes.
+- Proposition and project text names nodes from other files and reads enum
+  values as words: `derive_propositions.py` and `derive_projects.py` take
+  `--names` (other statement sets whose nodes give names), `make derive`
+  runs in three passes over every set (strategies, then projects, then
+  propositions; projects now come before propositions so criteria
+  propositions name the projects they are about), and `transfer_costs.py`
+  names from the sets it reads. "node:strategy-f38f3a2661ee incurs labour
+  cost" now reads "earthworks then seeding then mowing incurs labour cost",
+  and "qualifies as degraded_area" reads "qualifies as degraded area".
+  Only `propositionText` and project node names change, in
+  `cost_statements.derived.yaml`, `cost_statements.transferred.yaml` and
+  `implementation_statements.derived.yaml`; no ID moves, and no identity
+  rule changes (text is not part of identity).
 
 ### Terminology
 

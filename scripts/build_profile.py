@@ -89,13 +89,19 @@ def main(argv=None):
     assessments = [str(p) for p in prof.get("assessments") or []]
     r = Runner()
 
-    derived = []
-    for inp in inputs:
-        d = out / (inp.stem + ".derived.yaml")
-        derived.append(str(d))
-        r.run(f"derive strategies: {inp}", [PY, "scripts/derive_strategies.py", str(inp), str(d), *sch])
-        r.run(f"derive propositions: {inp}", [PY, "scripts/derive_propositions.py", str(d), str(d), *sch])
-        r.run(f"derive projects: {inp}", [PY, "scripts/derive_projects.py", str(d), str(d), *sch])
+    # Three passes, as make derive does: every set's strategies, then
+    # projects, then propositions, each pass naming nodes from all sets.
+    derived = [str(out / (inp.stem + ".derived.yaml")) for inp in inputs]
+    for inp, d in zip(inputs, derived):
+        r.run(f"derive strategies: {inp}", [PY, "scripts/derive_strategies.py", str(inp), d, *sch])
+    for inp, d in zip(inputs, derived):
+        r.run(f"derive projects: {inp}", [PY, "scripts/derive_projects.py", d, d,
+                                           "--names", *derived, *sch])
+    for inp, d in zip(inputs, derived):
+        r.run(f"derive propositions: {inp}", [PY, "scripts/derive_propositions.py", d, d,
+                                               "--names", *derived, *sch])
+    for inp, d in zip(inputs, derived):
+        d = Path(d)
         full = inp.with_name(inp.stem + ".derived.yaml")
         print(f"--- same derived records as the full build: {full}")
         if (ROOT / d).exists() and (ROOT / full).exists() and body(ROOT / d) == body(ROOT / full):

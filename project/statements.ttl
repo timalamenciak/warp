@@ -1214,7 +1214,7 @@ prop:71e3dff9f480 a warp:ImplementationProposition ;
     warp:object site:0517 ;
     warp:period <https://w3id.org/ecoweaver/warp/prop/71e3dff9f480/period> ;
     warp:predicate warp:carried_out_at ;
-    warp:propositionText "In a particular case, node:strategy-f38f3a2661ee was carried out at Site 0517." ;
+    warp:propositionText "In a particular case, earthworks then seeding then mowing was carried out at Site 0517." ;
     warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
     warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
     warp:status_by_claimant <https://w3id.org/ecoweaver/warp/prop/71e3dff9f480/status_by_claimant/0> ;
@@ -1277,7 +1277,7 @@ prop:9797650932b3 a warp:CostProposition ;
     warp:place TODO:place_project_x_site ;
     warp:predicate warp:incurs_labour_cost ;
     warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/prop/9797650932b3/predicate_qualifiers> ;
-    warp:propositionText "In a particular case, node:strategy-f38f3a2661ee incurs labour cost." ;
+    warp:propositionText "In a particular case, earthworks then seeding then mowing incurs labour cost." ;
     warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
     warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
     warp:subject node:strategy-f38f3a2661ee .
@@ -1294,7 +1294,7 @@ prop:98c90f1839c7 a warp:CriteriaProposition ;
     warp:object <https://w3id.org/ecoweaver/warp/concept/effective_restoration> ;
     warp:predicate warp:assessed_against ;
     warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/prop/98c90f1839c7/predicate_qualifiers> ;
-    warp:propositionText "In a particular case, proj:71e3dff9f480 qualifies as effective_restoration." ;
+    warp:propositionText "In a particular case, project 71e3dff9f480: Earthworks then seeding then mowing at Site 0517 qualifies as effective restoration." ;
     warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
     warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
     warp:subject proj:71e3dff9f480 .
@@ -1390,7 +1390,7 @@ prop:b8a8f3da7637 a warp:CostProposition ;
     warp:place TODO:place_project_x_site ;
     warp:predicate warp:incurs_total_cost ;
     warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/prop/b8a8f3da7637/predicate_qualifiers> ;
-    warp:propositionText "In a particular case, node:strategy-f38f3a2661ee incurs total cost." ;
+    warp:propositionText "In a particular case, earthworks then seeding then mowing incurs total cost." ;
     warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
     warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
     warp:subject node:strategy-f38f3a2661ee .
@@ -2812,7 +2812,7 @@ prop:093dff0cf91f a warp:CriteriaProposition ;
     warp:object <https://w3id.org/ecoweaver/warp/concept/degraded_area> ;
     warp:predicate warp:assessed_against ;
     warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/prop/093dff0cf91f/predicate_qualifiers> ;
-    warp:propositionText "In a particular case, site 0517 qualifies as degraded_area." ;
+    warp:propositionText "In a particular case, site 0517 qualifies as degraded area." ;
     warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
     warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
     warp:subject site:0517 .
@@ -2826,7 +2826,7 @@ prop:0a2c8c5cbc76 a warp:CostProposition ;
     warp:place <https://www.iso.org/obp/ui/#iso:code:3166:CA-SK> ;
     warp:predicate warp:incurs_total_cost ;
     warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/prop/0a2c8c5cbc76/predicate_qualifiers> ;
-    warp:propositionText "In a particular case, node:strategy-f38f3a2661ee incurs total cost." ;
+    warp:propositionText "In a particular case, earthworks then seeding then mowing incurs total cost." ;
     warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
     warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
     warp:subject node:strategy-f38f3a2661ee .
@@ -2864,7 +2864,7 @@ prop:5e77695b6702 a warp:CostProposition ;
     warp:place <https://www.iso.org/obp/ui/#iso:code:3166:CA-SK> ;
     warp:predicate warp:incurs_total_cost ;
     warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/prop/5e77695b6702/predicate_qualifiers> ;
-    warp:propositionText "In a particular case, node:cut_treat_acacia_saligna_coastal_reserves incurs total cost." ;
+    warp:propositionText "In a particular case, cutting, stump treatment and seedling control of Acacia saligna in coastal protected areas incurs total cost." ;
     warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
     warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
     warp:subject node:cut_treat_acacia_saligna_coastal_reserves .
@@ -2903,7 +2903,7 @@ prop:76daefe75c6e a warp:CostProposition ;
     warp:place <https://www.iso.org/obp/ui/#iso:code:3166:CA-SK> ;
     warp:predicate warp:incurs_labour_cost ;
     warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/prop/76daefe75c6e/predicate_qualifiers> ;
-    warp:propositionText "In a particular case, node:strategy-f38f3a2661ee incurs labour cost." ;
+    warp:propositionText "In a particular case, earthworks then seeding then mowing incurs labour cost." ;
     warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
     warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
     warp:subject node:strategy-f38f3a2661ee .
@@ -2981,7 +2981,7 @@ prop:9b5c70df8184 a warp:CriteriaProposition ;
     warp:object <https://w3id.org/ecoweaver/warp/concept/degraded_area> ;
     warp:predicate warp:assessed_against ;
     warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/prop/9b5c70df8184/predicate_qualifiers> ;
-    warp:propositionText "In a particular case, site 0517 qualifies as degraded_area." ;
+    warp:propositionText "In a particular case, site 0517 qualifies as degraded area." ;
     warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
     warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
     warp:subject site:0517 .
@@ -3008,7 +3008,7 @@ prop:a309012ef67d a warp:CriteriaProposition ;
     warp:object <https://w3id.org/ecoweaver/warp/concept/degraded_area> ;
     warp:predicate warp:assessed_against ;
     warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/prop/a309012ef67d/predicate_qualifiers> ;
-    warp:propositionText "In a particular case, agreement site 0412 qualifies as degraded_area." ;
+    warp:propositionText "In a particular case, agreement site 0412 qualifies as degraded area." ;
     warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
     warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
     warp:subject site:0412 .
@@ -3052,7 +3052,7 @@ prop:agreement-0412 a warp:ImplementationProposition ;
     warp:object site:0412 ;
     warp:period <https://w3id.org/ecoweaver/warp/prop/agreement-0412/period> ;
     warp:predicate warp:carried_out_at ;
-    warp:propositionText "In a particular case, node:strategy-f38f3a2661ee was carried out at Agreement site 0412." ;
+    warp:propositionText "In a particular case, earthworks then seeding then mowing was carried out at Agreement site 0412." ;
     warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
     warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
     warp:status_by_claimant <https://w3id.org/ecoweaver/warp/prop/agreement-0412/status_by_claimant/0>,
@@ -3067,7 +3067,7 @@ prop:bbc212383aad a warp:CriteriaProposition ;
     warp:object <https://w3id.org/ecoweaver/warp/concept/effective_restoration> ;
     warp:predicate warp:assessed_against ;
     warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/prop/bbc212383aad/predicate_qualifiers> ;
-    warp:propositionText "In a particular case, proj:agreement-0412 qualifies as effective_restoration." ;
+    warp:propositionText "In a particular case, project agreement-0412: Earthworks then seeding then mowing at Agreement site 0412 qualifies as effective restoration." ;
     warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
     warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
     warp:subject proj:agreement-0412 .
@@ -3483,7 +3483,7 @@ prop:e17519ff723f a warp:CriteriaProposition ;
     warp:object <https://w3id.org/ecoweaver/warp/concept/degraded_area> ;
     warp:predicate warp:assessed_against ;
     warp:predicate_qualifiers <https://w3id.org/ecoweaver/warp/prop/e17519ff723f/predicate_qualifiers> ;
-    warp:propositionText "In a particular case, agreement site 0412 qualifies as degraded_area." ;
+    warp:propositionText "In a particular case, agreement site 0412 qualifies as degraded area." ;
     warp:scope <https://w3id.org/ecoweaver/warp/SemanticUnitScopeEnum#assertional> ;
     warp:status <https://w3id.org/ecoweaver/warp/PropositionStatusEnum#asserted> ;
     warp:subject site:0412 .

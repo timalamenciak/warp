@@ -77,11 +77,11 @@ nodes:
   name: Site 0517
   entity_term: site
 - id: proj:agreement-0412
-  name: 'Project agreement-0412: node:strategy-f38f3a2661ee at Agreement site 0412'
+  name: 'Project agreement-0412: Earthworks then seeding then mowing at Agreement site 0412'
   entity_type: management_intervention
   entity_term: project (derived by warp-impl-identity/1)
 - id: proj:71e3dff9f480
-  name: 'Project 71e3dff9f480: node:strategy-f38f3a2661ee at Site 0517'
+  name: 'Project 71e3dff9f480: Earthworks then seeding then mowing at Site 0517'
   entity_type: management_intervention
   entity_term: project (derived by warp-impl-identity/1)
 site_definitions:
@@ -506,116 +506,6 @@ criteria_statements:
       role: annotator
       contributor: warp:agent/ecoweaver-synthesis
   proposition: warp:prop/98c90f1839c7
-criteria_propositions:
-- id: warp:prop/093dff0cf91f
-  type: CriteriaProposition
-  subject: site:0517
-  predicate: qualifies_as
-  object: degraded_area
-  negated: false
-  scope: assertional
-  predicate_qualifiers:
-    criteria_set: crit:degraded-area/fed-draft-1
-    assessed_period:
-      start: '2023'
-      end: '2023'
-  propositionText: In a particular case, site 0517 qualifies as degraded_area.
-  derived_from_statements:
-  - stmt:assessor-d-0517-fed
-  status: asserted
-  identity_key: criteria|site:0517|qualifies_as|degraded_area|affirmed|assertional|predicate_qualifiers.criteria_set="crit:degraded-area/fed-draft-1"|predicate_qualifiers.assessed_period={"end":"2023","start":"2023"}
-  identity_rule_version: warp-criteria-identity/1
-- id: warp:prop/98c90f1839c7
-  type: CriteriaProposition
-  subject: proj:71e3dff9f480
-  predicate: qualifies_as
-  object: effective_restoration
-  negated: false
-  scope: assertional
-  predicate_qualifiers:
-    criteria_set: crit:effective-restoration/fed-draft-1
-    assessed_period:
-      start: '2026'
-      end: '2026'
-  propositionText: In a particular case, proj:71e3dff9f480 qualifies as effective_restoration.
-  derived_from_statements:
-  - stmt:ecoweaver-project-0517-effective
-  status: asserted
-  identity_key: criteria|proj:71e3dff9f480|qualifies_as|effective_restoration|affirmed|assertional|predicate_qualifiers.criteria_set="crit:effective-restoration/fed-draft-1"|predicate_qualifiers.assessed_period={"end":"2026","start":"2026"}
-  identity_rule_version: warp-criteria-identity/1
-- id: warp:prop/9b5c70df8184
-  type: CriteriaProposition
-  subject: site:0517
-  predicate: qualifies_as
-  object: degraded_area
-  negated: false
-  scope: assertional
-  predicate_qualifiers:
-    criteria_set: crit:degraded-area/ref-ecosystem-1
-    assessed_period:
-      start: '2023'
-      end: '2023'
-  propositionText: In a particular case, site 0517 qualifies as degraded_area.
-  derived_from_statements:
-  - stmt:assessor-d-0517-ref
-  status: asserted
-  identity_key: criteria|site:0517|qualifies_as|degraded_area|affirmed|assertional|predicate_qualifiers.criteria_set="crit:degraded-area/ref-ecosystem-1"|predicate_qualifiers.assessed_period={"end":"2023","start":"2023"}
-  identity_rule_version: warp-criteria-identity/1
-- id: warp:prop/a309012ef67d
-  type: CriteriaProposition
-  subject: site:0412
-  predicate: qualifies_as
-  object: degraded_area
-  negated: false
-  scope: assertional
-  predicate_qualifiers:
-    criteria_set: crit:degraded-area/ref-ecosystem-1
-    assessed_period:
-      start: '2023'
-      end: '2023'
-  propositionText: In a particular case, agreement site 0412 qualifies as degraded_area.
-  derived_from_statements:
-  - stmt:assessor-d-0412-ref
-  status: asserted
-  identity_key: criteria|site:0412|qualifies_as|degraded_area|affirmed|assertional|predicate_qualifiers.criteria_set="crit:degraded-area/ref-ecosystem-1"|predicate_qualifiers.assessed_period={"end":"2023","start":"2023"}
-  identity_rule_version: warp-criteria-identity/1
-- id: warp:prop/bbc212383aad
-  type: CriteriaProposition
-  subject: proj:agreement-0412
-  predicate: qualifies_as
-  object: effective_restoration
-  negated: false
-  scope: assertional
-  predicate_qualifiers:
-    criteria_set: crit:effective-restoration/fed-draft-1
-    assessed_period:
-      start: '2026'
-      end: '2026'
-  propositionText: In a particular case, proj:agreement-0412 qualifies as effective_restoration.
-  derived_from_statements:
-  - stmt:assessor-c-project-0412-effective
-  status: asserted
-  identity_key: criteria|proj:agreement-0412|qualifies_as|effective_restoration|affirmed|assertional|predicate_qualifiers.criteria_set="crit:effective-restoration/fed-draft-1"|predicate_qualifiers.assessed_period={"end":"2026","start":"2026"}
-  identity_rule_version: warp-criteria-identity/1
-- id: warp:prop/e17519ff723f
-  type: CriteriaProposition
-  subject: site:0412
-  predicate: qualifies_as
-  object: degraded_area
-  negated: false
-  scope: assertional
-  predicate_qualifiers:
-    criteria_set: crit:degraded-area/fed-draft-1
-    assessed_period:
-      start: '2023'
-      end: '2023'
-  propositionText: In a particular case, agreement site 0412 qualifies as degraded_area.
-  derived_from_statements:
-  - stmt:assessor-c-0412-fed
-  - stmt:assessor-e-0412-fed
-  status: asserted
-  identity_key: criteria|site:0412|qualifies_as|degraded_area|affirmed|assertional|predicate_qualifiers.criteria_set="crit:degraded-area/fed-draft-1"|predicate_qualifiers.assessed_period={"end":"2023","start":"2023"}
-  identity_rule_version: warp-criteria-identity/1
 implementation_propositions:
 - id: prop:71e3dff9f480
   type: ImplementationProposition
@@ -624,7 +514,7 @@ implementation_propositions:
   object: site:0517
   negated: false
   scope: assertional
-  propositionText: In a particular case, node:strategy-f38f3a2661ee was carried out at Site 0517.
+  propositionText: In a particular case, earthworks then seeding then mowing was carried out at Site 0517.
   status: asserted
   identity_key: stmt:land-trust-0517
   identity_rule_version: warp-impl-identity/1
@@ -651,8 +541,8 @@ implementation_propositions:
   object: site:0412
   negated: false
   scope: assertional
-  propositionText: In a particular case, node:strategy-f38f3a2661ee was carried out at Agreement site
-    0412.
+  propositionText: In a particular case, earthworks then seeding then mowing was carried out at Agreement
+    site 0412.
   status: asserted
   identity_key: stmt:funder-0412 + stmt:land-trust-0412
   identity_rule_version: warp-impl-identity/1
@@ -685,3 +575,115 @@ implementation_propositions:
     value: '0412'
   period:
     start: 2024-05
+criteria_propositions:
+- id: warp:prop/093dff0cf91f
+  type: CriteriaProposition
+  subject: site:0517
+  predicate: qualifies_as
+  object: degraded_area
+  negated: false
+  scope: assertional
+  predicate_qualifiers:
+    criteria_set: crit:degraded-area/fed-draft-1
+    assessed_period:
+      start: '2023'
+      end: '2023'
+  propositionText: In a particular case, site 0517 qualifies as degraded area.
+  derived_from_statements:
+  - stmt:assessor-d-0517-fed
+  status: asserted
+  identity_key: criteria|site:0517|qualifies_as|degraded_area|affirmed|assertional|predicate_qualifiers.criteria_set="crit:degraded-area/fed-draft-1"|predicate_qualifiers.assessed_period={"end":"2023","start":"2023"}
+  identity_rule_version: warp-criteria-identity/1
+- id: warp:prop/98c90f1839c7
+  type: CriteriaProposition
+  subject: proj:71e3dff9f480
+  predicate: qualifies_as
+  object: effective_restoration
+  negated: false
+  scope: assertional
+  predicate_qualifiers:
+    criteria_set: crit:effective-restoration/fed-draft-1
+    assessed_period:
+      start: '2026'
+      end: '2026'
+  propositionText: 'In a particular case, project 71e3dff9f480: Earthworks then seeding then mowing at
+    Site 0517 qualifies as effective restoration.'
+  derived_from_statements:
+  - stmt:ecoweaver-project-0517-effective
+  status: asserted
+  identity_key: criteria|proj:71e3dff9f480|qualifies_as|effective_restoration|affirmed|assertional|predicate_qualifiers.criteria_set="crit:effective-restoration/fed-draft-1"|predicate_qualifiers.assessed_period={"end":"2026","start":"2026"}
+  identity_rule_version: warp-criteria-identity/1
+- id: warp:prop/9b5c70df8184
+  type: CriteriaProposition
+  subject: site:0517
+  predicate: qualifies_as
+  object: degraded_area
+  negated: false
+  scope: assertional
+  predicate_qualifiers:
+    criteria_set: crit:degraded-area/ref-ecosystem-1
+    assessed_period:
+      start: '2023'
+      end: '2023'
+  propositionText: In a particular case, site 0517 qualifies as degraded area.
+  derived_from_statements:
+  - stmt:assessor-d-0517-ref
+  status: asserted
+  identity_key: criteria|site:0517|qualifies_as|degraded_area|affirmed|assertional|predicate_qualifiers.criteria_set="crit:degraded-area/ref-ecosystem-1"|predicate_qualifiers.assessed_period={"end":"2023","start":"2023"}
+  identity_rule_version: warp-criteria-identity/1
+- id: warp:prop/a309012ef67d
+  type: CriteriaProposition
+  subject: site:0412
+  predicate: qualifies_as
+  object: degraded_area
+  negated: false
+  scope: assertional
+  predicate_qualifiers:
+    criteria_set: crit:degraded-area/ref-ecosystem-1
+    assessed_period:
+      start: '2023'
+      end: '2023'
+  propositionText: In a particular case, agreement site 0412 qualifies as degraded area.
+  derived_from_statements:
+  - stmt:assessor-d-0412-ref
+  status: asserted
+  identity_key: criteria|site:0412|qualifies_as|degraded_area|affirmed|assertional|predicate_qualifiers.criteria_set="crit:degraded-area/ref-ecosystem-1"|predicate_qualifiers.assessed_period={"end":"2023","start":"2023"}
+  identity_rule_version: warp-criteria-identity/1
+- id: warp:prop/bbc212383aad
+  type: CriteriaProposition
+  subject: proj:agreement-0412
+  predicate: qualifies_as
+  object: effective_restoration
+  negated: false
+  scope: assertional
+  predicate_qualifiers:
+    criteria_set: crit:effective-restoration/fed-draft-1
+    assessed_period:
+      start: '2026'
+      end: '2026'
+  propositionText: 'In a particular case, project agreement-0412: Earthworks then seeding then mowing
+    at Agreement site 0412 qualifies as effective restoration.'
+  derived_from_statements:
+  - stmt:assessor-c-project-0412-effective
+  status: asserted
+  identity_key: criteria|proj:agreement-0412|qualifies_as|effective_restoration|affirmed|assertional|predicate_qualifiers.criteria_set="crit:effective-restoration/fed-draft-1"|predicate_qualifiers.assessed_period={"end":"2026","start":"2026"}
+  identity_rule_version: warp-criteria-identity/1
+- id: warp:prop/e17519ff723f
+  type: CriteriaProposition
+  subject: site:0412
+  predicate: qualifies_as
+  object: degraded_area
+  negated: false
+  scope: assertional
+  predicate_qualifiers:
+    criteria_set: crit:degraded-area/fed-draft-1
+    assessed_period:
+      start: '2023'
+      end: '2023'
+  propositionText: In a particular case, agreement site 0412 qualifies as degraded area.
+  derived_from_statements:
+  - stmt:assessor-c-0412-fed
+  - stmt:assessor-e-0412-fed
+  status: asserted
+  identity_key: criteria|site:0412|qualifies_as|degraded_area|affirmed|assertional|predicate_qualifiers.criteria_set="crit:degraded-area/fed-draft-1"|predicate_qualifiers.assessed_period={"end":"2023","start":"2023"}
+  identity_rule_version: warp-criteria-identity/1

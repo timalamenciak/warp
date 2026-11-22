@@ -201,7 +201,7 @@ def build_set(sets, selection, rule, schema=dp.DEFAULT_SCHEMA):
                     "subtype": "software", "agent_kind": "synthesis_pipeline"}],
         "cost_statements": derived,
     }
-    dp.derive_all(out, schema)
+    dp.derive_all(out, schema, dp.names_from(*sets))
     return out, refused
 
 

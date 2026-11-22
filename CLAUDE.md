@@ -195,11 +195,15 @@ pipeline, as claimant of `SynthesisAssessment`s, is the agent
 
 ### Derivation
 
-`make derive`, per statement set: `derive_strategies.py IN OUT` (canonical
-strategies, references rewritten; superseded IDs in `replaces`) →
-`derive_propositions.py OUT OUT` (every group not `warp_derived_by` another
-script) → `derive_projects.py OUT OUT` (implementation group: projects, with
-`proj:` node records). Then `transfer_costs.py` writes
+`make derive`, in three passes, each over every statement set before the
+next starts: `derive_strategies.py IN OUT` (canonical strategies, references
+rewritten; superseded IDs in `replaces`) → `derive_projects.py OUT OUT
+--names <all derived>` (implementation group: projects, with `proj:` node
+records) → `derive_propositions.py OUT OUT --names <all derived>` (every
+group not `warp_derived_by` another script). `--names` lets text name a node
+defined in another file (a cost about a canonical strategy); the passes make
+that independent of file order. Text is not identity: names never move an
+ID. Then `transfer_costs.py` writes
 `examples/cost_statements.transferred.yaml`. Derived IDs that annotators must
 cite (a causal proposition in `justified_by`, a project in a criteria
 statement) are computed by running derivation once and pasting the ID, as the
