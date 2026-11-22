@@ -121,11 +121,14 @@ validate: derive gen rdf owl
 
 # What the schema cannot express: Assertion Mode, negation, contribution
 # roles, CARE, references resolving across files (check_statements.py); and
-# identifiers, units, places, scales and dates (check_values.py). Pass files
+# identifiers, units, places, scales and dates (check_values.py); and that
+# every slot has a place in the plain-language rendering and every value is
+# rendered (render_statements.py --check, config/rosetta.yaml). Pass files
 # that cite each other together.
 check: derive
 	$(PY) scripts/check_statements.py $(ALL_DERIVED) $(ASSESSMENTS)
 	$(PY) scripts/check_values.py $(STATEMENTS) $(ALL_DERIVED) $(ASSESSMENTS)
+	$(PY) scripts/render_statements.py $(ALL_DERIVED) $(ASSESSMENTS) --check
 
 # Warnings about camelCase slot names come from upstream SEPIO and are expected.
 lint:
@@ -173,6 +176,8 @@ owl-check:
 
 # Findings, not validation: project/reports/.
 reports: derive
+	$(PY) scripts/render_statements.py $(ALL_DERIVED) $(ASSESSMENTS) \
+	  --out project/reports/statements.md
 	$(PY) scripts/report_guidance.py $(ALL_DERIVED) $(ASSESSMENTS) \
 	  --out project/reports/guidance.md --csv project/reports/guidance.csv
 	$(PY) scripts/report_tolerance.py $(ALL_DERIVED) --out project/reports/tolerance.md

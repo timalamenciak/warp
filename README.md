@@ -35,6 +35,9 @@ in the docs refer to the questions and decisions in those documents.
 - [Annotator's tests](docs/annotation-tests.md): one question per group (and
   for strategies) that tells you where a sentence belongs, with an example
   each.
+- [Statements in plain language](docs/rosetta.md): each statement as one
+  English sentence with everything it records, for review, and how each slot
+  is given its words (Rosetta Statements).
 
 Open work, including draft ECO term requests: [TODOS.md](TODOS.md).
 
@@ -280,7 +283,9 @@ reference resolving. `make nodes` also writes
 
 Every set validates against the profile; `make validate` and `make check`
 also run the reference, value, OWL, tolerance, cost and site checks over all
-of them together.
+of them together, and check that every value of every statement is said in
+its plain-language sentence (`render_statements.py --check`,
+[docs/rosetta.md](docs/rosetta.md)).
 
 ### Reports
 
@@ -289,6 +294,7 @@ Findings, not validation errors, written to `project/reports/` by
 
 | Report | Script | Says |
 |---|---|---|
+| `statements.md` | `render_statements.py` | Every statement as one English sentence with everything it records, next to the source's own words, for review ([docs/rosetta.md](docs/rosetta.md)) |
 | `projection.md` | `project_owl.py` | Which propositions reached `axioms.ttl`, and why each other one did not |
 | `guidance.md`, `.csv` | `report_guidance.py` | Unsupported and self-supporting guidance, and how well what it cites is assessed |
 | `tolerance.md` | `report_tolerance.py` | Ranges per proposition by claimant and response; non-overlapping ranges, unit mismatches |
@@ -426,6 +432,7 @@ vocab/
                               local places → SKOS; local classes → OWL
 config/cost_transfer/         versioned cost transfer rules and selections (edit this)
 config/profiles.yaml          predicate-group profiles (edit this)
+config/rosetta.yaml           how each slot reads in a statement's English sentence (edit this)
 patterns/                     GENERATED DOSDP patterns, prefixes, fill tables
 scripts/
   derive_strategies.py        canonical strategy nodes (warp-strategy-identity/1)
@@ -446,6 +453,7 @@ scripts/
   export_rdf.py               statement sets → project/statements.ttl (reification layer)
   project_owl.py              the gate → project/axioms.ttl; project individuals → projects.ttl
   report_*.py                 guidance, tolerance, cost completeness, Target 2
+  render_statements.py        statements → English sentences (config/rosetta.yaml); coverage check
   subset_schema.py            profiles: the schema restricted to some groups
   build_profile.py            build and check one profile on its examples
   templates_lib.py            shared template code

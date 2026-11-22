@@ -201,6 +201,10 @@ the profile does not constrain it.
 - [ ] Rosetta rendering currently reads `certainty_grade` from the CAMO edge.
       Choose between: (a) article level → `EcoEvidenceLine.strengthOfEvidenceProvided`;
       (b) synthesis only → `SynthesisAssessment.strength`. Update the renderer.
+      (That is CAMO's renderer. WARP's own, `render_statements.py`, says each
+      evidence line's `strengthOfEvidenceProvided` and treats a statement's
+      SEPIO `strength` as unused: revisit `config/rosetta.yaml` with this
+      decision.)
 
 ---
 
@@ -344,6 +348,31 @@ See README section 10 for the questions. Decisions needed:
 - [ ] Decide the unit of counting (studies, statements or study arms).
 - [ ] Write the evidence-type weighting rules as explicit, versioned config.
 
+### 6.1 Statements in plain language (ROADMAP 4.4)
+
+`render_statements.py` and `config/rosetta.yaml` ([docs/rosetta.md](docs/rosetta.md))
+say every statement in one sentence. Open:
+
+- [ ] **Tense.** A statement about a particular case (`assertional`, not
+      `anticipated`) is put in the past tense. Check with annotators that
+      this reads right for implementation and criteria statements, whose
+      templates already carry a tense ("was carried out at").
+- [ ] **CAMO predicates on attribute nodes.** "prevented Larval density of
+      …" reads wrongly: on an attribute (a measured quantity), `prevents`
+      means "reduces". Either render by node kind, or take it to CAMO as a
+      modelling question about predicates over variables.
+- [ ] **Read the sentences with reviewers.** Are the clause order and the
+      phrases (`phrases`, `enum_phrases`) what a reviewer expects? Should the
+      record line (annotator, proposition) stay out of the sentence?
+- [ ] **Rosetta statement types.** Whether to publish each group as a
+      Rosetta statement type definition (positions and templates) for ORKG
+      reuse, with a group version (ROADMAP 4.4); and whether `config/rosetta.yaml`
+      should then move into schema annotations (it cannot today: most of the
+      classes it covers are vendored SEPIO and CAMO classes, which the
+      profile does not annotate).
+- [ ] **Other languages.** The config is English; a second language would be
+      a second config with the same coverage check.
+
 ---
 
 ## 7. Build and tooling
@@ -393,7 +422,19 @@ example; a real database needs statements from many sources grouped together.
       letter of a sentence that starts with one, which breaks genus names
       ("spartina pectinata prefers…"). Use the template-generated label, or a
       flag on the node for proper names. Changing it changes `propositionText`
-      in every derived file, not any ID.
+      in every derived file, not any ID. The statement sentences
+      (`render_statements.py`) insert names as written and have the same
+      problem; fix both together.
+- [ ] **Proposition and project text shows raw IDs across files.**
+      `derive_propositions.py` looks node names up in the file being derived
+      only, so cost and implementation propositions read
+      "node:strategy-f38f3a2661ee incurs labour cost" (the name is in
+      `strategy_statements.derived.yaml`); project names from
+      `derive_projects.py` do the same ("Project agreement-0412:
+      node:strategy-…"). It also leaves enum-valued objects as names
+      ("qualifies as degraded_area"). `render_statements.py` resolves labels
+      across all files given; derivation could do the same. Changes
+      `propositionText`, not IDs.
 - [ ] **Duplicate ids across files.** `check_statements.py` compares
       duplicate ids within a file only. Compare across all files given. (The
       examples repeat a few agents and the EcoWeaver agent identically

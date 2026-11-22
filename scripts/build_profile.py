@@ -5,7 +5,8 @@
 Runs the same pipeline as `make all`, restricted to a profile's schema
 (project/profiles/warp_<name>.yaml, from scripts/subset_schema.py) and the
 example sets the config lists for it: derivation, LinkML validation, the
-reference, statement and value checks, node expansion, RDF export, the
+reference, statement and value checks, the plain-language rendering check
+(render_statements.py --check), node expansion, RDF export, the
 projection gate, the schema as OWL (gen-owl, then clean_owl.py with the
 profile's relations), and the OWL lint over everything it wrote.
 
@@ -108,6 +109,8 @@ def main(argv=None):
     r.run("check_refs", [PY, "scripts/check_refs.py", *files, *sch])
     r.run("check_statements", [PY, "scripts/check_statements.py", *derived, *assessments, *sch])
     r.run("check_values", [PY, "scripts/check_values.py", *files, *sch])
+    r.run("render_statements", [PY, "scripts/render_statements.py", *derived, *assessments,
+                                "--check", "--out", str(out / "statements.md"), *sch])
     r.run("expand_nodes", [PY, "scripts/expand_nodes.py", str(args.templates), *derived,
                            "--owl", str(out / "nodes.ttl"), "--sites", str(out / "sites.ttl"),
                            "--tsv-dir", str(out / "tsv")])

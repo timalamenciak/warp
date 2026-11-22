@@ -61,7 +61,10 @@ enums:
 ```
 
 Without a `rosetta_template`, text falls back to "{subject} ⟨predicate⟩
-{object}". Add further annotations (sign, FCM weight) if downstream
+{object}". The same template gives the predicate's words in the statement's
+plain-language sentence ([rosetta.md](rosetta.md)); add its first word to
+`verbs` in `config/rosetta.yaml` so it can be put in the negative and the
+past tense. Add further annotations (sign, FCM weight) if downstream
 renderings need them, following CAMO's `CausalPredicateEnum`.
 
 The enum is the annotator's list, not the ontology. A predicate WARP mints is
@@ -283,6 +286,7 @@ set together with its derived file and with anything that cites it.
 - [ ] Two StatementSet lists, named as in the annotations
 - [ ] Node templates exist for the subjects and objects
 - [ ] The five questions in [rdf-owl.md §8](rdf-owl.md#8-adding-a-group) answered, and the group added to its register
+- [ ] Every slot of the statement and qualifier classes has a place in `config/rosetta.yaml`, and each predicate's verb is in its `verbs` (`make check` names what is missing; see [rosetta.md](rosetta.md))
 - [ ] Example statement; `make all` passes; version bumped
 - [ ] If the group should be usable on its own or with a few others, a profile in `config/profiles.yaml` (see the README's "Profiles"); `make profile-check` passes. A profile needs no code: it is found from the same registry annotations
 

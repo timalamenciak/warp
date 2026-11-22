@@ -99,6 +99,17 @@ First public release. Schema version 0.7.0; examples' `profile_version`
   (`make owl-check`, skipped with a warning where ROBOT is not installed).
 - Reports in `project/reports/`: projection, guidance, tolerance, cost
   completeness (after Iacona et al.'s five standards) and Target 2.
+- Statements in plain language (Rosetta Statements, rule `warp-rosetta/1`):
+  `scripts/render_statements.py` says every statement as one English
+  sentence with everything it records, next to the source's own words and
+  the study results its evidence cites, in `project/reports/statements.md`.
+  How each slot reads is set by class in `config/rosetta.yaml`, inherited
+  along `is_a`; predicates use their `rosetta_template` words, put in the
+  negative or past tense from a verb table. `--check` (in `make check` and
+  every profile build) fails on a slot with no place in the config, a
+  template naming a missing slot, a predicate with no tenses, or a value the
+  sentence leaves out. See `docs/rosetta.md`. No schema change; no derived ID
+  changes.
 
 ### Terminology
 

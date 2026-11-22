@@ -221,6 +221,17 @@ is stale.
   implementation group). Profiles change no IRI, so never give a profile's
   elements their own URIs.
 
+### Plain-language rendering
+
+`scripts/render_statements.py` (rule `warp-rosetta/1`) says each statement
+as one English sentence, from `config/rosetta.yaml`: entries by class,
+inherited along `is_a`, so it names no group in code. `--check` (in
+`make check` and `build_profile.py`) fails when a reachable slot has no
+template, `quoted`, `elsewhere`, `unused` or `claim` entry, or when an
+example value is not rendered. A new slot or group therefore needs a config
+entry, and a new predicate's first word needs a `verbs` entry. Report:
+`project/reports/statements.md`. See `docs/rosetta.md`.
+
 ### Group-specific scripts
 
 - Checks, in `make validate`: `check_tolerance.py` (object kind per

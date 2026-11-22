@@ -580,9 +580,11 @@ Tasks:
       `rosetta_template`; versioning → group version).
 - [ ] Add a group version annotation, and record it on propositions
       next to `identity_rule_version`.
-- [ ] Extend verbalization to use qualifiers and scope (e.g. "typically
+- [x] Extend verbalization to use qualifiers and scope (e.g. "typically
       prevents", "did not reduce on this plot"), with negated and
       per-scope variants; test the rendered text for every fixture.
+      Done for whole statements: `render_statements.py`,
+      `config/rosetta.yaml`, `docs/rosetta.md` (open points in TODOS §6.1).
 - [ ] Fix capitalisation in rendered text (TODOS §7.2).
 - [ ] Decide whether WARP publishes its groups as Rosetta statement
       type definitions (for ORKG reuse), and if so, generate them.
