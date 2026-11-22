@@ -2,8 +2,10 @@
 
 How WARP records the values that several predicate groups share: a quantity
 and its unit, a count of things, a value on a source's own scale, the region a
-statement is about, and a date or period. Decisions D18 to D20 of the 0.4 dev
-guide; checked by `scripts/check_values.py` (`make check`).
+statement is about, and a date or period. The design decisions are D18 to D20
+in `docs/proposals/warp-0.4-dev-guide.md`; the rules are checked by
+`scripts/check_values.py` (`make check`). How to choose a term in general,
+and what to do when no ontology has one, is in `docs/terminology.md`.
 
 The rule behind all of it: **every value that names something is an IRI under
 a declared prefix, and nothing invented sits under a real ontology's prefix.**
@@ -27,7 +29,7 @@ either end optional (not both) and `min <= max`.
    scale rather than a physical quantity. EIVE reaction values (0 to 10) are
    an example: `range: {min: 5.9, max: 7.7, unit: scale:eive-1.0-reaction}`.
 4. **A `TODO:` placeholder** when the term has not been verified. Placeholders
-   are listed in `TODOS.md` and replaced before release.
+   are listed in `TODOS.md` and replaced as terms are verified.
 
 **One quantity, one IRI.** Site area and cost scale must use the same IRI for
 the hectare, or nothing aggregates. These are the units the examples use:
@@ -114,9 +116,11 @@ Work down this list and stop at the first that has the place:
      `tgn:<id>`.
 4. **An ENVO ecoregion individual**, for an ecoregion as such (ENVO has the
    WWF ecoregions as named individuals): `ENVO:<number>`.
-5. **A local concept**, failing all of these: `place:<slug>`, with a label and
-   the place it nests inside recorded in the example's comments, and a TODO
-   to replace it. Use this rather than inventing a Wikidata QID.
+5. **A local concept**, failing all of these: `place:<slug>`, registered in
+   `vocab/local/places.yaml` with a label, a definition, the place it nests
+   inside (`broader`) where known, and its upstream status
+   (`docs/terminology.md`). `check_values.py` refuses a `place:` IRI that is
+   not registered. Use this rather than inventing a Wikidata QID.
 
 For Indigenous territories, prefer the IRI the nation itself uses or
 endorses, and follow the CARE metadata on the statement. Where a territory's
@@ -157,9 +161,10 @@ Every prefix an example uses is declared in `warp.yaml`. WARP's own spaces:
 | `proj:` | `…/warp/project/` | projects: OWL individuals |
 | `comp:` | `…/warp/component/` | strategy components |
 | `crit:` | `…/warp/criteria/` | criteria sets |
-| `concept:` | `…/warp/concept/` | criteria concepts |
+| `concept:` | `…/warp/concept/` | criteria concepts (local SKOS concepts, `vocab/local/`) |
 | `scale:` | `…/warp/scale/` | source scales and their values |
-| `place:` | `…/warp/place/` | locally minted places |
+| `place:` | `…/warp/place/` | locally minted places (`vocab/local/places.yaml`) |
+| `term:` | `…/warp/term/` | local OWL classes no ontology has yet (`vocab/local/`) |
 | `TODO:` | `…/warp/TODO/` | placeholders for unverified terms |
 
 `…` is `https://w3id.org/ecoweaver`. **Placeholders always use `TODO:`.**

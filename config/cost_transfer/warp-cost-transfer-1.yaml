@@ -1,4 +1,4 @@
-# Cost transfer rule warp-cost-transfer/1 (0.7.0, Phase 6.2).
+# Cost transfer rule warp-cost-transfer/1.
 #
 # How scripts/transfer_costs.py re-states a cost in another place, price year
 # and currency. Changing anything here is a new rule: bump `id`, and the

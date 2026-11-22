@@ -15,7 +15,7 @@ ECO facts below were checked against ECO release 2026-07-10 in OLS on
 |---|---|---|
 | `index.html` | everyone: picks a level | 1 screen |
 | `basic.html` | contributors filing GitHub issues; no schema knowledge | ~13 sections |
-| `camo.html` | annotators who already know CAMO (added 2026-10-11) | ~15 sections |
+| `camo.html` | annotators who already know CAMO | ~15 sections |
 | `advanced.html` | users who want the model explained but won't build | ~16 sections |
 | `mechanic.html` | maintainers: schema internals and the build | ~18 sections |
 
@@ -110,9 +110,9 @@ confirm:
 - [ ] **Nodes section**: "a reasoner can tell … a node about a species
       sits under a node about its genus". True only once NCBITaxon is
       imported alongside `nodes.ttl`. Keep, qualify, or cut.
-- [ ] **"Same or different?" table** in Propositions: five worked cases
-      of the identity rule. Check each verdict, especially the context
-      row (says context is not identity "yet").
+- [ ] **"Same or different?" table** in Propositions: seven worked cases
+      of the identity rule, including a recommendation and a tolerance case.
+      Check each verdict, especially the context row.
 - [ ] **Roles table**: `reviewer` is shown as allowed "anywhere". That's
       what `check_statements.py` does (it has no rule for reviewer), but
       is it what you intend?
@@ -131,25 +131,17 @@ confirm:
 the code; the derivation and check behaviour was confirmed by running
 them. Not verified:
 
-- [ ] **Windows `make` install commands** (`choco install make`,
-      `winget install GnuWin32.Make`): untested. Test one or replace
-      with "install GNU make".
-- [ ] **ROBOT EL check** in "Compiling a full database". Since 0.6.0 the
-      commands are `make owl-check` (EL for nodes, axioms, sites and projects;
-      DL for the schema and relations). Run it once with ROBOT installed
-      (section 8.3) and update the page to point at the target.
+- [ ] **Windows `make`.** The page recommends Rtools' GNU make (tested on
+      the development machine). Confirm that is the advice you want to give
+      contributors who don't have R.
+- [ ] **ROBOT profile checks** in "Compiling a full database" point at
+      `make owl-check` (EL for nodes, axioms, sites and projects; DL for the
+      schema and relations). Run it once with ROBOT installed (section 8.3).
 - [ ] **"Compiling a full database"** describes a merge step that doesn't
       exist (see 7.1). That section is a design proposal. Agree with it
       or rewrite it before anyone follows it.
 - [ ] **"Gotchas"**: confirm each one is a known limitation and not a
       bug you'd rather fix (several are now items in section 7).
-
-### 0.4b Bring the HTML pages up to 0.7.0
-
-The pages in `docs/html/` were written for 0.5.0. They describe two predicate
-groups, rule v3, literal enum values and no RDF output. Update them (or mark
-them as describing 0.5.0) using `README.md`, `docs/predicate-groups.md`,
-`docs/annotation-tests.md` and `docs/rdf-owl.md`, per the table in 0.5.
 
 ### 0.5 Publish
 
@@ -299,10 +291,10 @@ evidence. Revisit if finer terms would change any output.
 - [ ] Confirm semantic unit definitions (assertional, contingent,
       prototypical, universal) against Vogt's own; update `SemanticUnitScopeEnum`.
 - [ ] Identity rule: should any context (ecosystem type, comparator) be part
-      of proposition identity? Since 0.6.0 a group can add fields to its key
-      by annotation (`warp_identity_extras`); causal and interaction add none
-      (D1), so their IDs are unchanged. Adding one to them is now a schema
-      change, not a code change, but it moves their IDs.
+      of proposition identity? A group adds fields to its key by annotation
+      (`warp_identity_extras`); causal and interaction add none (D1). Adding
+      one to them is a schema change, not a code change, but it moves their
+      IDs.
 - [ ] BFO review of the `quality_of_process_of_population` template
       (PATO quality of a process vs BFO 2020 process profiles).
 - [ ] SSSOM crosswalk between Wikidata QIDs (CAMO `entity_term`) and
@@ -372,21 +364,27 @@ example; a real database needs statements from many sources grouped together.
 - [ ] Write the merge script (concatenate every StatementSet list, dedupe
       by id, fail when one id names two different objects, pass open
       questions through untouched).
-- [x] Generalize the Makefile: `derive`, `validate` and `check` hard-coded
-      the example paths. Now `STATEMENTS` and `ASSESSMENTS` list them (0.6.0).
+
+### 7.1b Profiles
+
+- [ ] **Split `warp.yaml` into modules** (core, nodes, one file per group),
+      with each profile assembled by imports, if generated profiles prove
+      too indirect. `StatementSet` would then be defined per assembly, since
+      LinkML cannot add attributes to a class from another module. Splitting
+      the relations file per group would follow.
+- [ ] **A group's required lists are not detected** unless the schema reaches
+      them: implementation and criteria use sites as node references, so a
+      profile with them must name `site_definitions` itself (the config says
+      so). A `warp_requires_lists` annotation on the group class would make
+      this checkable.
+- [ ] **`warp:in_jurisdiction`** stays in every profile's relations file: it
+      belongs to sites, not to a group's predicate enum.
 
 ### 7.2 Smaller fixes
 
-- [x] **Derivation across groups and files.** `make derive` now derives
-      every set (and strategies, projects, transfers); cross-file references
-      resolve when the files are checked together (0.6.0, 0.7.0).
 - [ ] **Hand-written propositions vanish.** Derivation silently drops any
       existing proposition that isn't `open_question` / `raised_as_question`.
       Warn on stderr, or refuse.
-- [x] **Patterns skipped by validation.** `make patterns` validates
-      `patterns/*_*.yaml`, so a template id without an underscore is never
-      DOSDP-validated. Loop over template ids instead, or exclude
-      `prefixes.yaml` by name.
 - [ ] **Comments lost.** Derivation rewrites the input through
       `yaml.safe_dump`, dropping YAML comments. Either accept it and say
       so in the annotation guidance, or switch to `ruamel.yaml`.
@@ -398,25 +396,61 @@ example; a real database needs statements from many sources grouped together.
       in every derived file, not any ID.
 - [ ] **Duplicate ids across files.** `check_statements.py` compares
       duplicate ids within a file only. Compare across all files given. (The
-      0.7.0 examples repeat a few agents and the EcoWeaver agent identically
+      examples repeat a few agents and the EcoWeaver agent identically
       across files, which a cross-file check should accept.)
-- [ ] **Windows.** `make` is not in Git Bash. Rtools' GNU make works
-      (`/c/rtools45/usr/bin`, noted in `CLAUDE.md`); document it for
-      contributors in `mechanic.html`, or add a small Python task runner.
+- [ ] **Windows.** `make` is not in Git Bash. Rtools' GNU make works and is
+      documented in `mechanic.html`; consider a small Python task runner for
+      contributors without it.
 
 ---
 
-## 8. The 0.4 proposal round (releases 0.6.0 and 0.7.0)
+### 7.3 Terminology (docs/terminology.md)
 
-Open questions and placeholders left by the build in
-`docs/proposals/warp-0.4-dev-guide.md`, grouped by proposal. Question numbers
-refer to each proposal's "Open questions" in
-`docs/proposals/warp-proposals-0.4.html`.
+The ranked order and the local term register (`vocab/local/`) are in place.
+Still to do, in order:
+
+- [ ] Sort every `TODO:` placeholder (8.1) into "lookup pending" (units,
+      ENVO, PATO, NCBITaxon: look them up and use the tier-1 term) and
+      "missing upstream" (`TODO:planting`, `TODO:tidal_restoration`,
+      `TODO:earthworks`, `TODO:hand_seeding`, `TODO:mowing`: register them as
+      `term:` class stubs under their ELMO parent with status `to_request`,
+      and list `term` in the template variables' `allowed_prefixes`).
+- [ ] Search for the five `not_checked` places in `vocab/local/places.yaml`
+      and set each to `accepted` (replacing it everywhere; tolerance and cost
+      proposition IDs move, since `place` is in their keys) or to
+      `not_appropriate` with a reason (the NWPL regions may be a source's own
+      regionalization).
+- [ ] Confirm `not_appropriate` for the two criteria concepts
+      (`vocab/local/criteria-concepts.yaml`): the reason given is D14, that
+      each is defined only by whichever criteria set is applied.
+- [ ] A generated terminology report (`project/reports/terminology.md`):
+      every `TODO:` with its uses, every local term by upstream status, every
+      text fallback. It would replace the hand-kept table in 8.1.
+- [ ] Helpers: `find_term.py` (search the local ECOCORE imports, and OLS
+      when online; say that the imports are subsets) and `replace_term.py`
+      (rewrite a term across the input files, mark the register entry
+      accepted, report which derived IDs moved).
+- [ ] Opt-in text: mark the slots that accept text in place of a term with an
+      annotation (for example `warp_text_fallback`) and check that text
+      appears nowhere else (`docs/terminology.md`, section 6).
+- [ ] Audit the domain enums (`EcosystemAttributeEnum`, `ReferenceBasisEnum`,
+      `CostCategoryEnum`, `TenureEnum` and others) for `meaning:`: an
+      ontology term, else a register concept, as `CriteriaConceptEnum` does.
+- [ ] Decide: when a term in an identity key is upstreamed, record the old
+      proposition IDs (`replaces`, as strategies do), or only name them in
+      `CHANGELOG.md` (the current rule)?
+- [ ] Decide: should a release fail while any `TODO:` placeholder remains?
+
+## 8. Open questions from the design proposals
+
+Open questions and placeholders, grouped by proposal. Question numbers refer
+to each proposal's "Open questions" in
+`docs/proposals/warp-proposals-0.4.html`; decision numbers (D1, R2, …) to
+`docs/proposals/warp-0.4-dev-guide.md`.
 
 ### 8.1 Placeholders to fill (Q12)
 
-Every `TODO:` placeholder left in `examples/`, `templates/` and the schema
-after 0.7.0. Nothing sits under a real ontology's prefix; `check_values.py`
+Every `TODO:` placeholder in `examples/`, `templates/` and the schema. Nothing sits under a real ontology's prefix; `check_values.py`
 would refuse it if it did. Replace each everywhere at once (search the
 repository), so one quantity keeps one IRI.
 
@@ -437,21 +471,21 @@ repository), so one quantity keeps one IRI.
 | `TODO:protected_area` | the kind of thing counted (a node or ENVO term) | cost example |
 | `TODO:place_milk_river_drainage`, `TODO:place_project_x_site` | place IRIs (Wikidata or a gazetteer) | recommendation, cost examples |
 
-Locally minted places, to replace with registered IRIs where they exist
-(`docs/values.md`): `place:europe`, `place:mediterranean-coastal-israel`,
-`place:northern-great-plains`, `place:nwpl-great-plains`, `place:nwpl-midwest`.
+Locally minted places are registered in `vocab/local/places.yaml` with
+upstream status `not_checked` (section 7.3): search for each, and replace it
+everywhere with the registered IRI where one exists (`docs/values.md`).
 
 Free-text `TODO` values (wording, citations, names) are marked in each
 example's comments and agents; they are not CURIEs and are not listed here.
 
-### 8.1b Phase 9 (not in this release, Q15c)
+### 8.1b Deferred to a later release (Q15c)
 
-- [ ] **9.1 Feedback-model additions** (lag, measurable state variables,
+- [ ] **Feedback-model additions** (lag, measurable state variables,
       quantitative effect size, self-regulation): touches the causal
       qualifiers; its own proposal and release.
-- [ ] **9.2 `ThreatAssessment`** and **9.3 rate-of-interaction template**:
+- [ ] **`ThreatAssessment`** and a **rate-of-interaction template**:
       small and additive, any time.
-- [ ] **9.4 Tolerance importer**: gated on source licences (USDA PLANTS,
+- [ ] **Tolerance importer**: gated on source licences (USDA PLANTS,
       EIVE, Ellenberg-type values).
 
 ### 8.2 Shared foundations
@@ -472,10 +506,10 @@ example's comments and agents; they are not CURIEs and are not listed here.
 
 ### 8.3 RDF and OWL contract
 
-- [ ] **Run `make owl-check` with ROBOT** (not installed where 0.6.0 was
-      built). Neither the EL check (nodes, axioms, sites, projects) nor the DL
-      check (schema + relations) has been run; fix what it finds before
-      releasing 0.6.0.
+- [ ] **Run `make owl-check` with ROBOT** (not installed on the development
+      machine). Neither the EL check (nodes, axioms, sites, projects) nor the
+      DL check (schema + relations) has been run; fix what it finds before
+      the release.
 - [ ] **SEPIO mapping file (Q13).** When SEPIO gives its slots real IRIs,
       add `src/warp/owl/warp-sepio-mapping.ttl` with one
       `warp:<slot> owl:equivalentProperty sepio:<slot>` per slot that has a
@@ -532,7 +566,7 @@ job in `scripts/clean_owl.py`; when one is fixed upstream, delete the job.
 - [ ] **Q6 Theories of change.** Map `suggested_to` chains to CMP Open
       Standards results chains?
 - [ ] **A closer relation than `warp:suggested_to`.** Search OBO and IAO for
-      an existing relation for guidance before 0.7.0 is released.
+      an existing relation for guidance before the release.
 - [ ] **Example wording.** Check every TODO in
       `examples/recommendation_statements.yaml` against the Mountain Sucker
       and Spring Salamander recovery strategies, and add node template
@@ -639,12 +673,12 @@ job in `scripts/clean_owl.py`; when one is fixed upstream, delete the job.
 - [ ] **Q8 Reporting without exposure.** Roll-ups over restricted records:
       `report_target2.py` counts them and lists them only with
       `--show-restricted`. Who authorizes that under CARE?
-- [ ] **Phase 7 placeholders.** `TODO:grassland` (an ENVO grassland term),
+- [ ] **Implementation and criteria placeholders.** `TODO:grassland` (an ENVO grassland term),
       the site geometry (a placeholder square), the three FICTIONAL criteria
       sets and their `TODO` threshold text, and every agent and document in
       `examples/implementation_statements.yaml`.
 
-### 8.10 Lars: one conversation, after Phase 7 (Q14)
+### 8.10 Lars: one conversation (Q14)
 
 Send `docs/rdf-owl.md` and the generated Turtle (`project/nodes.ttl`,
 `sites.ttl`, `projects.ttl`, `axioms.ttl`), not the proposals. In this order:

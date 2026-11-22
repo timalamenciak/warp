@@ -87,9 +87,9 @@ The predicate layer: what kind of relation is asserted.
 ```
 
 **Avoid slot names SEPIO already uses** on Statement: `direction`,
-`strength`, `score`, `subject`, `predicate`, `object`, `qualifier`. CAMO's
-`direction` and `strength` were renamed `causal_direction` and
-`effect_strength` for this reason.
+`strength`, `score`, `subject`, `predicate`, `object`, `qualifier`. That is why
+CAMO's `direction` and `strength` are `causal_direction` and
+`effect_strength` in WARP.
 
 ## 4. Statement class
 
@@ -239,14 +239,15 @@ proposition rather than as separate propositions.
 | implementation | its own rule, `warp-impl-identity/1` (`derive_projects.py`) |
 | criteria | `predicate_qualifiers.criteria_set`, `predicate_qualifiers.assessed_period` (rule name `warp-criteria-identity/1`) |
 
-(Later groups add theirs; the register in [rdf-owl.md](rdf-owl.md) lists every
-group.)
+(A new group adds its own row; the register in [rdf-owl.md](rdf-owl.md) lists
+every group.)
 
 How the key is built (`scripts/derive_propositions.py`):
 
-- The six shared fields are joined with `|`, exactly as under rule 3, so a
-  group with **no extras keeps every proposition ID it had** (the ID is a hash
-  of the key; the rule version is recorded on the proposition, never hashed).
+- The six shared fields are joined with `|`. A group with **no extras** has
+  just these six in its key. The ID is a hash of the key; the rule version is
+  recorded on the proposition, never hashed, so a new rule version that
+  leaves a group's key unchanged leaves its IDs unchanged.
 - Each extra is appended as `path=<canonical JSON>`. Objects are written with
   sorted keys and lists sorted, unless the slot is `list_elements_ordered`, so
   the same content always gives the same key.
@@ -283,6 +284,7 @@ set together with its derived file and with anything that cites it.
 - [ ] Node templates exist for the subjects and objects
 - [ ] The five questions in [rdf-owl.md §8](rdf-owl.md#8-adding-a-group) answered, and the group added to its register
 - [ ] Example statement; `make all` passes; version bumped
+- [ ] If the group should be usable on its own or with a few others, a profile in `config/profiles.yaml` (see the README's "Profiles"); `make profile-check` passes. A profile needs no code: it is found from the same registry annotations
 
 ---
 
@@ -292,7 +294,7 @@ set together with its derived file and with anything that cites it.
 
 What changes what; which organisms act on which. See the README.
 
-### recommendation (0.7.0)
+### recommendation
 
 Guidance: a source tells someone to **do, avoid or consider** an action because
 of an outcome. `RecommendationStatement`, one predicate `suggested_to`.
@@ -338,7 +340,7 @@ self-supporting guidance (cited propositions resting only on the same
 claimant's assertion or expert judgment), and the assessed strength of what
 each recommendation cites. Example: `examples/recommendation_statements.yaml`.
 
-### tolerance (0.7.0)
+### tolerance
 
 The conditions under which an organism establishes, persists or performs: the
 soil pH it tolerates, the moisture regime it prefers, the salinity that
@@ -381,7 +383,7 @@ only through the gate; ranges, optima, class values and curves never do.
 by claimant and response, flags non-overlapping ranges and unit mismatches,
 and never aggregates or converts. Example: `examples/tolerance_statements.yaml`.
 
-### cost (0.7.0)
+### cost
 
 What carrying out an action took (money, staff and volunteer time,
 equipment, materials) with the context needed to read the number.
@@ -446,7 +448,7 @@ against the five standards and flags unknown breakdowns, payment rates and
 missing values. Examples: `examples/cost_statements.yaml` and the generated
 `examples/cost_statements.transferred.yaml`.
 
-### implementation (0.7.0)
+### implementation
 
 That a strategy (or action) was carried out at a site. `ImplementationStatement`,
 one predicate `carried_out_at`; subject a strategy or action node, object a
@@ -493,13 +495,13 @@ cluster holding two different external IDs from one scheme is reported as a
 candidate bad merge. Criteria statements about a project name it by its
 `proj:` ID.
 
-### criteria (0.7.0)
+### criteria
 
 That a site or project meets a named, versioned definition, for a period.
 `CriteriaStatement`, predicate `qualifies_as`; subject a site or project
 individual (both particulars, so plainly required); object a
 `CriteriaConceptEnum` value (`degraded_area`, `effective_restoration`, SKOS
-concepts in `project/criteria_concepts.ttl`). The **verdict is the statement's
+concepts in `project/local_terms.ttl`, from `vocab/local/criteria-concepts.yaml`). The **verdict is the statement's
 `direction`** (supports, disputes, neutral) and is required: criteria
 statements are the one annotated statement that fills it. Qualifiers:
 `criteria_set` and `assessed_period` (both required, both in the key) and

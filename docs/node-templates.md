@@ -81,7 +81,7 @@ terms:
   - {id: "PCO:0000001", label: population of organisms, kind: class}
 ```
 
-Labels change: RO:0000052 used to be *inheres in* and is now *characteristic
+Ontology labels change: RO:0000052 was once *inheres in* in RO and is now *characteristic
 of*. If a label is out of date the generated DOSDP pattern will not match the
 ontology; re-check labels when you update templates.
 
@@ -245,7 +245,7 @@ To run dosdp-tools outside ODK, `make owl-dosdp DOSDP_TOOLS=/path/to/dosdp-tools
   contested ones (for example, BFO's treatment of characteristics of
   processes as process profiles).
 
-## 8. Templates that are not class expressions (0.7.0)
+## 8. Templates that are not class expressions
 
 Every template above is a `class_expression` template, the default: a
 fillable shape compiled to a DOSDP pattern and an OWL equivalent-class axiom.
@@ -259,7 +259,7 @@ designator to tell them apart.
 |---|---|---|---|
 | `class_expression` | everything in sections 1 to 7 | `node_definitions` | the template's `equivalent_to` |
 | `composite` | `management_strategy` | `strategy_definitions` | `expand_nodes.py`, directly from the definitions |
-| `particular` | `site` (Phase 7) | its own list | `expand_nodes.py`, as individuals |
+| `particular` | `site` | `site_definitions` | `expand_nodes.py`, as individuals |
 
 ### Management strategies
 
@@ -328,7 +328,7 @@ formally retired.
 
 Worked example: `examples/strategy_statements.yaml`.
 
-### Refinements: depth and season (0.7.0)
+### Refinements: depth and season
 
 `quality_of_environmental_material` (the object of tolerance statements:
 pH of soil, temperature of water, wetness of soil) lists `refinements: [depth,
@@ -353,7 +353,7 @@ them one class. Refined nodes are left out of the DOSDP fill tables, which can
 only write the equivalent-class form. A refinement on a template that does not
 list it is an error.
 
-### Sites: the first particular (0.7.0)
+### Sites: the first particular
 
 Every node so far is a kind of thing: an action, a variable, a taxon, a
 strategy. A **site** is one piece of ground (agreement site 0412), the place a

@@ -88,6 +88,9 @@ prefixes:
   concept: https://w3id.org/ecoweaver/warp/concept/
   scale: https://w3id.org/ecoweaver/warp/scale/
   place: https://w3id.org/ecoweaver/warp/place/
+  # Local OWL classes no ontology has yet (vocab/local/, docs/terminology.md).
+  # concept: and place: hold local SKOS concepts; term: holds local classes.
+  term: https://w3id.org/ecoweaver/warp/term/
   # Placeholders for terms not yet verified (decision D20). TODO:planting can
   # never be mistaken for an ELMO term; ELMO:TODO_planting could.
   TODO: https://w3id.org/ecoweaver/warp/TODO/
@@ -341,7 +344,7 @@ enums:
           not record one). A sentinel: it records an absence, so it has no
           meaning and is never exported to RDF (decision D14).
 
-  # --- recommendation group (0.7.0, Phase 3) ---------------------------------
+  # --- recommendation group ------------------------------------------------------
 
   RecommendationPredicateEnum:
     implements: [owl:ObjectProperty]
@@ -402,7 +405,7 @@ enums:
       direct:
       precursor:
 
-  # --- management strategies (0.7.0, Phase 4) ------------------------------------
+  # --- management strategies ---------------------------------------------------------
 
   StrategyRoleEnum:
     implements: [owl:NamedIndividual]
@@ -427,7 +430,7 @@ enums:
         annotations:
           warp_cost_phase: monitoring
 
-  # --- tolerance group (0.7.0, Phase 5) -------------------------------------------
+  # --- tolerance group ----------------------------------------------------------------
 
   TolerancePredicateEnum:
     implements: [owl:ObjectProperty]
@@ -480,7 +483,7 @@ enums:
       survival:
       reproduction:
 
-  # --- cost group (0.7.0, Phase 6) ------------------------------------------------
+  # --- cost group ---------------------------------------------------------------------
 
   CostPredicateEnum:
     implements: [owl:ObjectProperty]
@@ -585,7 +588,7 @@ enums:
       inflation:
       discounted:
 
-  # --- sites (0.7.0, Phase 7.1) ----------------------------------------------------
+  # --- sites -------------------------------------------------------------------------
 
   GeometryPrecisionEnum:
     implements: [owl:NamedIndividual]
@@ -615,7 +618,7 @@ enums:
       unknown:
         description: "Not known. A sentinel: never exported."
 
-  # --- implementation group (0.7.0, Phase 7.2) ---------------------------------------
+  # --- implementation group ------------------------------------------------------------
 
   ImplementationPredicateEnum:
     implements: [owl:ObjectProperty]
@@ -638,7 +641,7 @@ enums:
       maintained:
       abandoned:
 
-  # --- criteria group (0.7.0, Phase 7.3) -------------------------------------------------
+  # --- criteria group ----------------------------------------------------------------------
 
   CriteriaPredicateEnum:
     implements: [owl:ObjectProperty]
@@ -658,7 +661,7 @@ enums:
     implements: [owl:NamedIndividual]
     description: >-
       What is being defined. Each value's meaning is its SKOS concept IRI
-      (project/criteria_concepts.ttl, from vocab/criteria_concepts.yaml), so a
+      (project/local_terms.ttl, from vocab/local/criteria-concepts.yaml), so a
       concept exists once; the concepts are skos:Concept and never owl:Class
       (decision D14).
     permissible_values:
@@ -772,8 +775,7 @@ slots:
       The KIND of ecosystem the statement is about, as one of CAMO's IUCN
       Global Ecosystem Typology functional groups (warm_temperate_forests,
       coastal_saltmarshes_and_reedbeds). Not a place: "Florida" or "the
-      Mediterranean coast of Israel" go in `place`. Every 0.4 proposal example
-      confused the two (R19).
+      Mediterranean coast of Israel" go in `place` (R19).
     range: EcosystemFunctionalGroupEnum   # CAMO
 
   place:
@@ -1159,8 +1161,8 @@ classes:
         range: ComparatorAnnotation   # CAMO
         multivalued: true
         inlined_as_list: true
-      # context, ecosystem_context and temporal_extent were inline attributes
-      # here until 0.6.0; they are now shared slots on EcoStatement.
+      # context, ecosystem_context and temporal_extent are shared slots on
+      # EcoStatement.
       camo_edge_id:
         description: "Identifier of the CAMO CausalEdge this statement was migrated or projected from."
 
@@ -1394,8 +1396,8 @@ classes:
         range: CausalNode
 
   # ---------------------------------------------------------------------------
-  # Predicate group: recommendation (0.7.0, Phase 3;
-  # docs/proposals/warp-proposals-0.4.html section 5)
+  # Predicate group: recommendation
+  # (docs/proposals/warp-proposals-0.4.html section 5)
   # ---------------------------------------------------------------------------
 
   RecommendationStatement:
@@ -1489,8 +1491,8 @@ classes:
         inlined: true
 
   # ---------------------------------------------------------------------------
-  # Predicate group: tolerance (0.7.0, Phase 5;
-  # docs/proposals/warp-proposals-0.4.html section 7)
+  # Predicate group: tolerance
+  # (docs/proposals/warp-proposals-0.4.html section 7)
   # ---------------------------------------------------------------------------
 
   ToleranceStatement:
@@ -1594,8 +1596,8 @@ classes:
         range: CausalNode
 
   # ---------------------------------------------------------------------------
-  # Predicate group: cost (0.7.0, Phase 6;
-  # docs/proposals/warp-proposals-0.4.html section 8)
+  # Predicate group: cost
+  # (docs/proposals/warp-proposals-0.4.html section 8)
   # Qualifiers follow the five cost reporting standards of Iacona et al. 2018.
   # ---------------------------------------------------------------------------
 
@@ -1841,7 +1843,7 @@ classes:
         description: "What the ratio is per (per_hectare, per_site)."
 
   # ---------------------------------------------------------------------------
-  # Sites (0.7.0, Phase 7.1; docs/proposals/warp-proposals-0.4.html, s. 9)
+  # Sites (docs/proposals/warp-proposals-0.4.html, s. 9)
   # ---------------------------------------------------------------------------
 
   SiteDefinition:
@@ -1900,7 +1902,7 @@ classes:
         inlined: true
 
   # ---------------------------------------------------------------------------
-  # Predicate group: implementation (0.7.0, Phase 7.2)
+  # Predicate group: implementation
   # ---------------------------------------------------------------------------
 
   ImplementationStatement:
@@ -2094,7 +2096,7 @@ classes:
         multivalued: true
 
   # ---------------------------------------------------------------------------
-  # Criteria sets and the criteria group (0.7.0, Phase 7.3)
+  # Criteria sets and the criteria group
   # ---------------------------------------------------------------------------
 
   CriteriaSet:
@@ -2669,7 +2671,7 @@ classes:
         slot_uri: warp:systemVersion
 
   # ---------------------------------------------------------------------------
-  # Value types shared by several predicate groups (0.6.0, Phase 1)
+  # Value types shared by several predicate groups
   # Units are verified UO CURIEs, QUDT where UO has no term, or TODO:
   # placeholders: never bare tokens (decision D18, docs/values.md).
   # ---------------------------------------------------------------------------

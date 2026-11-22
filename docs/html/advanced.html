@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>How WARP Works</title>
-<meta name="description" content="How WARP models ecological statements: nodes, predicate groups, scope, propositions and identity, evidence lines, synthesis assessments, agents and CARE metadata.">
+<meta name="description" content="How WARP models ecological statements: nodes, predicate groups, scope, propositions and identity, evidence lines, synthesis assessments, agents and CARE metadata, and the RDF and OWL output.">
 <link rel="stylesheet" href="warp-docs.css">
 </head>
 <body>
@@ -34,8 +34,9 @@
     <li><a href="#evidence">Evidence lines</a></li>
     <li><a href="#assessment">Synthesis assessments</a></li>
     <li><a href="#people">Agents, roles and CARE</a></li>
+    <li><a href="#rdf">RDF and OWL output</a></li>
     <li><a href="#suggest">Writing a precise suggestion</a></li>
-    <li><a href="#example">Reading the worked example</a></li>
+    <li><a href="#example">Reading the worked examples</a></li>
     <li><a href="#camo">Coming from CAMO</a></li>
     <li><a href="#open">Open decisions</a></li>
   </ol>
@@ -44,10 +45,6 @@
 <main>
   <span class="eyebrow advanced">Advanced user guide</span>
   <h1>How WARP works</h1>
-  <div class="callout note">
-    <strong class="t">These pages describe WARP 0.5.0</strong>
-    The schema is now at 0.7.0: seven predicate groups, identity rule <code>warp-prop-identity/4</code>, enum values as IRIs, and RDF output. Until these pages are updated, the current descriptions are <code>README.md</code>, <code>docs/predicate-groups.md</code>, <code>docs/annotation-tests.md</code>, <code>docs/rdf-owl.md</code> and <code>docs/values.md</code>.
-  </div>
   <p class="lede">The full conceptual model, for people who want to know why a suggestion is recorded the way it is, read WARP data, or write suggestions in WARP's own format. Building and maintaining the database is covered in the <a href="mechanic.html">mechanic guide</a>.</p>
 
   <section id="shape">
@@ -57,14 +54,16 @@
       <thead><tr><th>Part</th><th>What it is</th><th>Comes from</th></tr></thead>
       <tbody>
         <tr><td><strong>Node shapes</strong></td><td>Fillable templates for what statements are about, e.g. <em>rate of a process of a population of a taxon</em></td><td>WARP node templates, compiled to OWL</td></tr>
-        <tr><td><strong>Predicate groups</strong></td><td>Controlled relationship words plus the qualifiers that say what <em>kind</em> of relation is asserted</td><td>Causal: CAMO. Interaction: Relation Ontology (RO)</td></tr>
+        <tr><td><strong>Predicate groups</strong></td><td>Controlled relationship words plus the qualifiers that say what <em>kind</em> of relation is asserted</td><td>Causal: CAMO. Interaction: Relation Ontology (RO). Recommendation, tolerance, cost, implementation, criteria: WARP, reusing RO where it has a term</td></tr>
+        <tr><td><strong>Strategies and sites</strong></td><td>Nodes that are not one filled template: an ordered bundle of actions, and one particular piece of ground</td><td>WARP</td></tr>
+        <tr><td><strong>Definitions</strong></td><td>What "degraded" or "effectively restored" means, per body and version</td><td>WARP (<code>CriteriaSet</code>)</td></tr>
         <tr><td><strong>Overall shape</strong></td><td>Statement, proposition, evidence line, agent, contribution</td><td>SEPIO</td></tr>
         <tr><td><strong>Scope</strong></td><td>One case, some cases, typical cases, all cases</td><td>WARP, after Vogt's semantic unit types</td></tr>
         <tr><td><strong>Evidential basis</strong></td><td>Study design, evidence object, practitioner and Indigenous knowledge as evidence</td><td>WARP, using CAMO's evidence types</td></tr>
       </tbody>
     </table></div>
     <p>The <em>warp</em> (fixed threads) is the SEPIO frame, scope and evidence. The <em>weft</em> (woven across, changing) is the node templates and predicate groups. Adding a new kind of statement means adding weft, never changing the warp.</p>
-    <p>Everything is exchanged as a <strong>StatementSet</strong>: one file holding agents, nodes, node definitions, statements and propositions for each predicate group, synthesis assessments, study results and documents. Objects refer to each other by id.</p>
+    <p>Everything is exchanged as a <strong>StatementSet</strong>: one file holding agents, nodes, node, strategy and site definitions, statements and propositions for each predicate group, criteria sets, synthesis assessments, study results and documents. Objects refer to each other by id, across files too.</p>
   </section>
 
   <section id="layers">
@@ -81,7 +80,7 @@
     <div class="legend"><span><i class="hl"></i>written by people</span><span><i class="gen"></i>derived automatically</span><span><i></i>written by a synthesis pipeline or team</span></div>
     <p>SEPIO distinguishes two modes of statement, and WARP uses both:</p>
     <ul>
-      <li><strong>Assertion Mode</strong>: the statement puts a proposition forward as true. Every annotated statement (<code>CausalStatement</code>, <code>InteractionStatement</code>) is in this mode, and leaves SEPIO's <code>direction</code>, <code>strength</code> and <code>score</code> empty.</li>
+      <li><strong>Assertion Mode</strong>: the statement puts a proposition forward as true. Every annotated statement, in every group, is in this mode, and leaves SEPIO's <code>direction</code>, <code>strength</code> and <code>score</code> empty. The one exception is a criteria statement, whose <code>direction</code> is its verdict (<a href="#groups">below</a>).</li>
       <li><strong>Proposition Assessment Mode</strong>: the statement says how well the evidence supports a proposition. <code>SynthesisAssessment</code> is in this mode, and must fill <code>direction</code> and <code>strength</code>.</li>
     </ul>
   </section>
@@ -101,15 +100,23 @@
         <tr><td><code>intervention_involving_taxon</code></td><td>⟨action⟩ of ⟨taxon⟩</td><td>action: ELMO; taxon: NCBITaxon</td><td>planting of Sanguinaria canadensis</td></tr>
       </tbody>
     </table></div>
+    <p>These three are the ones the bloodroot example uses. There are twenty-two such templates in <code>templates/node_templates.yaml</code>, covering populations, assemblages, traits, environmental materials and their qualities, ecosystem processes, interventions with a method, level or timing, disturbances and stressors, and environment types.</p>
     <p>Each template also has a logical definition. In words, the garlic mustard node is:</p>
     <p class="callout note">a <strong>rate</strong> that is a <em>characteristic of</em> some (<strong>population growth</strong> that <em>has participant</em> some (<strong>population of organisms</strong> that <em>has member</em> some <strong>Alliaria petiolata</strong>))</p>
     <p>Because these are OWL definitions, a reasoner can tell that two nodes built from the same template and terms are the same thing, and that a node about a species sits under a node about its genus.</p>
     <p>A node can be recorded without a template filling; it just won't have a logical definition yet. CAMO nodes record taxa as Wikidata QIDs in <code>entity_term</code>, while template fillings use NCBITaxon IDs. Both are kept, and are to be crosswalked with SSSOM.</p>
+    <h3>Refinements</h3>
+    <p>Some templates allow a <strong>refinement</strong> that narrows a node without an ontology class for it: soil pH at 0 to 15 cm depth, or in one season. A refined node is a <em>subclass</em> of its template's expression, never an equivalent class, so "pH of soil, 0 to 15 cm" and "pH of soil" stay distinct.</p>
+    <h3>Management strategies</h3>
+    <p>A <strong>management strategy</strong> is a set of actions carried out together in a stated order: earthworks, then hand seeding two weeks later, then mowing yearly for three years. Each part is an ordinary action node with a step number, and optionally a lag, a repeat, a role (site preparation, establishment, follow-up…) and an optional flag. Statements in any group can be about the strategy as a whole.</p>
+    <p>Two sources describing the same strategy under different names should meet, so a script derives a <strong>canonical strategy node</strong> (<code>node:strategy-&lt;hash&gt;</code>) from the required parts and their order, ignoring lags, repeats, roles, labels and optional parts. In OWL a strategy is a planned process that <em>has part</em> each required action.</p>
+    <h3>Sites</h3>
+    <p>A <strong>site</strong> is one particular piece of ground, the place a strategy is carried out or whose condition is assessed. Unlike every other node it is an individual, not a kind of thing, and its id is under <code>site:</code>. A site records its geometry and how precise that geometry is, its area, ecosystem types, jurisdiction, tenure and CARE metadata. Geometry is never exported, and precise geometry under restricted access is flagged.</p>
   </section>
 
   <section id="groups">
     <h2>Predicate groups</h2>
-    <p>A <strong>predicate group</strong> is one kind of statement. Each brings its own predicate list, its own predicate qualifiers, a statement class and a proposition class. Everything else (scope, hedging conventions, CARE, evidence lines, assessments, proposition derivation) is shared. Two groups exist today.</p>
+    <p>A <strong>predicate group</strong> is one kind of statement. Each brings its own predicate list, its own predicate qualifiers, a statement class and a proposition class. Everything else (scope, CARE, evidence lines, assessments, proposition derivation) is shared. There are seven groups. The one-question test that tells you which group a sentence belongs to is in <code>docs/annotation-tests.md</code>.</p>
     <h3>Causal (from CAMO)</h3>
     <div class="table-wrap"><table>
       <thead><tr><th>Predicate</th><th>Meaning</th><th>Rendered as</th></tr></thead>
@@ -138,12 +145,23 @@
       </tbody>
     </table></div>
     <p>Interaction statements relate population nodes and qualify the predicate with <code>effect_on_subject</code> and <code>effect_on_object</code> (<code>positive</code>, <code>negative</code>, <code>neutral</code>, <code>not_reported</code>): −/+ for predation, +/+ for mutualism, and so on.</p>
-    <p>Planned groups (occurrence, composition, TEK statements via IUS) will slot in the same way.</p>
+    <h3>Recommendation</h3>
+    <p>Guidance: a source tells someone to <strong>do, avoid or consider</strong> an action because of an outcome. One predicate, <code>suggested_to</code>, from an action or strategy node to an outcome node. Qualifiers: <code>guidance</code> (do, avoid, consider; part of identity), <code>deontic_force</code> (required, recommended, suggested, optional), <code>priority</code> and <code>timing_of_influence</code> on the source's own scale, and <code>contribution</code> (direct or precursor). <code>justified_by</code> cites the propositions the advice rests on, usually causal ones.</p>
+    <p>A prediction ("if sportfish are stocked, abundance will fall") is a <em>causal</em> statement with <code>modality: anticipated</code>, which the guidance cites. Predictions are never derived from guidance automatically.</p>
+    <h3>Tolerance</h3>
+    <p>The conditions under which an organism establishes, persists or performs. Predicates <code>tolerates</code>, <code>prefers</code>, <code>intolerant_of</code> and <code>has_habitat</code> (RO:0002303), from an organism node to a quality of an environmental material (pH of soil) or, for <code>has_habitat</code>, a habitat. Qualifiers: <code>range</code>, <code>optimum</code>, <code>class_value</code> (a value on a source scale such as a wetland indicator status), <code>response</code> (occurrence, growth, survival…) and <code>response_curve</code>. <code>explained_by</code> cites a mechanism. <code>place</code> is part of identity, because ratings are assigned by region; the range is not, so two sources giving different ranges share one proposition.</p>
+    <h3>Cost</h3>
+    <p>What carrying out an action took, in money or effort, after Iacona et al.'s five cost reporting standards. Predicates <code>incurs_cost</code> (object a cost category: total, labour, capital equipment, consumables, overhead) and <code>costs_relative_to</code> (object another action, with a ratio). Qualifiers include <code>amount</code> (value, ISO 4217 currency, price year), <code>effort</code>, <code>scale</code>, <code>phase</code>, <code>reporting_level</code> and <code>cost_basis</code>; <code>outcome_reported</code> points at the source's causal statements about what was achieved. <code>place</code>, <code>phase</code> and <code>reporting_level</code> are part of identity. Moving a cost to another place, year or currency is an explicit, versioned transfer that makes a new statement, never an edit.</p>
+    <h3>Implementation</h3>
+    <p>That a strategy or action <strong>was carried out</strong> at a site: <code>carried_out_at</code>, always assertional, with a period, a status (planned, in progress, completed, maintained, abandoned), the area treated, who did it, who funded it and any external ids such as agreement numbers. Reports of the same work are grouped into a <strong>project</strong> by their own rule: a shared external id, or the same strategy at the same site over overlapping periods. Each project is a record that keeps every claimant's figures, attributed, and an individual under <code>proj:</code>.</p>
+    <h3>Criteria</h3>
+    <p>That a site or project <strong>meets a named, versioned definition</strong> for a period: <code>qualifies_as</code> a concept such as <code>degraded_area</code> or <code>effective_restoration</code>, under a <code>criteria_set</code>, for an <code>assessed_period</code>. The verdict is the statement's <code>direction</code> (supports, disputes, neutral). A <strong>criteria set</strong> is an information record describing one body's definition, never an OWL definition, so a definition can change without any record being rewritten. "Degraded" with no definition named is context, not a criteria statement.</p>
+    <p>Further groups (occurrence, composition, TEK statements via IUS) can be added the same way, from schema annotations alone.</p>
   </section>
 
   <section id="statement">
     <h2>Anatomy of a statement</h2>
-    <p>Every annotated statement, in any group, shares these fields (from <code>EcoStatement</code> and SEPIO <code>Statement</code>):</p>
+    <p>Every annotated statement, in any group, shares these fields (from <code>EcoStatement</code> and SEPIO <code>Statement</code>). Each group adds its own <code>predicate_qualifiers</code>.</p>
     <div class="table-wrap"><table>
       <thead><tr><th>Field</th><th>Holds</th></tr></thead>
       <tbody>
@@ -159,6 +177,12 @@
         <tr><td><code>contributions</code></td><td>Who made the statement: at least one contribution with role <code>author</code>.</td></tr>
         <tr><td><code>recordMetadata</code></td><td>Who recorded it in EcoWeaver, and when (role <code>annotator</code>, <code>dateRecordCreated</code>).</td></tr>
         <tr><td><code>care</code></td><td>Consent, access and knowledge-holder metadata (<a href="#people">below</a>).</td></tr>
+        <tr><td><code>modality</code></td><td>Whether the statement reports what was observed, infers it, or forecasts it: <code>observed</code>, <code>inferred</code>, <code>anticipated</code>. Not hedging: a confident forecast is still anticipated.</td></tr>
+        <tr><td><code>context</code></td><td>Conditions under which the statement holds: scope conditions, geographic, temporal and ecosystem scope.</td></tr>
+        <tr><td><code>ecosystem_context</code></td><td>An IUCN Global Ecosystem Typology functional group, grounded in ELMO: a kind of ecosystem, not a place.</td></tr>
+        <tr><td><code>place</code></td><td>The region the statement is about, as an IRI (Wikidata, a gazetteer, ISO 3166-2).</td></tr>
+        <tr><td><code>temporal_extent</code></td><td>The timescale of the effect itself: duration, lag, observation grain and seasons.</td></tr>
+        <tr><td><code>specified_in</code></td><td>Plan documents the statement comes from, by id.</td></tr>
         <tr><td><code>hasEvidenceLines</code></td><td>The statement's own evidence lines (<a href="#evidence">below</a>).</td></tr>
         <tr><td><code>proposition</code></td><td><strong>Derived.</strong> Filled by the derivation script, never by annotators.</td></tr>
       </tbody>
@@ -170,9 +194,6 @@
         <tr><td><code>causal_language</code></td><td>Statement-level hedging, from CAMO (adapted from Yu et al. 2019): <code>direct_causal</code>, <code>uncertain_causal</code>, <code>associational</code>, <code>no_relationship</code>. Captures the text's commitment, not the strength of the evidence.</td></tr>
         <tr><td><code>predicate_qualifiers</code></td><td>What kind of causal relation is asserted (<a href="#qualifiers">below</a>).</td></tr>
         <tr><td><code>comparator</code></td><td>What the effect was assessed relative to, one entry per comparison arm: <code>untreated_control</code>, <code>reference_undisturbed</code>, <code>pre_treatment_baseline</code>, <code>alternative_treatment</code>, <code>passive_management_arm</code>, <code>spatial_or_temporal_control</code>, <code>not_reported</code>, <code>not_applicable</code>.</td></tr>
-        <tr><td><code>context</code></td><td>Conditions under which the statement holds: scope conditions, geographic, temporal and ecosystem scope.</td></tr>
-        <tr><td><code>ecosystem_context</code></td><td>An IUCN Global Ecosystem Typology functional group, grounded in ELMO.</td></tr>
-        <tr><td><code>temporal_extent</code></td><td>The timescale of the effect itself: duration, lag, observation grain and seasons.</td></tr>
         <tr><td><code>camo_edge_id</code></td><td>The CAMO edge this statement was migrated from, if any.</td></tr>
       </tbody>
     </table></div>
@@ -238,11 +259,22 @@
 
   <section id="identity">
     <h2>Propositions and identity</h2>
-    <p>Nobody writes propositions by hand (except open questions). A script groups statements under identity rule <strong><code>warp-prop-identity/3</code></strong>:</p>
+    <p>Nobody writes propositions by hand (except open questions). A script groups statements under identity rule <strong><code>warp-prop-identity/4</code></strong>:</p>
     <div class="callout note">
-      Two statements share a proposition when <strong>group, subject node, predicate, object node, negated and scope</strong> all match exactly.
+      Two statements share a proposition when <strong>group, subject node, predicate, object node, negated and scope</strong> all match exactly, plus the few fields a group declares as part of its identity.
     </div>
-    <p>Everything else stays on the statement and is aggregated, not used for identity: hedging, causal features, comparator, context, evidence.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Group</th><th>Also part of identity</th></tr></thead>
+      <tbody>
+        <tr><td>causal, interaction</td><td>nothing</td></tr>
+        <tr><td>recommendation</td><td><code>guidance</code> (do, avoid, consider)</td></tr>
+        <tr><td>tolerance</td><td><code>place</code></td></tr>
+        <tr><td>cost</td><td><code>place</code>, <code>phase</code>, <code>reporting_level</code></td></tr>
+        <tr><td>criteria</td><td><code>criteria_set</code>, <code>assessed_period</code> (rule <code>warp-criteria-identity/1</code>)</td></tr>
+        <tr><td>implementation</td><td>its own rule, <code>warp-impl-identity/1</code>: projects (<a href="#groups">above</a>)</td></tr>
+      </tbody>
+    </table></div>
+    <p>Everything else stays on the statement and is aggregated, not used for identity: hedging, causal features, comparator, context, ranges, amounts, evidence. A statement missing a declared identity field still groups with others missing it, and the derivation report counts it.</p>
     <h3>Same or different?</h3>
     <div class="table-wrap"><table>
       <thead><tr><th>Statement A</th><th>Statement B</th><th>Same proposition?</th></tr></thead>
@@ -250,8 +282,10 @@
         <tr><td>Planting bloodroot <em>prevents</em> GM growth rate, typical (paper 1, "reduces")</td><td>Same, typical (paper 2, "may reduce")</td><td><strong>Yes.</strong> Hedging differs, but it's not identity.</td></tr>
         <tr><td>…typical</td><td>…one plot (assertional)</td><td><strong>No.</strong> Scope differs.</td></tr>
         <tr><td>…prevents…</td><td>…does <em>not</em> prevent… (negated)</td><td><strong>No.</strong> They are opposite propositions; a synthesis weighs both.</td></tr>
-        <tr><td>…in temperate deciduous forest</td><td>…in oldfields</td><td><strong>Yes</strong>, under rule 3. Context isn't identity (yet; <a href="#open">see open decisions</a>).</td></tr>
+        <tr><td>…in temperate deciduous forest</td><td>…in oldfields</td><td><strong>Yes.</strong> Context isn't part of a causal proposition's identity (<a href="#open">see open decisions</a>).</td></tr>
         <tr><td>Causal: deer <em>prevents</em> X</td><td>Interaction: deer <em>eats</em> X</td><td><strong>No.</strong> Different group and predicate.</td></tr>
+        <tr><td>Recommendation: <em>do</em> prescribed burning for Y</td><td>Recommendation: <em>avoid</em> prescribed burning for Y</td><td><strong>No.</strong> Guidance is part of identity; both may cite the same causal proposition.</td></tr>
+        <tr><td>Tolerance: pH 6.0 to 8.5, Great Plains</td><td>Tolerance: pH 6.5 to 8.0, Great Plains</td><td><strong>Yes.</strong> Ranges aren't identity; the proposition carries both.</td></tr>
       </tbody>
     </table></div>
     <h3>What a derived proposition looks like</h3>
@@ -266,11 +300,11 @@
   derived_from_statements: [warp:statement/notebook-c1]
   status: asserted
   identity_key: causal|node:planting_of_...|prevents|node:rate_of_...|affirmed|assertional
-  identity_rule_version: warp-prop-identity/3</pre>
+  identity_rule_version: warp-prop-identity/4</pre>
     <h3>Open questions</h3>
     <p>A proposition written by people with <code>status: open_question</code> represents a question nobody has answered: an empty cell in an evidence gap map, or a practitioner's question in TREK. It keeps its chosen id. When a statement matches, it becomes <code>asserted</code>, its text is replaced by the rendered fact, and the original question is kept in <code>description</code>. If those statements go away, it reverts to <code>open_question</code>. It's never deleted by re-derivation.</p>
-    <h3>When the rule changes</h3>
-    <p>The identity rule is a modelling decision. Changing it regroups statements, so every proposition records the rule version that made it, and derived proposition ids change with each version (open-question ids don't). Version 1 had no group; version 2 added it; version 3 changed the non-negated key word from "asserted" to "affirmed" to avoid clashing with the proposition status.</p>
+    <h3>Versioned rules</h3>
+    <p>The identity rule is a modelling decision, so it is versioned, and every proposition records the rule version that made it. A proposition id is a hash of the identity key alone, not of the rule version: a new version changes a group's ids only if it changes that group's key, and open-question ids never change. The other derived records work the same way: canonical strategies (<code>warp-strategy-identity/1</code>), projects (<code>warp-impl-identity/1</code>) and transferred costs each record the rule that made them.</p>
   </section>
 
   <section id="evidence">
@@ -289,7 +323,7 @@
       </tbody>
     </table></div>
     <h3>Evidence types</h3>
-    <p>From CAMO. The Evidence and Conclusion Ontology (ECO) has no terms for most ecological study designs, so most are only broadly mapped to ECO for now; a joint term request is being prepared.</p>
+    <p>From CAMO, plus <code>not_stated</code>. The Evidence and Conclusion Ontology (ECO) has no terms for most ecological study designs, so most are only broadly mapped to ECO for now; a joint term request is being prepared.</p>
     <div class="table-wrap"><table>
       <thead><tr><th>Value</th><th>Meaning</th></tr></thead>
       <tbody>
@@ -307,6 +341,7 @@
         <tr><td><code>theoretical</code></td><td>Deduction from theory without empirical test</td></tr>
         <tr><td><code>practitioner_experience</code></td><td>Practitioner or land manager field experience</td></tr>
         <tr><td><code>indigenous_knowledge</code></td><td>Traditional ecological knowledge or Indigenous knowledge systems</td></tr>
+        <tr><td><code>not_stated</code></td><td>The source gives no basis (WARP's addition to CAMO's list)</td></tr>
       </tbody>
     </table></div>
     <h3>Study results</h3>
@@ -370,6 +405,22 @@
     </table></div>
   </section>
 
+  <section id="rdf">
+    <h2>RDF and OWL output</h2>
+    <p>WARP's output is RDF, and OWL wherever the content allows. It has two layers, and nothing mixes them:</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Layer</th><th>Holds</th><th>Read as</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Logical</strong></td><td>Node classes from templates, strategy classes, site and project individuals, and the few class axioms that pass the projection gate</td><td>OWL 2 EL, for a reasoner</td></tr>
+        <tr><td><strong>Reification</strong></td><td>Every statement, proposition, evidence line, qualifier, agent and document, as RDF</td><td>RDF, for SPARQL</td></tr>
+      </tbody>
+    </table></div>
+    <p>One IRI is one kind of thing: a <code>node:</code> IRI is always a class, a <code>site:</code> or <code>proj:</code> IRI always an individual. Statements point at node classes through annotation properties, so a reasoner never reads "Murphy and colleagues said X" as "X".</p>
+    <h3>The projection gate</h3>
+    <p>A proposition becomes an OWL axiom only when its scope is <code>universal</code>, it is not negated, every statement under it is <code>observed</code>, and a synthesis assessment supports it. OWL has no way to say "typically", so a prototypical proposition never becomes an axiom, however well supported. Recommendations, costs and criteria verdicts never project at any scope. On the worked examples nothing passes, which is the correct answer; a report says why for each proposition.</p>
+    <p>The full contract is in <code>docs/rdf-owl.md</code>.</p>
+  </section>
+
   <section id="suggest">
     <h2>Writing a precise suggestion</h2>
     <p>The <a href="basic.html#template">contributor template</a> is always fine. If you'd rather be exact, paste a statement in WARP's own format into the issue. Leave out <code>proposition</code> and <code>targetProposition</code> (they're derived), and don't invent node ids: describe new nodes in words, or propose a template filling.</p>
@@ -409,8 +460,8 @@
   </section>
 
   <section id="example">
-    <h2>Reading the worked example</h2>
-    <p>The repository's <code>examples/</code> folder walks through one case in three files:</p>
+    <h2>Reading the worked examples</h2>
+    <p>The repository's <code>examples/</code> folder walks through the bloodroot case in three files:</p>
     <div class="flow">
       <div class="box hl"><b>bloodroot_statements.yaml</b>What annotators produce: 3 agents, 4 nodes with template fillings, a published causal statement (typical), a practitioner's causal statement (one plot), a practitioner's negated interaction statement ("deer generally don't browse garlic mustard"), and one open question.</div>
       <div class="arrow">→</div>
@@ -419,6 +470,18 @@
       <div class="box"><b>bloodroot_assessment.yaml</b>A synthesis assessment of the general proposition, with an experimental and a practitioner evidence line.</div>
     </div>
     <p>Placeholders are marked <code>TODO</code>: the citation, verbatim quotes, numbers, Wikidata QIDs and the ELMO planting term.</p>
+    <p>The other sets, each with its derived file:</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Set</th><th>Shows</th></tr></thead>
+      <tbody>
+        <tr><td><code>kramer1995_statements.yaml</code></td><td>One real finding (Kramer et al. 1995), the case-report pattern</td></tr>
+        <tr><td><code>recommendation_statements.yaml</code></td><td>Guidance from recovery strategies; predictions as causal statements; do and avoid on one action</td></tr>
+        <tr><td><code>strategy_statements.yaml</code></td><td>Management strategies: two descriptions merging, parallel and optional parts, nesting</td></tr>
+        <tr><td><code>tolerance_statements.yaml</code></td><td>Ranges, class values on source scales, regional ratings, a suitability curve, a habitat</td></tr>
+        <tr><td><code>cost_statements.yaml</code></td><td>Costings after Iacona et al., a relative cost, strategy costs, an explicit transfer</td></tr>
+        <tr><td><code>implementation_statements.yaml</code></td><td>Sites, two reports of one project, criteria sets and verdicts</td></tr>
+      </tbody>
+    </table></div>
   </section>
 
   <section id="camo">
@@ -461,6 +524,6 @@
   </section>
 </main>
 </div>
-<footer>WARP 0.5.0 · <a href="camo.html">CAMO annotators</a> · Advanced guide · <a href="basic.html">Contributor</a> · <a href="mechanic.html">Mechanic</a></footer>
+<footer>WARP 0.7.0 · <a href="camo.html">CAMO annotators</a> · Advanced guide · <a href="basic.html">Contributor</a> · <a href="mechanic.html">Mechanic</a></footer>
 </body>
 </html>

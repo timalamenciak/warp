@@ -1,4 +1,4 @@
-"""The recommendation group (Phase 3; proposals section 5)."""
+"""The recommendation group (proposals section 5)."""
 
 import copy
 

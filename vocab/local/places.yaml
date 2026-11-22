@@ -1,0 +1,63 @@
+# Locally minted places: regions the examples need that have not yet been
+# matched to a registered place IRI.
+#
+# Part of the local term register (docs/terminology.md). scripts/gen_vocab.py
+# writes these as SKOS concepts to project/local_terms.ttl. docs/values.md
+# (section 3) says where to look for a registered IRI first: ISO 3166-2,
+# Wikidata, a gazetteer, an ENVO ecoregion. A local place is the last step on
+# that list.
+#
+# Every place here was minted before the register existed, so none has been
+# searched for yet (`not_checked`). Search, then either replace it everywhere
+# with the registered IRI (status accepted, replaced_by) or say why it stays.
+# The definitions describe how the examples use each place; they are not
+# boundaries.
+
+scheme:
+  id: local-places
+  label: WARP local places
+  prefix: place
+  kind: concept
+
+terms:
+  - id: europe
+    label: Europe
+    definition: >-
+      Europe, as the region a European indicator-value source covers in the
+      tolerance example.
+    upstream:
+      target: Wikidata
+      status: not_checked
+  - id: mediterranean-coastal-israel
+    label: Mediterranean coastal Israel
+    definition: >-
+      The Mediterranean coastal region of Israel, where the cost example's
+      invasive Acacia saligna control was carried out.
+    upstream:
+      target: Wikidata
+      status: not_checked
+  - id: northern-great-plains
+    label: northern Great Plains
+    definition: >-
+      The northern part of the North American Great Plains, as the tolerance
+      and cost examples use it.
+    upstream:
+      target: Wikidata
+      status: not_checked
+  - id: nwpl-great-plains
+    label: National Wetland Plant List Great Plains region
+    definition: >-
+      The Great Plains region of the US National Wetland Plant List, the
+      region a wetland indicator status rating applies to in the tolerance
+      example.
+    # A source's own regionalization: it may have no IRI outside the source,
+    # in which case it stays local (not_appropriate, a source's own wording).
+    upstream:
+      status: not_checked
+  - id: nwpl-midwest
+    label: National Wetland Plant List Midwest region
+    definition: >-
+      The Midwest region of the US National Wetland Plant List, the region a
+      wetland indicator status rating applies to in the tolerance example.
+    upstream:
+      status: not_checked

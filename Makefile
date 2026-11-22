@@ -44,18 +44,20 @@ ROBOT     ?= robot
 # Every generated Turtle file, for check_owl.py. Files that later phases add
 # are picked up by wildcard once they exist.
 OWL_FILES = project/nodes.ttl project/axioms.ttl project/statements.ttl \
-            project/warp.owl.ttl project/scales.ttl \
-            $(wildcard project/sites.ttl project/projects.ttl project/criteria_concepts.ttl) \
+            project/warp.owl.ttl project/scales.ttl project/local_terms.ttl \
+            $(wildcard project/sites.ttl project/projects.ttl project/local_classes.ttl) \
             $(RELATIONS)
 LOGICAL   = project/nodes.ttl project/axioms.ttl \
-            $(wildcard project/sites.ttl project/projects.ttl)
+            $(wildcard project/sites.ttl project/projects.ttl project/local_classes.ttl)
 
 .PHONY: all templates patterns vocab nodes derive validate check lint gen rdf owl \
-        owl-check reports test owl-dosdp clean
+        owl-check reports profiles profile profile-check test owl-dosdp clean
 
 # templates -> vocab -> nodes -> propositions -> schema OWL -> rdf -> owl ->
-# validate (shapes, references, OWL lint) -> checks -> profiles -> reports -> tests
-all: patterns vocab derive nodes gen rdf owl validate check owl-check reports test
+# validate (shapes, references, OWL lint) -> checks -> OWL profiles -> reports ->
+# predicate-group profiles -> tests
+all: patterns vocab derive nodes gen rdf owl validate check owl-check reports \
+     profiles profile-check test
 
 # --- Node templates ----------------------------------------------------------
 
@@ -70,10 +72,12 @@ patterns: templates
 	  [ $$f = patterns/prefixes.yaml ] || $(PY) -m dosdp validate -i $$f || exit 1; \
 	done
 
-# Source scales (and, later, criteria concepts) as SKOS.
+# Source scales as SKOS, and the local term register (vocab/local/,
+# docs/terminology.md): concepts as SKOS, local classes as OWL.
 vocab:
 	$(PY) scripts/gen_vocab.py vocab/scales.yaml --out project/scales.ttl \
-	  --criteria vocab/criteria_concepts.yaml --criteria-out project/criteria_concepts.ttl
+	  --local vocab/local --local-out project/local_terms.ttl \
+	  --classes-out project/local_classes.ttl
 
 # Expand node definitions: OWL (Turtle) + DOSDP fill tables. Reads the
 # derived sets, where canonical strategy nodes live.
@@ -178,9 +182,31 @@ reports: derive
 	  --degraded crit:degraded-area/fed-draft-1 --degraded crit:degraded-area/ref-ecosystem-1 \
 	  --effective crit:effective-restoration/fed-draft-1 --out project/reports/target2.md
 
+# --- Predicate-group profiles (config/profiles.yaml) -----------------------------
+
+# WARP restricted to some predicate groups: one schema and one relations file
+# per profile in project/profiles/ (committed, like the rest of project/).
+PROFILES_CONFIG := config/profiles.yaml
+PROFILE_NAMES = $(shell $(PY) scripts/subset_schema.py $(PROFILES_CONFIG) --list)
+
+profiles:
+	$(PY) scripts/subset_schema.py $(PROFILES_CONFIG) --out-dir project/profiles
+
+# Build and check one profile on its example sets: make profile PROFILE=causal.
+# Output in build/profiles/<name>/ (not committed).
+profile: profiles
+	@test -n "$(PROFILE)" || { echo "usage: make profile PROFILE=<name> (one of: $(PROFILE_NAMES))"; exit 1; }
+	$(PY) scripts/build_profile.py $(PROFILES_CONFIG) $(PROFILE) --owlgen-flags "$(OWLGEN_FLAGS)"
+
+# Every profile, as make all runs it.
+profile-check: profiles
+	for p in $(PROFILE_NAMES); do \
+	  $(PY) scripts/build_profile.py $(PROFILES_CONFIG) $$p --owlgen-flags "$(OWLGEN_FLAGS)" || exit 1; \
+	done
+
 # pytest suite under tests/.
 test:
 	$(PY) -m pytest -q tests
 
 clean:
-	rm -rf project examples/*.derived.yaml patterns/data patterns/*.yaml
+	rm -rf project build examples/*.derived.yaml patterns/data patterns/*.yaml

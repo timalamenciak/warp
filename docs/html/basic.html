@@ -28,6 +28,7 @@
     <li><a href="#template">The issue template</a></li>
     <li><a href="#things">Naming the two things</a></li>
     <li><a href="#relationship">Picking the relationship</a></li>
+    <li><a href="#kinds">Other kinds of statement</a></li>
     <li><a href="#scope">Picking the scope</a></li>
     <li><a href="#backing">What backs it up</a></li>
     <li><a href="#question">Suggesting a question</a></li>
@@ -41,10 +42,6 @@
 <main>
   <span class="eyebrow basic">Contributor guide</span>
   <h1>Suggesting a statement or a question</h1>
-  <div class="callout note">
-    <strong class="t">These pages describe WARP 0.5.0</strong>
-    The schema is now at 0.7.0: seven predicate groups, identity rule <code>warp-prop-identity/4</code>, enum values as IRIs, and RDF output. Until these pages are updated, the current descriptions are <code>README.md</code>, <code>docs/predicate-groups.md</code>, <code>docs/annotation-tests.md</code>, <code>docs/rdf-owl.md</code> and <code>docs/values.md</code>.
-  </div>
   <p class="lede">You know something about how an ecosystem works, from a paper, a report, your own field notes or your community's knowledge, and you'd like it in EcoWeaver. This page tells you what to write in an issue. You don't need to know anything about schemas, files or code.</p>
 
   <section id="what">
@@ -80,7 +77,7 @@
       <li><strong>Is it one relationship?</strong> "A affects B" is one statement. "A affects B, which affects C" is two. A paper with five findings is five statements; list them in one issue if you like, numbered.</li>
       <li><strong>Can you point to where it comes from?</strong> A citation or DOI, a report, a dataset, or "my own field notes, spring 2025". Your own observation is a perfectly good source.</li>
       <li><strong>Is it yours, or are you allowed to share it?</strong> GitHub issues are public. Read <a href="#knowledge">your own and community knowledge</a> before posting anything a community holds.</li>
-      <li><strong>Is it about ecology?</strong> WARP handles cause-and-effect statements ("planting X reduces Y") and interactions between organisms ("deer eat X"). Other kinds of statement are planned; if yours doesn't fit, file it anyway and say so.</li>
+      <li><strong>What kind of statement is it?</strong> Most are cause and effect ("planting X reduces Y") or interactions between organisms ("deer eat X"). WARP also records advice, the conditions a species tolerates, what an action cost, work carried out at a site, and whether a site meets a named definition: see <a href="#kinds">other kinds of statement</a>. If yours doesn't fit any of them, file it anyway and say so.</li>
     </ul>
   </section>
 
@@ -174,6 +171,22 @@
       </tbody>
     </table></div>
     <p>For interactions, it also helps to say whether each side benefits, is harmed, or is unaffected, if the source says.</p>
+  </section>
+
+  <section id="kinds">
+    <h2>Other kinds of statement</h2>
+    <p>Not everything is cause and effect. Use the same issue template, write the kind in the title (<em>Statement (cost): …</em>), and add what the last column asks for. Leave the relationship line blank if none of the words above fits.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Kind</th><th>Sounds like</th><th>Also tell us</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Advice</strong></td><td>"Avoid stocking sportfish in the Milk River." Someone is told what to do, avoid or consider.</td><td>Do, avoid or consider; how strongly it's worded (required, recommended, suggested); any priority the source gives, and the reason it gives.</td></tr>
+        <tr><td><strong>Tolerance</strong></td><td>"Grows on soils of pH 5.5 to 8." The conditions an organism can live under, prefers or can't stand, or its habitat.</td><td>The range or value and its unit, or the source's own rating scale; the region it applies to.</td></tr>
+        <tr><td><strong>Cost</strong></td><td>"Treating 600 ha took two seasons and cost NIS 17,600." What an action took, in money or effort.</td><td>The amount, currency and the year the prices are from; the area or scale; whether it was set-up or upkeep; what the source says was achieved.</td></tr>
+        <tr><td><strong>Work done at a site</strong></td><td>"We recontoured and seeded 42 ha of the site in 2024." Something was actually done (or is firmly scheduled) at a particular place.</td><td>The site, the dates, the area treated, who did it and who paid, and any agreement or project number.</td></tr>
+        <tr><td><strong>Meets a definition</strong></td><td>"Under the 2023 provincial definition, the site counted as degraded." A named, versioned definition applied to a site or project.</td><td>Which definition and its version, the period assessed, and the verdict (meets it, doesn't, or can't tell).</td></tr>
+      </tbody>
+    </table></div>
+    <p>A sentence can be two kinds at once. "Avoid stocking sportfish, because they reduce Mountain Sucker numbers" is advice <em>and</em> a cause-and-effect statement; we record both and link them. "Should be done" is advice; "was done" is work at a site.</p>
   </section>
 
   <section id="scope">
@@ -274,7 +287,7 @@
     <ol>
       <li><strong>A maintainer records it.</strong> They'll match your two things to EcoWeaver's existing nodes (or create new ones), and may ask about scope, wording or sharing.</li>
       <li><strong>It's checked.</strong> Automatic checks make sure every reference resolves, the right people are credited, and community knowledge carries its consent and sharing information.</li>
-      <li><strong>It's grouped.</strong> If other statements say the same thing (same two things, same relationship, same yes/no, same scope), they're grouped under one shared proposition. If yours matches an open question, the question is marked as asserted.</li>
+      <li><strong>It's grouped.</strong> If other statements say the same thing (same two things, same relationship, same yes/no, same scope, and for some kinds the same region or the same do/avoid), they're grouped under one shared proposition. If yours matches an open question, the question is marked as asserted.</li>
       <li><strong>It may feed a synthesis.</strong> EcoWeaver's syntheses weigh all the statements about a proposition and grade how certain the evidence is.</li>
     </ol>
     <p>Curious how any of that works? The <a href="advanced.html">advanced guide</a> explains it all, still without code.</p>
@@ -294,6 +307,6 @@
   </section>
 </main>
 </div>
-<footer>WARP 0.5.0 · <a href="camo.html">CAMO annotators</a> · Contributor guide · <a href="advanced.html">Advanced</a> · <a href="mechanic.html">Mechanic</a></footer>
+<footer>WARP 0.7.0 · <a href="camo.html">CAMO annotators</a> · Contributor guide · <a href="advanced.html">Advanced</a> · <a href="mechanic.html">Mechanic</a></footer>
 </body>
 </html>

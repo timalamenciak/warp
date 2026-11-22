@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Check identifiers, units, places, scales and dates in WARP statement sets.
 
-    python scripts/check_values.py FILE.yaml [FILE.yaml ...] [--schema PATH] [--scales PATH]
+    python scripts/check_values.py FILE.yaml [FILE.yaml ...] [--schema PATH] [--scales PATH] [--local DIR]
 
 Schema-driven: every slot whose range is a CURIE type, an identifier, or a
 reference to another record is checked, so new groups and value classes are
@@ -19,6 +19,10 @@ covered without code changes. Errors (exit status 1):
     be UO, QUDT, a scale or TODO; places must come from a registered place
     scheme (docs/values.md).
   - QuantityRange with min greater than max.
+  - A local IRI (under concept:, place: or term:) that is not in the local
+    term register (vocab/local/), or whose register entry is deprecated
+    because the term is now upstream: the error names the replacement
+    (docs/terminology.md).
   - ScaledValue whose scale is not registered in vocab/scales.yaml, whose
     concept is not in that scale, which has a concept but no scale, or which
     uses the `practitioner-free` pseudo-scale (a practitioner's wording goes in
@@ -36,17 +40,20 @@ import yaml
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import warp_schema as ws  # noqa: E402
 import warp_time  # noqa: E402
-from gen_vocab import load_scales, scale_index  # noqa: E402
+from gen_vocab import load_register, load_scales, register_bases, register_index, scale_index  # noqa: E402
 
 DEFAULT_SCALES = ws.ROOT / "vocab" / "scales.yaml"
+DEFAULT_LOCAL = ws.ROOT / "vocab" / "local"
 PLACEHOLDER_MARKERS = ("TODO", "<", ">")
 
 
 class ValueChecker:
-    def __init__(self, sv, scales_path=DEFAULT_SCALES):
+    def __init__(self, sv, scales_path=DEFAULT_SCALES, local_path=DEFAULT_LOCAL):
         self.sv = sv
         self.pm = ws.prefix_map(sv)
         self.scales, self.not_scales = scale_index(load_scales(scales_path))
+        self.local = register_index(load_register(local_path, self.pm))
+        self.local_bases = register_bases(self.pm)
         self.errors = []
 
     def error(self, where, msg):
@@ -56,6 +63,7 @@ class ValueChecker:
 
     def curie(self, where, value, allowed=None):
         if ws.is_absolute(value):
+            self.local_term(where, value)
             return
         if ":" not in value:
             self.error(where, f"{value!r} is not a CURIE (no prefix); in RDF it would be a relative IRI")
@@ -71,6 +79,18 @@ class ValueChecker:
             self.error(where, f"{value!r}: {prefix} is an OBO ontology and its IDs are numeric")
         if allowed and prefix not in allowed:
             self.error(where, f"{value!r} uses prefix {prefix!r}; allowed here: {', '.join(sorted(allowed))}")
+        self.local_term(where, value)
+
+    def local_term(self, where, value):
+        iri = ws.expand(value, self.pm)
+        if not iri.startswith(self.local_bases):
+            return
+        entry = self.local.get(iri)
+        if entry is None:
+            self.error(where, f"{value} is a local term but is not in the register (vocab/local/); "
+                              "add it there (docs/terminology.md)")
+        elif entry["deprecated"]:
+            self.error(where, f"{value} is deprecated: the term is now upstream; use {entry['replaced_by']}")
 
     # -- value classes ------------------------------------------------------
 
@@ -152,9 +172,10 @@ def main(argv=None):
     parser.add_argument("files", type=Path, nargs="+")
     parser.add_argument("--schema", type=Path, default=ws.DEFAULT_SCHEMA)
     parser.add_argument("--scales", type=Path, default=DEFAULT_SCALES)
+    parser.add_argument("--local", type=Path, default=DEFAULT_LOCAL, help="the local term register")
     args = parser.parse_args(argv)
 
-    checker = ValueChecker(ws.load(args.schema), args.scales)
+    checker = ValueChecker(ws.load(args.schema), args.scales, args.local)
     for f in args.files:
         checker.check_set(f.name, yaml.safe_load(f.read_text(encoding="utf-8")) or {})
     for e in checker.errors:

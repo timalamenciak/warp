@@ -1,4 +1,4 @@
-"""Management strategy nodes (Phase 4; proposals section 6)."""
+"""Management strategy nodes (proposals section 6)."""
 
 import copy
 import subprocess

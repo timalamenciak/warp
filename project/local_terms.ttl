@@ -1,0 +1,65 @@
+@prefix concept: <https://w3id.org/ecoweaver/warp/concept/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix place: <https://w3id.org/ecoweaver/warp/place/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+
+<https://w3id.org/ecoweaver/warp/ontology/local_terms> a owl:Ontology ;
+    rdfs:label "WARP local terms" ;
+    owl:versionInfo "warp-local-terms/1" .
+
+concept:degraded_area a skos:Concept ;
+    skos:definition "An area whose ecological condition is judged, under some named and versioned definition, to have declined relative to a reference."@en ;
+    skos:editorialNote "Local by design, not upstreamed: A WARP design decision (D14): the concept only names what a criteria set defines. Its meaning is whichever versioned criteria set is applied, so there is no single definition to give an ontology."@en ;
+    skos:inScheme concept:criteria-concepts ;
+    skos:prefLabel "degraded area"@en .
+
+concept:effective_restoration a skos:Concept ;
+    skos:definition "Restoration judged, under some named and versioned definition, to be achieving or to have achieved its intended recovery."@en ;
+    skos:editorialNote "Local by design, not upstreamed: A WARP design decision (D14): the concept only names what a criteria set defines. Its meaning is whichever versioned criteria set is applied, so there is no single definition to give an ontology."@en ;
+    skos:inScheme concept:criteria-concepts ;
+    skos:prefLabel "effective restoration"@en .
+
+place:europe a skos:Concept ;
+    skos:definition "Europe, as the region a European indicator-value source covers in the tolerance example."@en ;
+    skos:editorialNote "Upstream: Wikidata; status not_checked."@en ;
+    skos:inScheme place:local-places ;
+    skos:prefLabel "Europe"@en .
+
+place:mediterranean-coastal-israel a skos:Concept ;
+    skos:definition "The Mediterranean coastal region of Israel, where the cost example's invasive Acacia saligna control was carried out."@en ;
+    skos:editorialNote "Upstream: Wikidata; status not_checked."@en ;
+    skos:inScheme place:local-places ;
+    skos:prefLabel "Mediterranean coastal Israel"@en .
+
+place:northern-great-plains a skos:Concept ;
+    skos:definition "The northern part of the North American Great Plains, as the tolerance and cost examples use it."@en ;
+    skos:editorialNote "Upstream: Wikidata; status not_checked."@en ;
+    skos:inScheme place:local-places ;
+    skos:prefLabel "northern Great Plains"@en .
+
+place:nwpl-great-plains a skos:Concept ;
+    skos:definition "The Great Plains region of the US National Wetland Plant List, the region a wetland indicator status rating applies to in the tolerance example."@en ;
+    skos:editorialNote "Upstream: no target chosen; status not_checked."@en ;
+    skos:inScheme place:local-places ;
+    skos:prefLabel "National Wetland Plant List Great Plains region"@en .
+
+place:nwpl-midwest a skos:Concept ;
+    skos:definition "The Midwest region of the US National Wetland Plant List, the region a wetland indicator status rating applies to in the tolerance example."@en ;
+    skos:editorialNote "Upstream: no target chosen; status not_checked."@en ;
+    skos:inScheme place:local-places ;
+    skos:prefLabel "National Wetland Plant List Midwest region"@en .
+
+concept:criteria-concepts a skos:ConceptScheme ;
+    skos:hasTopConcept concept:degraded_area,
+        concept:effective_restoration ;
+    skos:prefLabel "WARP criteria concepts"@en .
+
+place:local-places a skos:ConceptScheme ;
+    skos:hasTopConcept place:europe,
+        place:mediterranean-coastal-israel,
+        place:northern-great-plains,
+        place:nwpl-great-plains,
+        place:nwpl-midwest ;
+    skos:prefLabel "WARP local places"@en .
+

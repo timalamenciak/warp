@@ -134,7 +134,7 @@ def refinements(defn, template):
 
 
 def expand_strategies(g, data, templates, prefixes, names, seen, problems):
-    """Write each canonical management strategy as an OWL class (Phase 4).
+    """Write each canonical management strategy as an OWL class.
 
     `<strategy> rdfs:subClassOf <parent_class>` and one
     `rdfs:subClassOf [ owl:onProperty <part_property> ; owl:someValuesFrom <part> ]`

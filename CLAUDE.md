@@ -1,17 +1,20 @@
 # CLAUDE.md
 
 Working notes for anyone (person or Claude Code session) changing WARP. Read
-this before touching the schema, a script or an example. The build plan for
-the current round of work is `docs/proposals/warp-0.4-dev-guide.md`; the
-reference for every slot and enum is `docs/proposals/warp-0.4-reference.html`;
-the graph contract is `docs/rdf-owl.md`. The proposals themselves are
-`docs/proposals/warp-proposals-0.4.html`.
+this before touching the schema, a script or an example. The design record is
+in `docs/proposals/`: the build guide and its decisions
+(`warp-0.4-dev-guide.md`), the reference for every slot and enum
+(`warp-0.4-reference.html`) and the proposals themselves
+(`warp-proposals-0.4.html`); "0.4" names the proposal round, not a release.
+The graph contract is `docs/rdf-owl.md`.
 
 ## Running the build
 
 - `make all` runs patterns → vocab → derive → nodes → gen → rdf → owl →
-  validate → check → owl-check → reports → test. It takes five to nine
-  minutes on the development machine.
+  validate → check → owl-check → reports → profiles → profile-check → test.
+  It takes six to ten minutes on the development machine.
+- `make profile PROFILE=causal` builds and checks one predicate-group
+  profile (`config/profiles.yaml`) into `build/profiles/` (not committed).
 - `make test` runs the pytest suite in `tests/` (one to two minutes; some
   tests read the generated files in `project/`, so run `make all` first after
   changing the schema).
@@ -41,6 +44,9 @@ the graph contract is `docs/rdf-owl.md`. The proposals themselves are
   cannot be expressed as an identity key.
 - **Examples are illustrative.** Mark placeholders with TODO. Never invent DOIs,
   ontology IDs or figures that could pass as real.
+- **Choose terms by `docs/terminology.md`**: an ontology term, else a local
+  term in `vocab/local/` with its upstream status (a plan to upstream it, or
+  why not), and text only where a slot allows it.
 - **Use only ontology CURIEs you have verified.** Otherwise use a placeholder
   under the `TODO:` prefix (`TODO:planting`, never `ELMO:TODO_planting`) and add
   it to `TODOS.md`. Nothing under a real ontology's prefix is invented. Offline,
@@ -56,25 +62,25 @@ the graph contract is `docs/rdf-owl.md`. The proposals themselves are
   proposals say `Claim`, `ClaimSet`, `RecommendationClaim`. Use the code's
   names everywhere (Q1). Where a proposal sketch says `claimant`, the code's
   equivalent is a contribution with role `author`.
-- **Versions.** The 0.4 proposal round ships as 0.6.0 (after Phase 2.5) and
-  0.7.0 (after Phase 7), never as 0.4.0 (Q15b).
+- **Versions.** The schema version is in `warp.yaml` (`version`), mirrored in
+  `warp_templates.yaml`, `warp-relations.ttl` and the examples'
+  `profile_version`. Change them together.
 - **Ask before adding a dependency** to `requirements.txt`.
 
-## Definition of done (every phase)
+## Definition of done (every change)
 
-- `make all` passes, including tests, reference checks and `make owl-check`
-  (from Phase 2.5 on).
+- `make all` passes, including tests, reference checks and `make owl-check`.
 - Existing examples still validate. If any derived ID changed, say which and
   why.
-- Every IRI the phase introduces has exactly one kind (class, individual,
+- Every IRI the change introduces has exactly one kind (class, individual,
   object property, annotation property, datatype), and `scripts/check_owl.py`
-  is clean (from Phase 2.5 on).
-- An entry in `CHANGELOG.md` under the unreleased version, naming the phase.
-- Docs updated where the phase changed behaviour (`README.md`, `docs/*.md`).
+  is clean.
+- An entry in `CHANGELOG.md` under the unreleased version.
+- Docs updated where the change altered behaviour (`README.md`, `docs/*.md`).
 - Open questions not resolved are added to `TODOS.md`, citing the proposal and
-  its question number.
+  its question number where there is one.
 - Tests for every new rule, check and script.
-- One commit: `warp 0.4: <phase name>`.
+- One commit per change, its message naming the change.
 
 ## How the code works
 
@@ -99,11 +105,11 @@ proposition text.
 
 ### Proposition identity and IDs
 
-Rule `warp-prop-identity/4` (constant `RULE_VERSION`; rule 3 until 0.6.0).
+Rule `warp-prop-identity/4` (constant `RULE_VERSION`).
 The key is `"|".join([group, subject, predicate, object,
 "negated"|"affirmed", scope])`, followed by `path=<canonical JSON>` for each
 of the group's `warp_identity_extras` (missing extras are `null`). Causal and
-interaction declare no extras, so their keys are what they were under rule 3.
+interaction declare no extras, so their keys are the six shared fields.
 The proposition ID is `"warp:prop/" + sha1(key)[:12]`. **The rule version is
 not part of the hash** (it is recorded on the proposition as
 `identity_rule_version`), so a rule change that leaves a group's key string
@@ -119,10 +125,10 @@ people with `status: open_question` keep their IDs.
   `recordMetadata`, `reportedIn`, `dateAuthored`.
 - Top-level slot from the profile: `scope`.
 - Inline attributes on `EcoStatement`: `original_text`, `source_spans`, `care`.
-- Inline attributes on `CausalStatement` (0.5.0): `negated`, `causal_language`,
-  `predicate_qualifiers`, `comparator`, `context`, `ecosystem_context`,
-  `temporal_extent`, `camo_edge_id`. Phase 1 promotes `context`,
-  `ecosystem_context` and `temporal_extent` to shared slots.
+- Inline attributes on `CausalStatement`: `negated`, `causal_language`,
+  `predicate_qualifiers`, `comparator`, `camo_edge_id`.
+- Shared slots on `EcoStatement`: `modality`, `context`, `ecosystem_context`,
+  `place`, `temporal_extent`, `specified_in`.
 
 ### Claimant
 
@@ -140,7 +146,7 @@ pipeline, as claimant of `SynthesisAssessment`s, is the agent
   Ecosystem Typology functional groups (110 values). A kind of ecosystem, not
   a place: places go in `place`.
 
-### Shared helpers (0.6.0)
+### Shared helpers
 
 - `scripts/warp_schema.py`: cached SchemaView, the prefix map of the profile
   and its imports, CURIE expansion, and `walk()`, which yields every slot
@@ -150,7 +156,10 @@ pipeline, as claimant of `SynthesisAssessment`s, is the agent
   bounds, and period overlap. Never compare date strings.
 - `scripts/check_values.py`: CURIEs, units, places, scales and dates. Slots
   restrict their prefixes with a `warp_allowed_prefixes` annotation.
-- `scripts/gen_vocab.py`: `vocab/scales.yaml` to SKOS.
+- `scripts/gen_vocab.py`: `vocab/scales.yaml` to SKOS, and the local term
+  register `vocab/local/` to SKOS concepts (`concept:`, `place:`) and OWL
+  classes (`term:`). `load_register()` and `register_index()` give any check
+  the registered local IRIs.
 
 ### Templates to OWL and DOSDP
 
@@ -164,7 +173,7 @@ pipeline, as claimant of `SynthesisAssessment`s, is the agent
   an `owl:equivalentClass` intersection to `project/nodes.ttl`, plus DOSDP fill
   tables in `patterns/data/`.
 
-### RDF and OWL (0.6.0)
+### RDF and OWL
 
 - `project/warp.owl.ttl`: `gen-owl $(OWLGEN_FLAGS)` then `scripts/clean_owl.py`
   (eight reported jobs; see `docs/rdf-owl.md` §9.1). Enum values are
@@ -184,7 +193,7 @@ pipeline, as claimant of `SynthesisAssessment`s, is the agent
   kind of value (literal vs IRI), give the new one its own `slot_uri`, or
   `check_owl.py` will report the IRI as two kinds.
 
-### Derivation (0.7.0)
+### Derivation
 
 `make derive`, per statement set: `derive_strategies.py IN OUT` (canonical
 strategies, references rewritten; superseded IDs in `replaces`) →
@@ -197,7 +206,22 @@ statement) are computed by running derivation once and pasting the ID, as the
 examples do. `tests/test_derived_ids.py` fails if any committed derived file
 is stale.
 
-### Group-specific scripts (0.7.0)
+### Profiles
+
+- `scripts/subset_schema.py` reads `config/profiles.yaml` and writes
+  `project/profiles/warp_<name>.yaml` and `warp-relations_<name>.ttl`: the
+  shared core, the named groups, the named optional lists, and anything they
+  reach (ranges, is_a, mixins, class slots, slot_usage keys, recursively).
+  Group lists come from the registry annotations; no group is named in code.
+  An all-groups profile must reproduce `warp.yaml` exactly (tested).
+- `scripts/build_profile.py` runs the core pipeline with `--schema` on a
+  profile and fails if its derived records differ from the full build's.
+- Every script that reads the schema takes `--schema`, and must work when a
+  group it knows about is absent (as `derive_projects.py` does without the
+  implementation group). Profiles change no IRI, so never give a profile's
+  elements their own URIs.
+
+### Group-specific scripts
 
 - Checks, in `make validate`: `check_tolerance.py` (object kind per
   predicate, curves), `check_cost.py` (per-predicate cost rules),
@@ -213,26 +237,10 @@ is stale.
 - `check_statements.py` allows `direction` on a statement class whose schema
   requires it (criteria verdicts) and enum-valued subjects or objects.
 
-### Where each kind of OWL entity came from (0.5.0, before the contract)
+## Where the proposals' sketches differ from the code
 
-- `project/nodes.ttl` (`expand_nodes.py`): node classes, the object properties
-  used in their definitions, `IAO:0000115` and `dcterms:conformsTo` as
-  annotation properties. No `owl:Ontology` header in 0.5.0.
-- `project/warp.owl.ttl` (`gen-owl`): every class, slot and enum of the
-  profile and both upstreams. Enum values, including predicate IRIs such as
-  `RO:0002470`, come out as `owl:Class` with `rdfs:subClassOf` the enum, and
-  each enum class carries `owl:unionOf` directly. Enum-ranged slots are
-  `owl:ObjectProperty` with the enum class as range, while data writes
-  literals for them.
-- Nothing generates RDF for statements or propositions in 0.5.0:
-  `examples/kramer1995.ttl` is hand-written and is the specification for
-  `export_rdf.py`. It uses node class IRIs as objects of `sepio:subject`,
-  which would pun them as individuals if `sepio:subject` were an object
-  property.
-
-## Where the 0.4 proposals' sketches differ from the code
-
-Listed in Phase 0 and resolved in the phases that touch them:
+The proposals were written before the code settled. Read their sketches with
+these translations:
 
 - `Claim`, `ClaimSet`, `causal_claims`, `RecommendationClaim` → `Statement`,
   `StatementSet`, `causal_statements`, `RecommendationStatement` (Q1).
@@ -258,6 +266,5 @@ Listed in Phase 0 and resolved in the phases that touch them:
   `EcosystemFunctionalGroupEnum` values → `place` (D18, R19).
 - Units such as `UO:hectare`, `ha`, `protected_area` → verified CURIEs or
   `TODO:` placeholders, and counts as `Count` (R20).
-- The identity rule is already `warp-prop-identity/3` in 0.5.0 (the guide was
-  written against 0.3.0, where it was v2), so the per-group extras rule is
-  `warp-prop-identity/4`, not v3.
+- The guide calls the per-group extras rule v3; in the code it is
+  `warp-prop-identity/4`.

@@ -1,6 +1,6 @@
 # WARP relations: every predicate WARP mints, declared once (decision D13).
 #
-# HAND-MAINTAINED. Never generated. Each predicate-group phase adds its own
+# HAND-MAINTAINED. Never generated. Each predicate group adds its own
 # predicates here and touches nothing else. Contract: docs/rdf-owl.md.
 #
 # Rules for this file:
@@ -90,12 +90,12 @@ warp:derived_from a owl:AnnotationProperty ;
 # Predicate groups
 # =============================================================================
 
-# --- causal (0.2) -------------------------------------------------------------
+# --- causal -------------------------------------------------------------------
 # CAMO predicates (camo:causes, camo:prevents, ...; biolink:precedes) are
 # reused, never re-declared here. Subject and object: node classes.
 # Polarity: `negated` only; a negated statement exports no relation triple.
 
-# --- interaction (0.2) ---------------------------------------------------------
+# --- interaction ---------------------------------------------------------------
 # RO predicates (RO:0002437 biotically interacts with, RO:0002470 eats,
 # RO:0002455 pollinates, RO:0002444 parasite of) are reused, never
 # re-declared here. Subject and object: population node classes.
@@ -107,7 +107,7 @@ warp:selected_by a owl:AnnotationProperty ;
     obo:IAO_0000115 "The qualifier value (an enum value IRI) for which export_rdf.py writes this sub-property in place of its abstract parent." ;
     rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
 
-# --- recommendation (0.7.0; docs/proposals/warp-proposals-0.4.html, s. 5) ---
+# --- recommendation (docs/proposals/warp-proposals-0.4.html, s. 5) ---
 # Subject: an action or strategy node class. Object: an outcome node class.
 # Polarity: `guidance` (do / avoid / consider) picks the sub-property.
 # Projected to OWL: nothing, at any scope. Guidance is deontic, and "you
@@ -141,7 +141,7 @@ warp:suggested_for_consideration a owl:ObjectProperty ;
     warp:selected_by <https://w3id.org/ecoweaver/warp/GuidanceEnum#consider> ;
     rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
 
-# --- management strategies (0.7.0; proposal section 6) -------------------------
+# --- management strategies (proposal section 6) -------------------------
 # The part relation is reused from BFO/RO, not minted: BFO:0000051 has part
 # (checked in the local ECOCORE imports). It is transitive in RO, which is
 # what makes the derivation's one-level flattening agree with the OWL: a
@@ -154,7 +154,7 @@ warp:suggested_for_consideration a owl:ObjectProperty ;
 #                             [ owl:onProperty BFO:0000051 ; owl:someValuesFrom <action> ] .
 # Subclass, never equivalent class (D6): see docs/rdf-owl.md section 8.
 
-# --- tolerance (0.7.0; docs/proposals/warp-proposals-0.4.html section 7) ------
+# --- tolerance (docs/proposals/warp-proposals-0.4.html section 7) ------
 # Subject: an organism node class (taxon, population or life stage).
 # Object: the kind VARIES BY PREDICATE, so no range is declared here:
 # tolerates, prefers and intolerant_of take a quality_of_environmental_material
@@ -181,7 +181,7 @@ warp:intolerant_of a owl:ObjectProperty ;
     obo:IAO_0000115 "The organism fails to establish, persist or reproduce when the environmental variable is within the stated range." ;
     rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
 
-# --- cost (0.7.0; docs/proposals/warp-proposals-0.4.html section 8) -----------
+# --- cost (docs/proposals/warp-proposals-0.4.html section 8) -----------
 # A cost is three things at once: an action, a category and an amount. The
 # only relation among them is action-to-amount, so the category moves into the
 # predicate and the amount is the object (D16):
@@ -239,7 +239,7 @@ warp:costs_relative_to a owl:ObjectProperty ;
     obo:IAO_0000115 "The subject action costs a stated multiple of the object action, for the same objective and scale. The multiple is the statement's ratio." ;
     rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
 
-# --- implementation (0.7.0; docs/proposals/warp-proposals-0.4.html, s. 9) ---
+# --- implementation (docs/proposals/warp-proposals-0.4.html, s. 9) ---
 # Subject: a strategy or action node CLASS. Object: a site INDIVIDUAL. A class
 # to an individual: so it is asserted only in the reification layer
 # (statements.ttl). The claim records that a kind of work was done at a
@@ -263,7 +263,7 @@ warp:period_end a owl:AnnotationProperty ;
     obo:IAO_0000115 "The first instant after a project's period, as xsd:dateTime (the upper bound of its ISO 8601 end). Absent while the work is ongoing." ;
     rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
 
-# --- sites (0.7.0) --------------------------------------------------------------
+# --- sites ----------------------------------------------------------------------
 # On site individuals (sites.ttl). A jurisdiction with an ISO 3166-2 code is an
 # IRI (in_jurisdiction); one without, as for many Indigenous territories, is a
 # literal (jurisdiction_name). Two properties, because one property cannot
@@ -279,7 +279,7 @@ warp:jurisdiction_name a owl:AnnotationProperty ;
     obo:IAO_0000115 "The name of the jurisdiction a site lies in, where it has no code to make an IRI of." ;
     rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
 
-# --- criteria (0.7.0) ------------------------------------------------------------
+# --- criteria --------------------------------------------------------------------
 # Subject: a site or project INDIVIDUAL. Object in the relation layer: the
 # CRITERIA SET (crit:...), not the concept, the one place where the exported
 # object is not the annotated object. The concept is recoverable through the

@@ -116,10 +116,10 @@ node:strategy-ab075dde135f a owl:Class ;
             owl:someValuesFrom node:removal_of_invasive_shrubs ],
         [ a owl:Restriction ;
             owl:onProperty BFO:0000051 ;
-            owl:someValuesFrom node:hand_seeding_native_mix_a ],
+            owl:someValuesFrom node:earthworks_recontouring ],
         [ a owl:Restriction ;
             owl:onProperty BFO:0000051 ;
-            owl:someValuesFrom node:earthworks_recontouring ],
+            owl:someValuesFrom node:hand_seeding_native_mix_a ],
         OBI:0000011 .
 
 node:strategy-f38f3a2661ee a owl:Class ;

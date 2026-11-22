@@ -1342,7 +1342,7 @@
                 },
                 "ecosystem_context": {
                     "$ref": "#/$defs/EcosystemFunctionalGroupEnum",
-                    "description": "The KIND of ecosystem the statement is about, as one of CAMO's IUCN Global Ecosystem Typology functional groups (warm_temperate_forests, coastal_saltmarshes_and_reedbeds). Not a place: \"Florida\" or \"the Mediterranean coast of Israel\" go in `place`. Every 0.4 proposal example confused the two (R19)."
+                    "description": "The KIND of ecosystem the statement is about, as one of CAMO's IUCN Global Ecosystem Typology functional groups (warm_temperate_forests, coastal_saltmarshes_and_reedbeds). Not a place: \"Florida\" or \"the Mediterranean coast of Israel\" go in `place` (R19)."
                 },
                 "extensions": {
                     "description": "A list of extensions to the Entity, that allow for capture of information not directly supported by elements defined in the model.",
@@ -2578,7 +2578,7 @@
                 },
                 "ecosystem_context": {
                     "$ref": "#/$defs/EcosystemFunctionalGroupEnum",
-                    "description": "The KIND of ecosystem the statement is about, as one of CAMO's IUCN Global Ecosystem Typology functional groups (warm_temperate_forests, coastal_saltmarshes_and_reedbeds). Not a place: \"Florida\" or \"the Mediterranean coast of Israel\" go in `place`. Every 0.4 proposal example confused the two (R19)."
+                    "description": "The KIND of ecosystem the statement is about, as one of CAMO's IUCN Global Ecosystem Typology functional groups (warm_temperate_forests, coastal_saltmarshes_and_reedbeds). Not a place: \"Florida\" or \"the Mediterranean coast of Israel\" go in `place` (R19)."
                 },
                 "extensions": {
                     "description": "A list of extensions to the Entity, that allow for capture of information not directly supported by elements defined in the model.",
@@ -2948,7 +2948,7 @@
             "type": "object"
         },
         "CriteriaConceptEnum": {
-            "description": "What is being defined. Each value's meaning is its SKOS concept IRI (project/criteria_concepts.ttl, from vocab/criteria_concepts.yaml), so a concept exists once; the concepts are skos:Concept and never owl:Class (decision D14).",
+            "description": "What is being defined. Each value's meaning is its SKOS concept IRI (project/local_terms.ttl, from vocab/local/criteria-concepts.yaml), so a concept exists once; the concepts are skos:Concept and never owl:Class (decision D14).",
             "enum": [
                 "degraded_area",
                 "effective_restoration"
@@ -3343,7 +3343,7 @@
                 },
                 "ecosystem_context": {
                     "$ref": "#/$defs/EcosystemFunctionalGroupEnum",
-                    "description": "The KIND of ecosystem the statement is about, as one of CAMO's IUCN Global Ecosystem Typology functional groups (warm_temperate_forests, coastal_saltmarshes_and_reedbeds). Not a place: \"Florida\" or \"the Mediterranean coast of Israel\" go in `place`. Every 0.4 proposal example confused the two (R19)."
+                    "description": "The KIND of ecosystem the statement is about, as one of CAMO's IUCN Global Ecosystem Typology functional groups (warm_temperate_forests, coastal_saltmarshes_and_reedbeds). Not a place: \"Florida\" or \"the Mediterranean coast of Israel\" go in `place` (R19)."
                 },
                 "extensions": {
                     "description": "A list of extensions to the Entity, that allow for capture of information not directly supported by elements defined in the model.",
@@ -5842,7 +5842,7 @@
                 },
                 "ecosystem_context": {
                     "$ref": "#/$defs/EcosystemFunctionalGroupEnum",
-                    "description": "The KIND of ecosystem the statement is about, as one of CAMO's IUCN Global Ecosystem Typology functional groups (warm_temperate_forests, coastal_saltmarshes_and_reedbeds). Not a place: \"Florida\" or \"the Mediterranean coast of Israel\" go in `place`. Every 0.4 proposal example confused the two (R19)."
+                    "description": "The KIND of ecosystem the statement is about, as one of CAMO's IUCN Global Ecosystem Typology functional groups (warm_temperate_forests, coastal_saltmarshes_and_reedbeds). Not a place: \"Florida\" or \"the Mediterranean coast of Israel\" go in `place` (R19)."
                 },
                 "extensions": {
                     "description": "A list of extensions to the Entity, that allow for capture of information not directly supported by elements defined in the model.",
@@ -7795,7 +7795,7 @@
                 },
                 "ecosystem_context": {
                     "$ref": "#/$defs/EcosystemFunctionalGroupEnum",
-                    "description": "The KIND of ecosystem the statement is about, as one of CAMO's IUCN Global Ecosystem Typology functional groups (warm_temperate_forests, coastal_saltmarshes_and_reedbeds). Not a place: \"Florida\" or \"the Mediterranean coast of Israel\" go in `place`. Every 0.4 proposal example confused the two (R19)."
+                    "description": "The KIND of ecosystem the statement is about, as one of CAMO's IUCN Global Ecosystem Typology functional groups (warm_temperate_forests, coastal_saltmarshes_and_reedbeds). Not a place: \"Florida\" or \"the Mediterranean coast of Israel\" go in `place` (R19)."
                 },
                 "extensions": {
                     "description": "A list of extensions to the Entity, that allow for capture of information not directly supported by elements defined in the model.",
@@ -8528,7 +8528,7 @@
                 },
                 "ecosystem_context": {
                     "$ref": "#/$defs/EcosystemFunctionalGroupEnum",
-                    "description": "The KIND of ecosystem the statement is about, as one of CAMO's IUCN Global Ecosystem Typology functional groups (warm_temperate_forests, coastal_saltmarshes_and_reedbeds). Not a place: \"Florida\" or \"the Mediterranean coast of Israel\" go in `place`. Every 0.4 proposal example confused the two (R19)."
+                    "description": "The KIND of ecosystem the statement is about, as one of CAMO's IUCN Global Ecosystem Typology functional groups (warm_temperate_forests, coastal_saltmarshes_and_reedbeds). Not a place: \"Florida\" or \"the Mediterranean coast of Israel\" go in `place` (R19)."
                 },
                 "extensions": {
                     "description": "A list of extensions to the Entity, that allow for capture of information not directly supported by elements defined in the model.",
@@ -9948,7 +9948,7 @@
                 },
                 "ecosystem_context": {
                     "$ref": "#/$defs/EcosystemFunctionalGroupEnum",
-                    "description": "The KIND of ecosystem the statement is about, as one of CAMO's IUCN Global Ecosystem Typology functional groups (warm_temperate_forests, coastal_saltmarshes_and_reedbeds). Not a place: \"Florida\" or \"the Mediterranean coast of Israel\" go in `place`. Every 0.4 proposal example confused the two (R19)."
+                    "description": "The KIND of ecosystem the statement is about, as one of CAMO's IUCN Global Ecosystem Typology functional groups (warm_temperate_forests, coastal_saltmarshes_and_reedbeds). Not a place: \"Florida\" or \"the Mediterranean coast of Israel\" go in `place` (R19)."
                 },
                 "extensions": {
                     "description": "A list of extensions to the Entity, that allow for capture of information not directly supported by elements defined in the model.",
@@ -11934,7 +11934,7 @@
                 },
                 "ecosystem_context": {
                     "$ref": "#/$defs/EcosystemFunctionalGroupEnum",
-                    "description": "The KIND of ecosystem the statement is about, as one of CAMO's IUCN Global Ecosystem Typology functional groups (warm_temperate_forests, coastal_saltmarshes_and_reedbeds). Not a place: \"Florida\" or \"the Mediterranean coast of Israel\" go in `place`. Every 0.4 proposal example confused the two (R19)."
+                    "description": "The KIND of ecosystem the statement is about, as one of CAMO's IUCN Global Ecosystem Typology functional groups (warm_temperate_forests, coastal_saltmarshes_and_reedbeds). Not a place: \"Florida\" or \"the Mediterranean coast of Israel\" go in `place` (R19)."
                 },
                 "evidence_balance": {
                     "$ref": "#/$defs/EvidenceBalanceEnum"
@@ -12693,7 +12693,7 @@
                 },
                 "ecosystem_context": {
                     "$ref": "#/$defs/EcosystemFunctionalGroupEnum",
-                    "description": "The KIND of ecosystem the statement is about, as one of CAMO's IUCN Global Ecosystem Typology functional groups (warm_temperate_forests, coastal_saltmarshes_and_reedbeds). Not a place: \"Florida\" or \"the Mediterranean coast of Israel\" go in `place`. Every 0.4 proposal example confused the two (R19)."
+                    "description": "The KIND of ecosystem the statement is about, as one of CAMO's IUCN Global Ecosystem Typology functional groups (warm_temperate_forests, coastal_saltmarshes_and_reedbeds). Not a place: \"Florida\" or \"the Mediterranean coast of Israel\" go in `place` (R19)."
                 },
                 "explained_by": {
                     "description": "Propositions giving the mechanism behind a tolerance, usually causal (saturated soils cause root anoxia, so the species is intolerant of saturation). By reference.",

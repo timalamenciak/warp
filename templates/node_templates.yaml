@@ -53,7 +53,7 @@ terms:
   - {id: "RO:0002573", label: has modifier, kind: object_property}
   - {id: "BFO:0000050", label: part of, kind: object_property}
   - {id: "BFO:0000066", label: occurs in, kind: object_property}
-  # Management strategies (0.7.0). Checked against the local ECOCORE imports
+  # Management strategies. Checked against the local ECOCORE imports
   # (envo_import.owl, chebi_import.owl) on 2026-11-20.
   - {id: "OBI:0000011", label: planned process, kind: class}
   - {id: "BFO:0000051", label: has part, kind: object_property}
@@ -721,7 +721,7 @@ templates:
     examples:
       - "trait=TO:<vegetative spread> value=PATO:<rhizomatous>"
 
-  # --- Tolerance objects (0.7.0) ----------------------------------------------
+  # --- Tolerance objects ------------------------------------------------------
   - id: quality_of_environmental_material
     title: Quality of an environmental material or medium (tolerance object)
     status: draft

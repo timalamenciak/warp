@@ -1,4 +1,4 @@
-"""Identity rule warp-prop-identity/4: per-group extras (Phase 2, D1, D4)."""
+"""Identity rule warp-prop-identity/4: per-group extras (D1, D4)."""
 
 import copy
 

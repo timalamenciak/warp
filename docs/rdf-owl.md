@@ -12,20 +12,19 @@ with a range nobody else agrees with, is not a class axiom in any logic — and
 asserting it as one would state something stronger than the source did. So
 WARP has two layers, and the rules below are mostly about keeping them apart.
 
-> **Status.** Built in 0.6.0 (Phase 2.5 of the 0.4 proposal round,
-> `docs/proposals/warp-0.4-dev-guide.md`, decisions D11 to D20) for the causal
-> and interaction groups; each later group adds its row to the register in
-> section 8. The "state of play" table in section 9 says what exists.
-> `examples/kramer1995.ttl` was the hand-written specification for
-> `export_rdf.py`; `project/statements.ttl` is now the generated version.
+> **Status.** Every predicate group follows this contract; each has its row
+> in the register in section 8. The "state of play" table in section 9 says
+> what exists. The design decisions behind it (D11 to D20) are in
+> `docs/proposals/warp-0.4-dev-guide.md`.
 >
-> **Terminology.** The 0.4 proposals write `Claim` and `ClaimSet` where the
+> **Terminology.** The design proposals write `Claim` and `ClaimSet` where the
 > code writes `Statement` and `StatementSet`. This file follows the code.
 
 ```
 templates/node_templates.yaml ──▶ project/nodes.ttl         classes       OWL 2 EL
 vocab/scales.yaml ────────────▶ project/scales.ttl          SKOS schemes
-                                project/criteria_concepts.ttl
+vocab/local/*.yaml ───────────┬▶ project/local_terms.ttl     SKOS concepts
+                              └▶ project/local_classes.ttl   classes       OWL 2 EL
 StatementSet *.yaml ──────────┬▶ project/statements.ttl     reification   RDF
      + *.derived.yaml         ├▶ project/sites.ttl          individuals   OWL 2 EL
                               ├▶ project/projects.ttl       individuals   OWL 2 EL
@@ -153,15 +152,15 @@ taken from its proposal, and `rdfs:isDefinedBy`. (Because its enum says
 `implements: [owl:ObjectProperty]`, the schema OWL also types it an object
 property, with the same kind; its definition and sub-property structure live
 only in the relations file.) The file is hand-maintained
-and never generated. Each group phase adds its own predicates and touches
-nothing else.
+and never generated. A new group adds its own predicates and touches nothing
+else.
 
 Predicates from other ontologies — RO's `RO:0002303 has habitat`, CAMO's
 `camo:prevents` — are **reused exactly as published and never re-declared**.
 
-The reason is specific. Until 0.6.0, generating OWL from the LinkML schema
-typed every permissible value of a predicate enum as a class, so
-`project/warp.owl.ttl` contained:
+The reason is specific. By default, generating OWL from the LinkML schema
+types every permissible value of a predicate enum as a class, so
+`project/warp.owl.ttl` would contain:
 
 ```turtle
 RO:0002470 a owl:Class ;                     # "eats": an object property in RO
@@ -233,7 +232,7 @@ enum class: `implements: [owl:NamedIndividual]` on every profile enum, and
 enums. Enum value IRIs (`…/SemanticUnitScopeEnum#assertional`) are not legal
 Turtle prefixed names (`#` needs escaping in a local part), so write them out
 in full in hand-written Turtle and SPARQL. Proposition IRIs are fine as
-`prop:9f0b068ca33b` now that `prop:` is a declared prefix; written as
+`prop:9f0b068ca33b`, since `prop:` is a declared prefix; written as
 `warp:prop/9f0b068ca33b` they are not, because of the `/`.
 
 `gen-owl` writes the covering axiom (`owl:oneOf`) directly onto the named enum
@@ -241,12 +240,12 @@ class, which does not reverse-map to OWL 2 DL, so `clean_owl.py` moves it to
 `<enum> owl:equivalentClass [ a owl:Class ; owl:oneOf (…) ]`. That is the one
 real LinkML defect here; the dev guide's appendix has the upstream patch.
 
-Literals were the old behaviour and they do not work. The schema declares
-`warp:scope` an `owl:ObjectProperty` with `rdfs:range warp:SemanticUnitScopeEnum`,
-while `examples/kramer1995.ttl` writes `warp:scope "assertional"` — a literal in
-an object property's object position, which has no OWL 2 DL reading at all.
-Exporting IRIs fixes both ends, and makes the value joinable with its
-definition and its mappings.
+Literals would not work. The schema declares `warp:scope` an
+`owl:ObjectProperty` with `rdfs:range warp:SemanticUnitScopeEnum`, so
+`warp:scope "assertional"` would put a literal in an object property's object
+position, which has no OWL 2 DL reading at all. Exporting IRIs keeps both ends
+consistent, and makes the value joinable with its definition and its
+mappings.
 
 **Sentinels are not values.** `not_stated`, `unknown`, `unclear`,
 `not_reported` and `not_addressed` record the *absence* of something. They get
@@ -399,11 +398,11 @@ the annotation properties `warp:action` and `warp:component_of`.
 |---|---|---|---|---|
 | causal | CAMO (`camo:causes`, `camo:prevents`, …) | class → class | `negated`: no triple | Existential subsumption, through the gate |
 | interaction | RO (`RO:0002470`, …), reused | class → class | `negated`: no triple | Existential subsumption, through the gate |
-| recommendation (built, 0.7.0) | `suggested_to` (abstract) + `recommended_to_achieve`, `advised_against_for`, `suggested_for_consideration` | class → class | `guidance`; each `GuidanceEnum` value names its sub-property (`warp_subproperty`), and each sub-property its value (`warp:selected_by`) | **Nothing**, at any scope: deontic. The causal proposition a recommendation cites may project on its own if it passes the gate |
-| tolerance (built, 0.7.0) | `tolerates`, `prefers`, `intolerant_of`; `RO:0002303` reused | class → class; object kind varies by predicate (`check_tolerance.py`) | none | `has_habitat` only, through the gate. Ranges, optima, class values and curves never: measurements across populations, not class axioms |
-| cost (built, 0.7.0) | `incurs_cost` (abstract) + `incurs_total_cost`, `incurs_labour_cost`, `incurs_capital_equipment_cost`, `incurs_consumables_cost`, `incurs_overhead_cost`; `costs_relative_to` | class → amount individual (`<statement>/predicate_qualifiers/amount`, or the first effort quantity for an effort-only costing), or class → class; checked by `check_cost.py` | the object category; each `CostCategoryEnum` value names its sub-property | **Nothing** |
-| implementation (built, 0.7.0) | `carried_out_at` | class → individual (site) | none | Nothing through the gate; the project individuals (`projects.ttl`) are its logical-layer output, and they come from the derivation rule. The grouping record is `IAO:0000136` (is about) its project |
-| criteria (built, 0.7.0) | `assessed_against` (abstract) + `qualifies_as`, `does_not_qualify_as` | individual (site or project) → criteria set | `direction`; neutral exports no triple, and a proposition's record names `assessed_against` | **Nothing** |
+| recommendation | `suggested_to` (abstract) + `recommended_to_achieve`, `advised_against_for`, `suggested_for_consideration` | class → class | `guidance`; each `GuidanceEnum` value names its sub-property (`warp_subproperty`), and each sub-property its value (`warp:selected_by`) | **Nothing**, at any scope: deontic. The causal proposition a recommendation cites may project on its own if it passes the gate |
+| tolerance | `tolerates`, `prefers`, `intolerant_of`; `RO:0002303` reused | class → class; object kind varies by predicate (`check_tolerance.py`) | none | `has_habitat` only, through the gate. Ranges, optima, class values and curves never: measurements across populations, not class axioms |
+| cost | `incurs_cost` (abstract) + `incurs_total_cost`, `incurs_labour_cost`, `incurs_capital_equipment_cost`, `incurs_consumables_cost`, `incurs_overhead_cost`; `costs_relative_to` | class → amount individual (`<statement>/predicate_qualifiers/amount`, or the first effort quantity for an effort-only costing), or class → class; checked by `check_cost.py` | the object category; each `CostCategoryEnum` value names its sub-property | **Nothing** |
+| implementation | `carried_out_at` | class → individual (site) | none | Nothing through the gate; the project individuals (`projects.ttl`) are its logical-layer output, and they come from the derivation rule. The grouping record is `IAO:0000136` (is about) its project |
+| criteria | `assessed_against` (abstract) + `qualifies_as`, `does_not_qualify_as` | individual (site or project) → criteria set | `direction`; neutral exports no triple, and a proposition's record names `assessed_against` | **Nothing** |
 
 Two entries in that table need their reason stated where someone will hit it:
 
@@ -452,20 +451,20 @@ robot merge warp.owl.ttl warp-relations.ttl             | validate-profile --pro
 |---|---|
 | `nodes.ttl`, node classes in EL, with an ontology header | Built (`expand_nodes.py`) |
 | `warp.owl.ttl` | Built: `gen-owl`, then `clean_owl.py` (§9.1) |
-| `warp-relations.ttl` | Hand-maintained (version 0.7.0): the annotation properties, and every predicate WARP mints for the recommendation, tolerance, cost, implementation and criteria groups. Causal and interaction reuse CAMO and RO |
+| `warp-relations.ttl` | Hand-maintained: the annotation properties, and every predicate WARP mints for the recommendation, tolerance, cost, implementation and criteria groups. Causal and interaction reuse CAMO and RO |
 | `statements.ttl` | Built (`export_rdf.py`) |
 | `axioms.ttl` | Built (`project_owl.py`); empty of axioms on the examples, by design |
-| `scales.ttl` | Built (`gen_vocab.py`, Phase 1) |
+| `scales.ttl` | Built (`gen_vocab.py`) |
 | `check_owl.py` | In `make validate`; clean |
-| `make owl-check` | Written; skipped with a warning where `robot` is not on PATH, which includes the machine 0.6.0 was built on. **Neither profile has been confirmed by ROBOT yet.** |
-| `sites.ttl` | Built (`expand_nodes.py --sites`, 0.7.0) |
-| `projects.ttl` | Built (`project_owl.py --projects`, from `derive_projects.py`, 0.7.0) |
-| `criteria_concepts.ttl` | Built (`gen_vocab.py --criteria`, 0.7.0) |
+| `make owl-check` | Written; skipped with a warning where `robot` is not on PATH. **Neither profile has been confirmed by ROBOT yet.** |
+| `sites.ttl` | Built (`expand_nodes.py --sites`) |
+| `projects.ttl` | Built (`project_owl.py --projects`, from `derive_projects.py`) |
+| `local_terms.ttl`, `local_classes.ttl` | Built (`gen_vocab.py --local`); no class schemes yet, so no `local_classes.ttl` |
 | WARP IRIs for SEPIO's slots | **Done (Q13):** `slot_uri` in the profile; a SEPIO mapping file waits on SEPIO grounding its terms. SEPIO's own classes and slots still appear under `https://example.org/sepio-model/` in `warp.owl.ttl`, which carries the vendored schema as it is; `check_owl.py` refuses them in every data file. |
 
 ### 9.1 What `clean_owl.py` does
 
-The dev guide expected one job. There are eight, each a function that reports
+There are eight jobs, each a function that reports
 every change, and each a candidate upstream issue (`TODOS.md`, "Upstream"):
 
 | Job | Why |
@@ -488,6 +487,7 @@ every change, and each a candidate upstream issue (`TODOS.md`, "Upstream"):
 - [ ] Projection answered, with its reason, in the register above
 - [ ] Any value another record will cite has an IRI, not a blank node
 - [ ] Scales registered in `vocab/scales.yaml`; units verified or `TODO:`
+- [ ] Every term chosen by `docs/terminology.md`: an ontology term, else a register entry with its upstream status
 - [ ] Sentinel values listed in `clean_owl.py` and not exported
 - [ ] `check_owl.py` clean; `make owl-check` passes both profiles
 - [ ] The projection report says what passed and why the rest did not

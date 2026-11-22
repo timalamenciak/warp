@@ -1,0 +1,32 @@
+# WARP profiles: the schema restricted to some predicate groups.
+#
+# scripts/subset_schema.py (make profiles) writes one schema per profile to
+# project/profiles/warp_<name>.yaml, with a matching relations file; make
+# profile PROFILE=<name> builds and checks a profile on its example sets
+# (scripts/build_profile.py, output in build/profiles/<name>/, not committed).
+#
+# A profile always keeps the shared core: StatementSet's agents, nodes,
+# node_definitions, assessments, study_results and documents; statements,
+# propositions, evidence lines, agents, contributions, CARE and the shared
+# slots. `groups` names the predicate groups it adds (registry names, the
+# `warp_group` annotation). `lists` names optional StatementSet lists it adds:
+#   strategy_definitions  management strategies (any group may use them)
+#   site_definitions      sites (needed by implementation and criteria)
+#   criteria_sets         versioned definitions (needed by criteria)
+# `examples` and `assessments` are the sets `make profile` checks it on; a
+# profile's derived records must equal the full build's.
+
+optional_lists: [strategy_definitions, site_definitions, criteria_sets]
+
+profiles:
+  causal:
+    title: causal
+    groups: [causal]
+    examples: [examples/kramer1995_statements.yaml]
+    assessments: [examples/kramer1995_assessment.yaml]
+
+  causal-interaction:
+    title: causal and interaction
+    groups: [causal, interaction]
+    examples: [examples/bloodroot_statements.yaml, examples/kramer1995_statements.yaml]
+    assessments: [examples/bloodroot_assessment.yaml, examples/kramer1995_assessment.yaml]

@@ -1,4 +1,4 @@
-"""Shared foundations in the profile (Phase 1): value classes, shared slots,
+"""Shared foundations in the profile: value classes, shared slots,
 modality, stated_goal, and the OWL entity types gen-owl is told to emit."""
 
 import copy

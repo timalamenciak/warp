@@ -1,4 +1,4 @@
-"""scripts/check_refs.py: every non-inlined reference resolves (Phase 2)."""
+"""scripts/check_refs.py: every non-inlined reference resolves."""
 
 import copy
 
@@ -47,7 +47,7 @@ def test_assessment_resolves_only_with_its_derived_set(schemaview):
 
 
 def test_new_reference_slots_are_checked_without_code_changes(schemaview):
-    """specified_in arrived in Phase 1; check_refs covers it because it is schema-driven."""
+    """check_refs covers specified_in because it is schema-driven."""
     data = copy.deepcopy(load_yaml(EXAMPLES / "bloodroot_statements.yaml"))
     data["causal_statements"][0]["specified_in"] = ["warp:doc/no-such-plan"]
     problems = check_refs.check(schemaview, [("x.yaml", data)])

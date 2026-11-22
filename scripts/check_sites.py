@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check sites, implementation statements and criteria statements (Phase 7).
+"""Check sites, implementation statements and criteria statements.
 
     python scripts/check_sites.py FILE.yaml [FILE.yaml ...]
 

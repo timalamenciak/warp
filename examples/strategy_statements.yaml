@@ -1,4 +1,4 @@
-# Management strategy nodes: worked example (0.7.0, Phase 4).
+# Management strategy nodes: worked example.
 #
 # Strategies are ordered bundles of action nodes. Annotators give each one a
 # local node ID; scripts/derive_strategies.py derives its canonical node

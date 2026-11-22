@@ -37,9 +37,10 @@ Two statements share a proposition when these match exactly:
     group, subject node, predicate, object node, negated, scope,
     then the group's identity extras, in declaration order
 
-A group with no extras has exactly the key it had under rule 3, and
-proposition IDs hash the key alone (the rule version is recorded, not
-hashed), so its IDs do not change (decision D4).
+A group with no extras has just the six shared fields in its key.
+Proposition IDs hash the key alone (the rule version is recorded, not
+hashed), so a new rule version that leaves a group's key unchanged leaves its
+IDs unchanged (decision D4).
 
 Extras are written into the key as `path=<canonical JSON>`. Structured values
 are canonicalized (objects with sorted keys; lists sorted unless the slot is
@@ -54,9 +55,8 @@ context, evidence) stays on the statement and is aggregated later, not used
 for identity. Statements whose scope is missing or "unclear" are not grouped
 and are reported, because scope is part of what a proposition says.
 
-History: rule 1 had no group field; rule 2 wrote "asserted" for a non-negated
-key, the same word as the proposition status; rule 3 writes "affirmed"; rule 4
-adds per-group extras.
+A non-negated key says "affirmed", not "asserted", so it cannot be confused
+with the proposition status `asserted`.
 
 Changing this rule regroups statements. Bump RULE_VERSION whenever you do.
 

@@ -1,4 +1,4 @@
-"""Sites, implementation and projects, criteria and Target 2 (Phase 7)."""
+"""Sites, implementation and projects, criteria and Target 2."""
 
 import copy
 import subprocess
@@ -239,7 +239,7 @@ def test_neutral_verdict_has_a_record_and_no_triple(graph):
 # --- 7.3 criteria ----------------------------------------------------------------------
 
 def test_criteria_concepts_are_skos_and_match_the_enum(schemaview):
-    g = Graph().parse(ROOT / "project" / "criteria_concepts.ttl")
+    g = Graph().parse(ROOT / "project" / "local_terms.ttl")
     for name, pv in schemaview.get_enum("CriteriaConceptEnum").permissible_values.items():
         iri = URIRef(schemaview.expand_curie(pv.meaning))
         assert (iri, RDF.type, SKOS.Concept) in g and (iri, RDF.type, OWL.Class) not in g

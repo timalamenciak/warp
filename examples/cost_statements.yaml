@@ -1,4 +1,4 @@
-# Cost group: worked example (0.7.0, Phase 6).
+# Cost group: worked example.
 #
 # What actions took to carry out, with the context needed to read the number
 # (Iacona et al. 2018's five reporting standards).
@@ -149,7 +149,7 @@ cost_statements:
     reportedIn: [doc:notebook-entry-4]
     care: {knowledge_holders: [person:practitioner-b], access_level: attribution_required}
 
-  # A whole-project cost on the Phase 4 earthworks-seed-mow strategy, by its
+  # A whole-project cost on the earthworks-seed-mow strategy, by its
   # canonical node (examples/strategy_statements.yaml). Illustrative figures
   # from the proposal.
   - id: stmt:land-trust-strategy-total

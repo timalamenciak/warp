@@ -1,4 +1,4 @@
-"""The RDF and OWL contract (Phase 2.5, decisions D11 to D20)."""
+"""The RDF and OWL contract (decisions D11 to D20)."""
 
 import copy
 
@@ -263,7 +263,7 @@ def test_lint_catches_literal_on_object_property():
 
 
 def test_generated_files_are_clean():
-    files = [ROOT / "project" / f for f in ("nodes.ttl", "axioms.ttl", "statements.ttl", "warp.owl.ttl", "scales.ttl")]
+    files = [ROOT / "project" / f for f in ("nodes.ttl", "axioms.ttl", "statements.ttl", "warp.owl.ttl", "scales.ttl", "local_terms.ttl")]
     files.append(ROOT / "src" / "warp" / "owl" / "warp-relations.ttl")
     missing = [f for f in files if not f.exists()]
     if missing:
