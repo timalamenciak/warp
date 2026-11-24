@@ -128,6 +128,20 @@ Vendoring rather than importing by URL is deliberate: LinkML URL imports are
 not pinned, and an upstream change should never silently change what your
 data means.
 
+The CAMO dependency is **0.10.0**, pinned to release tag `v0.10.0` (commit
+`9a89dcbaa393c21828e5c74137201b2c1d8b5f71`). SEPIO's pin is unchanged.
+The vendored CAMO file is byte-for-byte upstream. Its new node fields,
+quantity types, effect statistics, comparator doses and measurement times
+are available through the imported classes; `CausalStatement` also exposes
+`dose` and `dose_level`. These fields do not change proposition identity.
+
+When updating existing data, `TemporalExtent.observation_seasons` now takes
+`SeasonEnum` keys. A calendar window such as "May-October" is not a season:
+retain the wording in the appropriate temporal text field, without guessing
+season membership. The Kramer example already preserves that exact window in
+`duration_text`. CAMO now pins its class IRIs explicitly under
+`causal_mosaic:`, which the generated WARP schema and RDF honour.
+
 ## 4. What the profile adds or changes
 
 | Profile class | Builds on | Changes |
@@ -167,12 +181,14 @@ the evidence.
 | `philosophical_accounts`, `necessity`, `sufficiency`, `temporal_ordering`, `mediation`, `moderation`, `specificity`, `stability`, `determinism`, `proximate_distal`, `contributing_sole`, `reversibility`, `proportionality` | `CausalStatement.predicate_qualifiers`, same names |
 | `direction`, `strength` | `predicate_qualifiers.causal_direction`, `predicate_qualifiers.effect_strength` (renamed) |
 | `causal_language` | `CausalStatement.causal_language` (statement-level hedging) |
-| `token_or_type` | `scope` (token → assertional, type → prototypical by default; check by hand) |
+| `scope` (CAMO 0.10.0) | `scope`, the same five values; WARP retains `SemanticUnitScopeEnum` |
+| Legacy `token_or_type` | `scope` (token → assertional, type → prototypical by default; check by hand) |
 | `context_dependence` | `CausalStatement.context` |
 | `comparator`, `ecosystem_context`, `temporal_extent` | `CausalStatement`, same names |
+| `dose`, `dose_level` | `CausalStatement`, same names and CAMO ranges; statement conditions, outside proposition identity |
 | `original_sentence`, `source_spans`, `source_document` | `original_text`, `source_spans`, `reportedIn` |
 | `evidential_basis.evidence_types` / `evidence_objects` | `EcoEvidenceLine.evidence_type` / `evidence_object` (one evidence line per type) |
-| `certainty_grade` | `SynthesisAssessment.strength`; at article level use `EcoEvidenceLine.strengthOfEvidenceProvided` (**decision needed**: Rosetta rendering currently reads `certainty_grade` from the edge) |
+| `certainty_grade` | No automatic conversion. `SynthesisAssessment.strength` assesses a proposition; `EcoEvidenceLine.strengthOfEvidenceProvided` assesses a line of evidence and has a different enum. Preserve an imported grade for review until its target and assessor are established. |
 | `annotator`, `annotation_timestamp` | `recordMetadata`: a contribution with role annotator, and `dateRecordCreated` |
 | `annotation_confidence`, `annotation_notes` | not yet mapped (Loom workflow metadata) |
 | `fcm_weight`, `fcm_weight_source` | not in the statements layer: rendering metadata, derived downstream |
@@ -381,7 +397,8 @@ entry to `config/profiles.yaml` naming its groups, lists and example sets.
   top-level `slots` would let this profile reuse them instead of re-listing
   them, and clears many of the "ambiguous attribute" warnings from `gen-owl`.
 - Rename edge `direction` and `strength` to match the names used here.
-- Replace `token_or_type` with `scope`.
+- CAMO 0.10.0 already replaces `token_or_type` with `scope`; WARP keeps its
+  existing scope enum and IRIs for compatibility.
 
 **Elsewhere:**
 - Semantic unit definitions are working glosses; confirm against Vogt.
@@ -401,7 +418,7 @@ Questions this design raises for Loom:
 - **What annotators see.** Can Loom keep presenting a CAMO edge form and
   write `CausalStatement`s behind it, with predicate qualifiers as a collapsible
   section?
-- **Scope.** Annotators currently choose token or type. Is the four-way
+- **Scope.** CAMO 0.10.0 and WARP use four substantive scopes plus unclear. Is the four-way
   scope choice teachable to undergraduate annotators, or should Loom ask a
   simpler question ("about one place and time, or in general?") and map it?
 - **Evidence lines.** Who creates them: annotators (one per evidence type
@@ -411,8 +428,9 @@ Questions this design raises for Loom:
   consent captured?
 - **When derivation runs.** On every export, nightly, or before each
   synthesis? Who reviews statements left ungrouped because scope is unclear?
-- **Migration.** Existing CAMO 0.8 edges → `CausalStatement` via `camo_edge_id`,
-  with `token_or_type` mapped to scope and flagged for review.
+- **Migration.** CAMO 0.10.0 edges → `CausalStatement` via `camo_edge_id`,
+  preserving scope and dose. Older `token_or_type` values still need mapping
+  and review. Claim certainty is not automatically an evidence assessment.
 
 ## Layout
 

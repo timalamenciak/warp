@@ -209,8 +209,6 @@ causal_statements:
   temporal_extent:
     duration_text: One mosquito season (May-October 1992) after the 6-week project ended in late 1991.
     observation_grain: Five 400 ml dips per inundated monitoring station after each high tide cycle
-    observation_seasons:
-    - May-October
   predicate_qualifiers:
     philosophical_accounts:
     - interventionist

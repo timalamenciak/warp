@@ -198,13 +198,13 @@ the profile does not constrain it.
 
 ### 1.3 Decide where CAMO's `certainty_grade` lives
 
-- [ ] Rosetta rendering currently reads `certainty_grade` from the CAMO edge.
-      Choose between: (a) article level → `EcoEvidenceLine.strengthOfEvidenceProvided`;
-      (b) synthesis only → `SynthesisAssessment.strength`. Update the renderer.
-      (That is CAMO's renderer. WARP's own, `render_statements.py`, says each
-      evidence line's `strengthOfEvidenceProvided` and treats a statement's
-      SEPIO `strength` as unused: revisit `config/rosetta.yaml` with this
-      decision.)
+- [ ] CAMO 0.10.0 retains per-claim `certainty_grade`. Decide how to import
+      it: an evidence-line judgement and a synthesis judgement have different
+      targets, and the evidence-strength enum differs from certainty grades.
+      Preserve the source grade for review until the target, assessor and
+      value mapping are established; never copy it automatically to either
+      field. WARP's renderer already says evidence-line strength and keeps
+      ordinary statements in Assertion Mode.
 
 ---
 
@@ -274,7 +274,7 @@ evidence. Revisit if finer terms would change any output.
 - [ ] Promote `CausalEdge` inline `attributes` to top-level `slots`, so the
       profile can reuse them (and to clear `gen-owl` ambiguity warnings).
 - [ ] Rename edge `direction` → `causal_direction`, `strength` → `effect_strength`.
-- [ ] Replace `token_or_type` with `scope` (semantic unit types).
+- [x] Replace `token_or_type` with `scope` (available in pinned CAMO 0.10.0).
 - [ ] Rename `CausalNode` → `Node` (or similar): WARP uses it for every
       predicate group's nodes, including non-causal interaction statements.
 - [ ] Rename `ClaimStrengthEnum` (e.g. `CausalLanguageEnum`), so WARP uses
@@ -549,10 +549,16 @@ example's comments and agents; they are not CURIEs and are not listed here.
 
 ### 8.3 RDF and OWL contract
 
-- [ ] **Run `make owl-check` with ROBOT** (not installed on the development
-      machine). Neither the EL check (nodes, axioms, sites, projects) nor the
-      DL check (schema + relations) has been run; fix what it finds before
-      the release.
+- [ ] **Finish ROBOT DL validation before release.** Checked directly with
+      the installed ROBOT JAR on 2026-11-24 during the CAMO 0.10.0 upgrade:
+      the logical layer passes EL, but the schema plus relations fails DL.
+      The pre-upgrade schema at `5f65cef` fails too. Outstanding generator
+      issues are undeclared annotation properties, object/data property
+      conflicts in restrictions, and a singleton intersection. The upgrade
+      introduces another metadata annotation (`skos:narrowMatch`) affected
+      by the same declaration issue. `check_owl.py` does not catch these.
+      The build shell still skips ROBOT unless it has an executable launcher
+      on PATH; a passing `make all` alone does not certify OWL DL compliance.
 - [ ] **SEPIO mapping file (Q13).** When SEPIO gives its slots real IRIs,
       add `src/warp/owl/warp-sepio-mapping.ttl` with one
       `warp:<slot> owl:equivalentProperty sepio:<slot>` per slot that has a

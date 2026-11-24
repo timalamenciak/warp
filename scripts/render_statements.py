@@ -7,7 +7,7 @@ A proposition's text (derive_propositions.py) says only subject, predicate,
 object, scope and negation. This script says everything a statement records,
 in one sentence per statement, so a reviewer can read the structured record
 next to the source's own words (`statementText`, `original_text`,
-`source_spans`) and see whether they agree. Rule `warp-rosetta/1`
+`source_spans`) and see whether they agree. Rule `warp-rosetta/2`
 (constant RULE_VERSION).
 
 What each slot contributes is set in config/rosetta.yaml, by class, and
@@ -48,7 +48,7 @@ import warp_schema as ws  # noqa: E402
 from derive_propositions import load_groups  # noqa: E402
 from gen_vocab import SCALE, load_register, load_scales  # noqa: E402
 
-RULE_VERSION = "warp-rosetta/1"
+RULE_VERSION = "warp-rosetta/2"
 ROOT = ws.ROOT
 DEFAULT_CONFIG = ROOT / "config" / "rosetta.yaml"
 CLAIM = "@claim"

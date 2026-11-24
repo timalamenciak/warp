@@ -73,9 +73,9 @@ enums:
       Y" are different propositions. Definitions below are working glosses and must be checked against
       Vogt''s own definitions before release.'
     comments:
-    - 'Replaces CAMO''s token_or_type. Migration default: token -> assertional; type -> prototypical (most
-      ecological generalizations hold typically, with exceptions, rather than universally); ambiguous/not_addressed
-      -> unclear.'
+    - 'Matches CAMO 0.10.0''s scope values. For legacy token_or_type, migration default: token -> assertional;
+      type -> prototypical (most ecological generalizations hold typically, with exceptions, rather than
+      universally); ambiguous/not_addressed -> unclear.'
     permissible_values:
       assertional:
         description: 'About particular things: this plot, this population, this burn. Field observations
@@ -479,6 +479,18 @@ classes:
         range: ComparatorAnnotation
         multivalued: true
         inlined_as_list: true
+      dose:
+        description: The reported level or range of the subject intervention or driver, using CAMO's quantity
+          type. A condition of this statement, not a node definition or part of proposition identity.
+        range: QuantityValue
+        inlined: true
+        slot_uri: camo:dose
+      dose_level:
+        description: The subject driver's reported ordinal level. Use alone for a named level without
+          a number, or with dose when the source supplies both. A condition of this statement, not part
+          of proposition identity.
+        range: DoseLevelEnum
+        slot_uri: camo:dose_level
       camo_edge_id:
         description: Identifier of the CAMO CausalEdge this statement was migrated or projected from.
   CausalPredicateQualifiers:

@@ -9,6 +9,24 @@ First public release. Schema version 0.7.0; examples' `profile_version`
 
 ### Schema
 
+- Re-vendor CAMO **0.10.0** unchanged from release tag `v0.10.0`, commit
+  `9a89dcbaa393c21828e5c74137201b2c1d8b5f71`; keep SEPIO pinned unchanged.
+  Imported node classes now support life stages, intervention components,
+  sampling grain and assemblage composition. Effect statistics include
+  significance, analysis method, metric and uncertainty intervals; comparator
+  doses and time since intervention are also available.
+- Expose CAMO `dose` and `dose_level` on `CausalStatement`, with plain-language
+  rendering for these and the newly imported qualifier/value fields. No
+  proposition identity rule changes.
+- Migrate the Kramer example's free-text season window: retain "May-October"
+  in its existing duration text rather than treating it as a `SeasonEnum`
+  value. CAMO's explicit `causal_mosaic:` class IRIs are honoured in generated
+  outputs. Scope keeps WARP's existing enum; CAMO claim certainty is not
+  automatically mapped to an evidence-line or synthesis assessment.
+- A direct ROBOT audit confirms the logical layer is OWL EL. It also confirms
+  existing OWL DL generator issues in the schema, reproduced against the
+  pre-upgrade output; these remain release work in TODOS §8.3. The Windows
+  build's skipped ROBOT step must not be read as a passing DL check.
 - A LinkML profile of the SEPIO Core Information Model
   (`src/warp/schema/warp.yaml`), with SEPIO and the Causal Mosaic (CAMO)
   vendored unchanged at pinned commits in `src/warp/schema/upstream/` and
@@ -99,7 +117,7 @@ First public release. Schema version 0.7.0; examples' `profile_version`
   (`make owl-check`, skipped with a warning where ROBOT is not installed).
 - Reports in `project/reports/`: projection, guidance, tolerance, cost
   completeness (after Iacona et al.'s five standards) and Target 2.
-- Statements in plain language (Rosetta Statements, rule `warp-rosetta/1`):
+- Statements in plain language (Rosetta Statements, rule `warp-rosetta/2`):
   `scripts/render_statements.py` says every statement as one English
   sentence with everything it records, next to the source's own words and
   the study results its evidence cites, in `project/reports/statements.md`.

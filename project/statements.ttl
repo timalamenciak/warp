@@ -2149,8 +2149,7 @@ stmt:hsi-y-temperature a warp:ToleranceStatement ;
 
 <https://w3id.org/ecoweaver/warp/statement/kramer1995-c1/temporal_extent> a causal_mosaic:TemporalExtent ;
     causal_mosaic:duration_text "One mosquito season (May-October 1992) after the 6-week project ended in late 1991." ;
-    causal_mosaic:observation_grain "Five 400 ml dips per inundated monitoring station after each high tide cycle" ;
-    causal_mosaic:observation_seasons "May-October" .
+    causal_mosaic:observation_grain "Five 400 ml dips per inundated monitoring station after each high tide cycle" .
 
 <https://w3id.org/ecoweaver/warp/statement/land-trust-0412/predicate_qualifiers> a warp:ImplementationQualifiers ;
     warp:area_treated <https://w3id.org/ecoweaver/warp/statement/land-trust-0412/predicate_qualifiers/area_treated> ;

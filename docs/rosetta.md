@@ -7,7 +7,13 @@ source's own words (`statementText`, `original_text`, `source_spans`), so a
 reviewer can check that the structured record says what the source said.
 The idea follows Vogt et al.'s Rosetta Statements: a statement type has
 positions and a template that says them in a natural language. Rule
-`warp-rosetta/1` (`RULE_VERSION` in the script).
+`warp-rosetta/2` (`RULE_VERSION` in the script).
+
+Version 2 supports CAMO 0.10.0: statement and comparator doses, statistical
+significance and analysis method, effect metrics and uncertainty intervals,
+and measurement time since intervention. Quantity wording preserves open
+bounds and free-text units; its verbatim source wording is listed beside the
+sentence. Statistical significance is distinct from evidential strength.
 
 A proposition's text (`propositionText`, written by
 `derive_propositions.py`) is a different thing: subject, predicate, object,

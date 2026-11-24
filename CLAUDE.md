@@ -126,7 +126,7 @@ people with `status: open_question` keep their IDs.
 - Top-level slot from the profile: `scope`.
 - Inline attributes on `EcoStatement`: `original_text`, `source_spans`, `care`.
 - Inline attributes on `CausalStatement`: `negated`, `causal_language`,
-  `predicate_qualifiers`, `comparator`, `camo_edge_id`.
+  `predicate_qualifiers`, `comparator`, `dose`, `dose_level`, `camo_edge_id`.
 - Shared slots on `EcoStatement`: `modality`, `context`, `ecosystem_context`,
   `place`, `temporal_extent`, `specified_in`.
 
@@ -140,7 +140,9 @@ pipeline, as claimant of `SynthesisAssessment`s, is the agent
 ### Types of `temporal_extent` and `ecosystem_context`
 
 - `temporal_extent`: CAMO `TemporalExtent` (`duration_months`,
-  `duration_text`, `lag_months`, `observation_grain`, `observation_seasons`).
+  `duration_text`, `lag_months`, `observation_grain`, `observation_seasons`,
+  `time_since_intervention_months`, `time_since_intervention_text`). CAMO is
+  pinned at 0.10.0; observation seasons are `SeasonEnum` keys, not free text.
   It has **no start or end**, so periods use the profile's own `Period` class.
 - `ecosystem_context`: CAMO `EcosystemFunctionalGroupEnum`, the IUCN Global
   Ecosystem Typology functional groups (110 values). A kind of ecosystem, not
@@ -227,7 +229,7 @@ is stale.
 
 ### Plain-language rendering
 
-`scripts/render_statements.py` (rule `warp-rosetta/1`) says each statement
+`scripts/render_statements.py` (rule `warp-rosetta/2`) says each statement
 as one English sentence, from `config/rosetta.yaml`: entries by class,
 inherited along `is_a`, so it names no group in code. `--check` (in
 `make check` and `build_profile.py`) fails when a reachable slot has no

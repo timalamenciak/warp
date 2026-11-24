@@ -253,6 +253,23 @@
             "title": "AgentKindEnum",
             "type": "string"
         },
+        "AnalysisMethodEnum": {
+            "description": "The analysis that produced the reported result. Not the study design, which is EvidenceTypeEnum: a controlled browsing experiment analysed with a mixed model is randomized_experiment there and mixed_model here. Values carry a STATO mapping only where a verified equivalent exists; the rest are left unmapped rather than attached to an approximate term.",
+            "enum": [
+                "anova",
+                "manova",
+                "mixed_model",
+                "regression",
+                "ordination",
+                "multivariate_other",
+                "nonparametric",
+                "bayesian",
+                "descriptive_only",
+                "not_reported"
+            ],
+            "title": "AnalysisMethodEnum",
+            "type": "string"
+        },
         "ApplicabilityScope": {
             "additionalProperties": false,
             "description": "Describes which nodes a parameter option can apply to. A node is in scope when it matches at least one value in every slot that is filled in; empty slots impose no restriction.",
@@ -319,7 +336,7 @@
         },
         "AppliedToEntity": {
             "additionalProperties": false,
-            "description": "A structured entity reference used by the CausalNode.applied_to slot. On environmental_variable nodes it identifies a taxon or ecological guild whose measurements are aggregated (scope role). On environmental_process and management_intervention nodes it identifies the directional target of the process or intervention (target role). Uses the same entity_type / entity_term decomposition as CausalNode.",
+            "description": "A structured entity reference used by the CausalNode.applied_to slot. On composite_variable nodes it identifies a taxon or ecological guild whose measurements are aggregated (scope role). On environmental_process and management_intervention nodes it identifies the directional target of the process or intervention (target role). Uses the same entity_type / entity_term decomposition as CausalNode. Amounts (share, dominance, rank) do not belong here: they go on CompositionMember, in CausalNode.composition.",
             "properties": {
                 "entity_term": {
                     "anyOf": [
@@ -330,12 +347,31 @@
                             "type": "string"
                         }
                     ],
-                    "description": "The target entity as an ontology CURIE (preferred) or free text. For taxa use Wikidata QIDs; for environments ENVO; for processes GO.",
+                    "description": "The target entity as an ontology CURIE (preferred) or free text. For taxa use NCBITaxon where available, otherwise Wikidata QIDs; for environments ENVO; for processes GO.",
                     "type": "string"
                 },
                 "entity_type": {
                     "$ref": "#/$defs/EntityTypeEnum",
                     "description": "High-level category of the target entity."
+                },
+                "life_stage": {
+                    "$ref": "#/$defs/LifeStageEnum",
+                    "description": "The life stage of this target entity, where the node's measurement is restricted to one, e.g. richness of tree seedlings rather than of trees."
+                },
+                "life_stage_term": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "The stage as an ontology CURIE where one fits, otherwise as the source's own wording. PO development-stage terms for plants, UBERON life-cycle-stage terms for animals.",
+                    "type": "string"
                 }
             },
             "required": [
@@ -631,6 +667,21 @@
                     ],
                     "description": "Annotation of causal direction and evidence for direction."
                 },
+                "dose": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/QuantityValue"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "The level or range of the subject intervention or driver that this edge reports on, e.g. an initial planting density of 5 to 11 ramets/m2. Annotate one edge per reported level or range when the source reports results separately by dose; the nodes stay the same and only the dose differs. Leave empty when the source reports no dose. Dose is a condition of the claim, not part of the node, so it does not enter variable_key."
+                },
+                "dose_level": {
+                    "$ref": "#/$defs/DoseLevelEnum",
+                    "description": "The subject driver's level on an ordinal scale, for sources that name a level without quantifying it, e.g. \"under heavy browsing pressure\" or \"at intermediate densities\". Use alongside dose where the source gives both a name and a quantity, and alone where it gives only the name; a named level is the reason a QuantityValue with no number should never be built. Like dose, it is a condition of the claim rather than part of the node, so it does not enter variable_key."
+                },
                 "ecosystem_context": {
                     "$ref": "#/$defs/EcosystemFunctionalGroupEnum",
                     "description": "The IUCN Global Ecosystem Typology Level 3 ecosystem functional group in which this causal relationship was observed, represented by an ELMO ecosystem type term. Use this edge-level field for the ecosystem setting of the causal claim."
@@ -733,6 +784,10 @@
                     "$ref": "#/$defs/ReversibilityEnum",
                     "description": "Whether removing the cause is characterized as reversing the effect."
                 },
+                "scope": {
+                    "$ref": "#/$defs/ScopeEnum",
+                    "description": "What the claim is about: one case (assertional), some cases under stated conditions (contingent), typical cases (prototypical) or all cases (universal). Use instead of token_or_type. Most findings reported from a single study are assertional or contingent; general statements in an author's own voice are prototypical or universal."
+                },
                 "source_document": {
                     "description": "Reference to an entry in CausalGraph.source_documents, by document_id.",
                     "type": [
@@ -791,10 +846,6 @@
                 "temporal_ordering": {
                     "$ref": "#/$defs/FeatureAssertionEnum",
                     "description": "Whether temporal ordering between cause and effect is addressed."
-                },
-                "token_or_type": {
-                    "$ref": "#/$defs/TokenTypeEnum",
-                    "description": "Whether the claim concerns a specific causal instance or a general causal type."
                 }
             },
             "required": [
@@ -882,7 +933,15 @@
         },
         "CausalNode": {
             "additionalProperties": false,
-            "description": "A node in the labeled property graph representing a causally active ecological entity \u2014 specifically, a state or change in state of an environmental variable or process. Merges ELMO's entity structure (Alamenciak et al. 2025) with CAMO's annotation requirements.\nKey design principle: causation in ecology is represented between states or changes in state, not between things alone. A taxon does not cause anything by itself; the causally relevant annotation concerns the state or change of an attribute of a taxon. Therefore each node decomposes into:\n\n  entity: what thing (taxon, chemical, abiotic factor, process)\n  attribute: what measurable property (abundance, cover, rate)\n  qualifier: whether or how it changed (present, increased, etc.)\n\nThe human-readable 'name' is the composed form: \"Increased abundance of Canis lupus\". The structured fields allow decomposed querying: \"show me all claims involving Canis lupus\" or \"all claims about abundance changes\" or \"all claims where abundance decreased.\"\nThis pattern corresponds to ELMO's subject/object value + derivative qualifier + state/change qualifier structure.\nFor taxon-specific measurements a two-path model applies. Single-taxon measurements use entity_type: taxon, with the Wikidata QID in entity_term and the measured property in measured_attribute \u2014 the taxon node is both organism and measurement and participates directly in causal edges. Multi-taxon aggregates and ecological guilds (\"native species\", \"shade-tolerant species\") use entity_type: environmental_variable with one or more Wikidata QIDs or free-text guild names in applied_to. Causal edges are never used for taxon-to-measurement links; applied_to is a queryable annotation field only.",
+            "description": "A node in the labeled property graph representing a causally active ecological entity \u2014 specifically, a state or change in state of an environmental variable or process. Merges ELMO's entity structure (Alamenciak et al. 2025) with CAMO's annotation requirements.\nKey design principle: causation in ecology is represented between states or changes in state, not between things alone. A taxon does not cause anything by itself; the causally relevant annotation concerns the state or change of an attribute of a taxon. Therefore each node decomposes into:\n\n  entity: what thing (taxon, chemical, abiotic factor, process)\n  attribute: what measurable property (abundance, cover, rate)\n  qualifier: whether or how it changed (present, increased, etc.)\n\nThe human-readable 'name' is the composed form: \"Increased abundance of Canis lupus\". The structured fields allow decomposed querying: \"show me all claims involving Canis lupus\" or \"all claims about abundance changes\" or \"all claims where abundance decreased.\"\nThis pattern corresponds to ELMO's subject/object value + derivative qualifier + state/change qualifier structure.\nFor taxon-specific measurements a two-path model applies. Single-taxon measurements use entity_type: taxon, with the NCBITaxon ID in entity_term and the measured property in measured_attribute \u2014 the taxon node is both organism and measurement and participates directly in causal edges. Multi-taxon aggregates and ecological guilds (\"native species\", \"shade-tolerant species\") use entity_type: composite_variable with one or more NCBITaxon IDs or free-text guild names in applied_to. Causal edges are never used for taxon-to-measurement links; applied_to is a queryable annotation field only.",
+            "if": {
+                "properties": {
+                    "composition": {}
+                },
+                "required": [
+                    "composition"
+                ]
+            },
             "properties": {
                 "annotator": {
                     "description": "Annotator identifier (human ORCID or model ID).",
@@ -893,7 +952,7 @@
                     ]
                 },
                 "applied_to": {
-                    "description": "The entity or entities that this node is directed at, acts upon, or whose scope the measurement spans. Covers two roles depending on node type:\n(1) Scope role (environmental_variable): one or more taxa or ecological guilds whose measurements are aggregated or grouped \u2014 for example, \"richness of liverworts, Sphagnum, and true mosses\" (list the Wikidata QID for each group) or \"abundance of native species\" (free text \"native species\", tracked in NAO). Wikidata QIDs for higher-rank taxa enable downstream traversal to all taxon nodes sharing that QID without requiring a structural edge. Free-text values are accepted for functional groups and guilds with no Wikidata resolution (e.g., \"native species\", \"shade-tolerant species\", \"invasive plants\") and should be tracked in the project NAO list. Do not use on single-taxon nodes \u2014 use entity_type: taxon with the QID in entity_term instead.\n(2) Target role (environmental_process and management_intervention): the specific entity that the process or intervention is directed at or acts upon. Use when the node's meaning is only complete with reference to a target \u2014 for example, \"herbivory on Sphagnum\" or \"invasive species removal of Alliaria petiolata\".\nAccepts any entity type (taxon, community, habitat, etc.) using the same entity_type / entity_term decomposition as CausalNode.",
+                    "description": "The entity or entities that this node is directed at, acts upon, or whose scope the measurement spans. Covers two roles depending on node type:\n(1) Scope role (composite_variable; earlier annotations may use environmental_variable): one or more taxa or ecological guilds whose measurements are aggregated or grouped \u2014 for example, \"richness of liverworts, Sphagnum, and true mosses\" (list the NCBITaxon ID for each group) or \"abundance of native species\" (free text \"native species\", tracked in NAO). NCBITaxon IDs for higher-rank taxa enable downstream traversal to all taxon nodes sharing that ID without requiring a structural edge. Free-text values are accepted for functional groups and guilds with no NCBITaxon resolution (e.g., \"native species\", \"shade-tolerant species\", \"invasive plants\") and should be tracked in the project NAO list. Do not use on single-taxon nodes \u2014 use entity_type: taxon with the NCBITaxon ID in entity_term instead.\n(2) Target role (environmental_process and management_intervention): the specific entity that the process or intervention is directed at or acts upon. Use when the node's meaning is only complete with reference to a target \u2014 for example, \"herbivory on Sphagnum\" or \"invasive species removal of Alliaria petiolata\".\nAccepts any entity type (taxon, community, habitat, etc.) using the same entity_type / entity_term decomposition as CausalNode.",
                     "items": {
                         "$ref": "#/$defs/AppliedToEntity"
                     },
@@ -901,6 +960,27 @@
                         "array",
                         "null"
                     ]
+                },
+                "components": {
+                    "description": "For management_intervention nodes that apply a mixture or package, what it contained: one entry per component, with the taxon or material in counted_entity and its rate in the value fields (e.g. a seed mix of ten species with seeding rates). Defines what the intervention was; do not annotate components as separate nodes or edges unless the source reports results for them separately. This records what was applied. What was observed in an assemblage goes in composition on a composite_variable node.",
+                    "items": {
+                        "$ref": "#/$defs/QuantityValue"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "composition": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/CompositionAnnotation"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "For composite_variable nodes, the reported composition of the assemblage: its members and how much of the whole each accounts for. Requires entity_type: composite_variable. Not part of variable_key.\nWhich slot to use. Where the source gives each member's share, or ranks the members, record a composition: a number goes in member.share, a ranking with no number in member.dominance or member.rank. Where the source only names the members, with no share and no ranking, there is no composition to record: list them in applied_to and put presence or disappearance in state_or_change_qualifier, which is what those slots are for. Every composition member must carry an amount in one of the three forms, so a bare membership list will be rejected here by design.\nUse components, not composition, for what a management intervention applied, such as a seed mix and its rates."
                 },
                 "embedding_text": {
                     "description": "Concatenated text used for generating the embedding vector. Typically: name + description + synonym list.",
@@ -925,7 +1005,7 @@
                             "type": "string"
                         }
                     ],
-                    "description": "The core ecological entity as an ontology CURIE, or free text when no cached ontology term matches yet. This is the \"what thing\" \u2014 the taxon, chemical, abiotic factor, or process class, and is the authoritative ontology grounding for the node's entity. Corresponds to ELMO's subject_value / object_value slot. Examples: wd:Q18498 (Canis lupus), CHEBI:24279 (glucosinolate), ENVO:01000253 (grassland). Secondary ontology crosswalks, if needed, should be maintained outside article annotations in SSSOM files.",
+                    "description": "The core ecological entity as an ontology CURIE, or free text when no cached ontology term matches yet. This is the \"what thing\" \u2014 the taxon, chemical, abiotic factor, or process class, and is the authoritative ontology grounding for the node's entity. Corresponds to ELMO's subject_value / object_value slot. Examples: NCBITaxon:9612 (Canis lupus), CHEBI:24279 (glucosinolate), ENVO:01000253 (grassland). Secondary ontology crosswalks, if needed, should be maintained outside article annotations in SSSOM files.",
                     "type": "string"
                 },
                 "entity_type": {
@@ -934,6 +1014,25 @@
                 },
                 "id": {
                     "description": "Unique node identifier. This field is populated automatically by the annotation tool; annotators do not need to fill it in. If entity_term is provided, Loom uses that CURIE; otherwise, Loom generates causal_mosaic:{slugified_name}_{4-char-hash}.",
+                    "type": "string"
+                },
+                "life_stage": {
+                    "$ref": "#/$defs/LifeStageEnum",
+                    "description": "The life stage of the organism this node measures, as a coarse facet. Kept out of measured_attribute, which is for the measured quality and is part of variable_key: a stage recorded there makes \"abundance of seedlings\" and \"abundance of year 2 rosettes\" two different variables for the wrong reason, and breaks the PATO grounding measured_attribute carries. Give mixed_or_whole_population for an unstaged count rather than leaving this empty."
+                },
+                "life_stage_term": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "The stage as an ontology CURIE where one fits, otherwise as the source's own wording. For plants use a PO development-stage term under PO:0009012 - PO:0007131 (seedling development stage), not PO:0008037 (seedling), which is a structure rather than a stage. For animals use a UBERON life-cycle-stage term under UBERON:0000105. Free text is for distinctions neither ontology nor the enum keeps, e.g. \"year 1 rosette\" against \"year 2 rosette\".",
                     "type": "string"
                 },
                 "measured_attribute": {
@@ -955,6 +1054,10 @@
                     "description": "Human-readable composed label for the node. Should express the full semantic content: \"Increased wolf population abundance\" or \"Prescribed burning process\" or \"Elevated soil nitrogen.\" This is what appears in Rosetta Statements and graph visualizations.",
                     "type": "string"
                 },
+                "nativeness_basis": {
+                    "$ref": "#/$defs/NativenessBasisEnum",
+                    "description": "For nodes whose applied_to names native or non-native species, how nativeness was assigned."
+                },
                 "parameter_options": {
                     "description": "Ways the state or change this node represents could be measured or supplied as a parameter, given as ids of ParameterOption entries in a ParameterOptionCatalog. A list of possibilities, independent of any source document: it does not record what a study measured. Used to bind nodes to data streams in digital twins and to choose observable variables when building causal models. Options apply to the variable, so nodes sharing a variable_key should carry the same options, filtered to those whose value_type suits the node's qualifier family.",
                     "items": {
@@ -975,6 +1078,17 @@
                         "null"
                     ]
                 },
+                "spatial_grain": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/QuantityValue"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "For environmental_variable nodes, the area of the sampling unit the measurement was made on, e.g. 1 m2 quadrats. Matters most for area-dependent attributes such as species richness. Not part of variable_key."
+                },
                 "state_or_change_qualifier": {
                     "$ref": "#/$defs/StateOrChangeQualifierEnum",
                     "description": "Qualifier indicating the state or change in the attribute, including cases where the attribute is present, absent, or unchanged. \"unchanged\" describes a reported stable state, not a null result; null results are encoded on the edge (see CausalEdge.negated). Corresponds to ELMO's direction_qualifier slot. Combined with entity_term and measured_attribute to produce the node's full meaning: e.g., entity=Canis lupus, attribute=abundance, qualifier=increased gives \"increased abundance of Canis lupus.\""
@@ -992,6 +1106,16 @@
                 "name",
                 "entity_term"
             ],
+            "then": {
+                "properties": {
+                    "entity_type": {
+                        "const": "composite_variable"
+                    }
+                },
+                "required": [
+                    "entity_type"
+                ]
+            },
             "title": "CausalNode",
             "type": "object"
         },
@@ -1339,6 +1463,21 @@
                 "direction": {
                     "$ref": "#/$defs/EvidenceDirectionEnum",
                     "description": "A term indicating whether the Statement supports, disputes, or remains neutral w.r.t. the validity of the Proposition it evaluates."
+                },
+                "dose": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/QuantityValue"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "The reported level or range of the subject intervention or driver, using CAMO's quantity type. A condition of this statement, not a node definition or part of proposition identity."
+                },
+                "dose_level": {
+                    "$ref": "#/$defs/DoseLevelEnum",
+                    "description": "The subject driver's reported ordinal level. Use alone for a named level without a number, or with dose when the source supplies both. A condition of this statement, not part of proposition identity."
                 },
                 "ecosystem_context": {
                     "$ref": "#/$defs/EcosystemFunctionalGroupEnum",
@@ -1800,6 +1939,21 @@
                         "null"
                     ]
                 },
+                "comparator_dose": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/QuantityValue"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "The level or range of the subject driver in this comparison arm, so that both ends of the contrast are recoverable. Pairs with CausalEdge.dose, which gives this edge's own level: the two together are what lets a dose-response curve be fitted and an effect size be recomputed. Expected when comparator_type is alternative_dose_level."
+                },
+                "comparator_dose_level": {
+                    "$ref": "#/$defs/DoseLevelEnum",
+                    "description": "The arm's level on the ordinal scale, for sources that name it without a number, e.g. \"relative to lower initial densities\". Use alongside comparator_dose where the source gives both."
+                },
                 "comparator_node_id": {
                     "description": "Node ID of the comparison arm, where that arm is itself annotated as a node. Expected when comparator_type is passive_management_arm or alternative_treatment; normally empty otherwise.",
                     "type": [
@@ -1829,10 +1983,163 @@
                 "passive_management_arm",
                 "spatial_or_temporal_control",
                 "not_reported",
+                "alternative_dose_level",
                 "not_applicable"
             ],
             "title": "ComparatorTypeEnum",
             "type": "string"
+        },
+        "CompositionAnnotation": {
+            "additionalProperties": false,
+            "description": "The reported composition of an observed assemblage: which members make it up and how much of it each accounts for. Attaches to a CausalNode whose entity is a composite_variable, and describes that node's entity rather than a causal relationship. Distinct from CausalNode.components, which records what a management intervention applied (a seed mix and its rates); this records what was observed. Members are usually taxa but need not be: a fraction of particulate organic matter by biomass is a member too. Not modelled: a ratio between two groups (\"forb-to-grass ratio 3.5:1\"), and nesting of groups within groups (list the leaf members and let the flat list stand).",
+            "properties": {
+                "basis": {
+                    "$ref": "#/$defs/CompositionBasisEnum",
+                    "description": "What the member shares measure. Required, because a share without its basis cannot be compared across studies."
+                },
+                "members": {
+                    "description": "The members of the assemblage, one entry each.",
+                    "items": {
+                        "$ref": "#/$defs/CompositionMember"
+                    },
+                    "minItems": 1,
+                    "type": "array"
+                },
+                "total_share": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/QuantityValue"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "The share of the whole that the listed members jointly account for, where the source states it, e.g. \"comprised more than 87% of the cladoceran assemblage\" is minimum_value 87. Records that the list is partial without forcing an invented remainder."
+                },
+                "verbatim": {
+                    "description": "The composition as the source states it.",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            },
+            "required": [
+                "basis",
+                "members"
+            ],
+            "title": "CompositionAnnotation",
+            "type": "object"
+        },
+        "CompositionBasisEnum": {
+            "description": "What a reported membership share measures. An assemblage share is only interpretable against its basis: 90% of individuals is not 90% of cover and not 90% of detections.",
+            "enum": [
+                "relative_abundance",
+                "cover",
+                "biomass",
+                "density",
+                "detection_frequency",
+                "frequency_of_occurrence",
+                "other",
+                "not_stated"
+            ],
+            "title": "CompositionBasisEnum",
+            "type": "string"
+        },
+        "CompositionMember": {
+            "additionalProperties": false,
+            "anyOf": [
+                {
+                    "properties": {
+                        "share": {}
+                    },
+                    "required": [
+                        "share"
+                    ]
+                },
+                {
+                    "properties": {
+                        "dominance": {}
+                    },
+                    "required": [
+                        "dominance"
+                    ]
+                },
+                {
+                    "properties": {
+                        "rank": {}
+                    },
+                    "required": [
+                        "rank"
+                    ]
+                }
+            ],
+            "description": "One member of an observed assemblage, with how much of the whole it accounts for. Inherits the entity_type / entity_term / life_stage decomposition from EntityReference, so a member is grounded the same way as an applied_to entry, and adds the member's amount. Give share when the source reports a number, dominance when it ranks members without one, and rank to preserve an explicit ordering.",
+            "properties": {
+                "dominance": {
+                    "$ref": "#/$defs/DominanceEnum",
+                    "description": "The member's ordinal standing where the source gives no number. Leave empty when share is given and the source adds no ranking."
+                },
+                "entity_term": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ],
+                    "description": "The target entity as an ontology CURIE (preferred) or free text. For taxa use NCBITaxon where available, otherwise Wikidata QIDs; for environments ENVO; for processes GO.",
+                    "type": "string"
+                },
+                "entity_type": {
+                    "$ref": "#/$defs/EntityTypeEnum",
+                    "description": "High-level category of the target entity."
+                },
+                "life_stage": {
+                    "$ref": "#/$defs/LifeStageEnum",
+                    "description": "The life stage of this target entity, where the node's measurement is restricted to one, e.g. richness of tree seedlings rather than of trees."
+                },
+                "life_stage_term": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "The stage as an ontology CURIE where one fits, otherwise as the source's own wording. PO development-stage terms for plants, UBERON life-cycle-stage terms for animals.",
+                    "type": "string"
+                },
+                "rank": {
+                    "description": "The member's position in an ordering the source states explicitly, 1 for the first named, e.g. \"detected most frequently, followed by coyotes and lynx\". Independent of list order.",
+                    "minimum": 1,
+                    "type": [
+                        "integer",
+                        "null"
+                    ]
+                },
+                "share": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/QuantityValue"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "How much of the whole this member accounts for, in the units named by CompositionAnnotation.basis. Use the QuantityValue range fields for a reported range, e.g. \"2-6% relative abundance\" is minimum_value 2 and maximum_value 6."
+                }
+            },
+            "required": [
+                "entity_term"
+            ],
+            "title": "CompositionMember",
+            "type": "object"
         },
         "ContextAnnotation": {
             "additionalProperties": false,
@@ -4398,6 +4705,46 @@
             "title": "DocumentSectionEnum",
             "type": "string"
         },
+        "DominanceEnum": {
+            "description": "A member's standing in the assemblage where the source ranks members without giving a number, e.g. \"dominated by Elymus trachycaulus\". Ordinal only: do not infer a share from it.",
+            "enum": [
+                "dominant",
+                "codominant",
+                "subdominant",
+                "minor",
+                "rare"
+            ],
+            "title": "DominanceEnum",
+            "type": "string"
+        },
+        "DoseLevelEnum": {
+            "description": "A driver or intervention level that the source names without quantifying, e.g. \"heavy browsing pressure\" or \"intermediate densities\". The first five values are ordinal, running from absent to very_high along one scale; the two relative values are for sources that compare with an arm they do not state. Use CausalEdge.dose for a reported quantity and CausalEdge.dose_level for a named level; a source giving both takes both. These values are deliberately unmapped: no OBO ontology carries an ordinal driver-intensity scale, and PATO magnitude qualities describe an outcome rather than a driver's level, so mapping to them would assert something false.",
+            "enum": [
+                "absent",
+                "low",
+                "intermediate",
+                "high",
+                "very_high",
+                "higher_than_comparator",
+                "lower_than_comparator",
+                "not_specified"
+            ],
+            "title": "DoseLevelEnum",
+            "type": "string"
+        },
+        "DoseResponseShapeEnum": {
+            "description": "The shape of a reported dose-response relationship.",
+            "enum": [
+                "monotonic",
+                "threshold",
+                "saturating",
+                "unimodal",
+                "none",
+                "not_reported"
+            ],
+            "title": "DoseResponseShapeEnum",
+            "type": "string"
+        },
         "EcoAgent": {
             "additionalProperties": false,
             "description": "A person, organization, community or software agent. Use an ORCID or ROR id where one exists and the agent agrees; otherwise a local id (warp:agent/...), which may be a pseudonym.",
@@ -6505,6 +6852,23 @@
             "title": "EcosystemFunctionalGroupEnum",
             "type": "string"
         },
+        "EffectMetricEnum": {
+            "description": "The metric of a reported effect size.",
+            "enum": [
+                "raw_mean_difference",
+                "standardized_mean_difference",
+                "log_response_ratio",
+                "percent_change",
+                "risk_ratio",
+                "odds_ratio",
+                "correlation_coefficient",
+                "regression_coefficient",
+                "variance_explained",
+                "other"
+            ],
+            "title": "EffectMetricEnum",
+            "type": "string"
+        },
         "Entity": {
             "additionalProperties": false,
             "description": "Anything that exists, has existed, or will exist.",
@@ -6569,10 +6933,57 @@
             "title": "Entity",
             "type": "object"
         },
+        "EntityReference": {
+            "additionalProperties": false,
+            "description": "The entity_type / entity_term / life_stage decomposition shared by the structured entity references: AppliedToEntity (applied_to entries) and CompositionMember (members of an observed assemblage). Abstract, so that the two stay separate range types: a CompositionMember is not accepted where an AppliedToEntity is expected, and the other way round.",
+            "properties": {
+                "entity_term": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ],
+                    "description": "The target entity as an ontology CURIE (preferred) or free text. For taxa use NCBITaxon where available, otherwise Wikidata QIDs; for environments ENVO; for processes GO.",
+                    "type": "string"
+                },
+                "entity_type": {
+                    "$ref": "#/$defs/EntityTypeEnum",
+                    "description": "High-level category of the target entity."
+                },
+                "life_stage": {
+                    "$ref": "#/$defs/LifeStageEnum",
+                    "description": "The life stage of this target entity, where the node's measurement is restricted to one, e.g. richness of tree seedlings rather than of trees."
+                },
+                "life_stage_term": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "The stage as an ontology CURIE where one fits, otherwise as the source's own wording. PO development-stage terms for plants, UBERON life-cycle-stage terms for animals.",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "entity_term"
+            ],
+            "title": "EntityReference",
+            "type": "object"
+        },
         "EntityTypeEnum": {
             "description": "The type of ecological entity at the core of a node, following ELMO's distinction between environmental variables and environmental processes. This classification determines how the node's attribute and state/change qualifier are interpreted.",
             "enum": [
                 "environmental_variable",
+                "composite_variable",
                 "environmental_process",
                 "management_intervention",
                 "taxon"
@@ -8842,6 +9253,32 @@
             "title": "InteractionTypeEnum",
             "type": "string"
         },
+        "IntervalTypeEnum": {
+            "description": "The kind of uncertainty interval reported around an effect size.",
+            "enum": [
+                "confidence",
+                "credible",
+                "standard_error_range",
+                "standard_deviation_range"
+            ],
+            "title": "IntervalTypeEnum",
+            "type": "string"
+        },
+        "LifeStageEnum": {
+            "description": "The life stage of the organism a node measures, as a coarse facet that cross-taxon queries can group on. Deliberately coarse: developmental stage vocabularies are kingdom-specific, so the precise term belongs in life_stage_term - a PO development-stage term for plants, a UBERON life-cycle-stage term for animals - while this enum stays usable across a graph that annotates plants, birds and mammals together. Values are mapped close, never exact, because each spans kingdoms and the source terms do not.",
+            "enum": [
+                "seed_or_seed_bank",
+                "germinant_or_seedling",
+                "juvenile",
+                "ramet_or_clonal_unit",
+                "reproductive_adult",
+                "senescent_or_dead",
+                "mixed_or_whole_population",
+                "not_specified"
+            ],
+            "title": "LifeStageEnum",
+            "type": "string"
+        },
         "MeasurementRelationEnum": {
             "description": "How what a parameter option measures relates to the node it supplies. Causal models should allow for measurement error when the relation is proxy or derived.",
             "enum": [
@@ -9171,6 +9608,17 @@
             ],
             "title": "MonetaryAmount",
             "type": "object"
+        },
+        "NativenessBasisEnum": {
+            "description": "How the source decided which taxa counted as native.",
+            "enum": [
+                "regional_flora_or_fauna",
+                "national_checklist",
+                "author_judgement",
+                "not_reported"
+            ],
+            "title": "NativenessBasisEnum",
+            "type": "string"
         },
         "NodeDefinition": {
             "additionalProperties": false,
@@ -9663,6 +10111,94 @@
                 "unit"
             ],
             "title": "QuantityRange",
+            "type": "object"
+        },
+        "QuantityValue": {
+            "additionalProperties": false,
+            "anyOf": [
+                {
+                    "properties": {
+                        "numeric_value": {}
+                    },
+                    "required": [
+                        "numeric_value"
+                    ]
+                },
+                {
+                    "properties": {
+                        "minimum_value": {}
+                    },
+                    "required": [
+                        "minimum_value"
+                    ]
+                },
+                {
+                    "properties": {
+                        "maximum_value": {}
+                    },
+                    "required": [
+                        "maximum_value"
+                    ]
+                }
+            ],
+            "description": "A reported quantity: a single value or a range, its unit, and the entity being counted or measured. Used for intervention doses (CausalEdge.dose), intervention components (CausalNode.components) and sampling grain (CausalNode.spatial_grain). Give numeric_value for a single value, or minimum_value and/or maximum_value for a range or threshold (\"5 or more\" is minimum_value 5 with no maximum).",
+            "properties": {
+                "counted_entity": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/AppliedToEntity"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "What is counted or measured, when the unit alone does not say, e.g. ramets of Sanguinaria canadensis in \"9 ramets/m2\"."
+                },
+                "maximum_value": {
+                    "description": "Upper bound of a reported range, inclusive.",
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                },
+                "minimum_value": {
+                    "description": "Lower bound of a reported range or threshold, inclusive.",
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                },
+                "numeric_value": {
+                    "description": "A single reported value.",
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                },
+                "unit": {
+                    "description": "Unit of the value, as a QUDT unit (preferred) or UO term, matching ParameterOption.unit. For counts per area give the area unit (e.g. per square metre) and name what is counted in counted_entity. Leave empty for unitless counts, and when no QUDT or UO term fits (ecological density units such as ramets/m2 or deer/km2 often have none): put the source's own wording in unit_text instead.",
+                    "pattern": "^(unit|UO):\\S+$",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "unit_text": {
+                    "description": "The unit as the source words it, for use only when no QUDT or UO term exists for it, e.g. \"ramets/m2\" or \"deer/km2\". unit stays an identifier; this slot makes the fallback explicit so a consumer can tell a resolvable unit from a free-text one. Do not fill it when unit is set. Differs from verbatim, which is the whole quantity (value and unit), not the unit alone.",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "verbatim": {
+                    "description": "The quantity as the source states it, e.g. '9 and 11 ramets/m2'.",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            },
+            "title": "QuantityValue",
             "type": "object"
         },
         "RecommendationPredicateEnum": {
@@ -10389,6 +10925,35 @@
             "title": "ScaledValue",
             "type": "object"
         },
+        "ScopeEnum": {
+            "description": "What a claim is about, following Vogt's semantic unit types. Replaces TokenTypeEnum for new records. Values and definitions must match WARP's SemanticUnitScopeEnum, so that ingestion copies them unchanged.",
+            "enum": [
+                "assertional",
+                "contingent",
+                "prototypical",
+                "universal",
+                "unclear"
+            ],
+            "title": "ScopeEnum",
+            "type": "string"
+        },
+        "SeasonEnum": {
+            "description": "A season during which an effect was observed or measured. The four cardinal seasons map to NCIT, which defines them astronomically (equinox to solstice); the sub-seasons take their cardinal season as a broad mapping, because no ontology checked carries them as terms. Growing and dormant season are included because sources in strongly seasonal systems report by those rather than by calendar season. A window spanning seasons or years is not a season: record it in time_since_intervention_text or duration_text instead.",
+            "enum": [
+                "early_spring",
+                "mid_spring",
+                "late_spring",
+                "spring",
+                "early_summer",
+                "summer",
+                "autumn",
+                "winter",
+                "growing_season",
+                "dormant_season"
+            ],
+            "title": "SeasonEnum",
+            "type": "string"
+        },
         "SemanticUnitScopeEnum": {
             "description": "The scope of what a statement asserts, following Vogt's semantic unit types for statement units. Scope is part of a proposition's identity: \"X reduced Y on this plot\" and \"X typically reduces Y\" are different propositions. Definitions below are working glosses and must be checked against Vogt's own definitions before release.",
             "enum": [
@@ -10399,6 +10964,18 @@
                 "unclear"
             ],
             "title": "SemanticUnitScopeEnum",
+            "type": "string"
+        },
+        "SignificanceEnum": {
+            "description": "Whether the source reported this relationship as statistically significant. Separate from causal_language, which records how strongly the text commits causally, and from negated, which encodes a null result: a finding can be non-significant without the authors asserting that no relationship holds. The two non-verdict values matter as much as the verdicts, because without them an evidence gap map cannot tell \"tested and not significant\" from \"never tested\".",
+            "enum": [
+                "significant",
+                "not_significant",
+                "marginal",
+                "not_tested",
+                "not_reported"
+            ],
+            "title": "SignificanceEnum",
             "type": "string"
         },
         "SiteDefinition": {
@@ -11405,10 +11982,67 @@
             "additionalProperties": false,
             "description": "Effect size, magnitude, or dose-response characterization.",
             "properties": {
+                "alpha": {
+                    "description": "The significance threshold the source used, where it states one, e.g. 0.05. Lets a significance verdict be re-derived from p_value.",
+                    "maximum": 1.0,
+                    "minimum": 0.0,
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                },
+                "analysis_method": {
+                    "$ref": "#/$defs/AnalysisMethodEnum",
+                    "description": "The analysis that produced the reported result. Distinct from evidential_basis.evidence_types, which records the study design."
+                },
                 "dose_response": {
-                    "description": "Is a dose-response or gradient relationship described?",
+                    "description": "Is a dose-response or gradient relationship described? Kept for 0.8.0 records; when dose_response_shape is given, this should be true unless the shape is none (loom enforces this).",
                     "type": [
                         "boolean",
+                        "null"
+                    ]
+                },
+                "dose_response_shape": {
+                    "$ref": "#/$defs/DoseResponseShapeEnum",
+                    "description": "Shape of the dose-response relationship, when one is described."
+                },
+                "effect_metric": {
+                    "$ref": "#/$defs/EffectMetricEnum",
+                    "description": "Metric of quantitative_numeric."
+                },
+                "interval_level": {
+                    "description": "Coverage of the interval as a proportion, e.g. 0.95.",
+                    "maximum": 1,
+                    "minimum": 0,
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                },
+                "interval_lower": {
+                    "description": "Lower bound of the reported interval around quantitative_numeric.",
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                },
+                "interval_type": {
+                    "$ref": "#/$defs/IntervalTypeEnum",
+                    "description": "Kind of interval reported."
+                },
+                "interval_upper": {
+                    "description": "Upper bound of the reported interval around quantitative_numeric.",
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                },
+                "p_value": {
+                    "description": "The reported p-value for the contrast this edge describes. Give the value for this specific contrast, not an omnibus test spanning several outcomes; where only an omnibus test is reported, leave this empty and record the test in analysis_method.",
+                    "maximum": 1.0,
+                    "minimum": 0.0,
+                    "type": [
+                        "number",
                         "null"
                     ]
                 },
@@ -11417,7 +12051,7 @@
                     "description": "Qualitative descriptor of the causal relationship strength."
                 },
                 "quantitative_numeric": {
-                    "description": "Numeric value extracted for computation (e.g., FCM weight derivation). Use the primary effect size; specify the metric in quantitative_value.",
+                    "description": "Numeric value extracted for computation (e.g., FCM weight derivation). Use the primary effect size; give its metric in effect_metric.",
                     "type": [
                         "number",
                         "null"
@@ -11429,6 +12063,10 @@
                         "string",
                         "null"
                     ]
+                },
+                "significance": {
+                    "$ref": "#/$defs/SignificanceEnum",
+                    "description": "Whether the source reported this relationship as statistically significant. Fill it even where no p-value is given: not_tested and not_reported are informative, and without this slot an edge whose causal_language is no_relationship cannot be told apart from a relationship the study never tested."
                 },
                 "status": {
                     "$ref": "#/$defs/FeatureAssertionEnum",
@@ -12270,7 +12908,7 @@
                     ]
                 },
                 "duration_text": {
-                    "description": "Free-text description of the temporal extent as stated in the source. E.g., \"within three growing seasons\", \"over a 20-year period\", \"immediately following treatment.\"",
+                    "description": "How long the effect lasted, as stated in the source. E.g., \"within three growing seasons\", \"over a 20-year period\", \"immediately following treatment.\" This slot is about the effect's duration only: when the measurement was taken belongs in time_since_intervention_text, the seasons it was observed in belong in observation_seasons, and the study's own fieldwork dates belong in source_document.",
                     "type": [
                         "string",
                         "null"
@@ -12291,12 +12929,26 @@
                     ]
                 },
                 "observation_seasons": {
-                    "description": "Seasons during which the effect was observed, if seasonally restricted. E.g., [\"spring\", \"summer\"] for a growing-season study. Important for context-dependent effects that may not hold year-round.",
+                    "description": "Seasons during which the effect was observed, where it is seasonally restricted, e.g. [late_spring, summer]. Important for context-dependent effects that may not hold year-round. A window that spans seasons or years is not a season: record it in time_since_intervention_text or duration_text.",
                     "items": {
-                        "type": "string"
+                        "$ref": "#/$defs/SeasonEnum"
                     },
                     "type": [
                         "array",
+                        "null"
+                    ]
+                },
+                "time_since_intervention_months": {
+                    "description": "Elapsed time between the intervention, or the onset of the driver, and the measurement this edge reports, in months. \"in year 2\" is 24; \"six years after establishing the experiment\" is 72. Distinct from duration_months, which is how long the effect lasted, and from lag_months, which is how long it took to begin. Where a reading spans a window, give its end. This is the slot that lets readings from one study be ordered into a trajectory.",
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                },
+                "time_since_intervention_text": {
+                    "description": "The measurement epoch as the source states it, e.g. \"in year 2\", \"by the second growing season\", \"results at year 3 of the experiment\". Use alongside time_since_intervention_months, and alone where the source is too vague to convert.",
+                    "type": [
+                        "string",
                         "null"
                     ]
                 }
@@ -12372,17 +13024,6 @@
                 "expert_judgement"
             ],
             "title": "ThresholdKindEnum",
-            "type": "string"
-        },
-        "TokenTypeEnum": {
-            "description": "Whether a causal claim is about a specific instance or a general type.",
-            "enum": [
-                "token",
-                "type",
-                "ambiguous",
-                "not_addressed"
-            ],
-            "title": "TokenTypeEnum",
             "type": "string"
         },
         "TolerancePredicateEnum": {

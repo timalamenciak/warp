@@ -456,7 +456,7 @@ robot merge warp.owl.ttl warp-relations.ttl             | validate-profile --pro
 | `axioms.ttl` | Built (`project_owl.py`); empty of axioms on the examples, by design |
 | `scales.ttl` | Built (`gen_vocab.py`) |
 | `check_owl.py` | In `make validate`; clean |
-| `make owl-check` | Written; skipped with a warning where `robot` is not on PATH. **Neither profile has been confirmed by ROBOT yet.** |
+| `make owl-check` | Skipped with a warning where `robot` is not on PATH. Direct ROBOT audit on 2026-11-24: logical layer passes EL; schema/relations fail DL, as does the pre-CAMO-upgrade schema. See TODOS §8.3 for undeclared annotations, property conflicts and a singleton intersection. |
 | `sites.ttl` | Built (`expand_nodes.py --sites`) |
 | `projects.ttl` | Built (`project_owl.py --projects`, from `derive_projects.py`) |
 | `local_terms.ttl`, `local_classes.ttl` | Built (`gen_vocab.py --local`); no class schemes yet, so no `local_classes.ttl` |

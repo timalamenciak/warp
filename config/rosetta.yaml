@@ -1,6 +1,6 @@
 # How a whole statement is said in English (Rosetta Statements).
 #
-# Read by scripts/render_statements.py (rule warp-rosetta/1), which writes
+# Read by scripts/render_statements.py (rule warp-rosetta/2), which writes
 # project/reports/statements.md and, with --check, fails when anything a
 # statement can record has no place here. docs/rosetta.md explains the format.
 #
@@ -35,7 +35,7 @@
 # else the value with underscores as spaces. References read by their
 # class's `label`, or the term register / scale label, else as the CURIE.
 
-version: warp-rosetta/1
+version: warp-rosetta/2
 
 # Classes rendered for review besides the statement classes, which are found
 # from the group registry.
@@ -171,6 +171,8 @@ classes:
   CausalStatement:
     clauses:
       - "{predicate_qualifiers}"
+      - "at a dose of {dose}"
+      - "at {dose_level} driver level"
       - "{comparator}"
       - "{causal_language}"
     elsewhere:
@@ -264,8 +266,18 @@ classes:
   StrengthAnnotation:
     template:
       - "by {quantitative_value}"
+      - "measured as {effect_metric}"
+      - "interval lower bound {interval_lower}"
+      - "interval upper bound {interval_upper}"
+      - "interval level {interval_level}"
+      - "interval type {interval_type}"
       - "a {qualitative_descriptor} effect"
       - "{dose_response}"
+      - "a {dose_response_shape} dose-response shape"
+      - "statistical significance: {significance}"
+      - "p-value {p_value}"
+      - "significance threshold {alpha}"
+      - "analysed using {analysis_method}"
     frame: "{*|effect size}[ ({status})]"
     elsewhere:
       quantitative_numeric: the number in quantitative_value, for computation
@@ -285,7 +297,11 @@ classes:
     frame: "{*|moderation}[ ({status})]"
 
   ComparatorAnnotation:
-    template: ["{comparator_description}", "{comparator_node_id}"]
+    template:
+      - "{comparator_description}"
+      - "{comparator_node_id}"
+      - "at a dose of {comparator_dose}"
+      - "at {comparator_dose_level} driver level"
     frame: "compared with {comparator_type|a comparator}[: {*}][ ({status})]"
     phrases:
       comparator_type:
@@ -293,6 +309,7 @@ classes:
         reference_undisturbed: an undisturbed reference
         pre_treatment_baseline: a pre-treatment baseline
         alternative_treatment: an alternative treatment
+        alternative_dose_level: an alternative dose level
         passive_management_arm: a passive-management arm
         spatial_or_temporal_control: a spatial or temporal control
         not_reported: an unreported comparator
@@ -392,10 +409,26 @@ classes:
       - "lasting {duration_months} months"
       - "{duration_text}"
       - "with a lag of {lag_months} months"
+      - "measured {time_since_intervention_months} months after intervention"
+      - "measurement time: {time_since_intervention_text}"
       - "observed at {observation_grain}"
       - "in {observation_seasons}"
     sep: "; "
     frame: "over time: {*}"
+
+  QuantityValue:
+    template:
+      - "{numeric_value}"
+      - "minimum {minimum_value}"
+      - "maximum {maximum_value}"
+      - "{unit}"
+      - "{unit_text}"
+      - "of {counted_entity}"
+    sep: " "
+    quoted: [verbatim]
+
+  EntityReference:
+    template: "{entity_term}[ ({entity_type})][ at {life_stage} stage][ ({life_stage_term})]"
 
   TextSpan:
     template:

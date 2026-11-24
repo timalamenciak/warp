@@ -103,7 +103,7 @@ default_range: string
 imports:
   - linkml:types
   - upstream/sepio_classes      # SEPIO Core IM, sepio-framework/sepio-linkml (pinned, see README)
-  - upstream/causalmosaic       # CAMO 0.8.x, timalamenciak/causalmosaic (pinned, see README)
+  - upstream/causalmosaic       # CAMO 0.10.0, timalamenciak/causalmosaic (pinned, see UPSTREAM.md)
 
 
 ## =============================================================================
@@ -122,7 +122,8 @@ enums:
       own definitions before release.
     comments:
       - >-
-        Replaces CAMO's token_or_type. Migration default: token -> assertional;
+        Matches CAMO 0.10.0's scope values. For legacy token_or_type, migration
+        default: token -> assertional;
         type -> prototypical (most ecological generalizations hold typically,
         with exceptions, rather than universally); ambiguous/not_addressed ->
         unclear.
@@ -1161,6 +1162,21 @@ classes:
         range: ComparatorAnnotation   # CAMO
         multivalued: true
         inlined_as_list: true
+      dose:
+        description: >-
+          The reported level or range of the subject intervention or driver,
+          using CAMO's quantity type. A condition of this statement, not a
+          node definition or part of proposition identity.
+        range: QuantityValue          # CAMO
+        inlined: true
+        slot_uri: camo:dose
+      dose_level:
+        description: >-
+          The subject driver's reported ordinal level. Use alone for a named
+          level without a number, or with dose when the source supplies both.
+          A condition of this statement, not part of proposition identity.
+        range: DoseLevelEnum          # CAMO
+        slot_uri: camo:dose_level
       # context, ecosystem_context and temporal_extent are shared slots on
       # EcoStatement.
       camo_edge_id:
