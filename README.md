@@ -1,14 +1,14 @@
 # WARP: Weaving Assertions, Reasons and Provenance
 
-**WARP** is EcoWeaver's schema for recording **sourced, scoped statements** about ecological
+**WARP** is a schema for recording **sourced, scoped statements** about ecological
 relationships, the **evidence** behind them, and **syntheses** across them.
+
 It builds on the [SEPIO](https://github.com/sepio-framework/sepio-linkml)
 Core Information Model and reuses the
 [Causal Mosaic (CAMO)](https://github.com/timalamenciak/causalmosaic) for
 causal statements.
 
-Status: draft 0.5.0. The worked example is illustrative; its citation, quotes
-and numbers are placeholders.
+Status: draft 0.7.0. 
 
 **How-to guides**
 - [Adding a node template](docs/node-templates.md): define a fillable node
