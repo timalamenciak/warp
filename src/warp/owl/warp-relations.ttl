@@ -1,0 +1,310 @@
+# WARP relations: every predicate WARP mints, declared once (decision D13).
+#
+# HAND-MAINTAINED. Never generated. Each predicate group adds its own
+# predicates here and touches nothing else. Contract: docs/rdf-owl.md.
+#
+# Rules for this file:
+# - Every predicate WARP mints is an owl:ObjectProperty with rdfs:label, an
+#   IAO:0000115 definition (from its proposal) and rdfs:isDefinedBy.
+# - Predicates from other ontologies (RO, CAMO, BFO) are REUSED, never
+#   re-declared here.
+# - Abstract parents (warp:abstract_predicate true) are never asserted of
+#   anything: the exporter always picks a sub-property (decision D16).
+# - No domain or range unless the end is a single kind of thing. Where the
+#   kind varies by predicate, a comment says so and a group check script
+#   enforces it (R17).
+# - The annotation properties the reification layer uses for subject,
+#   predicate and object live here too (decision D12).
+#
+# Profile: OWL 2 DL, checked merged with project/warp.owl.ttl by
+# `make owl-check` (needs ROBOT).
+
+@prefix warp:    <https://w3id.org/ecoweaver/warp/> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix obo:     <http://purl.obolibrary.org/obo/> .
+
+<https://w3id.org/ecoweaver/warp/ontology/relations> a owl:Ontology ;
+    rdfs:label "WARP relations" ;
+    dcterms:description "Every predicate WARP mints, declared once as an object property, and the annotation properties of WARP's reification layer." ;
+    owl:versionIRI <https://w3id.org/ecoweaver/warp/ontology/relations/0.7.0> ;
+    owl:versionInfo "0.7.0" .
+
+obo:IAO_0000115 a owl:AnnotationProperty ;
+    rdfs:label "definition" .
+
+warp:abstract_predicate a owl:AnnotationProperty ;
+    rdfs:label "abstract predicate" ;
+    obo:IAO_0000115 "True on a predicate that groups sub-properties and is never asserted of anything itself. The exporter always uses one of its sub-properties (decision D16)." ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+
+# =============================================================================
+# Reification layer: how a statement or proposition points at what it is about
+# (decision D12). Annotation properties, so a statement can name a node CLASS
+# without punning it as an individual. The logical layer never uses them.
+# =============================================================================
+
+warp:subject a owl:AnnotationProperty ;
+    rdfs:label "subject" ;
+    obo:IAO_0000115 "The node a statement or proposition is about: usually a node class, a site or project individual for particulars. An annotation, not a relation: nothing is inferred about the node." ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+warp:predicate a owl:AnnotationProperty ;
+    rdfs:label "predicate" ;
+    obo:IAO_0000115 "The predicate a statement or proposition puts forward, as the predicate's IRI (an RO, CAMO or WARP object property)." ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+warp:object a owl:AnnotationProperty ;
+    rdfs:label "object" ;
+    obo:IAO_0000115 "The node, or other value, a statement or proposition relates its subject to. An annotation, not a relation." ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+warp:focus a owl:AnnotationProperty ;
+    rdfs:label "focus" ;
+    obo:IAO_0000115 "The node (a variable, as a class) a study result's data are about. An annotation, so the node class is not punned as an individual." ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+warp:action a owl:AnnotationProperty ;
+    rdfs:label "action" ;
+    obo:IAO_0000115 "The action node (a class) a strategy component carries out. An annotation, so the class is not punned as an individual; in OWL the part is `has part some <action>` on the strategy class (project/nodes.ttl)." ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+warp:component_of a owl:AnnotationProperty ;
+    rdfs:label "component of" ;
+    obo:IAO_0000115 "The management strategy (a node class) a strategy component individual belongs to. Written by export_rdf.py." ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+# Axiom annotation on every class axiom in project/axioms.ttl: the
+# proposition the axiom was projected from (decision D15).
+warp:derived_from a owl:AnnotationProperty ;
+    rdfs:label "derived from" ;
+    obo:IAO_0000115 "The WARP proposition an axiom was projected from. Follow it to the statements grouped under the proposition and to the synthesis assessment that let it through the projection gate." ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+
+# =============================================================================
+# Predicate groups
+# =============================================================================
+
+# --- causal -------------------------------------------------------------------
+# CAMO predicates (camo:causes, camo:prevents, ...; biolink:precedes) are
+# reused, never re-declared here. Subject and object: node classes.
+# Polarity: `negated` only; a negated statement exports no relation triple.
+
+# --- interaction ---------------------------------------------------------------
+# RO predicates (RO:0002437 biotically interacts with, RO:0002470 eats,
+# RO:0002455 pollinates, RO:0002444 parasite of) are reused, never
+# re-declared here. Subject and object: population node classes.
+# Polarity: `negated` only.
+
+# Which qualifier value makes the exporter write a sub-property (D16).
+warp:selected_by a owl:AnnotationProperty ;
+    rdfs:label "selected by" ;
+    obo:IAO_0000115 "The qualifier value (an enum value IRI) for which export_rdf.py writes this sub-property in place of its abstract parent." ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+# --- recommendation (docs/proposals/warp-proposals-0.4.html, s. 5) ---
+# Subject: an action or strategy node class. Object: an outcome node class.
+# Polarity: `guidance` (do / avoid / consider) picks the sub-property.
+# Projected to OWL: nothing, at any scope. Guidance is deontic, and "you
+# should do X" has no OWL 2 rendering. No domain or range: both ends are node
+# classes, used only in the reification layer.
+
+warp:suggested_to a owl:ObjectProperty ;
+    rdfs:label "suggested to" ;
+    obo:IAO_0000115 "The claimant gives guidance about the subject action because of its relation to the object outcome. Whether to do, avoid or consider the action is said by a sub-property; strength is held in the statement's deontic_force. Never asserted of anything itself." ;
+    warp:abstract_predicate true ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+warp:recommended_to_achieve a owl:ObjectProperty ;
+    rdfs:subPropertyOf warp:suggested_to ;
+    rdfs:label "recommended to achieve" ;
+    obo:IAO_0000115 "Guidance to carry out the subject action, because of the object outcome." ;
+    warp:selected_by <https://w3id.org/ecoweaver/warp/GuidanceEnum#do> ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+warp:advised_against_for a owl:ObjectProperty ;
+    rdfs:subPropertyOf warp:suggested_to ;
+    rdfs:label "advised against for" ;
+    obo:IAO_0000115 "Guidance not to carry out the subject action, because of the object outcome." ;
+    warp:selected_by <https://w3id.org/ecoweaver/warp/GuidanceEnum#avoid> ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+warp:suggested_for_consideration a owl:ObjectProperty ;
+    rdfs:subPropertyOf warp:suggested_to ;
+    rdfs:label "suggested for consideration" ;
+    obo:IAO_0000115 "Guidance to consider the subject action, because of the object outcome; covers hedged guidance." ;
+    warp:selected_by <https://w3id.org/ecoweaver/warp/GuidanceEnum#consider> ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+# --- management strategies (proposal section 6) -------------------------
+# The part relation is reused from BFO/RO, not minted: BFO:0000051 has part
+# (checked in the local ECOCORE imports). It is transitive in RO, which is
+# what makes the derivation's one-level flattening agree with the OWL: a
+# nested strategy's parts are parts of the outer strategy either way. It is
+# used only inside someValuesFrom, never in a cardinality restriction, so the
+# node classes stay in OWL 2 EL. project/nodes.ttl states the transitivity
+# where it uses the relation, because the logical layer is reasoned over
+# without this file.
+#   <strategy> rdfs:subClassOf OBI:0000011 (planned process) ,
+#                             [ owl:onProperty BFO:0000051 ; owl:someValuesFrom <action> ] .
+# Subclass, never equivalent class (D6): see docs/rdf-owl.md section 8.
+
+# --- tolerance (docs/proposals/warp-proposals-0.4.html section 7) ------
+# Subject: an organism node class (taxon, population or life stage).
+# Object: the kind VARIES BY PREDICATE, so no range is declared here:
+# tolerates, prefers and intolerant_of take a quality_of_environmental_material
+# node; RO:0002303 has habitat takes an ENVO habitat or environment node.
+# scripts/check_tolerance.py enforces it (R17).
+# RO:0002303 is reused exactly as RO publishes it and is NOT re-declared here.
+# Polarity: none in a qualifier. tolerates and intolerant_of are recorded as
+# stated and never derived from each other.
+# Projected to OWL: has_habitat only, through the gate. Ranges, optima, class
+# values and curves never enter OWL.
+
+warp:tolerates a owl:ObjectProperty ;
+    rdfs:label "tolerates" ;
+    obo:IAO_0000115 "The organism establishes, persists or reproduces when the environmental variable is within the stated range. One-sided ranges allowed." ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+warp:prefers a owl:ObjectProperty ;
+    rdfs:label "prefers" ;
+    obo:IAO_0000115 "The organism performs best, or occurs most often, at or around the stated value or class of the environmental variable." ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+warp:intolerant_of a owl:ObjectProperty ;
+    rdfs:label "intolerant of" ;
+    obo:IAO_0000115 "The organism fails to establish, persist or reproduce when the environmental variable is within the stated range." ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+# --- cost (docs/proposals/warp-proposals-0.4.html section 8) -----------
+# A cost is three things at once: an action, a category and an amount. The
+# only relation among them is action-to-amount, so the category moves into the
+# predicate and the amount is the object (D16):
+#   <action> warp:incurs_<category>_cost <amount individual> .
+# Subject: an action or strategy node class. Object of the sub-properties: a
+# MonetaryAmount (or effort Quantity) individual of the reification layer.
+# Object of costs_relative_to: another action or strategy node class. The
+# object kind varies by predicate: scripts/check_cost.py enforces it (R16, R17).
+# There is no incurs_unknown_cost: `unknown` is a sentinel. No costcat: IRIs.
+# Projected to OWL: nothing. A cost is a fact about one episode of work.
+
+warp:incurs_cost a owl:ObjectProperty ;
+    rdfs:label "incurs cost" ;
+    obo:IAO_0000115 "Carrying out the subject action, under the stated context and scale, used the stated resources in a cost category. Never asserted itself: the category is said by a sub-property, and the object is the amount." ;
+    warp:abstract_predicate true ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+warp:incurs_total_cost a owl:ObjectProperty ;
+    rdfs:subPropertyOf warp:incurs_cost ;
+    rdfs:label "incurs total cost" ;
+    obo:IAO_0000115 "Carrying out the subject action used the object amount as the total cost of carrying out the subject action." ;
+    warp:selected_by <https://w3id.org/ecoweaver/warp/CostCategoryEnum#total> ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+warp:incurs_labour_cost a owl:ObjectProperty ;
+    rdfs:subPropertyOf warp:incurs_cost ;
+    rdfs:label "incurs labour cost" ;
+    obo:IAO_0000115 "Carrying out the subject action used the object amount as the labour cost." ;
+    warp:selected_by <https://w3id.org/ecoweaver/warp/CostCategoryEnum#labour> ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+warp:incurs_capital_equipment_cost a owl:ObjectProperty ;
+    rdfs:subPropertyOf warp:incurs_cost ;
+    rdfs:label "incurs capital and equipment cost" ;
+    obo:IAO_0000115 "Carrying out the subject action used the object amount as the capital and equipment cost." ;
+    warp:selected_by <https://w3id.org/ecoweaver/warp/CostCategoryEnum#capital_equipment> ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+warp:incurs_consumables_cost a owl:ObjectProperty ;
+    rdfs:subPropertyOf warp:incurs_cost ;
+    rdfs:label "incurs consumables cost" ;
+    obo:IAO_0000115 "Carrying out the subject action used the object amount as the cost of consumables." ;
+    warp:selected_by <https://w3id.org/ecoweaver/warp/CostCategoryEnum#consumables> ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+warp:incurs_overhead_cost a owl:ObjectProperty ;
+    rdfs:subPropertyOf warp:incurs_cost ;
+    rdfs:label "incurs overhead cost" ;
+    obo:IAO_0000115 "Carrying out the subject action used the object amount as the overhead cost." ;
+    warp:selected_by <https://w3id.org/ecoweaver/warp/CostCategoryEnum#overhead> ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+warp:costs_relative_to a owl:ObjectProperty ;
+    rdfs:label "costs relative to" ;
+    obo:IAO_0000115 "The subject action costs a stated multiple of the object action, for the same objective and scale. The multiple is the statement's ratio." ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+# --- implementation (docs/proposals/warp-proposals-0.4.html, s. 9) ---
+# Subject: a strategy or action node CLASS. Object: a site INDIVIDUAL. A class
+# to an individual: so it is asserted only in the reification layer
+# (statements.ttl). The claim records that a kind of work was done at a
+# particular place; the thing that happened is the project individual
+# (proj:<id>, project/projects.ttl), which comes from derive_projects.py, not
+# from this triple. No polarity in a qualifier. Projected: nothing.
+
+warp:carried_out_at a owl:ObjectProperty ;
+    rdfs:label "carried out at" ;
+    obo:IAO_0000115 "The subject strategy or action (a kind of work) was carried out at the object site (a particular piece of ground). Asserted only in the reification layer; the work itself is a project individual." ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+# On project individuals (projects.ttl): the normalized bounds of the period.
+warp:period_start a owl:AnnotationProperty ;
+    rdfs:label "period start" ;
+    obo:IAO_0000115 "The first instant of a project's period, as xsd:dateTime (the lower bound of its ISO 8601 start)." ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+warp:period_end a owl:AnnotationProperty ;
+    rdfs:label "period end" ;
+    obo:IAO_0000115 "The first instant after a project's period, as xsd:dateTime (the upper bound of its ISO 8601 end). Absent while the work is ongoing." ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+# --- sites ----------------------------------------------------------------------
+# On site individuals (sites.ttl). A jurisdiction with an ISO 3166-2 code is an
+# IRI (in_jurisdiction); one without, as for many Indigenous territories, is a
+# literal (jurisdiction_name). Two properties, because one property cannot
+# take both an IRI and a literal in OWL.
+
+warp:in_jurisdiction a owl:ObjectProperty ;
+    rdfs:label "in jurisdiction" ;
+    obo:IAO_0000115 "The site lies in the object jurisdiction, identified by an IRI (ISO 3166-2 code)." ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+warp:jurisdiction_name a owl:AnnotationProperty ;
+    rdfs:label "jurisdiction name" ;
+    obo:IAO_0000115 "The name of the jurisdiction a site lies in, where it has no code to make an IRI of." ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+# --- criteria --------------------------------------------------------------------
+# Subject: a site or project INDIVIDUAL. Object in the relation layer: the
+# CRITERIA SET (crit:...), not the concept, the one place where the exported
+# object is not the annotated object. The concept is recoverable through the
+# set's operationalizes. So `site qualifies_as crit:A` and
+# `site does_not_qualify_as crit:B` are two verdicts about two definitions,
+# never a flat contradiction about one concept. Polarity: the statement's
+# direction picks the sub-property; a neutral verdict exports no triple.
+# Projected: nothing. A criteria set is a stated test, not an OWL definition.
+
+warp:assessed_against a owl:ObjectProperty ;
+    rdfs:label "assessed against" ;
+    obo:IAO_0000115 "The subject site or project was assessed against the object criteria set. Never asserted itself: the verdict is said by a sub-property." ;
+    warp:abstract_predicate true ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+warp:qualifies_as a owl:ObjectProperty ;
+    rdfs:subPropertyOf warp:assessed_against ;
+    rdfs:label "qualifies as" ;
+    obo:IAO_0000115 "The subject site or project meets the object criteria set's definition of the concept it operationalizes." ;
+    warp:selected_by <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#supports> ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .
+
+warp:does_not_qualify_as a owl:ObjectProperty ;
+    rdfs:subPropertyOf warp:assessed_against ;
+    rdfs:label "does not qualify as" ;
+    obo:IAO_0000115 "The subject site or project does not meet the object criteria set's definition of the concept it operationalizes." ;
+    warp:selected_by <https://w3id.org/ecoweaver/warp/EvidenceDirectionEnum#disputes> ;
+    rdfs:isDefinedBy <https://w3id.org/ecoweaver/warp/ontology/relations> .

@@ -24,6 +24,10 @@ prefixes:
   - {prefix: FLOPO, expansion: "http://purl.obolibrary.org/obo/FLOPO_"}
   - {prefix: CHEBI, expansion: "http://purl.obolibrary.org/obo/CHEBI_"}
   - {prefix: node, expansion: "https://w3id.org/causal-mosaic/node/"}
+  # Placeholder terms (decision D20). Any variable may be filled with a TODO:
+  # term while the real one is unverified; expand_nodes.py allows it everywhere.
+  - {prefix: TODO, expansion: "https://w3id.org/ecoweaver/warp/TODO/"}
+  - {prefix: OBI, expansion: "http://purl.obolibrary.org/obo/OBI_"}
 
 # Every fixed class and relation used below needs a label: DOSDP writes
 # logical definitions with quoted labels. IDs and labels checked against OLS
@@ -49,6 +53,10 @@ terms:
   - {id: "RO:0002573", label: has modifier, kind: object_property}
   - {id: "BFO:0000050", label: part of, kind: object_property}
   - {id: "BFO:0000066", label: occurs in, kind: object_property}
+  # Management strategies. Checked against the local ECOCORE imports
+  # (envo_import.owl, chebi_import.owl) on 2026-11-20.
+  - {id: "OBI:0000011", label: planned process, kind: class}
+  - {id: "BFO:0000051", label: has part, kind: object_property}
 
 templates:
 
@@ -154,7 +162,7 @@ templates:
         - property: "RO:0000057"
           filler: {var: taxon}
     examples:
-      - "action=ELMO:TODO_planting taxon=NCBITaxon:3472"
+      - "action=TODO:planting taxon=NCBITaxon:3472"
 
   # ===========================================================================
   # Part A node shapes. Optional fillers (life stage, layer, intensity, value,
@@ -712,3 +720,85 @@ templates:
           filler: {var: value}
     examples:
       - "trait=TO:<vegetative spread> value=PATO:<rhizomatous>"
+
+  # --- Tolerance objects ------------------------------------------------------
+  - id: quality_of_environmental_material
+    title: Quality of an environmental material or medium (tolerance object)
+    status: draft
+    description: >-
+      The object of a tolerance statement: a quality (PATO) of an environmental
+      material or medium (ENVO): pH of soil, temperature of water, salinity of
+      water, depth or velocity of water, temperature of air. Not only soil:
+      water and climate variables use the same shape, with water or air as
+      the material. Optionally narrowed by a depth interval (0 to 15 cm) and a
+      season, given on the node definition (refinements), not as variables:
+      neither has an ontology class, so a refined node is a SUBCLASS of the
+      expression, never equivalent to it. The range a source gives belongs on
+      the statement, not the node, so every source's range for "pH of soil"
+      meets at one node. Same logical shape as
+      attribute_of_environmental_material, which stays for causal outcomes.
+    camo_entity_type: environmental_variable
+    vars:
+      - name: quality
+        range: "PATO:0000001"
+        allowed_prefixes: [PATO]
+        description: "pH, temperature, salinity, wetness, water potential, velocity."
+      - name: material
+        range: "BFO:0000040"
+        allowed_prefixes: [ENVO]
+        description: "An ENVO material or medium: soil, liquid water, air."
+    name: "{quality} of {material}"
+    definition: "The {quality} of {material}."
+    equivalent_to:
+      var: quality
+      restrictions:
+        - property: "RO:0000052"
+          filler: {var: material}
+    refinements: [depth, season]
+    examples:
+      - "quality=PATO:0000146 material=ENVO:00002006 (temperature of liquid water)"
+      - "quality=TODO:ph material=ENVO:00001998 depth={min: 0, max: 15, unit: TODO:unit_centimetre}"
+
+  # ===========================================================================
+  # 0.7.0 templates whose OWL does not come from a class expression.
+  # ===========================================================================
+
+  # --- Management strategy (composite) ---------------------------------------
+  - id: management_strategy
+    title: Management strategy
+    kind: composite
+    status: draft
+    description: >-
+      A set of management actions carried out together, in a stated order, so
+      that a cost, an outcome or a recommendation can point at the bundle
+      without dividing it among its parts. Parts are references to ordinary
+      action nodes (or one level of nested strategy); the strategy holds only
+      their order. Defined in a StatementSet's strategy_definitions, not with
+      fillers. Its canonical node ID is derived by scripts/derive_strategies.py
+      (warp-strategy-identity/1) from the sorted (step, action) pairs of its
+      required parts. OWL: rdfs:subClassOf planned process, and has part some
+      <action> per required part. Subclass, not equivalent class: order is in
+      the identity key but does not render, so equivalence would make two
+      strategies the identity rule holds apart the same class. No DOSDP
+      pattern: the number of parts varies. No objective: what counts as
+      success is contested, so aims stay on statements and in stated_goal.
+    camo_entity_type: management_intervention
+    parent_class: "OBI:0000011"
+    part_property: "BFO:0000051"
+    examples:
+      - "earthworks (step 1) -> hand seeding (step 2, lag P2W) -> mowing (step 3, yearly x3)"
+
+  # --- Site (particular) -----------------------------------------------------
+  - id: site
+    title: Site
+    kind: particular
+    status: draft
+    description: >-
+      One piece of ground: the place a strategy is carried out, or whose
+      condition is assessed. The first node type that is a particular, not a
+      kind of thing. It is a node anyway so any group can point at it, with
+      the same CausalNode record as every other node (R12); what differs is
+      its IRI space (site:, never node:) and its OWL: a named individual in
+      project/sites.ttl, typed by its ENVO ecosystem types, never a class.
+      Defined in a StatementSet's site_definitions. Geometry is never
+      exported.

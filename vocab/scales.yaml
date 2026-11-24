@@ -1,0 +1,110 @@
+# Source scales as SKOS concept schemes (decision D18).
+#
+# A ScaledValue records a value on a source's own scale: its wording verbatim
+# in `value`, the scheme IRI in `scale`, the concept IRI in `concept`.
+# scripts/gen_vocab.py turns this file into project/scales.ttl: one
+# skos:ConceptScheme per scale, one skos:Concept per value, each concept with
+# an explicit ordinal, so "medium" can be compared with "high" without a
+# script hard-coding the order.
+#
+# IRIs: scheme  scale:<id>          e.g. scale:dfo-recovery-priority
+#       concept scale:<id>/<value>  e.g. scale:dfo-recovery-priority/medium
+#
+# `values` are listed in ascending order of what `ordinal` measures (stated
+# per scale), and the ordinal is the 1-based position. Labels follow the
+# source's wording. Scales marked `not_a_scale` are recorded so the checks
+# can refuse them as a `scale`: a value from them goes in `value` alone.
+#
+# TODO: check each scale's values and wording against the source document
+# before release (TODOS.md, "Scales").
+
+scales:
+
+  - id: dfo-recovery-priority
+    label: DFO recovery approach priority
+    body: Fisheries and Oceans Canada (recovery strategies under SARA)
+    ordinal: priority, lowest first
+    values:
+      - {id: low, label: Low}
+      - {id: medium, label: Medium}
+      - {id: high, label: High}
+
+  - id: dfo-timing-of-influence
+    label: DFO timing of influence of a recovery approach
+    body: Fisheries and Oceans Canada (recovery strategies under SARA)
+    ordinal: how soon the approach takes effect, latest first
+    values:
+      - {id: future, label: Future}
+      - {id: medium, label: Medium}
+      - {id: immediate, label: Immediate}
+
+  - id: eccc-recovery-priority
+    label: ECCC recovery measure priority
+    body: Environment and Climate Change Canada (recovery strategies under SARA)
+    ordinal: priority, lowest first
+    values:
+      - {id: beneficial, label: Beneficial}
+      - {id: necessary, label: Necessary}
+      - {id: urgent, label: Urgent}
+
+  - id: eive-1.0-reaction
+    label: EIVE 1.0 reaction (soil pH) indicator value, binned
+    body: Dengler et al. 2023, Ecological Indicator Values for Europe (EIVE) 1.0
+    ordinal: position on the reaction gradient, most acid first
+    comment: >-
+      EIVE values are continuous on 0-10. These five bins of width 2 are
+      WARP's, not EIVE's, so that a value can be compared with others; the
+      verbatim value stays in ScaledValue.value. TODO: confirm the binning
+      (or drop the concepts and keep only the scheme) before release.
+    values:
+      - {id: "0-2", label: "0 to 2"}
+      - {id: "2-4", label: "2 to 4"}
+      - {id: "4-6", label: "4 to 6"}
+      - {id: "6-8", label: "6 to 8"}
+      - {id: "8-10", label: "8 to 10"}
+
+  - id: usda-texture-class
+    label: USDA soil texture class
+    body: USDA Natural Resources Conservation Service
+    ordinal: approximate fineness, coarsest first (texture classes are not strictly ordinal)
+    values:
+      - {id: sand, label: sand}
+      - {id: loamy-sand, label: loamy sand}
+      - {id: sandy-loam, label: sandy loam}
+      - {id: loam, label: loam}
+      - {id: silt-loam, label: silt loam}
+      - {id: silt, label: silt}
+      - {id: sandy-clay-loam, label: sandy clay loam}
+      - {id: clay-loam, label: clay loam}
+      - {id: silty-clay-loam, label: silty clay loam}
+      - {id: sandy-clay, label: sandy clay}
+      - {id: silty-clay, label: silty clay}
+      - {id: clay, label: clay}
+
+  - id: usda-tolerance-rating
+    label: USDA PLANTS tolerance rating
+    body: USDA NRCS PLANTS database
+    ordinal: tolerance, least tolerant first
+    values:
+      - {id: none, label: None}
+      - {id: low, label: Low}
+      - {id: medium, label: Medium}
+      - {id: high, label: High}
+
+  - id: wetland-indicator-status
+    label: Wetland indicator status
+    body: US National Wetland Plant List (US Army Corps of Engineers)
+    ordinal: affinity for wetlands, lowest first
+    values:
+      - {id: UPL, label: Obligate upland (UPL)}
+      - {id: FACU, label: Facultative upland (FACU)}
+      - {id: FAC, label: Facultative (FAC)}
+      - {id: FACW, label: Facultative wetland (FACW)}
+      - {id: OBL, label: Obligate wetland (OBL)}
+
+  # Not a scale. A practitioner's "wet" or "sandy" is recorded verbatim in
+  # ScaledValue.value with no scale and no concept, and the tolerance report
+  # says so; it is listed here only so the checks can refuse it as a `scale`.
+  - id: practitioner-free
+    label: Practitioner's own wording (not a scale)
+    not_a_scale: true

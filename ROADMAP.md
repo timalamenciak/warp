@@ -66,17 +66,16 @@ before closing it, and link it from the schema comment it affects.
 Nothing else in this roadmap can be "validated" until there is a test
 harness that fails loudly. Build that first.
 
-### 1.1 Put WARP under version control with CI
+### 1.1 Continuous integration
 
 Labels: `area:validation`
 
-The working copy is not a git repository yet. CI is what turns "make
-validate passed on my laptop" into a gate on every change.
+CI is what turns "make validate passed on my laptop" into a gate on every
+change.
 
 Tasks:
-- [ ] Initialise the repo (or connect the existing remote), add a
-      `.gitignore` for generated files you do not want committed
-      (decide whether `project/` and `patterns/` stay committed; see 1.3).
+- [ ] Decide whether `project/` and `patterns/` stay committed (see 1.3),
+      and update `.gitignore` to match.
 - [ ] Add a GitHub Actions workflow that installs `requirements.txt`
       and runs `make all` and the test suite (1.2) on every push and PR.
 - [ ] Add Java + ROBOT + dosdp-tools to the CI image, so the OWL checks
@@ -90,11 +89,12 @@ Done when: a PR that breaks `make validate` shows a red check.
 
 Labels: `area:validation`
 
-Today the only tests are that three example files validate. A schema is
-only validated when files that *should* fail do fail.
+The pytest suite in `tests/` covers the examples, the derivation rules and
+the check scripts, but has few invalid fixtures. A schema is only validated
+when files that *should* fail do fail.
 
 Tasks:
-- [ ] Add `tests/` with pytest. Layout:
+- [ ] Add fixture directories to `tests/`:
       `tests/fixtures/valid/<Class>/*.yaml` and
       `tests/fixtures/invalid/<Class>/<rule>.yaml`, each invalid fixture
       with a one-line comment naming the rule it breaks.
@@ -126,8 +126,6 @@ Tasks:
 - [ ] Pin ROBOT and dosdp-tools versions in the Makefile/CI.
 - [ ] Decide whether generated files are committed. If yes, add a CI
       check that regenerating them produces no diff.
-- [ ] Generalise the Makefile so `derive`, `validate` and `check` take
-      file lists rather than hard-coded example paths (TODOS §7.1).
 - [ ] Add a Python task runner (or document a make install) for
       Windows (TODOS §7.2).
 
@@ -383,7 +381,7 @@ Tasks:
       (labels drift; RO:0000052 already did).
 - [ ] Cache ontology versions in CI and record the versions used in
       the output.
-- [ ] Replace `ELMO:TODO_planting` (TODOS §3) or allowlist it until ELMO
+- [ ] Replace `TODO:planting` (was `ELMO:TODO_planting`) (TODOS §3) or allowlist it until ELMO
       has the term.
 
 Done when: filling `taxon` with a PATO term or an obsolete NCBITaxon id
@@ -582,9 +580,11 @@ Tasks:
       `rosetta_template`; versioning → group version).
 - [ ] Add a group version annotation, and record it on propositions
       next to `identity_rule_version`.
-- [ ] Extend verbalization to use qualifiers and scope (e.g. "typically
+- [x] Extend verbalization to use qualifiers and scope (e.g. "typically
       prevents", "did not reduce on this plot"), with negated and
       per-scope variants; test the rendered text for every fixture.
+      Done for whole statements: `render_statements.py`,
+      `config/rosetta.yaml`, `docs/rosetta.md` (open points in TODOS §6.1).
 - [ ] Fix capitalisation in rendered text (TODOS §7.2).
 - [ ] Decide whether WARP publishes its groups as Rosetta statement
       type definitions (for ORKG reuse), and if so, generate them.
@@ -637,11 +637,10 @@ Tasks:
 
 Done when: both groups render to RDF following one documented pattern.
 
-### 4.7 Add a third predicate group: measurement / observation statements
+### 4.7 Add a measurement / observation predicate group
 
 Labels: `area:predicates`, `area:semantic-units`
 
-Two groups is not enough to show the group mechanism generalises.
 Measurement and observation statement units are central to Vogt et al.
 2025 and connect WARP statements to `EcoStudyResult` data.
 

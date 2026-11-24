@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- ROBOT / OWL API catalog: resolve the owl:imports of WARP's generated
+     logical-layer files to the local copies (make owl-check). Paths are
+     relative to this file. -->
+<catalog prefer="public" xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+    <uri name="https://w3id.org/ecoweaver/warp/ontology/nodes" uri="../../../project/nodes.ttl"/>
+    <uri name="https://w3id.org/ecoweaver/warp/ontology/relations" uri="warp-relations.ttl"/>
+</catalog>

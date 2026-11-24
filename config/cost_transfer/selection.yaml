@@ -1,0 +1,8 @@
+# Which cost statements to transfer, and under which rule. The output is
+# GENERATED (examples/cost_statements.transferred.yaml): never edit it.
+rule: config/cost_transfer/warp-cost-transfer-1.yaml
+statements:
+  - stmt:inpa-wattle-cost                       # ILS 2008 -> CAD 2026: index, then convert
+  - stmt:land-trust-strategy-total              # CAD 2025 -> CAD 2026: index only
+  - stmt:land-trust-strategy-follow-up-labour   # labour re-priced from effort
+  - stmt:fwc-invasive-program                   # refused: no value or price year yet

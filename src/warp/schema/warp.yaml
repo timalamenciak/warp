@@ -40,7 +40,7 @@ description: >-
   syntheses across statements. Causal statements reuse the Causal Mosaic (CAMO) node
   shapes, predicates and causal features.
 license: CC0
-version: 0.5.0
+version: 0.7.0
 status: Draft
 
 prefixes:
@@ -57,6 +57,45 @@ prefixes:
   wd: http://www.wikidata.org/entity/
   orcid: https://orcid.org/
   doi: https://doi.org/
+  # Ontologies used by node template fillers and examples.
+  ENVO: http://purl.obolibrary.org/obo/ENVO_
+  NCBITaxon: http://purl.obolibrary.org/obo/NCBITaxon_
+  OBI: http://purl.obolibrary.org/obo/OBI_
+  PCO: http://purl.obolibrary.org/obo/PCO_
+  UBERON: http://purl.obolibrary.org/obo/UBERON_
+  PO: http://purl.obolibrary.org/obo/PO_
+  GO: http://purl.obolibrary.org/obo/GO_
+  CHEBI: http://purl.obolibrary.org/obo/CHEBI_
+  ELMO: https://w3id.org/elmo/elmo_
+  # Units (decision D18): UO first, QUDT where UO has no term.
+  UO: http://purl.obolibrary.org/obo/UO_
+  unit: http://qudt.org/vocab/unit/
+  # Places (decision D18, Q2). See docs/values.md for which to use when.
+  ISO3166-2: "https://www.iso.org/obp/ui/#iso:code:3166:"
+  geonames: https://sws.geonames.org/
+  tgn: http://vocab.getty.edu/tgn/
+  # WARP's own IRI spaces (decisions D11, D20). The first four are aliases of
+  # paths already used under warp:, so warp:prop/x and prop:x are one IRI.
+  prop: https://w3id.org/ecoweaver/warp/prop/
+  stmt: https://w3id.org/ecoweaver/warp/statement/
+  doc: https://w3id.org/ecoweaver/warp/doc/
+  org: https://w3id.org/ecoweaver/warp/agent/org/
+  person: https://w3id.org/ecoweaver/warp/agent/person/
+  site: https://w3id.org/ecoweaver/warp/site/
+  proj: https://w3id.org/ecoweaver/warp/project/
+  comp: https://w3id.org/ecoweaver/warp/component/
+  crit: https://w3id.org/ecoweaver/warp/criteria/
+  concept: https://w3id.org/ecoweaver/warp/concept/
+  scale: https://w3id.org/ecoweaver/warp/scale/
+  place: https://w3id.org/ecoweaver/warp/place/
+  # Local OWL classes no ontology has yet (vocab/local/, docs/terminology.md).
+  # concept: and place: hold local SKOS concepts; term: holds local classes.
+  term: https://w3id.org/ecoweaver/warp/term/
+  # Placeholders for terms not yet verified (decision D20). TODO:planting can
+  # never be mistaken for an ELMO term; ELMO:TODO_planting could.
+  TODO: https://w3id.org/ecoweaver/warp/TODO/
+  skos: http://www.w3.org/2004/02/skos/core#
+  owl: http://www.w3.org/2002/07/owl#
 
 default_prefix: warp
 default_range: string
@@ -64,7 +103,7 @@ default_range: string
 imports:
   - linkml:types
   - upstream/sepio_classes      # SEPIO Core IM, sepio-framework/sepio-linkml (pinned, see README)
-  - upstream/causalmosaic       # CAMO 0.8.x, timalamenciak/causalmosaic (pinned, see README)
+  - upstream/causalmosaic       # CAMO 0.10.0, timalamenciak/causalmosaic (pinned, see UPSTREAM.md)
 
 
 ## =============================================================================
@@ -74,6 +113,7 @@ imports:
 enums:
 
   SemanticUnitScopeEnum:
+    implements: [owl:NamedIndividual]
     description: >-
       The scope of what a statement asserts, following Vogt's semantic unit types
       for statement units. Scope is part of a proposition's identity: "X reduced
@@ -82,7 +122,8 @@ enums:
       own definitions before release.
     comments:
       - >-
-        Replaces CAMO's token_or_type. Migration default: token -> assertional;
+        Matches CAMO 0.10.0's scope values. For legacy token_or_type, migration
+        default: token -> assertional;
         type -> prototypical (most ecological generalizations hold typically,
         with exceptions, rather than universally); ambiguous/not_addressed ->
         unclear.
@@ -108,6 +149,7 @@ enums:
           blocks aggregation into scoped propositions until resolved.
 
   EvidenceDirectionEnum:
+    implements: [owl:NamedIndividual]
     description: >-
       SEPIO direction: whether a statement (in Proposition Assessment Mode) or an evidence line
       supports, disputes, or is neutral toward a proposition. NOT causal
@@ -118,6 +160,7 @@ enums:
       neutral:
 
   EvidenceStrengthEnum:
+    implements: [owl:NamedIndividual]
     description: >-
       Qualitative strength of the support an evidence line provides toward its
       target proposition, in the indicated direction.
@@ -128,6 +171,7 @@ enums:
       not_assessed:
 
   InteractionPredicateEnum:
+    implements: [owl:ObjectProperty]
     description: >-
       Predicates for biotic interaction statements, from the Relation Ontology
       (IDs and labels checked against OLS 2026-10-10). Annotations follow the
@@ -151,6 +195,7 @@ enums:
           rosetta_template: "{subject} is a parasite of {object}"
 
   InteractionEffectEnum:
+    implements: [owl:NamedIndividual]
     description: "Sign of an interaction's effect on one partner."
     permissible_values:
       positive:
@@ -159,6 +204,7 @@ enums:
       not_reported:
 
   PropositionStatusEnum:
+    implements: [owl:NamedIndividual]
     description: "Whether anyone has asserted the proposition yet."
     permissible_values:
       asserted:
@@ -169,6 +215,7 @@ enums:
           cell, or a practitioner's question.
 
   AgentKindEnum:
+    implements: [owl:NamedIndividual]
     description: >-
       The kind of knowledge an agent brings. Lets practitioners and Indigenous
       knowledge holders make statements in their own right, not only be
@@ -184,6 +231,7 @@ enums:
         description: "An EcoWeaver or other automated synthesis process."
 
   ContributionRoleEnum:
+    implements: [owl:NamedIndividual]
     description: >-
       What an agent did toward a statement, evidence line or record.
       Specializes SEPIO Contribution.activityType.
@@ -207,6 +255,7 @@ enums:
         description: "Checked an annotation or assessment made by someone else."
 
   AccessLevelEnum:
+    implements: [owl:NamedIndividual]
     description: "How a statement and its content may be shared and reused."
     permissible_values:
       open:
@@ -215,6 +264,483 @@ enums:
         description: "Shareable only within, or with the permission of, the knowledge holders' community."
       restricted:
         description: "Not to be shared beyond the original context."
+
+
+  ModalityEnum:
+    implements: [owl:NamedIndividual]
+    description: >-
+      Whether a statement reports, infers or forecasts. Not hedging: hedging
+      (causal_language) is how sure the speaker sounds; modality is what kind
+      of statement it is. "Stocking will reduce abundance" may be said
+      confidently and is still anticipated.
+    permissible_values:
+      observed:
+        description: >-
+          Reports what was seen or measured: a field result, an experiment,
+          a practitioner's observation.
+      inferred:
+        description: >-
+          Concluded from other statements or from theory rather than observed
+          directly: a mechanism argued from physiology, a generalization drawn
+          from several cases.
+      anticipated:
+        description: >-
+          A forecast or prediction about what will happen: "if sportfish are
+          stocked, abundance will decrease". Never projected to OWL.
+
+  WarpEvidenceTypeEnum:
+    implements: [owl:NamedIndividual]
+    description: >-
+      Kind of study or reasoning behind an evidence line. Every value of
+      CAMO's EvidenceTypeEnum, with the same descriptions and mappings, plus
+      not_stated. Kept as a profile enum (decision D3) so CAMO is not edited;
+      tests/test_evidence_types.py fails if CAMO gains a value this enum
+      lacks, so re-vendoring cannot silently drop one.
+    comments:
+      - "TODO: propose not_stated to CAMO (and to an evidence ontology); see TODOS.md."
+    permissible_values:
+      randomized_experiment:
+        description: "Randomized controlled trial or field experiment."
+        broad_mappings: [ECO:0000006]  # experimental evidence
+      natural_experiment:
+        description: "Natural experiment or exogenous shock."
+      quasi_experiment:
+        description: "Quasi-experimental design (BACI, difference-in-differences, etc.)."
+        broad_mappings: [ECO:0000006]  # experimental evidence
+      observational_longitudinal:
+        description: "Longitudinal observational study (cohort, panel)."
+      observational_cross_sectional:
+        description: "Cross-sectional observational study or survey."
+      mechanistic_study:
+        description: "Laboratory or field study of mechanism (pathway dissection, process tracing)."
+      structural_equation_model:
+        description: "Structural equation model or path analysis quantifying covariation patterns."
+      meta_analysis:
+        description: "Quantitative synthesis of multiple studies."
+        broad_mappings: [ECO:0000212]  # combinatorial evidence
+      systematic_review:
+        description: "Systematic review (qualitative or quantitative)."
+        broad_mappings: [ECO:0000212]  # combinatorial evidence
+      modeling_simulation:
+        description: "Computational model, simulation, or theoretical prediction."
+        broad_mappings: [ECO:0007672]  # computational evidence
+      expert_judgment:
+        description: "Expert elicitation, Delphi method, or professional opinion."
+        broad_mappings: [ECO:0006151]  # documented statement evidence
+      case_study:
+        description: "Single case study or natural history observation."
+      theoretical:
+        description: "Deduction from theory without empirical test."
+        broad_mappings: [ECO:0000361]  # inferential evidence
+      indigenous_knowledge:
+        description: "Traditional ecological knowledge or Indigenous knowledge systems."
+      practitioner_experience:
+        description: "Practitioner or land manager field experience."
+        broad_mappings: [ECO:0006151]  # documented statement evidence
+      not_stated:
+        description: >-
+          The source asserts without giving any basis. Distinct from
+          expert_judgment (a basis was given: someone's expertise) and from
+          leaving evidence lines empty (which may only mean the annotator did
+          not record one). A sentinel: it records an absence, so it has no
+          meaning and is never exported to RDF (decision D14).
+
+  # --- recommendation group ------------------------------------------------------
+
+  RecommendationPredicateEnum:
+    implements: [owl:ObjectProperty]
+    description: >-
+      The recommendation group's one predicate. warp:suggested_to is abstract
+      in the relation layer: the exporter always writes the sub-property the
+      statement's guidance selects (decision D16), declared in
+      src/warp/owl/warp-relations.ttl.
+    permissible_values:
+      suggested_to:
+        description: >-
+          The claimant gives guidance about the subject action because of its
+          relation to the object outcome. The guidance qualifier says whether
+          to do, avoid or consider the action. Says nothing about strength,
+          which is held in deontic_force.
+        meaning: warp:suggested_to
+        annotations:
+          rosetta_template: "{guidance}: {subject}, for {object}"
+
+  GuidanceEnum:
+    implements: [owl:NamedIndividual]
+    description: >-
+      What the guidance says to do with the subject action. In the identity
+      key, so "do X" and "avoid X" for the same outcome are two propositions.
+      Each value names the sub-property of warp:suggested_to the exporter
+      writes (warp_subproperty), so the relation layer reads correctly
+      without the qualifier.
+    permissible_values:
+      do:
+        description: "Carry out the action."
+        annotations:
+          warp_subproperty: warp:recommended_to_achieve
+      avoid:
+        description: "Do not carry out the action."
+        annotations:
+          warp_subproperty: warp:advised_against_for
+      consider:
+        description: "Consider the action; covers hedged guidance (\"may be appropriate where...\")."
+        annotations:
+          warp_subproperty: warp:suggested_for_consideration
+
+  DeonticForceEnum:
+    implements: [owl:NamedIndividual]
+    description: "How strongly the guidance binds. Not part of identity."
+    permissible_values:
+      required:
+        description: "A legal or regulatory duty, such as a SARA prohibition."
+      recommended:
+      suggested:
+      optional:
+
+  ContributionEnum:
+    implements: [owl:NamedIndividual]
+    description: >-
+      Whether the action acts on the outcome directly or enables later
+      actions that do (recovery strategies rank approaches partly by this).
+    permissible_values:
+      direct:
+      precursor:
+
+  # --- management strategies ---------------------------------------------------------
+
+  StrategyRoleEnum:
+    implements: [owl:NamedIndividual]
+    description: >-
+      What a strategy component does in the strategy. Each value names the
+      cost phase it falls in (warp_cost_phase), so a phase-level cost can say
+      which components it covers (R10).
+    permissible_values:
+      site_preparation:
+        annotations:
+          warp_cost_phase: initial
+      establishment:
+        annotations:
+          warp_cost_phase: initial
+      follow_up:
+        annotations:
+          warp_cost_phase: follow_up
+      maintenance:
+        annotations:
+          warp_cost_phase: maintenance
+      monitoring:
+        annotations:
+          warp_cost_phase: monitoring
+
+  # --- tolerance group ----------------------------------------------------------------
+
+  TolerancePredicateEnum:
+    implements: [owl:ObjectProperty]
+    description: >-
+      Predicates for tolerance statements: under what conditions an organism
+      establishes, persists or performs. Three minted in warp: (declared in
+      src/warp/owl/warp-relations.ttl), one reused from RO. The object's kind
+      varies by predicate (checked by scripts/check_tolerance.py, R17).
+    permissible_values:
+      tolerates:
+        description: >-
+          The organism establishes, persists or reproduces when the variable is
+          within the stated range. One-sided ranges allowed.
+        meaning: warp:tolerates
+        annotations:
+          rosetta_template: "{subject} tolerates {object}"
+      prefers:
+        description: >-
+          The organism performs best, or occurs most often, at or around the
+          stated value or class.
+        meaning: warp:prefers
+        annotations:
+          rosetta_template: "{subject} prefers {object}"
+      intolerant_of:
+        description: >-
+          The organism fails to establish, persist or reproduce when the
+          variable is within the stated range. Recorded as stated: never
+          derived from tolerates, nor tolerates from it.
+        meaning: warp:intolerant_of
+        annotations:
+          rosetta_template: "{subject} is intolerant of {object}"
+      has_habitat:
+        description: >-
+          RO has habitat, reused as RO publishes it (ID checked in the local
+          ENVO import, 2026-11-20), for categorical habitat statements. The
+          object is an ENVO habitat or environment node, not a quality node.
+          The only tolerance predicate that can project to OWL.
+        meaning: RO:0002303
+        annotations:
+          rosetta_template: "{subject} has habitat {object}"
+
+  ToleranceResponseEnum:
+    implements: [owl:NamedIndividual]
+    description: "What a tolerance range was judged against."
+    permissible_values:
+      occurrence:
+      germination:
+      establishment:
+      growth:
+      survival:
+      reproduction:
+
+  # --- cost group ---------------------------------------------------------------------
+
+  CostPredicateEnum:
+    implements: [owl:ObjectProperty]
+    description: >-
+      Predicates for cost statements. warp:incurs_cost is abstract in the
+      relation layer: the exporter writes one sub-property per cost category
+      (incurs_total_cost, incurs_labour_cost, ...), with the amount as the
+      object (decision D16). Declared in src/warp/owl/warp-relations.ttl.
+    permissible_values:
+      incurs_cost:
+        description: >-
+          Carrying out the subject action, under the stated context and
+          scale, used the stated resources in the object category.
+        meaning: warp:incurs_cost
+        annotations:
+          rosetta_template: "{subject} incurs {object} cost"
+      costs_relative_to:
+        description: >-
+          The subject action costs a stated multiple of the object action, for
+          the same objective and scale.
+        meaning: warp:costs_relative_to
+        annotations:
+          rosetta_template: "{subject} costs relative to {object}"
+
+  CostCategoryEnum:
+    implements: [owl:NamedIndividual]
+    description: >-
+      What a cost covers. The object of incurs_cost, and the values of
+      includes_categories. Not IRIs of their own in the relation layer: each
+      category names the sub-property of warp:incurs_cost the exporter writes
+      (warp_subproperty). `unknown` is a sentinel: valid in
+      includes_categories (common for program budgets), never an object, never
+      exported.
+    permissible_values:
+      total:
+        annotations:
+          warp_subproperty: warp:incurs_total_cost
+      labour:
+        annotations:
+          warp_subproperty: warp:incurs_labour_cost
+      capital_equipment:
+        annotations:
+          warp_subproperty: warp:incurs_capital_equipment_cost
+      consumables:
+        annotations:
+          warp_subproperty: warp:incurs_consumables_cost
+      overhead:
+        annotations:
+          warp_subproperty: warp:incurs_overhead_cost
+      unknown:
+        description: "The breakdown of a total is not known. A sentinel: never an object, never exported."
+
+  CostBehaviourEnum:
+    implements: [owl:NamedIndividual]
+    description: "How a cost varies with scale; needed to estimate economies of scale."
+    permissible_values:
+      fixed:
+      variable:
+      mixed:
+
+  CostPhaseEnum:
+    implements: [owl:NamedIndividual]
+    description: >-
+      The phase of the work a cost belongs to. In the identity key: initial and
+      maintenance costs never merge. Strategy roles map onto these
+      (StrategyRoleEnum's warp_cost_phase).
+    permissible_values:
+      initial:
+      follow_up:
+      maintenance:
+      monitoring:
+      whole_project:
+
+  ReportingLevelEnum:
+    implements: [owl:NamedIndividual]
+    description: >-
+      Whose costs: the action's own, a share of a program's, or of an
+      organization's. In the identity key.
+    permissible_values:
+      intervention:
+      program:
+      organization:
+
+  CostBasisEnum:
+    implements: [owl:NamedIndividual]
+    description: >-
+      What kind of figure it is; plays the role evidence type plays elsewhere.
+      A payment_rate is what a program pays, not necessarily what the work
+      cost: check cost_bearer.
+    permissible_values:
+      actual_expenditure:
+      budget_allocation:
+      estimate:
+      quote:
+      payment_rate:
+
+  CostAdjustmentEnum:
+    implements: [owl:NamedIndividual]
+    description: "Whether the source already standardized the figure."
+    permissible_values:
+      none:
+      inflation:
+      discounted:
+
+  # --- sites -------------------------------------------------------------------------
+
+  GeometryPrecisionEnum:
+    implements: [owl:NamedIndividual]
+    description: "How precise a site's recorded geometry is. Required: matching and area sums need to know."
+    permissible_values:
+      exact:
+      generalized:
+      centroid:
+      withheld:
+        description: "No geometry is recorded at all (under care)."
+
+  AreaSourceEnum:
+    implements: [owl:NamedIndividual]
+    description: "Whether a site's area was reported by the source or computed from its geometry."
+    permissible_values:
+      reported:
+      computed:
+
+  TenureEnum:
+    implements: [owl:NamedIndividual]
+    description: "Land tenure of a site; drives the default access level."
+    permissible_values:
+      public:
+      private:
+      indigenous:
+      mixed:
+      unknown:
+        description: "Not known. A sentinel: never exported."
+
+  # --- implementation group ------------------------------------------------------------
+
+  ImplementationPredicateEnum:
+    implements: [owl:ObjectProperty]
+    description: "The implementation group's predicate, declared in src/warp/owl/warp-relations.ttl."
+    permissible_values:
+      carried_out_at:
+        description: "The subject strategy or action was carried out at the object site."
+        meaning: warp:carried_out_at
+        annotations:
+          rosetta_template: "{subject} was carried out at {object}"
+
+  ImplementationStatusEnum:
+    implements: [owl:NamedIndividual]
+    description: "The state of the work as of reported_on. Later reports supersede, within one claimant."
+    permissible_values:
+      planned:
+        description: "Committed to a specific site but not started. Otherwise it is guidance (a recommendation)."
+      in_progress:
+      completed:
+      maintained:
+      abandoned:
+
+  # --- criteria group ----------------------------------------------------------------------
+
+  CriteriaPredicateEnum:
+    implements: [owl:ObjectProperty]
+    description: >-
+      The criteria group's predicate for annotators. In the relation layer it
+      is the sub-property the verdict picks (qualifies_as, does_not_qualify_as)
+      under the abstract warp:assessed_against, and the object is the
+      criteria set (decision D16).
+    permissible_values:
+      qualifies_as:
+        description: "The subject site or project meets the criteria set's definition of the object concept."
+        meaning: warp:qualifies_as
+        annotations:
+          rosetta_template: "{subject} qualifies as {object}"
+
+  CriteriaConceptEnum:
+    implements: [owl:NamedIndividual]
+    description: >-
+      What is being defined. Each value's meaning is its SKOS concept IRI
+      (project/local_terms.ttl, from vocab/local/criteria-concepts.yaml), so a
+      concept exists once; the concepts are skos:Concept and never owl:Class
+      (decision D14).
+    permissible_values:
+      degraded_area:
+        meaning: concept:degraded_area
+      effective_restoration:
+        meaning: concept:effective_restoration
+
+  CriteriaStatusEnum:
+    implements: [owl:NamedIndividual]
+    permissible_values:
+      draft:
+      adopted:
+      superseded:
+
+  ReferenceBasisEnum:
+    implements: [owl:NamedIndividual]
+    description: "Degraded compared with what?"
+    permissible_values:
+      reference_ecosystem:
+      historical_baseline:
+      potential_natural_state:
+      policy_target:
+
+  EcosystemAttributeEnum:
+    implements: [owl:NamedIndividual]
+    description: >-
+      Which aspects of an ecosystem a definition assesses: SER's six key
+      ecosystem attributes. PROVISIONAL (proposal Q4): the vocabulary may be
+      replaced by IUCN Red List of Ecosystems criteria, FAO FERM, or whatever
+      the federal process settles on.
+    permissible_values:
+      absence_of_threats:
+      physical_conditions:
+      species_composition:
+      structural_diversity:
+      ecosystem_function:
+      external_exchanges:
+
+  ThresholdKindEnum:
+    implements: [owl:NamedIndividual]
+    description: "How much change makes an area degraded."
+    permissible_values:
+      any_decline:
+      fraction_of_reference:
+      categorical_state:
+      expert_judgement:
+
+  AssessmentUnitEnum:
+    implements: [owl:NamedIndividual]
+    description: "What a criteria set judges: a site, an ecosystem unit, a jurisdiction."
+    permissible_values:
+      site:
+      ecosystem_unit:
+      jurisdiction:
+
+  AssessmentBasisEnum:
+    implements: [owl:NamedIndividual]
+    description: >-
+      For effectiveness: actions in place (process), moving toward the
+      reference (trajectory), or reached it (outcome).
+    permissible_values:
+      process:
+      trajectory:
+      outcome:
+
+  AssessmentMethodEnum:
+    implements: [owl:NamedIndividual]
+    description: >-
+      How a verdict was reached. rule_applied: EcoWeaver applying a criteria
+      set to data (a SHACL or SPARQL rule); such a verdict enters as a claim by
+      EcoWeaver like any other, never as an axiom.
+    permissible_values:
+      field_assessment:
+      remote_sensing:
+      rule_applied:
+      expert_judgement:
+      self_reported:
 
 
 ## =============================================================================
@@ -229,6 +755,82 @@ slots:
       derived from them.
     range: SemanticUnitScopeEnum
 
+  modality:
+    description: >-
+      Whether the statement reports (observed), infers (inferred) or
+      forecasts (anticipated). Different from hedging, which is
+      causal_language: hedging is how sure the speaker sounds, modality is
+      what kind of statement it is. A proposition projects to OWL only when
+      every statement grouped under it is observed (decision D15).
+    range: ModalityEnum
+
+  context:
+    description: >-
+      Conditions under which the statement is said to hold (scope
+      conditions), as the source gives them. Shared by every predicate group.
+    range: ContextAnnotation   # CAMO
+    inlined: true
+
+  ecosystem_context:
+    description: >-
+      The KIND of ecosystem the statement is about, as one of CAMO's IUCN
+      Global Ecosystem Typology functional groups (warm_temperate_forests,
+      coastal_saltmarshes_and_reedbeds). Not a place: "Florida" or "the
+      Mediterranean coast of Israel" go in `place` (R19).
+    range: EcosystemFunctionalGroupEnum   # CAMO
+
+  place:
+    description: >-
+      The REGION the statement is about, as an IRI from a registered place
+      scheme: an ISO 3166-2 code for a province or state (ISO3166-2:CA-SK);
+      a Wikidata item for a municipality, park, lake or territory (wd:Q...);
+      a GeoNames or Getty TGN entry where Wikidata has none; an ENVO
+      ecoregion individual; or, failing all of these, a locally minted
+      place: concept with a TODO to replace it. Never a bare name, never a
+      coordinate pair standing in for an area. Not the kind of ecosystem,
+      which is ecosystem_context. Part of the identity key for tolerance and
+      cost statements (decision D18). How to find an IRI: docs/values.md.
+    range: uriorcurie
+    multivalued: true
+    annotations:
+      warp_allowed_prefixes: "ISO3166-2 wd geonames tgn ENVO place TODO"
+
+  temporal_extent:
+    description: >-
+      The temporal window over which the stated effect or condition was
+      observed (CAMO TemporalExtent). Not a calendar period: dated periods use
+      Period (start and end as ISO 8601 strings).
+    range: TemporalExtent   # CAMO
+    inlined: true
+
+  specified_in:
+    description: >-
+      Plan documents that specify what was, or is to be, done: a recovery
+      strategy, a restoration plan, a work order. Referenced by id, not
+      inlined. Used by strategies and implementation statements.
+    range: EcoDocument
+    multivalued: true
+    inlined: false
+
+  justified_by:
+    description: >-
+      The propositions the guidance cites as its reason, usually causal
+      propositions ("avoid stocking: stocking decreases abundance"). Empty when
+      the source gives no reason. A prediction in the guidance is recorded as
+      its own causal statement (modality anticipated) and cited here; it is
+      never derived from the guidance automatically.
+    range: EcoProposition
+    multivalued: true
+    inlined: false
+
+  explained_by:
+    description: >-
+      Propositions giving the mechanism behind a tolerance, usually causal
+      (saturated soils cause root anoxia, so the species is intolerant of
+      saturation). By reference.
+    range: EcoProposition
+    multivalued: true
+    inlined: false
 
 ## =============================================================================
 ## CLASSES
@@ -251,7 +853,7 @@ classes:
         required: true
       profile_version:
         description: "Version of this profile the set conforms to."
-        ifabsent: string(0.5.0)
+        ifabsent: string(0.7.0)
       agents:
         description: >-
           People, organizations, communities and software that make, record
@@ -271,6 +873,23 @@ classes:
           and with what. Expanded to OWL and DOSDP fill tables by
           scripts/expand_nodes.py. See docs/node-templates.md.
         range: NodeDefinition
+        multivalued: true
+        inlined_as_list: true
+      strategy_definitions:
+        description: >-
+          Management strategies: ordered bundles of action nodes. Their own
+          list (not node_definitions) because a NodeDefinition list has no
+          type designator to tell a strategy from a filled template.
+          scripts/derive_strategies.py derives each one's canonical node.
+        range: StrategyDefinition
+        multivalued: true
+        inlined_as_list: true
+      site_definitions:
+        description: >-
+          Sites: particulars, each one piece of ground. Emitted as OWL
+          individuals under site: in project/sites.ttl, never classes; geometry
+          is never exported. Their own list for the same reason as strategies.
+        range: SiteDefinition
         multivalued: true
         inlined_as_list: true
 
@@ -296,6 +915,67 @@ classes:
       interaction_propositions:
         description: "Biotic interaction propositions (derived or open questions)."
         range: InteractionProposition
+        multivalued: true
+        inlined_as_list: true
+
+      recommendation_statements:
+        description: "Guidance statements: do, avoid or consider an action because of an outcome."
+        range: RecommendationStatement
+        multivalued: true
+        inlined_as_list: true
+      recommendation_propositions:
+        description: "Recommendation propositions (derived): one per action, outcome, scope and guidance."
+        range: RecommendationProposition
+        multivalued: true
+        inlined_as_list: true
+
+      tolerance_statements:
+        description: "Tolerance statements: the conditions under which an organism lives."
+        range: ToleranceStatement
+        multivalued: true
+        inlined_as_list: true
+      tolerance_propositions:
+        description: "Tolerance propositions (derived): one per organism, predicate, variable, scope and place."
+        range: ToleranceProposition
+        multivalued: true
+        inlined_as_list: true
+
+      cost_statements:
+        description: "Cost statements: what carrying out an action took."
+        range: CostStatement
+        multivalued: true
+        inlined_as_list: true
+      cost_propositions:
+        description: "Cost propositions (derived): one per action, predicate, object, scope, place, phase and reporting level."
+        range: CostProposition
+        multivalued: true
+        inlined_as_list: true
+
+      implementation_statements:
+        description: "Implementation statements: that a strategy or action was carried out at a site."
+        range: ImplementationStatement
+        multivalued: true
+        inlined_as_list: true
+      implementation_propositions:
+        description: >-
+          Derived projects (grouping records) by scripts/derive_projects.py
+          (warp-impl-identity/1). Each is about a project individual, proj:<id>.
+        range: ImplementationProposition
+        multivalued: true
+        inlined_as_list: true
+      criteria_sets:
+        description: "Versioned definitions (degraded area, effective restoration): information records, not nodes."
+        range: CriteriaSet
+        multivalued: true
+        inlined_as_list: true
+      criteria_statements:
+        description: "Criteria statements: that a site or project meets a criteria set, with a verdict."
+        range: CriteriaStatement
+        multivalued: true
+        inlined_as_list: true
+      criteria_propositions:
+        description: "Criteria propositions (derived, warp-criteria-identity/1)."
+        range: CriteriaProposition
         multivalued: true
         inlined_as_list: true
 
@@ -347,12 +1027,31 @@ classes:
         copied here so propositions can be derived from statements.
     slots:
       - scope
+      - modality
+      - context
+      - ecosystem_context
+      - place
+      - temporal_extent
+      - specified_in
     slot_usage:
       scope:
         recommended: true
       id:
         identifier: true
+      # Subject, predicate and object point at node CLASSES (and enum values).
+      # Declared annotation properties, so a statement can reference a class
+      # IRI without punning it as an individual (decision D12).
+      subject:
+        slot_uri: warp:subject
+        implements: [owl:AnnotationProperty]
+      predicate:
+        slot_uri: warp:predicate
+        implements: [owl:AnnotationProperty]
+      object:
+        slot_uri: warp:object
+        implements: [owl:AnnotationProperty]
       proposition:
+        slot_uri: warp:proposition
         range: EcoProposition
         inlined: false
         description: >-
@@ -362,11 +1061,14 @@ classes:
         annotations:
           loom_role: calculated
       direction:
+        slot_uri: warp:direction
         range: EvidenceDirectionEnum
       hasEvidenceLines:
+        slot_uri: warp:hasEvidenceLines
         range: EcoEvidenceLine
         inlined_as_list: true
       contributions:
+        slot_uri: warp:contributions
         description: >-
           Who made the statement: at least one contribution with role author.
           Who recorded it goes in recordMetadata, not here.
@@ -374,11 +1076,29 @@ classes:
         inlined_as_list: true
         recommended: true
       recordMetadata:
+        slot_uri: warp:recordMetadata
         description: >-
           Provenance of this record: who annotated it in EcoWeaver and when
           (role annotator, dateRecordCreated).
         range: EcoRecordMetadata
         inlined: true
+      statementText:
+        slot_uri: warp:statementText
+      strength:
+        slot_uri: warp:strength
+        range: CertaintyGradeEnum   # CAMO; empty in Assertion Mode, filled by SynthesisAssessment
+      score:
+        slot_uri: warp:score
+      reportedIn:
+        slot_uri: warp:reportedIn
+        description: "The source documents the statement was reported in, by id."
+        range: EcoDocument
+        inlined: false
+        multivalued: true
+      dateAuthored:
+        slot_uri: warp:dateAuthored
+      description:
+        slot_uri: warp:description
     attributes:
       original_text:
         description: >-
@@ -442,15 +1162,23 @@ classes:
         range: ComparatorAnnotation   # CAMO
         multivalued: true
         inlined_as_list: true
-      context:
-        description: "Conditions under which the statement is said to hold (scope conditions)."
-        range: ContextAnnotation   # CAMO
+      dose:
+        description: >-
+          The reported level or range of the subject intervention or driver,
+          using CAMO's quantity type. A condition of this statement, not a
+          node definition or part of proposition identity.
+        range: QuantityValue          # CAMO
         inlined: true
-      ecosystem_context:
-        range: EcosystemFunctionalGroupEnum   # CAMO
-      temporal_extent:
-        range: TemporalExtent   # CAMO
-        inlined: true
+        slot_uri: camo:dose
+      dose_level:
+        description: >-
+          The subject driver's reported ordinal level. Use alone for a named
+          level without a number, or with dose when the source supplies both.
+          A condition of this statement, not part of proposition identity.
+        range: DoseLevelEnum          # CAMO
+        slot_uri: camo:dose_level
+      # context, ecosystem_context and temporal_extent are shared slots on
+      # EcoStatement.
       camo_edge_id:
         description: "Identifier of the CAMO CausalEdge this statement was migrated or projected from."
 
@@ -513,6 +1241,7 @@ classes:
         required: true
         description: "The proposition being assessed (chosen, not derived)."
       direction:
+        range: EvidenceDirectionEnum   # restated: gen-owl does not inherit it from EcoStatement
         required: true
       strength:
         range: CertaintyGradeEnum   # CAMO
@@ -571,6 +1300,21 @@ classes:
         required: true
       id:
         identifier: true
+      subject:
+        slot_uri: warp:subject
+        implements: [owl:AnnotationProperty]
+      predicate:
+        slot_uri: warp:predicate
+        implements: [owl:AnnotationProperty]
+      object:
+        slot_uri: warp:object
+        implements: [owl:AnnotationProperty]
+      negated:
+        slot_uri: warp:negated
+      propositionText:
+        slot_uri: warp:propositionText
+      description:
+        slot_uri: warp:description
     attributes:
       status:
         range: PropositionStatusEnum
@@ -668,6 +1412,867 @@ classes:
         range: CausalNode
 
   # ---------------------------------------------------------------------------
+  # Predicate group: recommendation
+  # (docs/proposals/warp-proposals-0.4.html section 5)
+  # ---------------------------------------------------------------------------
+
+  RecommendationStatement:
+    is_a: EcoStatement
+    class_uri: warp:RecommendationStatement
+    description: >-
+      Guidance: a source tells someone to do, avoid or consider an action
+      because of an outcome. The subject is the action as the source names it
+      (an action node, or a management strategy node), never the
+      recommender: who gave the advice is the claimant (the author
+      contribution), as in every group. The object is the outcome node, a
+      change or target state. The advice is in predicate_qualifiers.guidance.
+      Annotator's test: is the source telling someone what to do, or
+      describing what happens? Describing is a causal statement.
+    annotations:
+      warp_group: recommendation
+      warp_statements_slot: recommendation_statements
+      warp_propositions_slot: recommendation_propositions
+      warp_proposition_class: RecommendationProposition
+      warp_identity_extras: predicate_qualifiers.guidance
+    slots:
+      - justified_by
+    slot_usage:
+      subject:
+        range: CausalNode
+        required: true
+        description: "The action, or strategy, as the source names it."
+      predicate:
+        range: RecommendationPredicateEnum
+        required: true
+      object:
+        range: CausalNode
+        required: true
+        description: "The outcome: a change or target state."
+    attributes:
+      predicate_qualifiers:
+        description: "The guidance, its force, priority, timing and contribution."
+        range: RecommendationQualifiers
+        inlined: true
+        required: true
+
+  RecommendationQualifiers:
+    class_uri: warp:RecommendationQualifiers
+    description: >-
+      The predicate layer of a recommendation statement. Only guidance is in
+      the identity key; force, priority, timing and contribution vary across
+      the statements of one proposition.
+    attributes:
+      guidance:
+        description: "Do, avoid or consider. In the identity key."
+        range: GuidanceEnum
+        required: true
+      deontic_force:
+        description: "How strongly the guidance binds: required (a legal duty), recommended, suggested, optional."
+        range: DeonticForceEnum
+      priority:
+        description: >-
+          The priority on the source's own scale (DFO High / Medium / Low;
+          ECCC Urgent / Necessary / Beneficial), as a ScaledValue with scale
+          and concept IRIs from vocab/scales.yaml.
+        range: ScaledValue
+        inlined: true
+      timing_of_influence:
+        description: "When the action takes effect, on the source's scale (DFO Immediate / Medium / Future)."
+        range: ScaledValue
+        inlined: true
+      contribution:
+        description: "Direct, or a precursor to actions that act on the outcome."
+        range: ContributionEnum
+
+  RecommendationProposition:
+    is_a: EcoProposition
+    class_uri: warp:RecommendationProposition
+    description: >-
+      A proposition put forward by recommendation statements: this guidance,
+      about this action, for this outcome, at this scope. Two agencies giving
+      the same guidance share one; "do" and "avoid" for the same action and
+      outcome are two, which may cite the same causal proposition: agreement
+      about how the world works, disagreement about what to do.
+    slot_usage:
+      subject:
+        range: CausalNode
+      predicate:
+        range: RecommendationPredicateEnum
+      object:
+        range: CausalNode
+    attributes:
+      predicate_qualifiers:
+        description: "The identity extra this proposition was grouped by (guidance)."
+        range: RecommendationQualifiers
+        inlined: true
+
+  # ---------------------------------------------------------------------------
+  # Predicate group: tolerance
+  # (docs/proposals/warp-proposals-0.4.html section 7)
+  # ---------------------------------------------------------------------------
+
+  ToleranceStatement:
+    is_a: EcoStatement
+    class_uri: warp:ToleranceStatement
+    description: >-
+      The conditions under which a taxon establishes, persists or performs: the
+      soil pH it tolerates, the moisture regime it prefers, the salinity that
+      excludes it. A disposition of the organism, not a change in one thing
+      bringing a change in another, which is why it is not a causal
+      statement. Subject: a taxon, population or life stage node. Object: a
+      quality_of_environmental_material node, or for has_habitat an ENVO
+      habitat or environment node (scripts/check_tolerance.py). The range,
+      optimum, class value and curve are qualifiers, not in the identity key,
+      so every source's range for "pH of soil" meets in one proposition.
+      Annotator's test: is the source saying under what conditions the
+      organism can live, or what changes what?
+    annotations:
+      warp_group: tolerance
+      warp_statements_slot: tolerance_statements
+      warp_propositions_slot: tolerance_propositions
+      warp_proposition_class: ToleranceProposition
+      warp_identity_extras: place
+    slots:
+      - explained_by
+    slot_usage:
+      subject:
+        range: CausalNode
+        required: true
+        description: "The organism: a taxon, population or life stage node."
+      predicate:
+        range: TolerancePredicateEnum
+        required: true
+      object:
+        range: CausalNode
+        required: true
+        description: "A quality_of_environmental_material node, or an ENVO habitat node for has_habitat."
+      place:
+        description: >-
+          In the identity key for this group: indicator ratings are assigned by
+          region, so a species rated differently in two regions is two
+          propositions, not a contradiction.
+    attributes:
+      predicate_qualifiers:
+        description: "Range, optimum, class value, response and curve."
+        range: ToleranceQualifiers
+        inlined: true
+
+  ToleranceQualifiers:
+    class_uri: warp:ToleranceQualifiers
+    description: >-
+      The predicate layer of a tolerance statement. None of it is in the
+      identity key: two sources giving pH 6.0 to 8.5 and 6.5 to 8.0 agree that
+      pH limits the species and differ on where, so they derive one
+      proposition with two ranges. Never converted between units silently.
+    attributes:
+      range:
+        description: "The range of the variable. Either end may be open."
+        range: QuantityRange
+        inlined: true
+      optimum:
+        description: "The optimum value, mostly with prefers."
+        range: Quantity
+        inlined: true
+      class_value:
+        description: >-
+          A value on the source's own scale (Ellenberg R, EIVE, USDA
+          low / medium / high, wetland indicator OBL to UPL), with scale and
+          concept IRIs from vocab/scales.yaml; a practitioner's "wet" has a
+          value and no scale.
+        range: ScaledValue
+        inlined: true
+      response:
+        description: "What the range was judged against: occurrence, germination, establishment, growth, survival, reproduction."
+        range: ToleranceResponseEnum
+      response_curve:
+        description: >-
+          Habitat suitability breakpoints, in order: x strictly increasing
+          (checked by scripts/check_tolerance.py), suitability in [0, 1], x in
+          the unit of `range`. A model's combination rule (geometric mean,
+          minimum) is not a statement: record it on the EcoStudyResult.
+        range: CurvePoint
+        multivalued: true
+        inlined_as_list: true
+        list_elements_ordered: true
+
+  ToleranceProposition:
+    is_a: EcoProposition
+    class_uri: warp:ToleranceProposition
+    description: >-
+      A proposition put forward by tolerance statements: this organism, this
+      predicate, this variable, at this scope, in this place.
+    slots:
+      - place
+    slot_usage:
+      subject:
+        range: CausalNode
+      predicate:
+        range: TolerancePredicateEnum
+      object:
+        range: CausalNode
+
+  # ---------------------------------------------------------------------------
+  # Predicate group: cost
+  # (docs/proposals/warp-proposals-0.4.html section 8)
+  # Qualifiers follow the five cost reporting standards of Iacona et al. 2018.
+  # ---------------------------------------------------------------------------
+
+  CostStatement:
+    is_a: EcoStatement
+    class_uri: warp:CostStatement
+    description: >-
+      What carrying out an action took (money, staff and volunteer time,
+      equipment and materials) with the context needed to read the number.
+      Subject: an action or strategy node, the same kind of node the
+      recommendation group uses, so a recommendation and the cost of
+      following it meet. Object: a cost category for incurs_cost, an action or
+      strategy node for costs_relative_to (checked by scripts/check_cost.py).
+      A source reporting one total gives one statement with object total; a
+      breakdown gives one statement per category. Annotator's test: is the
+      source saying what an action took, or what it did?
+    annotations:
+      warp_group: cost
+      warp_statements_slot: cost_statements
+      warp_propositions_slot: cost_propositions
+      warp_proposition_class: CostProposition
+      warp_identity_extras: place predicate_qualifiers.phase predicate_qualifiers.reporting_level
+    slot_usage:
+      subject:
+        range: CausalNode
+        required: true
+        description: "The action or strategy node."
+      predicate:
+        range: CostPredicateEnum
+        required: true
+      object:
+        required: true
+        description: >-
+          A CostCategoryEnum value (not unknown) for incurs_cost; an action or
+          strategy node for costs_relative_to. No costcat: IRIs: the category
+          reaches RDF through the predicate (R16).
+        any_of:
+          - range: CostCategoryEnum
+          - range: CausalNode
+      place:
+        description: >-
+          In the identity key for this group: costs from different regions
+          never merge silently. The region, not the functional group.
+    attributes:
+      predicate_qualifiers:
+        description: "Amount, effort or ratio, with scale, phase, level, categories and basis."
+        range: CostQualifiers
+        inlined: true
+        required: true
+      period:
+        description: "When the costs were incurred (ISO 8601 start and optional end)."
+        range: Period
+        inlined: true
+      outcome_reported:
+        description: >-
+          Causal statements from the same source about what the spending
+          achieved: the bridge to cost-effectiveness. By reference.
+        range: EcoStatement
+        multivalued: true
+        inlined: false
+      starting_conditions:
+        description: "Initial abundance or cover, as the source gives it."
+      cost_bearer:
+        description: "Who paid. May not be the claimant."
+        range: EcoAgent
+        inlined: false
+      transferred_from:
+        description: >-
+          DERIVED by scripts/transfer_costs.py: the cost statement this one
+          was adjusted from (to another place, year or currency). Requires
+          transfer_rule.
+        range: CostStatement
+        inlined: false
+      transfer_rule:
+        description: "DERIVED: the versioned transfer rule that adjusted it, e.g. warp-cost-transfer/1."
+      transfer_steps:
+        description: >-
+          DERIVED: the steps the transfer applied, in order ("indexed ILS 2008
+          to 2026", "converted ILS to CAD", "labour re-priced from effort").
+        multivalued: true
+
+  CostQualifiers:
+    class_uri: warp:CostQualifiers
+    description: >-
+      The predicate layer of a cost statement. One of amount, effort or ratio
+      is required; the rules that depend on the predicate (incurs_cost needs
+      amount or effort, plus scale and phase; costs_relative_to needs ratio)
+      are in scripts/check_cost.py, because a LinkML rule on CostStatement
+      cannot test slots inside predicate_qualifiers (R3, R4).
+    any_of:
+      - slot_conditions:
+          amount:
+            required: true
+      - slot_conditions:
+          effort:
+            required: true
+      - slot_conditions:
+          ratio:
+            required: true
+    attributes:
+      amount:
+        description: "Standard 4/5: the money, in its original currency and price year."
+        range: MonetaryAmount
+        inlined: true
+      effort:
+        description: >-
+          Standard 4: person-days, litres, machine hours. The most transferable
+          part of a costing: labour can be re-priced at local rates.
+        range: Quantity
+        multivalued: true
+        inlined_as_list: true
+      volunteer_effort:
+        description: "Volunteer time: valuable and often uncounted."
+        range: Quantity
+        inlined: true
+      ratio:
+        description: "For costs_relative_to: the multiple, and what it is per."
+        range: CostRatio
+        inlined: true
+      includes_categories:
+        description: >-
+          Standard 4: which categories a total includes. Required for totals
+          (check_cost.py); unknown is valid and common.
+        range: CostCategoryEnum
+        multivalued: true
+      cost_behaviour:
+        description: "Fixed, variable or mixed."
+        range: CostBehaviourEnum
+      scale:
+        description: >-
+          Standard 3: the scale the total is for (area, length treated).
+          Required for incurs_cost. Always the total with its scale; per-hectare
+          figures are derived, because costs rarely scale linearly.
+        range: Quantity
+        multivalued: true
+        inlined_as_list: true
+      count:
+        description: "Standard 3, when the scale is a number of things (46 protected areas): a Count, not a unit."
+        range: Count
+        multivalued: true
+        inlined_as_list: true
+      intensity:
+        description: "Standard 2: how intensively (\"two herbicide passes per year\")."
+      phase:
+        description: "Standard 2: the phase. Required; in the identity key."
+        range: CostPhaseEnum
+        required: true
+      covers_roles:
+        description: >-
+          For a phase-level cost of a strategy: which components (by role) the
+          cost covers.
+        range: StrategyRoleEnum
+        multivalued: true
+      reporting_level:
+        description: "The action's own cost, a program share, or an organization's. In the identity key."
+        range: ReportingLevelEnum
+      cost_basis:
+        description: "Actual expenditure, budget allocation, estimate, quote or payment rate."
+        range: CostBasisEnum
+
+  CostIdentityQualifiers:
+    class_uri: warp:CostIdentityQualifiers
+    description: >-
+      The qualifiers a cost proposition was grouped by (its identity extras):
+      phase and reporting level. Amounts, efforts and scales stay on the
+      statements, where they vary.
+    attributes:
+      phase:
+        range: CostPhaseEnum
+      reporting_level:
+        range: ReportingLevelEnum
+
+  CostProposition:
+    is_a: EcoProposition
+    class_uri: warp:CostProposition
+    description: >-
+      A proposition put forward by cost statements: this action, this
+      category or comparison, at this scope, place, phase and reporting level.
+      Two costings of initial wattle removal in one region at intervention
+      level share one, with two amounts; a synthesis reports their spread.
+    slots:
+      - place
+    slot_usage:
+      subject:
+        range: CausalNode
+      predicate:
+        range: CostPredicateEnum
+      object:
+        any_of:
+          - range: CostCategoryEnum
+          - range: CausalNode
+    attributes:
+      predicate_qualifiers:
+        description: "The identity extras this proposition was grouped by."
+        range: CostIdentityQualifiers
+        inlined: true
+
+  MonetaryAmount:
+    class_uri: warp:MonetaryAmount
+    description: >-
+      Standard 5: money in its original currency and price year. Exported as
+      a named individual (not a blank node), because a transferred cost cites
+      the amount it was computed from. An amount with a value needs currency
+      and price year (check_cost.py); one with no value yet records that the
+      source gives a figure not yet transcribed (TODO), and is flagged by the
+      completeness report and refused by transfer.
+    attributes:
+      value:
+        range: decimal
+      currency:
+        description: "ISO 4217 code, always the original currency."
+        pattern: "^[A-Z]{3}$"
+        required: true
+      price_year:
+        description: "The year the costs were incurred (an integer, never xsd:gYear)."
+        range: integer
+      adjustment:
+        description: "Whether the source already adjusted the figure."
+        range: CostAdjustmentEnum
+      adjustment_rate:
+        description: "The rate of that adjustment, as a fraction."
+        range: decimal
+      adjustment_base_year:
+        description: "The base year of that adjustment (missing from the proposal sketch; R5)."
+        range: integer
+      conversion_rate:
+        description: "The exchange rate applied, if the figure was converted (target units per source unit)."
+        range: decimal
+      derived_from_amount:
+        description: >-
+          DERIVED by transfer_costs.py: the IRI of the amount this one was
+          computed from, `<source statement>/predicate_qualifiers/amount`.
+        range: uriorcurie
+
+  CostRatio:
+    class_uri: warp:CostRatio
+    description: "\"A costs about a third of B, per hectare.\""
+    attributes:
+      value:
+        range: decimal
+        required: true
+      basis:
+        description: "What the ratio is per (per_hectare, per_site)."
+
+  # ---------------------------------------------------------------------------
+  # Sites (docs/proposals/warp-proposals-0.4.html, s. 9)
+  # ---------------------------------------------------------------------------
+
+  SiteDefinition:
+    is_a: NodeDefinition
+    class_uri: warp:SiteDefinition
+    description: >-
+      One piece of ground: the place a strategy is carried out, or whose
+      condition is assessed. A node, so any group can point at it, but unlike
+      every other node a particular, not a kind of thing (decisions D7, D11).
+      Its ID is under site:, never node:, and it is written to OWL as a named
+      individual in project/sites.ttl, typed by its ecosystem types, with its
+      label and jurisdiction. Geometry never goes into a generated output.
+      Checked by scripts/check_sites.py.
+    slots:
+      - specified_in
+    slot_usage:
+      template:
+        equals_string: site
+    attributes:
+      label:
+        description: "The site's name as the source gives it."
+      geometry:
+        description: >-
+          GeoJSON or WKT, or a reference to one. May be generalized or withheld
+          under care. GeoJSON must parse as JSON. Never exported.
+      geometry_precision:
+        description: "exact, generalized, centroid, or withheld (then no geometry at all)."
+        range: GeometryPrecisionEnum
+        required: true
+      area:
+        description: "The site's area."
+        range: Quantity
+        inlined: true
+      area_source:
+        description: "Whether the area was reported or computed."
+        range: AreaSourceEnum
+      ecosystem_type:
+        description: >-
+          ENVO environmental system classes; mixed sites are common. Exported
+          as rdf:type: the site is an instance of each.
+        range: uriorcurie
+        multivalued: true
+        annotations:
+          warp_allowed_prefixes: "ENVO TODO"
+      jurisdiction:
+        description: >-
+          An ISO 3166-2 code (CA-SK) where one exists, exported as an IRI; or
+          text where none does, as for many Indigenous territories, exported as
+          a literal.
+      tenure:
+        description: "public, private, indigenous, mixed or unknown."
+        range: TenureEnum
+      care:
+        description: "Governance metadata: private agreements and Indigenous lands need it from the first record."
+        range: CareMetadata
+        inlined: true
+
+  # ---------------------------------------------------------------------------
+  # Predicate group: implementation
+  # ---------------------------------------------------------------------------
+
+  ImplementationStatement:
+    is_a: EcoStatement
+    class_uri: warp:ImplementationStatement
+    description: >-
+      That a strategy (or action) was carried out at a site, over a period, as
+      reported by an implementer, funder, program or researcher (the
+      claimant). Scope is always assertional. Statements about the same work
+      are grouped into a derived project by scripts/derive_projects.py
+      (warp-impl-identity/1), not by the shared identity key. Annotator's
+      test: does the source say this was done, or that it should be done?
+      Planned work is an implementation statement only when committed to a
+      specific site; otherwise it is a recommendation.
+    annotations:
+      warp_group: implementation
+      warp_statements_slot: implementation_statements
+      warp_propositions_slot: implementation_propositions
+      warp_proposition_class: ImplementationProposition
+      warp_identity_rule: warp-impl-identity/1
+      warp_derived_by: derive_projects.py
+    slot_usage:
+      subject:
+        range: CausalNode
+        required: true
+        description: "A strategy node (canonical) or an action node."
+      predicate:
+        range: ImplementationPredicateEnum
+        required: true
+      object:
+        range: CausalNode
+        required: true
+        description: "A site (site:<id>), checked by scripts/check_sites.py."
+      scope:
+        equals_string: assertional
+        required: true
+    attributes:
+      predicate_qualifiers:
+        description: "Period, status, area treated, who implemented and funded it, and registry IDs."
+        range: ImplementationQualifiers
+        inlined: true
+        required: true
+
+  ImplementationQualifiers:
+    class_uri: warp:ImplementationQualifiers
+    description: >-
+      The predicate layer of an implementation statement. The plan document is
+      the statement's specified_in.
+    attributes:
+      period:
+        description: "When the work was carried out; an open end means ongoing."
+        range: Period
+        inlined: true
+        required: true
+      status:
+        description: "As of reported_on."
+        range: ImplementationStatusEnum
+        required: true
+      reported_on:
+        description: >-
+          When the claimant reported the status, as an ISO 8601 date string
+          (never LinkML date: xsd:date is not an OWL 2 datatype, D19). Later
+          reports supersede within one claimant.
+        pattern: "^[0-9]{4}(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[01]))?)?$"
+      area_treated:
+        description: "May be less than the site. Never divide a site's area among strategies."
+        range: Quantity
+        inlined: true
+      implemented_by:
+        description: "Who did the work. Distinct from the claimant."
+        range: EcoAgent
+        multivalued: true
+        inlined: false
+      funded_by:
+        description: "Who paid for it."
+        range: EcoAgent
+        multivalued: true
+        inlined: false
+      external_ids:
+        description: >-
+          Registry IDs and agreement numbers, as {scheme, value} (D20): not
+          CURIEs, because agreement:0412 is an IRI nobody can resolve, and the
+          matching rule needs the scheme. The strongest matching signal for
+          deriving projects.
+        range: ExternalId
+        multivalued: true
+        inlined_as_list: true
+
+  ExternalId:
+    class_uri: warp:ExternalId
+    description: "An identifier in some registry or agreement scheme."
+    attributes:
+      scheme:
+        description: "The registry or numbering scheme (\"agreement\", a program's registry name)."
+        required: true
+      value:
+        required: true
+
+  ClaimantStatus:
+    class_uri: warp:ClaimantStatus
+    description: "One claimant's latest reported status of a project (latest reported_on within that claimant only)."
+    attributes:
+      claimant:
+        range: EcoAgent
+        inlined: false
+        required: true
+      status:
+        range: ImplementationStatusEnum
+        required: true
+      reported_on:
+        pattern: "^[0-9]{4}(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[01]))?)?$"
+      statement:
+        description: "The statement it comes from."
+        range: ImplementationStatement
+        inlined: false
+
+  ClaimantArea:
+    class_uri: warp:ClaimantArea
+    description: "One claimant's reported area treated: disagreements are kept, attributed, not resolved."
+    attributes:
+      claimant:
+        range: EcoAgent
+        inlined: false
+        required: true
+      area:
+        range: Quantity
+        inlined: true
+        required: true
+      statement:
+        range: ImplementationStatement
+        inlined: false
+
+  ImplementationProposition:
+    is_a: EcoProposition
+    class_uri: warp:ImplementationProposition
+    description: >-
+      A derived project, as a grouping record: which implementation statements
+      describe the same work (shared external ID, or same strategy, same site
+      and overlapping periods), with each claimant's status and area kept and
+      attributed, the union of implementers and funders, and the envelope of
+      periods. It is about (IAO:0000136) the project individual, proj:<id>,
+      which is the work itself: an occurrent, typed in project/projects.ttl by
+      its strategy class and located at its site (decision D17). The record and
+      the individual share their local ID.
+    slot_usage:
+      subject:
+        range: CausalNode
+      predicate:
+        range: ImplementationPredicateEnum
+      object:
+        range: CausalNode
+    attributes:
+      about_project:
+        description: "DERIVED: the project individual, proj:<id>, this record is about."
+        slot_uri: IAO:0000136
+        range: uriorcurie
+      period:
+        description: "DERIVED: the envelope of the member statements' periods (open if any is open)."
+        range: Period
+        inlined: true
+      status_by_claimant:
+        description: "DERIVED: each claimant's latest status."
+        range: ClaimantStatus
+        multivalued: true
+        inlined_as_list: true
+      area_by_claimant:
+        description: "DERIVED: each claimant's area treated."
+        range: ClaimantArea
+        multivalued: true
+        inlined_as_list: true
+      implemented_by:
+        description: "DERIVED: the union of the member statements' implementers."
+        range: EcoAgent
+        multivalued: true
+        inlined: false
+      funded_by:
+        description: "DERIVED: the union of their funders."
+        range: EcoAgent
+        multivalued: true
+        inlined: false
+      external_ids:
+        description: "DERIVED: the union of their external IDs."
+        range: ExternalId
+        multivalued: true
+        inlined_as_list: true
+      replaces:
+        description: >-
+          DERIVED: earlier IDs of this project (when a joining statement moved
+          its anchor). Written to OWL as deprecated and replaced by this one.
+        range: uriorcurie
+        multivalued: true
+
+  # ---------------------------------------------------------------------------
+  # Criteria sets and the criteria group
+  # ---------------------------------------------------------------------------
+
+  CriteriaSet:
+    class_uri: warp:CriteriaSet
+    description: >-
+      One body's versioned definition of a concept such as "degraded area": a
+      particular, but an information record, not a node. A stated, versioned
+      test that criteria statements apply, described only by a fixed set of
+      definitional elements plus its verbatim text, so a definition never
+      becomes its own small graph. Taxa, indicator variables and measured
+      values never appear here: they belong in the evidence for a criteria
+      statement. Deliberately not an OWL definition, so a verdict can never be
+      inferred, and a definition can change without any record being
+      rewritten.
+    attributes:
+      id:
+        identifier: true
+        description: "crit:<concept>/<version>, e.g. crit:degraded-area/fed-draft-1."
+      operationalizes:
+        description: "The concept this set defines."
+        range: CriteriaConceptEnum
+        required: true
+      issued_by:
+        description: "Whose definition it is."
+        range: EcoAgent
+        inlined: false
+        required: true
+      version:
+        required: true
+      status:
+        range: CriteriaStatusEnum
+      supersedes:
+        description: "The version this one replaces."
+        range: CriteriaSet
+        inlined: false
+      specified_in:
+        description: "The document the definition is written in."
+        range: EcoDocument
+        inlined: false
+      criteria_text:
+        description: "The definition, verbatim."
+      reference_basis:
+        description: "Degraded compared with what?"
+        range: ReferenceBasisEnum
+      baseline_date:
+        description: "As of when? ISO 8601 year, year-month or date."
+        pattern: "^[0-9]{4}(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[01]))?)?$"
+      attributes_assessed:
+        description: "Which aspects count (SER's six attributes; provisional)."
+        range: EcosystemAttributeEnum
+        multivalued: true
+      threshold_kind:
+        description: "How much change makes it degraded?"
+        range: ThresholdKindEnum
+      threshold_text:
+        description: "The threshold as written."
+      human_caused:
+        description: "Must the decline be caused by people?"
+        range: boolean
+      assessment_unit:
+        description: "What is judged: site, ecosystem unit, jurisdiction."
+        range: AssessmentUnitEnum
+      assessment_basis:
+        description: "For effectiveness: process, trajectory or outcome."
+        range: AssessmentBasisEnum
+
+  CriteriaStatement:
+    is_a: EcoStatement
+    class_uri: warp:CriteriaStatement
+    description: >-
+      That a site or project meets (or does not meet) a named, versioned
+      definition, for an assessed period. The subject is a particular: a site
+      individual (degradation) or a project individual (effectiveness), so no
+      subject_proposition and no exactly_one_of rule (decision D17; R7 and R18
+      go away). The verdict is the statement's evidential direction (supports,
+      disputes, neutral) and is required: criteria statements are the one
+      annotated statement that fills it. "Degraded" with no definition named
+      is context, not a criteria statement. Annotator's test: is someone
+      applying a named, versioned definition to a site or project?
+    annotations:
+      warp_group: criteria
+      warp_statements_slot: criteria_statements
+      warp_propositions_slot: criteria_propositions
+      warp_proposition_class: CriteriaProposition
+      warp_identity_rule: warp-criteria-identity/1
+      warp_identity_extras: predicate_qualifiers.criteria_set predicate_qualifiers.assessed_period
+    slot_usage:
+      subject:
+        range: CausalNode
+        required: true
+        description: "A site (site:) or project (proj:) individual."
+      predicate:
+        range: CriteriaPredicateEnum
+        required: true
+      object:
+        range: CriteriaConceptEnum
+        required: true
+        description: "The concept. In RDF the relation's object is the criteria set instead (D16)."
+      direction:
+        range: EvidenceDirectionEnum
+        required: true
+        description: "The verdict: supports (qualifies), disputes (does not qualify), neutral."
+    attributes:
+      predicate_qualifiers:
+        description: "Which definition, for which period, by which method."
+        range: CriteriaQualifiers
+        inlined: true
+        required: true
+
+  CriteriaQualifiers:
+    class_uri: warp:CriteriaQualifiers
+    attributes:
+      criteria_set:
+        description: "The definition applied. In the identity key."
+        range: CriteriaSet
+        inlined: false
+        required: true
+      assessed_period:
+        description: "The period assessed: condition changes over time. In the identity key."
+        range: Period
+        inlined: true
+        required: true
+      assessment_method:
+        description: "field_assessment, remote_sensing, rule_applied, expert_judgement, self_reported."
+        range: AssessmentMethodEnum
+
+  CriteriaIdentityQualifiers:
+    class_uri: warp:CriteriaIdentityQualifiers
+    description: "The qualifiers a criteria proposition was grouped by: criteria set and assessed period."
+    attributes:
+      criteria_set:
+        range: CriteriaSet
+        inlined: false
+      assessed_period:
+        range: Period
+        inlined: true
+
+  CriteriaProposition:
+    is_a: EcoProposition
+    class_uri: warp:CriteriaProposition
+    description: >-
+      A proposition put forward by criteria statements: this site or project,
+      this concept, this criteria set, this period. Two assessors applying the
+      same definition and disagreeing share one, one supporting and one
+      disputing; "qualifies under A" and "does not qualify under B" are two,
+      and do not contradict.
+    slot_usage:
+      subject:
+        range: CausalNode
+      predicate:
+        range: CriteriaPredicateEnum
+      object:
+        range: CriteriaConceptEnum
+    attributes:
+      predicate_qualifiers:
+        description: "The identity extras this proposition was grouped by."
+        range: CriteriaIdentityQualifiers
+        inlined: true
+
+  # ---------------------------------------------------------------------------
   # Node definitions: a CAMO node filled from a node template
   # ---------------------------------------------------------------------------
 
@@ -685,11 +2290,139 @@ classes:
         description: "Id of a template in templates/node_templates.yaml."
         required: true
       fillers:
-        description: "One filler per template variable."
+        description: >-
+          One filler per template variable. Required for class_expression
+          templates (checked by scripts/expand_nodes.py); strategies and sites
+          have no variables.
         range: TemplateFiller
         multivalued: true
         inlined_as_list: true
+      depth:
+        description: >-
+          A refinement (templates' `refinements`): the depth interval the node
+          is about, e.g. 0 to 15 cm. Part of what the node is, but with no
+          ontology class, so the node is a subclass of the template's
+          expression rather than equivalent to it. Only for templates that
+          list it (quality_of_environmental_material).
+        range: QuantityRange
+        inlined: true
+      season:
+        description: >-
+          A refinement: the season the node is about ("growing season",
+          "spring freshet"). As for depth.
+
+  StrategyDefinition:
+    is_a: NodeDefinition
+    class_uri: warp:StrategyDefinition
+    description: >-
+      A management strategy: a set of management actions carried out together,
+      in a stated order. Its parts are references to ordinary action nodes
+      (or to another strategy, nested one level deep); the strategy holds only
+      their order. Annotators give each definition a local node ID;
+      scripts/derive_strategies.py (warp-strategy-identity/1) computes the
+      canonical node from the sorted (step, action) pairs of the required
+      parts after flattening, records it here, and rewrites references so
+      statements about two descriptions of the same work meet in one
+      proposition.
+    comments:
+      - >-
+        No objective field, on purpose. What counts as restoration success is
+        contested, and the same actions are aimed at different outcomes by
+        different people. A node with an objective would build one view of
+        success into the graph. Aims stay on statements, where they belong to
+        a claimant, and in EcoStudyResult.stated_goal.
+    slots:
+      - specified_in
+    slot_usage:
+      template:
+        equals_string: management_strategy
+    attributes:
+      components:
+        description: "The parts, at least two. Parallel parts share a step number."
+        range: StrategyComponent
+        multivalued: true
+        inlined_as_list: true
         required: true
+        minimum_cardinality: 2
+      identity_key:
+        description: >-
+          DERIVED: the sorted (step, action) pairs of the required components
+          after flattening, as derive_strategies.py wrote them.
+        annotations:
+          loom_role: calculated
+      identity_rule_version:
+        description: "DERIVED: the rule that produced identity_key (warp-strategy-identity/1)."
+        annotations:
+          loom_role: calculated
+      canonical_node:
+        description: >-
+          DERIVED: the strategy's canonical node, node:strategy-<hash of the
+          key>. Definitions with the same key share it.
+        range: CausalNode
+        annotations:
+          loom_role: calculated
+      replaces:
+        description: >-
+          DERIVED: canonical nodes this definition had under earlier
+          derivations, before a component changed. Each is written to OWL as
+          deprecated and replaced by the current one (IAO:0100001).
+        range: uriorcurie
+        multivalued: true
+        annotations:
+          loom_role: calculated
+
+  StrategyComponent:
+    class_uri: warp:StrategyComponent
+    description: >-
+      One part of a strategy. Exported to RDF as an individual of its own
+      (comp:<strategy>/<n>), so order, lag, repeats and role are addressable;
+      in OWL only the action, as `has part some <action>`, and only when the
+      part is required.
+    attributes:
+      action:
+        description: >-
+          The action node, or another strategy's node (nested one level deep
+          only). A reference, never an inline copy.
+        slot_uri: warp:action
+        implements: [owl:AnnotationProperty]   # points at a node class (D12)
+        range: CausalNode
+        required: true
+      step:
+        description: "Position in the sequence, from 1. Parts that run together share a step."
+        range: integer
+        required: true
+        minimum_value: 1
+      lag:
+        description: >-
+          Time after the previous step starts, as an ISO 8601 duration (P2W:
+          two weeks). A string, never xsd:duration (decision D19).
+        pattern: "^P(?!$)([0-9]+Y)?([0-9]+M)?([0-9]+W)?([0-9]+D)?(T([0-9]+H)?([0-9]+M)?([0-9]+S)?)?$"
+      repeat:
+        description: "How the part recurs (yearly mowing for three years)."
+        range: Recurrence
+        inlined: true
+      role:
+        description: "What the part does in the strategy; maps to a cost phase."
+        range: StrategyRoleEnum
+      optional:
+        description: >-
+          True for parts marked "if needed". Left out of the identity key and
+          out of the OWL, kept in RDF.
+        range: boolean
+
+  Recurrence:
+    class_uri: warp:Recurrence
+    description: "A repeating strategy component: every, how many times, until when."
+    attributes:
+      every:
+        description: "ISO 8601 duration between repeats (P1Y: yearly)."
+        pattern: "^P(?!$)([0-9]+Y)?([0-9]+M)?([0-9]+W)?([0-9]+D)?(T([0-9]+H)?([0-9]+M)?([0-9]+S)?)?$"
+      times:
+        description: "Number of times the part is carried out."
+        range: integer
+        minimum_value: 1
+      until:
+        description: "When repeats stop, as text, for open-ended repeats (\"until native cover exceeds 50%\")."
 
   TemplateFiller:
     description: "The term filling one template variable."
@@ -699,6 +2432,7 @@ classes:
         required: true
       value:
         description: "The filling term, as a CURIE."
+        slot_uri: warp:filler_term   # not warp:value, which holds literals elsewhere (one IRI, one kind)
         range: uriorcurie
         required: true
       label:
@@ -725,23 +2459,30 @@ classes:
       id:
         identifier: true
       targetProposition:
+        slot_uri: warp:targetProposition
         range: EcoProposition
         inlined: false
       directionOfEvidenceProvided:
+        slot_uri: warp:directionOfEvidenceProvided
         range: EvidenceDirectionEnum
         required: true
       strengthOfEvidenceProvided:
+        slot_uri: warp:strengthOfEvidenceProvided
         range: EvidenceStrengthEnum
       contributions:
+        slot_uri: warp:contributions
         range: EcoContribution
         inlined_as_list: true
+      description:
+        slot_uri: warp:description
     attributes:
       evidence_type:
         description: >-
-          Kind of study or reasoning (CAMO; ECO parents given as broad
-          mappings there). Specializes SEPIO EvidenceLine.subtype, which is
-          left empty.
-        range: EvidenceTypeEnum   # CAMO
+          Kind of study or reasoning (CAMO's values, ECO parents as broad
+          mappings, plus not_stated). Specializes SEPIO EvidenceLine.subtype,
+          which is left empty. Use CAMO's expert_judgment for expert opinion
+          (decision D2), and not_stated when the source gives no basis at all.
+        range: WarpEvidenceTypeEnum
         required: true
       evidence_object:
         description: >-
@@ -772,6 +2513,14 @@ classes:
     slot_usage:
       id:
         identifier: true
+      name:
+        slot_uri: warp:name
+      label:
+        slot_uri: warp:label
+      subtype:
+        slot_uri: warp:agent_subtype   # a string here; warp:subtype holds a coding record elsewhere (one IRI, one kind)
+      description:
+        slot_uri: warp:description
     attributes:
       agent_kind:
         description: "The kind of knowledge the agent brings."
@@ -785,9 +2534,18 @@ classes:
       recording either. The role says which.
     slot_usage:
       contributor:
+        slot_uri: warp:contributor
         range: EcoAgent
         inlined: false
         required: true
+      date:
+        slot_uri: warp:date
+        range: string
+        pattern: "^[0-9]{4}(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[01]))?)?$"
+        description: >-
+          When the contribution was made, as an ISO 8601 year, year-month or
+          date. A string, not LinkML's date type: xsd:date is not in the OWL 2
+          datatype map (decision D19).
     attributes:
       role:
         description: >-
@@ -804,9 +2562,11 @@ classes:
       annotated it and when.
     slot_usage:
       contributions:
+        slot_uri: warp:contributions
         range: EcoContribution
         inlined_as_list: true
-
+      dateRecordCreated:
+        slot_uri: warp:dateRecordCreated
   EcoStudyResult:
     is_a: StudyResult
     class_uri: warp:EcoStudyResult
@@ -818,12 +2578,34 @@ classes:
       id:
         identifier: true
       focus:
+        slot_uri: warp:focus
+        implements: [owl:AnnotationProperty]   # points at a node class (D12)
         range: CausalNode
         description: "The CAMO node (variable) the data are about."
       dataItems:
+        slot_uri: warp:dataItems
+        range: EcoDataItem
         inlined_as_list: true
       sourceDataSet:
+        slot_uri: warp:sourceDataSet
+        range: EcoDataSet
         inlined_as_list: true
+      reportedIn:
+        slot_uri: warp:reportedIn
+        description: "The documents the study result is reported in, by id."
+        range: EcoDocument
+        inlined: false
+        multivalued: true
+      description:
+        slot_uri: warp:description
+    attributes:
+      stated_goal:
+        description: >-
+          The aim of the work as the source states it ("to restore native
+          vegetation", "to reduce larval density"), recorded without judging
+          whether it was met. Shared by every predicate group. Aims belong to
+          the evidence layer: never put them on nodes (what counts as success
+          is contested) or on statements.
 
   EcoDocument:
     is_a: Document
@@ -832,3 +2614,205 @@ classes:
     slot_usage:
       id:
         identifier: true
+      title:
+        slot_uri: warp:title
+      description:
+        slot_uri: warp:description
+      doi:
+        slot_uri: warp:doi
+      subtype:
+        slot_uri: warp:subtype
+        range: EcoCoding
+      urls:
+        slot_uri: warp:urls
+      license:
+        slot_uri: warp:license
+
+  # ---------------------------------------------------------------------------
+  # SEPIO value classes used directly by WARP data. Subclassed only to give
+  # their slots WARP IRIs (Q13): SEPIO's own resolve under the placeholder
+  # https://example.org/sepio-model/, so nothing using them could be
+  # published. When SEPIO grounds its terms, an owl:equivalentProperty
+  # mapping file replaces these IRIs without any data changing.
+  # ---------------------------------------------------------------------------
+
+  EcoDataItem:
+    is_a: DataItem
+    class_uri: warp:EcoDataItem
+    description: "A SEPIO DataItem with WARP IRIs for its slots: one summary statistic of a study result."
+    slot_usage:
+      id:
+        identifier: true
+      subtype:
+        slot_uri: warp:subtype
+        range: EcoCoding
+      value:
+        slot_uri: warp:value
+      unit:
+        slot_uri: warp:unit
+        range: EcoCoding
+      description:
+        slot_uri: warp:description
+      label:
+        slot_uri: warp:label
+
+  EcoDataSet:
+    is_a: DataSet
+    class_uri: warp:EcoDataSet
+    description: "A SEPIO DataSet with WARP IRIs for its slots: the dataset a study result summarizes."
+    slot_usage:
+      id:
+        identifier: true
+      version:
+        slot_uri: warp:version
+      license:
+        slot_uri: warp:license
+      description:
+        slot_uri: warp:description
+      label:
+        slot_uri: warp:label
+
+  EcoCoding:
+    is_a: Coding
+    class_uri: warp:EcoCoding
+    description: "A SEPIO Coding (a code or label from some system) with WARP IRIs for its slots."
+    slot_usage:
+      code:
+        slot_uri: warp:code
+      label:
+        slot_uri: warp:label
+      system:
+        slot_uri: warp:system
+      systemVersion:
+        slot_uri: warp:systemVersion
+
+  # ---------------------------------------------------------------------------
+  # Value types shared by several predicate groups
+  # Units are verified UO CURIEs, QUDT where UO has no term, or TODO:
+  # placeholders: never bare tokens (decision D18, docs/values.md).
+  # ---------------------------------------------------------------------------
+
+  Quantity:
+    class_uri: warp:Quantity
+    description: >-
+      A number with a unit. Where a proposal sketch says QuantityValue, it
+      means this (R1). A count of things (46 protected areas) is a Count, not
+      a Quantity: "protected area" is not a unit.
+    attributes:
+      value:
+        range: float
+        required: true
+      unit:
+        description: >-
+          The unit, as a CURIE: UO (numeric IDs: UO:0000008, never
+          UO:hectare), QUDT (unit:), a scale scheme (scale:) when the number
+          is a position on a source's scale, or a TODO: placeholder.
+        range: uriorcurie
+        required: true
+        annotations:
+          warp_allowed_prefixes: "UO unit scale TODO"
+
+  QuantityRange:
+    class_uri: warp:QuantityRange
+    description: >-
+      An interval with a unit. Either end may be absent (one-sided ranges:
+      "tolerates pH above 5.5"), but not both. When both are present, min is
+      at most max (checked by scripts/check_values.py).
+    attributes:
+      min:
+        range: float
+      max:
+        range: float
+      unit:
+        description: "As for Quantity.unit."
+        range: uriorcurie
+        required: true
+        annotations:
+          warp_allowed_prefixes: "UO unit scale TODO"
+    any_of:
+      - slot_conditions:
+          min:
+            required: true
+      - slot_conditions:
+          max:
+            required: true
+
+  ScaledValue:
+    class_uri: warp:ScaledValue
+    description: >-
+      A value on a source's own ordinal or categorical scale: DFO's
+      High / Medium / Low priority, a USDA tolerance rating, a wetland
+      indicator status. `value` is the source's wording, verbatim. `scale` is
+      the IRI of a SKOS scheme in vocab/scales.yaml (scale:dfo-recovery-priority,
+      never the bare token), and `concept` the IRI of the value inside it, so
+      "medium" can be compared with "high" without a script knowing the
+      order (decision D18). A practitioner's "wet" is on no scale: it has a
+      value and nothing else.
+    attributes:
+      value:
+        description: "The source's own wording, verbatim."
+        required: true
+      scale:
+        description: "IRI of the scale's SKOS concept scheme (vocab/scales.yaml)."
+        range: uriorcurie
+        annotations:
+          warp_allowed_prefixes: "scale TODO"
+      concept:
+        description: >-
+          IRI of the value inside the scheme. Optional only while a scheme is
+          still unregistered.
+        range: uriorcurie
+        annotations:
+          warp_allowed_prefixes: "scale TODO"
+
+  CurvePoint:
+    class_uri: warp:CurvePoint
+    description: >-
+      One breakpoint of a habitat suitability response curve: the value of
+      the variable (in the unit of the statement's range) and the suitability
+      there, between 0 and 1.
+    attributes:
+      x:
+        range: float
+        required: true
+      suitability:
+        range: float
+        required: true
+        minimum_value: 0
+        maximum_value: 1
+
+  Count:
+    class_uri: warp:Count
+    description: >-
+      A number of things, where a unit would be wrong: 46 protected areas,
+      12 culverts. `entity` is a CURIE for the kind of thing counted.
+    attributes:
+      value:
+        range: integer
+        required: true
+        minimum_value: 0
+      entity:
+        description: "The kind of thing counted, as a CURIE (a node, an ENVO term, or a TODO: placeholder)."
+        range: uriorcurie
+        required: true
+
+  Period:
+    class_uri: warp:Period
+    description: >-
+      A calendar period. CAMO's TemporalExtent has no start or end, so this is
+      a separate class (R2). Start and end are ISO 8601 strings at whatever
+      granularity the source gives: a year (2023), a year and month (2024-05)
+      or a full date (2026-03-31). An absent end means open or ongoing.
+      Exporters write normalized xsd:dateTime bounds beside the verbatim
+      strings; xsd:date, xsd:gYear and xsd:duration never reach a generated
+      file, because they are not in the OWL 2 datatype map (decision D19).
+      Overlap is computed on the bounds (scripts/warp_time.py), never by
+      comparing strings.
+    attributes:
+      start:
+        description: "ISO 8601 year, year-month or date."
+        required: true
+        pattern: "^[0-9]{4}(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[01]))?)?$"
+      end:
+        description: "ISO 8601 year, year-month or date. Absent if open or ongoing."
+        pattern: "^[0-9]{4}(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[01]))?)?$"

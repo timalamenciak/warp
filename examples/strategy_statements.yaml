@@ -1,0 +1,168 @@
+# Management strategy nodes: worked example.
+#
+# Strategies are ordered bundles of action nodes. Annotators give each one a
+# local node ID; scripts/derive_strategies.py derives its canonical node
+# (warp-strategy-identity/1) and rewrites references, before propositions are
+# derived. See docs/node-templates.md.
+#
+# ILLUSTRATIVE ONLY. Strategies, sources and figures are placeholders from
+# the proposal (docs/proposals/warp-proposals-0.4.html, section 6). Action
+# terms are TODO: placeholders until ELMO terms are verified (decision D20).
+
+id: warp:statementset/strategy-example
+profile_version: 0.7.0
+
+agents:
+  - id: org:land-trust-a
+    type: EcoAgent
+    name: "TODO: a land trust (source A)"
+    subtype: organization
+    agent_kind: organization
+  - id: org:consultancy-b
+    type: EcoAgent
+    name: "TODO: a restoration consultancy (source B)"
+    subtype: organization
+    agent_kind: organization
+  - id: orcid:0000-0000-0000-0000
+    type: EcoAgent
+    name: "TODO: annotator"
+    subtype: person
+    agent_kind: researcher
+
+documents:
+  - id: doc:project-report-x
+    type: EcoDocument
+    title: "TODO: project report X (source A)"
+  - id: doc:practice-note-b
+    type: EcoDocument
+    title: "TODO: practice note (source B)"
+
+nodes:
+  # Component actions. Ordinary action nodes, each with its own template
+  # filling (TODO: placeholders for the ELMO action terms).
+  - {id: node:earthworks_recontouring, name: Earthworks recontouring, entity_type: management_intervention, entity_term: "TODO: earthworks"}
+  - {id: node:hand_seeding_native_mix_a, name: Hand seeding of native mix A, entity_type: management_intervention, entity_term: "TODO: hand seeding"}
+  - {id: node:mowing_weed_control, name: Mowing for weed control, entity_type: management_intervention, entity_term: "TODO: mowing"}
+  - {id: node:fill_removal, name: Fill removal, entity_type: management_intervention, entity_term: "TODO: fill removal"}
+  - {id: node:planting_plugs_sedge_meadow, name: Planting sedge meadow plugs, entity_type: management_intervention, entity_term: "TODO: plug planting"}
+  - {id: node:spot_herbicide_phalaris, name: Spot herbicide on reed canary grass, entity_type: management_intervention, entity_term: "TODO: spot spraying"}
+  - {id: node:removal_of_invasive_shrubs, name: Removal of invasive shrubs, entity_type: management_intervention, entity_term: "TODO: shrub removal"}
+  # Strategies, under the local IDs their sources' annotators gave them.
+  - {id: node:earthworks-seed-mow, name: Earthworks then seeding then mowing, entity_type: management_intervention, entity_term: "TODO: strategy"}
+  - {id: node:recontour-seed-mow-b, name: Recontour and seed then mow (source B), entity_type: management_intervention, entity_term: "TODO: strategy"}
+  - {id: node:fill-removal-plugs-spot-spray, name: Fill removal and plug planting with spot spraying if needed, entity_type: management_intervention, entity_term: "TODO: strategy"}
+  - {id: node:standard-site-preparation, name: Standard site preparation, entity_type: management_intervention, entity_term: "TODO: strategy"}
+  - {id: node:site-preparation-then-seeding, name: Standard site preparation then seeding, entity_type: management_intervention, entity_term: "TODO: strategy"}
+  # An outcome variable the causal statements are about.
+  - {id: node:native_plant_cover, name: Native plant cover, entity_type: environmental_variable, entity_term: "TODO: native plant cover"}
+
+node_definitions:
+  - node: node:earthworks_recontouring
+    template: intervention
+    fillers:
+      - {var: action, value: "TODO:earthworks", label: earthworks}
+      - {var: target, value: "ENVO:00001998", label: soil}
+  - node: node:hand_seeding_native_mix_a
+    template: intervention_with_method
+    fillers:
+      - {var: action, value: "TODO:hand_seeding", label: hand seeding}
+      - {var: target, value: "ENVO:00001998", label: soil}
+      - {var: method, value: "TODO:native_seed_mix_a", label: native seed mix A}
+  - node: node:mowing_weed_control
+    template: intervention
+    fillers:
+      - {var: action, value: "TODO:mowing", label: mowing}
+      - {var: target, value: "TODO:weedy_vegetation", label: weedy vegetation}
+
+strategy_definitions:
+
+  # Source A, as in the proposal: earthworks, then hand seeding two weeks
+  # later, then mowing yearly for three years.
+  - node: node:earthworks-seed-mow
+    template: management_strategy
+    specified_in: [doc:project-report-x]
+    components:
+      - {action: node:earthworks_recontouring, step: 1, role: site_preparation}
+      - {action: node:hand_seeding_native_mix_a, step: 2, lag: P2W, role: establishment}
+      - {action: node:mowing_weed_control, step: 3, repeat: {every: P1Y, times: 3}, role: follow_up}
+
+  # Source B describes the same strategy, flat, under another name and local
+  # ID, with a different lag and no roles. Same required (step, action)
+  # pairs, so it merges with source A's.
+  - node: node:recontour-seed-mow-b
+    template: management_strategy
+    specified_in: [doc:practice-note-b]
+    components:
+      - {action: node:earthworks_recontouring, step: 1}
+      - {action: node:hand_seeding_native_mix_a, step: 2, lag: P3W}
+      - {action: node:mowing_weed_control, step: 3, repeat: {every: P1Y, until: "native cover exceeds 50%"}}
+
+  # Parallel and optional parts: fill removal and plug planting in the same
+  # season (shared step 1); spot spraying only if reed canary grass returns.
+  # Identity key: [(1, fill removal), (1, plug planting)].
+  - node: node:fill-removal-plugs-spot-spray
+    template: management_strategy
+    components:
+      - {action: node:fill_removal, step: 1, role: site_preparation}
+      - {action: node:planting_plugs_sedge_meadow, step: 1, role: establishment}
+      - {action: node:spot_herbicide_phalaris, step: 2, optional: true, role: maintenance}
+
+  # A "standard site preparation" strategy, nested in another strategy.
+  - node: node:standard-site-preparation
+    template: management_strategy
+    components:
+      - {action: node:removal_of_invasive_shrubs, step: 1, role: site_preparation}
+      - {action: node:earthworks_recontouring, step: 2, role: site_preparation}
+  # Flattened: shrub removal (1), earthworks (2), hand seeding (3).
+  - node: node:site-preparation-then-seeding
+    template: management_strategy
+    components:
+      - {action: node:standard-site-preparation, step: 1}
+      - {action: node:hand_seeding_native_mix_a, step: 2, role: establishment}
+
+# Two sources report the same outcome for their own description of the same
+# strategy. After strategy derivation both subjects are the canonical node,
+# so they derive one causal proposition with two statements.
+causal_statements:
+  - id: stmt:strategy-a-native-cover
+    type: CausalStatement
+    subject: node:earthworks-seed-mow
+    predicate: causes
+    object: node:native_plant_cover
+    scope: assertional
+    modality: observed
+    causal_language: associational
+    statementText: "TODO: after earthworks, seeding and three years of mowing, native cover increased on the project site."
+    contributions:
+      - {id: warp:contrib/strategy-a-native-cover-author, type: EcoContribution, role: author, contributor: org:land-trust-a}
+    recordMetadata:
+      contributions:
+        - {id: warp:contrib/strategy-a-native-cover-annotation, type: EcoContribution, role: annotator, contributor: "orcid:0000-0000-0000-0000"}
+    reportedIn: [doc:project-report-x]
+    hasEvidenceLines:
+      - id: warp:el/strategy-a-native-cover-1
+        type: EcoEvidenceLine
+        evidence_type: case_study
+        directionOfEvidenceProvided: supports
+        strengthOfEvidenceProvided: not_assessed
+  - id: stmt:strategy-b-native-cover
+    type: CausalStatement
+    subject: node:recontour-seed-mow-b
+    predicate: causes
+    object: node:native_plant_cover
+    scope: assertional
+    modality: observed
+    causal_language: associational
+    statementText: "TODO: recontouring and seeding, then mowing, increased native cover."
+    contributions:
+      - {id: warp:contrib/strategy-b-native-cover-author, type: EcoContribution, role: author, contributor: org:consultancy-b}
+    recordMetadata:
+      contributions:
+        - {id: warp:contrib/strategy-b-native-cover-annotation, type: EcoContribution, role: annotator, contributor: "orcid:0000-0000-0000-0000"}
+    reportedIn: [doc:practice-note-b]
+    hasEvidenceLines:
+      - id: warp:el/strategy-b-native-cover-1
+        type: EcoEvidenceLine
+        evidence_type: practitioner_experience
+        directionOfEvidenceProvided: supports
+        strengthOfEvidenceProvided: not_assessed

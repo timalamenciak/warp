@@ -1,0 +1,12 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix warp: <https://w3id.org/ecoweaver/warp/> .
+
+warp:derived_from a owl:AnnotationProperty .
+
+<https://w3id.org/ecoweaver/warp/ontology/axioms> a owl:Ontology ;
+    rdfs:label "WARP projected axioms" ;
+    rdfs:comment "Class axioms projected from WARP propositions that passed the projection gate (scope universal, not negated, every statement observed, supported by a synthesis assessment). Each axiom is annotated with warp:derived_from <proposition>." ;
+    owl:imports <https://w3id.org/ecoweaver/warp/ontology/nodes> ;
+    owl:versionInfo "warp-projection-gate/1" .
+

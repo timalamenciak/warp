@@ -165,7 +165,7 @@
     <div class="table-wrap"><table>
       <thead><tr><th>CAMO <code>CausalEdge</code></th><th>WARP <code>CausalStatement</code></th><th>Note</th></tr></thead>
       <tbody>
-        <tr><td><code>id</code></td><td><code>id</code></td><td>Now an identifier (<code>warp:statement/…</code>). Keep the CAMO id in <code>camo_edge_id</code> when migrating.</td></tr>
+        <tr><td><code>id</code></td><td><code>id</code></td><td>An identifier (<code>warp:statement/…</code>). Keep the CAMO id in <code>camo_edge_id</code> when migrating.</td></tr>
         <tr><td><code>subject</code>, <code>predicate</code>, <code>object</code>, <code>negated</code></td><td>same</td><td></td></tr>
         <tr><td><code>causal_language</code></td><td>same</td><td>Required in CAMO, <strong>optional</strong> in WARP. Fill it anyway.</td></tr>
         <tr><td><code>original_sentence</code></td><td><code>original_text</code></td><td>Renamed: sources can be notebook lines or transcripts, not only sentences.</td></tr>
@@ -219,7 +219,7 @@
     </table></div>
     <p><strong>Why it matters more now:</strong> propositions are grouped by exact node id. "Increased X" and "decreased X" as separate nodes would put a positive finding and a negative finding in different propositions, so a synthesis would never see them disagree. With one node, they meet.</p>
     <h3>Node templates</h3>
-    <p>New in WARP: a node can also have a <strong>node definition</strong> saying which template it fills and with which ontology terms. That turns it into an OWL class with a generated label. Three templates exist (<code>population_of_taxon</code>, <code>quality_of_process_of_population</code>, <code>intervention_involving_taxon</code>).</p>
+    <p>New in WARP: a node can also have a <strong>node definition</strong> saying which template it fills and with which ontology terms. That turns it into an OWL class with a generated label. There are twenty-two such templates (<code>population_of_taxon</code>, <code>quality_of_process_of_population</code>, <code>intervention_involving_taxon</code>, <code>quality_of_environmental_material</code> and more), plus two filled differently: <code>management_strategy</code>, an ordered bundle of actions, and <code>site</code>, one particular piece of ground.</p>
 <pre>node_definitions:
   - node: node:rate_of_population_growth_of_alliaria_petiolata
     template: quality_of_process_of_population
@@ -309,7 +309,10 @@ hasEvidenceLines:
       <dt><code>statementText</code></dt><dd>A normalized rendering of the claim, alongside the verbatim <code>original_text</code>.</dd>
       <dt><code>dateAuthored</code></dt><dd>When the author made the statement (publication year), distinct from when you recorded it.</dd>
       <dt>Open questions</dt><dd>Propositions written before any statement exists, e.g. an empty evidence gap map cell. Your statement may turn one into an asserted proposition automatically.</dd>
-      <dt>Interaction statements</dt><dd>A second statement group for biotic interactions (<code>eats</code>, <code>pollinates</code>, <code>parasite_of</code>, <code>biotically_interacts_with</code>, from RO), using population nodes and the sign of the effect on each partner. Use these for "deer eat X" rather than forcing it into a causal predicate.</dd>
+      <dt>Interaction statements</dt><dd>A statement group for biotic interactions (<code>eats</code>, <code>pollinates</code>, <code>parasite_of</code>, <code>biotically_interacts_with</code>, from RO), using population nodes and the sign of the effect on each partner. Use these for "deer eat X" rather than forcing it into a causal predicate.</dd>
+      <dt>Other statement groups</dt><dd>Sentences that aren't about what changes what have their own groups: <strong>recommendation</strong> (do, avoid, consider), <strong>tolerance</strong> (ranges, optima, habitat), <strong>cost</strong> (what an action took), <strong>implementation</strong> (work carried out at a site) and <strong>criteria</strong> (a site or project meets a named definition). A sentence like "avoid stocking sportfish, because they reduce Mountain Sucker" is two statements, a recommendation and a causal statement, linked. The one-question test for each is in <code>docs/annotation-tests.md</code>.</dd>
+      <dt><code>modality</code></dt><dd>Whether the statement reports what was observed, infers it, or forecasts it (<code>observed</code>, <code>inferred</code>, <code>anticipated</code>). Not hedging: a confident prediction is still <code>anticipated</code>.</dd>
+      <dt><code>place</code></dt><dd>The region a statement is about, as an IRI (Wikidata, a gazetteer, ISO 3166-2). <code>ecosystem_context</code> stays the IUCN functional group: "Florida" goes in <code>place</code>, never in <code>ecosystem_context</code>.</dd>
       <dt><code>care</code></dt><dd>Consent, community, access level and Local Contexts labels. Required when a statement's author is an Indigenous knowledge holder or community member.</dd>
       <dt>Practitioner statements</dt><dd>Field notebooks, interviews and practitioner reports can be annotated as statements with the practitioner as author, not only as evidence for published claims.</dd>
       <dt><code>EcoStudyResult</code></dt><dd>A summary of one study arm (mean, SD, n) about one node, which evidence lines can point at.</dd>
@@ -338,7 +341,8 @@ hasEvidenceLines:
       <li>Write <strong>one evidence line per evidence type</strong>, pairing each with its object, and give it a direction (and a strength, or <code>not_assessed</code>).</li>
       <li>Keep filling <code>causal_language</code> and <code>philosophical_accounts</code>, though WARP doesn't force you to.</li>
       <li>Never fill <code>proposition</code> or <code>targetProposition</code>.</li>
-      <li>Biotic interactions go in <strong>interaction statements</strong>.</li>
+      <li>Biotic interactions go in <strong>interaction statements</strong>; advice, tolerances, costs, work done at sites and verdicts against definitions go in their own groups.</li>
+      <li>Regions go in <strong><code>place</code></strong>, not <code>ecosystem_context</code>.</li>
       <li>Statements by Indigenous knowledge holders or community members need <strong><code>care</code></strong>.</li>
     </ul>
   </section>
@@ -360,6 +364,6 @@ hasEvidenceLines:
   </section>
 </main>
 </div>
-<footer>WARP 0.5.0 · For CAMO annotators · <a href="basic.html">Contributor</a> · <a href="advanced.html">Advanced</a> · <a href="mechanic.html">Mechanic</a></footer>
+<footer>WARP 0.7.0 · For CAMO annotators · <a href="basic.html">Contributor</a> · <a href="advanced.html">Advanced</a> · <a href="mechanic.html">Mechanic</a></footer>
 </body>
 </html>

@@ -3,6 +3,13 @@
 #   "The tidal enhancement project therefore resulted in a larval reduction of
 #    approximately 98.7%."  (Results, p. 392)
 #
+# HISTORICAL: the hand-written specification for scripts/export_rdf.py, kept
+# as it was written for 0.5.0 (with the TODO: placeholder updated). The
+# generated rendering is project/statements.ttl (make rdf), which differs on
+# purpose: WARP IRIs instead of sepio: (Q13), enum values as IRIs instead of
+# literals (D14), and named individuals instead of blank nodes (D11). See
+# docs/rdf-owl.md.
+#
 # Same content as kramer1995_statements.derived.yaml (which validates against
 # the profile), written out by hand because linkml-convert cannot yet compile
 # the schema. Property IRIs follow project/warp.owl.ttl: warp: for profile
@@ -15,7 +22,7 @@
 @prefix causal_mosaic: <https://w3id.org/causal-mosaic/> .
 @prefix node:          <https://w3id.org/causal-mosaic/node/> .
 @prefix orcid:         <https://orcid.org/> .
-@prefix ELMO:          <https://w3id.org/elmo/elmo_> .
+@prefix TODO:          <https://w3id.org/ecoweaver/warp/TODO/> .
 @prefix ENVO:          <http://purl.obolibrary.org/obo/ENVO_> .
 @prefix NCBITaxon:     <http://purl.obolibrary.org/obo/NCBITaxon_> .
 @prefix PATO:          <http://purl.obolibrary.org/obo/PATO_> .
@@ -40,7 +47,7 @@ node:tidal_restoration_of_marsh a owl:Class ;
     obo:IAO_0000115 "A tidal restoration process acting on marsh." ;
     dcterms:conformsTo <https://w3id.org/ecoweaver/patterns/intervention.yaml> ;
     owl:equivalentClass [ a owl:Class ;
-        owl:intersectionOf ( ELMO:TODO_tidal_restoration      # TODO: ELMO action term
+        owl:intersectionOf ( TODO:tidal_restoration           # TODO: ELMO action term
                              [ a owl:Restriction ;
                                owl:onProperty RO:0000057 ;     # has participant
                                owl:someValuesFrom ENVO:00000035 ] ) ] .   # marsh

@@ -1,0 +1,562 @@
+# How a whole statement is said in English (Rosetta Statements).
+#
+# Read by scripts/render_statements.py (rule warp-rosetta/2), which writes
+# project/reports/statements.md and, with --check, fails when anything a
+# statement can record has no place here. docs/rosetta.md explains the format.
+#
+# Entries are by class and are inherited along is_a, nearest class first, so
+# SEPIO's generic slots are settled once on Entity and InformationEntity. A
+# class (or an ancestor) must account for every slot it has, in one of:
+#
+#   template   a string, or a list of clauses joined by `sep` (default ", ")
+#              and placed in `frame` at {*}; how a value of the class reads
+#   variants   other templates, picked with {slot:variant}
+#   label      how a reference to an object of the class reads; a list gives
+#              alternatives, the first that renders wins (label_lower_first:
+#              true lowers its first letter, for text that starts a sentence)
+#   sentence   statements: the clauses of the sentence; @group is replaced by
+#              the predicate group's own `clauses`
+#   record     statements: the record line under the sentence
+#   quoted     shown verbatim next to the sentence (the source's own words)
+#   elsewhere  shown in the report outside the sentence, with the reason
+#   unused     WARP does not use the slot; a value in it is an error
+#   claim      rendered inside the predicate's own words ({@claim})
+#
+# Template syntax: {slot} is a value; {slot[field=value]} keeps the list
+# items whose field has that value (!= for the others); {slot:variant} uses
+# a named template of the value's class; {slot|text} gives text for when the
+# slot has no value. [...] is dropped unless every placeholder directly in
+# it has a value; a clause is dropped the same way. {@claim} is subject,
+# predicate and object in the predicate's `rosetta_template` words (schema),
+# negated or past as `claim` below says.
+#
+# Words for values: `phrases` (per class, by slot) then `enum_phrases` (by
+# enum), else the permissible value's title or preferred_label annotation,
+# else the value with underscores as spaces. References read by their
+# class's `label`, or the term register / scale label, else as the CURIE.
+
+version: warp-rosetta/2
+
+# Classes rendered for review besides the statement classes, which are found
+# from the group registry.
+roots: [EcoStudyResult]
+
+claim:
+  when:
+    - {slot: negated, equals: true, form: negative}
+    - {slot: direction, equals: disputes, form: negative}
+    - {slot: direction, equals: neutral, frame: "it is left open whether {claim}"}
+  # A statement about one case reports something that happened.
+  past_tense:
+    when: {scope: [assertional]}
+    unless: {modality: [anticipated]}
+  negation_fallback: "it is not the case that {claim}"
+
+# The first word after {subject} in a predicate's rosetta_template: its base
+# form (for "does not ...") and its past. "is" and "was" are built in.
+verbs:
+  causes: {base: cause, past: caused}
+  contributes: {base: contribute, past: contributed}
+  prevents: {base: prevent, past: prevented}
+  enables: {base: enable, past: enabled}
+  disrupts: {base: disrupt, past: disrupted}
+  regulates: {base: regulate, past: regulated}
+  mediates: {base: mediate, past: mediated}
+  moderates: {base: moderate, past: moderated}
+  precedes: {base: precede, past: preceded}
+  interacts: {base: interact, past: interacted}
+  eats: {base: eat, past: ate}
+  pollinates: {base: pollinate, past: pollinated}
+  tolerates: {base: tolerate, past: tolerated}
+  prefers: {base: prefer, past: preferred}
+  has: {base: have, past: had}
+  incurs: {base: incur, past: incurred}
+  costs: {base: cost, past: cost}
+  qualifies: {base: qualify, past: qualified}
+
+# Whole forms for a predicate, by enum value name: present, negative, past,
+# past_negative. Missing forms are built from `verbs`.
+predicates:
+  suggested_to:
+    present: "{guidance} {subject}, with respect to {object}"
+
+enum_phrases:
+  FeatureAssertionEnum:
+    explicitly_asserted: stated
+    implicitly_assumed: assumed
+    explicitly_denied: denied
+    not_addressed: not addressed
+  WarpEvidenceTypeEnum:
+    not_stated: unstated
+    expert_judgment: expert-judgment
+    practitioner_experience: practitioner-experience
+    indigenous_knowledge: Indigenous-knowledge
+  EvidenceStrengthEnum:
+    not_assessed: of unassessed strength
+  EvidenceDirectionEnum:
+    neutral: is neutral on
+
+classes:
+
+  # --- SEPIO generics ---------------------------------------------------------
+
+  Entity:
+    elsewhere:
+      id: identifier
+      type: class name
+    unused: [identifiers, label, alternativeLabels, description, extensions]
+
+  InformationEntity:
+    unused: [isAbout, contributions, dateAuthored, specifiedBy, supportingMethods,
+             supportingMethodTypes, derivedFrom, reportedIn, sources, informationQuality,
+             recordMetadata]
+
+  Statement:
+    unused: [qualifier, strength, score, subjectClassification, hasEvidenceOfTypes,
+             hasEvidence, hasEvidenceFromSources]
+
+  Coding:
+    template: ["{system}", "version {systemVersion}", "code {code}"]
+    frame: "{label|coding}[ ({*})]"
+
+  Contribution:
+    template: "{contributor}[ on {date}]"
+    unused: [activityType, contributionMadeTo, subtype, performedBy, specifiedBy, input, output]
+
+  Agent:
+    template: "{name}[ ({subtype})]"
+
+  RecordMetadata:
+    template:
+      - "annotated by {contributions[role=annotator]:agent}"
+      - "reviewed by {contributions[role=reviewer]:agent}"
+      - "record created {dateRecordCreated}"
+      - "record {recordIdentifier}[ version {recordVersion}]"
+      - "derived from record {derivedFromRecord}"
+    sep: "; "
+
+  # --- statements ---------------------------------------------------------------
+
+  EcoStatement:
+    sentence:
+      - "according to {contributions[role=author]:agent}[ ({dateAuthored})]"
+      - "as reported in {reportedIn}"
+      - "[{modality} ]{scope} {@claim}"
+      - "@group"
+      - "in {place}"
+      - "in {ecosystem_context} ecosystems"
+      - "{context}"
+      - "{temporal_extent}"
+      - "as specified in {specified_in}"
+      - "on the basis of {hasEvidenceLines}"
+      - "with contributions by {contributions[role!=author]}"
+      - "{care}"
+    record:
+      - "{recordMetadata}"
+      - "proposition: {proposition}"
+    quoted: [statementText, original_text, source_spans]
+    phrases:
+      modality:
+        observed: it was observed that
+        inferred: it was inferred that
+        anticipated: it is expected that
+      scope:
+        assertional: in a particular case
+        contingent: under some conditions
+        prototypical: typically
+        universal: always
+        unclear: in an unclear scope
+    label: "“{statementText}”"
+
+  CausalStatement:
+    clauses:
+      - "{predicate_qualifiers}"
+      - "at a dose of {dose}"
+      - "at {dose_level} driver level"
+      - "{comparator}"
+      - "{causal_language}"
+    elsewhere:
+      camo_edge_id: the CAMO edge this statement was imported from
+    phrases:
+      causal_language:
+        no_relationship: worded as finding no relationship
+        associational: worded as an association
+        uncertain_causal: worded as possibly causal
+        direct_causal: worded as directly causal
+
+  InteractionStatement:
+    clauses: ["{predicate_qualifiers}"]
+
+  RecommendationStatement:
+    clauses:
+      - "{predicate_qualifiers}"
+      - "justified by the claim that {justified_by}"
+
+  ToleranceStatement:
+    clauses:
+      - "{predicate_qualifiers}"
+      - "because {explained_by}"
+
+  CostStatement:
+    clauses:
+      - "{predicate_qualifiers}"
+      - "{period}"
+      - "starting from {starting_conditions}"
+      - "borne by {cost_bearer}"
+      - "with reported outcome {outcome_reported}"
+      - "transferred from {transferred_from}[ by rule {transfer_rule}][ ({transfer_steps})]"
+
+  ImplementationStatement:
+    clauses: ["{predicate_qualifiers}"]
+
+  CriteriaStatement:
+    clauses: ["{predicate_qualifiers}"]
+
+  # --- predicate qualifiers -----------------------------------------------------
+
+  CausalPredicateQualifiers:
+    template:
+      - "{effect_strength}"
+      - "{causal_direction}"
+      - "{mediation}"
+      - "{moderation}"
+      - "read as {philosophical_accounts} causation"
+      - "necessity {necessity}"
+      - "sufficiency {sufficiency}"
+      - "temporal order {temporal_ordering}"
+      - "specificity {specificity}"
+      - "stability {stability}"
+      - "proportionality {proportionality}"
+      - "{determinism}"
+      - "{proximate_distal}"
+      - "{contributing_sole}"
+      - "{reversibility}"
+    phrases:
+      determinism:
+        deterministic_process: as a deterministic process
+        indeterministic_process: as an indeterministic process
+        epistemic_probability_only: probabilistic only for want of knowledge
+        ambiguous: ambiguous as to determinism
+        not_addressed: determinism not addressed
+      proximate_distal:
+        proximate: as a proximate cause
+        distal: as a distal cause
+        both_specified: as both proximate and distal causes
+        not_addressed: proximate or distal not addressed
+      contributing_sole:
+        sole_cause: as the sole cause
+        contributing_cause: as a contributing cause
+        not_addressed: sole or contributing cause not addressed
+      reversibility:
+        reversible: reversibly
+        irreversible: irreversibly
+        partially_reversible: partly reversibly
+        hysteresis: with hysteresis
+        not_addressed: reversibility not addressed
+
+  DirectionAnnotation:
+    template: "{status}[ (shown by {evidence_for_direction} evidence)]"
+    phrases:
+      status:
+        asserted: the direction of causation asserted
+        uncertain: the direction of causation uncertain
+        bidirectional: causation running both ways
+        not_addressed: the direction of causation not addressed
+
+  StrengthAnnotation:
+    template:
+      - "by {quantitative_value}"
+      - "measured as {effect_metric}"
+      - "interval lower bound {interval_lower}"
+      - "interval upper bound {interval_upper}"
+      - "interval level {interval_level}"
+      - "interval type {interval_type}"
+      - "a {qualitative_descriptor} effect"
+      - "{dose_response}"
+      - "a {dose_response_shape} dose-response shape"
+      - "statistical significance: {significance}"
+      - "p-value {p_value}"
+      - "significance threshold {alpha}"
+      - "analysed using {analysis_method}"
+    frame: "{*|effect size}[ ({status})]"
+    elsewhere:
+      quantitative_numeric: the number in quantitative_value, for computation
+    phrases:
+      dose_response:
+        "true": with a dose-response relationship
+        "false": with no dose-response relationship
+      qualitative_descriptor:
+        not_specified: unspecified
+
+  MediationAnnotation:
+    template: ["mediated by {mediator_node_ids}", "via {pathway_description}"]
+    frame: "{*|mediation}[ ({status})]"
+
+  ModerationAnnotation:
+    template: ["moderated by {moderator_node_ids}", "{interaction_type} moderation"]
+    frame: "{*|moderation}[ ({status})]"
+
+  ComparatorAnnotation:
+    template:
+      - "{comparator_description}"
+      - "{comparator_node_id}"
+      - "at a dose of {comparator_dose}"
+      - "at {comparator_dose_level} driver level"
+    frame: "compared with {comparator_type|a comparator}[: {*}][ ({status})]"
+    phrases:
+      comparator_type:
+        untreated_control: an untreated control
+        reference_undisturbed: an undisturbed reference
+        pre_treatment_baseline: a pre-treatment baseline
+        alternative_treatment: an alternative treatment
+        alternative_dose_level: an alternative dose level
+        passive_management_arm: a passive-management arm
+        spatial_or_temporal_control: a spatial or temporal control
+        not_reported: an unreported comparator
+        not_applicable: no comparator (not applicable)
+
+  InteractionQualifiers:
+    template:
+      - "the effect on the subject being {effect_on_subject}"
+      - "the effect on the object being {effect_on_object}"
+    phrases:
+      effect_on_subject: {not_reported: not reported}
+      effect_on_object: {not_reported: not reported}
+
+  RecommendationQualifiers:
+    claim: [guidance]
+    template:
+      - "{deontic_force}"
+      - "priority {priority}"
+      - "timing of influence {timing_of_influence}"
+      - "{contribution}"
+    phrases:
+      guidance:
+        do: one should carry out
+        avoid: one should avoid
+        consider: one should consider
+      deontic_force:
+        required: as a requirement
+        recommended: as a recommendation
+        suggested: as a suggestion
+        optional: as an option
+      contribution:
+        direct: contributing directly
+        precursor: as a precursor
+
+  ToleranceQualifiers:
+    template:
+      - "{range}"
+      - "with optimum {optimum}"
+      - "at class value {class_value}"
+      - "judged by {response}"
+      - "with suitability {response_curve}"
+
+  CostQualifiers:
+    template:
+      - "amounting to {amount}"
+      - "taking {effort}"
+      - "with volunteer effort of {volunteer_effort}"
+      - "at {ratio}"
+      - "covering {includes_categories} costs"
+      - "{cost_behaviour} cost"
+      - "over {scale}"
+      - "across {count}"
+      - "at intensity {intensity}"
+      - "in the {phase} phase"
+      - "for the {covers_roles} components"
+      - "reported at {reporting_level} level"
+      - "as {cost_basis}"
+    phrases:
+      includes_categories:
+        unknown: unspecified
+      cost_basis:
+        actual_expenditure: actual expenditure
+        budget_allocation: a budget allocation
+        estimate: an estimate
+        quote: a quote
+        payment_rate: a payment rate
+
+  ImplementationQualifiers:
+    template:
+      - "{period}"
+      - "status {status}"
+      - "as reported on {reported_on}"
+      - "treating {area_treated}"
+      - "implemented by {implemented_by}"
+      - "funded by {funded_by}"
+      - "under {external_ids}"
+
+  CriteriaQualifiers:
+    template:
+      - "under {criteria_set}"
+      - "{assessed_period}"
+      - "by {assessment_method}"
+
+  # --- shared value classes ---------------------------------------------------------
+
+  ContextAnnotation:
+    template:
+      - "{geographic_scope}"
+      - "{temporal_scope}"
+      - "{ecosystem_scope} ecosystems"
+      - "conditions: {scope_conditions}"
+    sep: "; "
+    frame: "in the [{status} ]context of {*}"
+
+  TemporalExtent:
+    template:
+      - "lasting {duration_months} months"
+      - "{duration_text}"
+      - "with a lag of {lag_months} months"
+      - "measured {time_since_intervention_months} months after intervention"
+      - "measurement time: {time_since_intervention_text}"
+      - "observed at {observation_grain}"
+      - "in {observation_seasons}"
+    sep: "; "
+    frame: "over time: {*}"
+
+  QuantityValue:
+    template:
+      - "{numeric_value}"
+      - "minimum {minimum_value}"
+      - "maximum {maximum_value}"
+      - "{unit}"
+      - "{unit_text}"
+      - "of {counted_entity}"
+    sep: " "
+    quoted: [verbatim]
+
+  EntityReference:
+    template: "{entity_term}[ ({entity_type})][ at {life_stage} stage][ ({life_stage_term})]"
+
+  TextSpan:
+    template:
+      - "{section}"
+      - "sentence {sentence_id}"
+      - "paragraph {paragraph_id}"
+      - "characters {start_char} to {end_char}"
+    frame: "“{text}”[ ({*})]"
+
+  CareMetadata:
+    template:
+      - "knowledge held by {knowledge_holders}"
+      - "community: {community}"
+      - "consent: {consent_reference}"
+      - "{access_level}"
+      - "Local Contexts labels {local_contexts_labels}"
+      - "protocols: {protocols}"
+    sep: "; "
+    frame: "under care conditions ({*})"
+    phrases:
+      access_level:
+        open: open access
+        attribution_required: attribution required
+        community_restricted: restricted to the community
+        restricted: restricted access
+
+  EcoEvidenceLine:
+    template: >-
+      {evidence_type} evidence[ ({subtype})][ about {evidence_object}][ that
+      {directionOfEvidenceProvided} the statement][ ({strengthOfEvidenceProvided})][,
+      score {scoreOfEvidenceProvided}][, from {evidence_item_refs}][, assessed by
+      {contributions[role=evidence_assessor]:agent}][, with contributions by
+      {contributions[role!=evidence_assessor]}]
+    elsewhere:
+      targetProposition: set by derivation; the statement's own proposition
+    unused: [hasEvidenceItems, evidenceItemSources]
+    phrases:
+      evidence_object:
+        correlation: a correlation
+        mechanism: a mechanism
+        both: both a correlation and a mechanism
+
+  EcoContribution:
+    template: "{contributor} as {role}[ on {date}]"
+    variants:
+      agent: "{contributor}[ on {date}]"
+
+  Quantity:
+    template: "{value}[ {unit}]"
+
+  QuantityRange:
+    template: "[from {min}][ to {max}][ {unit}]"
+
+  ScaledValue:
+    template: "{value}[ (read as {concept})][ on the {scale} scale]"
+
+  CurvePoint:
+    template: "{suitability} at {x}"
+
+  Count:
+    template: "{value} {entity}"
+
+  Period:
+    template: "[from {start}][ to {end}]"
+
+  MonetaryAmount:
+    template: >-
+      {currency} {value|(amount not transcribed)}[ at {price_year} prices][,
+      {adjustment}][ at a rate of {adjustment_rate}][ from base year
+      {adjustment_base_year}][, converted at {conversion_rate}][, derived from
+      {derived_from_amount}]
+    phrases:
+      adjustment:
+        none: not adjusted
+        inflation: adjusted for inflation
+        discounted: discounted
+
+  CostRatio:
+    template: "{value} times[ {basis}]"
+
+  ExternalId:
+    template: "{scheme} {value}"
+
+  # --- study results (rendered under the statements that cite them) -------------
+
+  StudyResult:
+    unused: [componentResult, studyGroup]
+
+  EcoStudyResult:
+    template:
+      - "for {focus}"
+      - "goal: {stated_goal}"
+      - "{dataItems}"
+      - "interpreted as {interpretation}"
+      - "from {sourceDataSet}"
+      - "as reported in {reportedIn}"
+    sep: "; "
+    frame: "{description|A study result}[: {*}]"
+    label: ["{description}", "a result for {focus}"]
+
+  DataItem:
+    template:
+      - "variability {variabilityMeasures}"
+      - "confidence interval {confidenceInterval}"
+      - "components {componentDataItem}"
+    frame: "{subtype|value} {value}[ {unit}][ ({*})]"
+
+  DataSet:
+    template:
+      - "{subtype}"
+      - "version {version}"
+      - "released {releaseDate}"
+      - "licence {license}"
+    frame: "data set {id}[ ({*})]"
+
+  # --- labels of referenced objects ------------------------------------------------
+
+  CausalNode:
+    label: ["{name}"]
+  EcoAgent:
+    label: ["{name}"]
+  EcoDocument:
+    label: ["{title}", "{subtype}"]
+  SiteDefinition:
+    label: ["{label}"]
+  CriteriaSet:
+    label: ["the {issued_by} {operationalizes} definition[ {version}][ ({status})]"]
+  EcoProposition:
+    label: ["{propositionText}"]
+    # Proposition text starts with its scope ("Typically, ..."), mid-sentence here.
+    label_lower_first: true

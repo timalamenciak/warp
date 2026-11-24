@@ -10,11 +10,37 @@ causal statements.
 
 Status: draft 0.7.0. 
 
+Seven predicate groups (causal, interaction,
+recommendation, tolerance, cost, implementation, criteria), management
+strategies and sites as nodes, criteria sets as versioned definitions, and an
+RDF and OWL output with a projection gate. The worked examples are
+illustrative: their citations, quotes and numbers are placeholders unless a
+comment says otherwise. The design proposals behind the schema, the build
+guide and a reference for every slot and enum are in
+[docs/proposals/](docs/proposals/) (`warp-proposals-0.4.html`,
+`warp-0.4-dev-guide.md`, `warp-0.4-reference.html`; the "0.4" in their names
+labels the proposal round, not a release). Decision codes such as Q13 or D17
+in the docs refer to the questions and decisions in those documents.
+
 **How-to guides**
 - [Adding a node template](docs/node-templates.md): define a fillable node
   shape in LinkML and get DOSDP patterns and OWL classes from it.
 - [Adding a predicate group](docs/predicate-groups.md): add a new kind of
   statement (its predicates, qualifiers, statement and proposition classes).
+- [Terminology](docs/terminology.md): which term to use, in order: an
+  ontology term, a local term with a plan to upstream it, a local term alone,
+  and text as a last resort; and the register where local terms live.
+- [Units, counts, scales, places and dates](docs/values.md): which IRI to
+  use for a unit, a source's scale or a place, and how dates are written.
+- [WARP in RDF and OWL](docs/rdf-owl.md): what each generated file may be read
+  as, which IRI denotes what, and the gate a statement passes before a reasoner
+  is allowed to use it. The contract every group follows.
+- [Annotator's tests](docs/annotation-tests.md): one question per group (and
+  for strategies) that tells you where a sentence belongs, with an example
+  each.
+- [Statements in plain language](docs/rosetta.md): each statement as one
+  English sentence with everything it records, for review, and how each slot
+  is given its words (Rosetta Statements).
 
 Open work, including draft ECO term requests: [TODOS.md](TODOS.md).
 
@@ -40,14 +66,16 @@ whose evidence is other people's statements.
 | Part | What it is | Where it lives |
 |---|---|---|
 | **Node shapes** | Fillable templates for what statements are about, e.g. *rate of a process of a population of a taxon* | Templates in `templates/node_templates.yaml` (LinkML-validated), compiled to DOSDP patterns and OWL; CAMO `CausalNode` stays the annotation record |
-| **Predicate groups** | Controlled predicates plus the qualifiers that say what *kind* of relation is asserted | One group per kind of statement: **causal** (CAMO `CausalPredicateEnum`, features bundled as `CausalPredicateQualifiers`) and **interaction** (RO predicates, worked example) |
+| **Predicate groups** | Controlled predicates plus the qualifiers that say what *kind* of relation is asserted | Seven, one per kind of statement: **causal** (CAMO predicates and features), **interaction** (RO), **recommendation** (guidance: do, avoid, consider), **tolerance** (ranges and optima on environmental variables), **cost** (what an action took), **implementation** (work carried out at a site; derives projects), **criteria** (a site or project meets a versioned definition). See [predicate-groups.md](docs/predicate-groups.md) |
+| **Strategies and sites** | Nodes that are not single filled templates | `management_strategy` (an ordered bundle of action nodes, canonicalized by `derive_strategies.py`) and `site` (a particular: an OWL individual under `site:`) |
+| **Definitions** | What "degraded" or "effective" means, per body and version | `CriteriaSet`, an information record that criteria statements name, never an OWL definition |
 | **Overall shape** | Statement, proposition, evidence line | SEPIO `Statement`, `Proposition`, `EvidenceLine`, upstream |
 | **Scope** | What a statement is about: one case, some cases, typical cases, all cases | `SemanticUnitScopeEnum` (Vogt's semantic unit types), here |
 | **Evidential basis** | Study design, evidence object, practitioner and Indigenous knowledge as evidence | `EcoEvidenceLine`, here |
 
 Other statement types (occurrence, composition, TEK statements via IUS) get their own
 node templates and predicate groups and slot into the same SEPIO frame, the
-same way `CausalStatement` and `InteractionStatement` do. The scripts discover groups
+same way the seven groups do. The scripts discover groups
 from annotations in the schema, so adding one needs no code changes.
 
 ```
@@ -55,6 +83,8 @@ StatementSet
 ├── agents                    EcoAgent               (← SEPIO Agent) people, communities, software
 ├── nodes                     CausalNode             (CAMO) what statements are about
 ├── node_definitions          NodeDefinition         node → template + fillers (→ OWL, DOSDP)
+├── strategy_definitions      StrategyDefinition     ordered parts (→ canonical node, OWL subclass)
+├── site_definitions          SiteDefinition         one piece of ground (→ OWL individual; no geometry exported)
 ├── causal_statements         CausalStatement        (EcoStatement ← SEPIO Statement, Assertion Mode)
 │     ├── subject / predicate / object      → nodes, CAMO predicate
 │     ├── predicate_qualifiers              → accounts + causal features
@@ -67,8 +97,13 @@ StatementSet
 │                                             direction, strength, item refs,
 │                                             targetProposition (DERIVED)
 ├── causal_propositions       CausalProposition      (EcoProposition ← SEPIO Proposition)
-├── interaction_statements    InteractionStatement   (second predicate group)
-├── interaction_propositions  InteractionProposition
+├── interaction_statements    InteractionStatement   (and interaction_propositions)
+├── recommendation_statements RecommendationStatement (and _propositions)
+├── tolerance_statements      ToleranceStatement     (and _propositions)
+├── cost_statements           CostStatement          (and _propositions)
+├── implementation_statements ImplementationStatement (and _propositions: DERIVED projects)
+├── criteria_sets             CriteriaSet            versioned definitions (information records)
+├── criteria_statements       CriteriaStatement      (and _propositions)
 ├── assessments               SynthesisAssessment    (EcoStatement, SEPIO Proposition Assessment Mode)
 ├── study_results             EcoStudyResult         (← SEPIO StudyResult) summarized data
 └── documents                 EcoDocument            (← SEPIO Document) sources
@@ -96,22 +131,46 @@ Vendoring rather than importing by URL is deliberate: LinkML URL imports are
 not pinned, and an upstream change should never silently change what your
 data means.
 
+The CAMO dependency is **0.10.0**, pinned to release tag `v0.10.0` (commit
+`9a89dcbaa393c21828e5c74137201b2c1d8b5f71`). SEPIO's pin is unchanged.
+The vendored CAMO file is byte-for-byte upstream. Its new node fields,
+quantity types, effect statistics, comparator doses and measurement times
+are available through the imported classes; `CausalStatement` also exposes
+`dose` and `dose_level`. These fields do not change proposition identity.
+
+When updating existing data, `TemporalExtent.observation_seasons` now takes
+`SeasonEnum` keys. A calendar window such as "May-October" is not a season:
+retain the wording in the appropriate temporal text field, without guessing
+season membership. The Kramer example already preserves that exact window in
+`duration_text`. CAMO now pins its class IRIs explicitly under
+`causal_mosaic:`, which the generated WARP schema and RDF honour.
+
 ## 4. What the profile adds or changes
 
 | Profile class | Builds on | Changes |
 |---|---|---|
 | `EcoStatement` (abstract) | SEPIO `Statement` | Annotated statements are in SEPIO Assertion Mode (no `direction` / `strength`). IDs become identifiers; `direction` constrained to supports / disputes / neutral; adds `scope`, `original_text`, `source_spans`, `care`. Who made it: `contributions` (role author); who recorded it: `recordMetadata`. `proposition` is marked as derived. |
-| `CausalStatement` | `EcoStatement` | Subject and object must be CAMO nodes; predicate must be a CAMO predicate. Adds `negated`, `causal_language`, `predicate_qualifiers`, `comparator`, `context`, `ecosystem_context`, `temporal_extent`, `camo_edge_id`. |
+| `CausalStatement` | `EcoStatement` | Subject and object must be CAMO nodes; predicate must be a CAMO predicate. Adds `negated`, `causal_language`, `predicate_qualifiers`, `comparator`, `camo_edge_id`. |
+| Shared statement slots | `EcoStatement` | `modality` (observed / inferred / anticipated), `context`, `ecosystem_context` (CAMO functional group), `place` (a region, as an IRI), `temporal_extent`, `specified_in` (plan documents). See [docs/values.md](docs/values.md). |
+| `Quantity`, `QuantityRange`, `ScaledValue`, `CurvePoint`, `Count`, `Period` | (new) | Shared value types. Units are CURIEs; scales are SKOS schemes in `vocab/scales.yaml`; dates are ISO 8601 strings. |
 | `CausalPredicateQualifiers` | (new) | CAMO's philosophical accounts and causal features, grouped. CAMO's `direction` → `causal_direction` and `strength` → `effect_strength`, so they cannot be confused with SEPIO's evidential direction and strength. |
 | `EcoProposition` (abstract) | SEPIO `Proposition` | Adds `scope`, `status` (asserted / open question), `raised_as_question`, `identity_key`, `identity_rule_version`, `derived_from_statements`. |
 | `CausalProposition` | `EcoProposition` | Subject, predicate and object constrained as for `CausalStatement`. |
 | `InteractionStatement`, `InteractionQualifiers`, `InteractionProposition` | `EcoStatement`, (new), `EcoProposition` | The biotic interaction group: RO predicates (eats, pollinates, parasite of, biotically interacts with) and the sign of the effect on each partner. |
 | `NodeDefinition`, `TemplateFiller` | (new) | Which node template a CAMO node fills, and with which terms. |
-| `EcoEvidenceLine` | SEPIO `EvidenceLine` | Direction and strength constrained to enums; who judged them is a contribution (role evidence_assessor). Adds `evidence_type` (CAMO; specializes `subtype`), `evidence_object` (Russo-Williamson: correlation, mechanism, both), and `evidence_item_refs` (by ID instead of SEPIO's inlined objects). |
+| `RecommendationStatement`, `RecommendationQualifiers`, `RecommendationProposition` | `EcoStatement`, (new), `EcoProposition` | Guidance: `suggested_to`, with `guidance` (do / avoid / consider, in the key), `deontic_force`, `priority`, `timing_of_influence`, `contribution`; `justified_by` cites propositions. |
+| `ToleranceStatement`, `ToleranceQualifiers`, `ToleranceProposition` | `EcoStatement`, (new), `EcoProposition` | `tolerates`, `prefers`, `intolerant_of`, `has_habitat` (RO); `range`, `optimum`, `class_value`, `response`, `response_curve`; `place` in the key; `explained_by`. |
+| `CostStatement`, `CostQualifiers`, `CostProposition`, `MonetaryAmount`, `CostRatio` | `EcoStatement`, (new), `EcoProposition` | `incurs_cost` (object a category) and `costs_relative_to` (object a node); amount, effort, ratio, scale, phase, reporting level and basis, after Iacona et al.'s five standards; `place`, `phase` and `reporting_level` in the key; explicit, versioned transfer. |
+| `ImplementationStatement`, `ImplementationQualifiers`, `ImplementationProposition`, `ExternalId` | `EcoStatement`, (new), `EcoProposition` | `carried_out_at` a site, with period, status, area treated, implementers, funders, external IDs; projects derived, each about a `proj:` individual. |
+| `CriteriaSet`, `CriteriaStatement`, `CriteriaQualifiers`, `CriteriaProposition` | (new), `EcoStatement`, (new), `EcoProposition` | Versioned definitions, and statements applying them: `qualifies_as` a concept under a criteria set for a period, the verdict in `direction`. |
+| `StrategyDefinition`, `StrategyComponent`, `Recurrence` | `NodeDefinition`, (new), (new) | A management strategy: at least two ordered parts with lag, repeat, role and optional flag; derived canonical node. |
+| `SiteDefinition` | `NodeDefinition` | A site: geometry (never exported) and its precision, area, ecosystem types, jurisdiction, tenure, CARE. |
+| `EcoDataItem`, `EcoDataSet`, `EcoCoding` | SEPIO `DataItem`, `DataSet`, `Coding` | Only give SEPIO's slots WARP IRIs (Q13). |
+| `EcoEvidenceLine` | SEPIO `EvidenceLine` | Direction and strength constrained to enums; who judged them is a contribution (role evidence_assessor). Adds `evidence_type` (`WarpEvidenceTypeEnum`: CAMO's values plus `not_stated`; specializes `subtype`), `evidence_object` (Russo-Williamson: correlation, mechanism, both), and `evidence_item_refs` (by ID instead of SEPIO's inlined objects). |
 | `SynthesisAssessment` | `EcoStatement` | SEPIO Proposition Assessment Mode: `proposition`, `direction` and `strength` (CAMO certainty grade) required. Adds `evidence_balance`. Replaces CAMO `EvidenceBaseAssessmentEdge`. |
 | `EcoAgent`, `EcoContribution`, `EcoRecordMetadata` | SEPIO `Agent`, `Contribution`, `RecordMetadata` | Agents get identifiers and an `agent_kind` (researcher, practitioner, Indigenous knowledge holder, …). Contributions reference agents by id and carry a `role` (author, evidence_assessor, annotator, reviewer; specializes `activityType`). |
 | `CareMetadata` | (new) | Knowledge holders (agent ids), community, consent, access level, Local Contexts labels, protocols. |
-| `EcoStudyResult`, `EcoDocument` | SEPIO `StudyResult`, `Document` | IDs become identifiers so evidence lines can point at them. |
+| `EcoStudyResult`, `EcoDocument` | SEPIO `StudyResult`, `Document` | IDs become identifiers so evidence lines can point at them. `EcoStudyResult` adds `stated_goal`, the aim as the source states it. |
 
 ## 5. Where CAMO's edge fields go
 
@@ -125,34 +184,40 @@ the evidence.
 | `philosophical_accounts`, `necessity`, `sufficiency`, `temporal_ordering`, `mediation`, `moderation`, `specificity`, `stability`, `determinism`, `proximate_distal`, `contributing_sole`, `reversibility`, `proportionality` | `CausalStatement.predicate_qualifiers`, same names |
 | `direction`, `strength` | `predicate_qualifiers.causal_direction`, `predicate_qualifiers.effect_strength` (renamed) |
 | `causal_language` | `CausalStatement.causal_language` (statement-level hedging) |
-| `token_or_type` | `scope` (token → assertional, type → prototypical by default; check by hand) |
+| `scope` (CAMO 0.10.0) | `scope`, the same five values; WARP retains `SemanticUnitScopeEnum` |
+| Legacy `token_or_type` | `scope` (token → assertional, type → prototypical by default; check by hand) |
 | `context_dependence` | `CausalStatement.context` |
 | `comparator`, `ecosystem_context`, `temporal_extent` | `CausalStatement`, same names |
+| `dose`, `dose_level` | `CausalStatement`, same names and CAMO ranges; statement conditions, outside proposition identity |
 | `original_sentence`, `source_spans`, `source_document` | `original_text`, `source_spans`, `reportedIn` |
 | `evidential_basis.evidence_types` / `evidence_objects` | `EcoEvidenceLine.evidence_type` / `evidence_object` (one evidence line per type) |
-| `certainty_grade` | `SynthesisAssessment.strength`; at article level use `EcoEvidenceLine.strengthOfEvidenceProvided` (**decision needed**: Rosetta rendering currently reads `certainty_grade` from the edge) |
+| `certainty_grade` | No automatic conversion. `SynthesisAssessment.strength` assesses a proposition; `EcoEvidenceLine.strengthOfEvidenceProvided` assesses a line of evidence and has a different enum. Preserve an imported grade for review until its target and assessor are established. |
 | `annotator`, `annotation_timestamp` | `recordMetadata`: a contribution with role annotator, and `dateRecordCreated` |
 | `annotation_confidence`, `annotation_notes` | not yet mapped (Loom workflow metadata) |
 | `fcm_weight`, `fcm_weight_source` | not in the statements layer: rendering metadata, derived downstream |
 | `EvidenceBaseAssessmentEdge` | `SynthesisAssessment`; `included_edge_ids` → evidence lines' `evidence_item_refs`. Aggregate criteria fields not yet mapped. |
 
-## 6. Propositions are derived
+## 6. Derived records
 
-Annotators never write propositions. `scripts/derive_propositions.py` groups
-statements and writes them for every predicate group, under **identity rule
-`warp-prop-identity/3`**:
+Annotators never write derived records. Four rules derive them, each
+versioned, each recording its version on what it makes:
 
-> Two statements share a proposition when **group, subject node, predicate,
-> object node, negated and scope** all match.
+| Rule | Script | Derives | Same when | Not in the key |
+|---|---|---|---|---|
+| `warp-strategy-identity/1` | `derive_strategies.py` | Canonical strategy nodes (`node:strategy-<hash>`) | The sorted (step, action) pairs of required parts match, after flattening one level of nesting | Lags, repeats, roles, labels, optional parts |
+| `warp-prop-identity/4` | `derive_propositions.py` | Propositions, for every group not derived by another script | Group, subject, predicate, object, negated and scope match, plus the group's extras: guidance (recommendation); place (tolerance); place, phase, reporting level (cost) | Hedging, priority, ranges, amounts, scale, year |
+| `warp-criteria-identity/1` | `derive_propositions.py` (its rule name, through the same engine) | Criteria propositions | Subject, concept, criteria set and assessed period match | Assessment method, assessor, verdict |
+| `warp-impl-identity/1` | `derive_projects.py` | Projects: a grouping record about a `proj:` individual | A shared external ID; or the same strategy, the same site and overlapping periods | Status, area treated, implementers |
 
-(Version 1, in 0.1.0, had no group field; version 2 wrote "asserted" into
-the key for non-negated statements, the same word as the proposition status,
-and version 3, in 0.5.0, writes "affirmed". Derived proposition ids changed
-with each version; open-question ids are kept.)
+`make derive` runs them in that order for each statement set, so statements
+about two descriptions of one strategy meet in one proposition, and projects
+are derived over canonical strategies. `transfer_costs.py` also derives cost
+statements, explicitly, under a versioned rule in `config/cost_transfer/`.
 
-Everything else (hedging, causal features, comparator, context, evidence)
-stays on the statement and is aggregated, not used for identity. Proposition IDs
-are hashes of the identity key, so they are stable across runs.
+Proposition IDs are hashes of the identity key, so they are stable across
+runs; the rule version is recorded on each proposition, never hashed. Causal
+and interaction declare no extras, so their key is the six shared fields
+alone.
 
 Consequences worth knowing:
 
@@ -160,21 +225,16 @@ Consequences worth knowing:
   plot" (assertional) and "bloodroot typically reduces garlic mustard"
   (prototypical) are different propositions. The particular statement enters as
   **evidence for** the general one, in a synthesis assessment. That is how a
-  case report supports a generalization. (This supersedes the earlier Turtle
-  sketch, where both statements shared one proposition.)
+  case report supports a generalization.
 - **Statements with scope missing or `unclear` are not grouped**, and the script
   reports them. Scope is part of what a proposition says.
 - **Open questions are propositions with no statements yet**: an empty evidence
   gap map cell, or a practitioner's question in TREK. People write them with
   `status: open_question`; they keep their ID, become `asserted` when a statement
   matches, and revert if those statements go away.
-- **Changing the rule regroups statements.** Bump `RULE_VERSION` in the script
-  whenever the rule changes; every proposition records the version that made it.
-
-The identity rule is a modelling decision, not a technicality. The main open
-question: should any context qualifiers (ecosystem type, comparator) be part
-of identity? Adding them makes propositions narrower and evidence gap maps
-sparser.
+- **A missing identity extra** groups with others missing it, and is counted
+  in the derivation report.
+- **Changing a rule regroups records.** Bump its version whenever it changes.
 
 ## 7. Practitioners and Indigenous knowledge holders as agents making statements
 
@@ -200,9 +260,25 @@ once that is aligned with this profile.
 ## 8. Worked example
 
 ```
-make all        # templates → DOSDP patterns, nodes → OWL, derive propositions,
-                # validate, generate JSON Schema and OWL for the profile
+make all        # templates → DOSDP patterns, scales → SKOS, nodes → OWL,
+                # derive propositions, schema → JSON Schema and OWL,
+                # statements → RDF, propositions → OWL axioms, validate
+                # (shapes, references, OWL lint), checks, OWL profiles, tests
 ```
+
+The examples, one set per file with its derived file next to it:
+
+| Set | Shows |
+|---|---|
+| `bloodroot_statements.yaml` (+ `bloodroot_assessment.yaml`) | Causal and interaction statements, an open question, a synthesis assessment |
+| `kramer1995_statements.yaml` (+ `kramer1995_assessment.yaml`) | One real finding (Kramer et al. 1995), the case-report pattern |
+| `recommendation_statements.yaml` | Guidance from recovery strategies; predictions as causal statements; do and avoid on one action |
+| `strategy_statements.yaml` | Management strategies: merging, parallel and optional parts, nesting |
+| `tolerance_statements.yaml` | Ranges, class values on SKOS scales, regional ratings, a suitability curve, a habitat |
+| `cost_statements.yaml` (+ generated `cost_statements.transferred.yaml`) | Costings after Iacona et al., a relative cost, strategy costs, explicit transfer |
+| `implementation_statements.yaml` | Sites, two reports of one project, criteria sets and verdicts, Target 2 |
+
+The bloodroot set in detail:
 
 1. `examples/bloodroot_statements.yaml`: what annotators produce. Four nodes with
    their template fillings, a type-level published causal statement, a
@@ -220,8 +296,90 @@ All three validate against the profile, and `make check` runs
 `scripts/check_statements.py` over the derived set and the assessment
 together: Assertion Mode, negation, contribution roles, CARE, and every
 reference resolving. `make nodes` also writes
-`project/nodes.ttl`, the four nodes as OWL classes (checked to be in OWL 2
-EL with ROBOT), and `patterns/data/*.tsv`, the same fillings as DOSDP input.
+`project/nodes.ttl`, the four nodes as OWL classes (meant to be OWL 2 EL;
+`make owl-check` confirms it with ROBOT where ROBOT is installed), and
+`patterns/data/*.tsv`, the same fillings as DOSDP input.
+
+Every set validates against the profile; `make validate` and `make check`
+also run the reference, value, OWL, tolerance, cost and site checks over all
+of them together, and check that every value of every statement is said in
+its plain-language sentence (`render_statements.py --check`,
+[docs/rosetta.md](docs/rosetta.md)).
+
+### Reports
+
+Findings, not validation errors, written to `project/reports/` by
+`make reports` (and `make owl`):
+
+| Report | Script | Says |
+|---|---|---|
+| `statements.md` | `render_statements.py` | Every statement as one English sentence with everything it records, next to the source's own words, for review ([docs/rosetta.md](docs/rosetta.md)) |
+| `projection.md` | `project_owl.py` | Which propositions reached `axioms.ttl`, and why each other one did not |
+| `guidance.md`, `.csv` | `report_guidance.py` | Unsupported and self-supporting guidance, and how well what it cites is assessed |
+| `tolerance.md` | `report_tolerance.py` | Ranges per proposition by claimant and response; non-overlapping ranges, unit mismatches |
+| `cost_completeness.md`, `.csv` | `report_cost_completeness.py` | Each costing against Iacona et al.'s five standards |
+| `target2.md` | `report_target2.py` | Degraded and effectively restored area under chosen definitions, in three buckets, compared across definitions |
+
+### What comes out as RDF and OWL
+
+Two layers, and nothing mixes them. The contract is
+[docs/rdf-owl.md](docs/rdf-owl.md).
+
+| File | Layer | Holds | Profile |
+|---|---|---|---|
+| `project/nodes.ttl` | logical | Node classes from templates | OWL 2 EL |
+| `project/axioms.ttl` | logical | Class axioms projected from propositions that pass the gate | OWL 2 EL |
+| `project/sites.ttl`, `project/projects.ttl` | logical | Site and project **individuals** (no geometry, ever) | OWL 2 EL |
+| `project/statements.ttl` | reification | Every statement, proposition, evidence line, qualifier, agent and document | RDF, for SPARQL |
+| `project/warp.owl.ttl` | schema | The profile itself, after `clean_owl.py` | OWL 2 DL |
+| `src/warp/owl/warp-relations.ttl` | schema | Every predicate WARP mints, declared once (hand-maintained) | OWL 2 DL |
+| `project/scales.ttl`, `project/local_terms.ttl` | vocabulary | Source scales, and the local terms (criteria concepts, local places) as SKOS | SKOS |
+| `project/local_classes.ttl` | logical | Local classes no ontology has yet (written only when the register has some) | OWL 2 EL |
+
+The IRI spaces: `node:` IRIs are OWL classes everywhere; `site:` and `proj:`
+IRIs are individuals everywhere; `stmt:`, `prop:`, `doc:`, `crit:`, `comp:`
+and `warp:el/` are reification-layer individuals; enum values are
+individuals of their enum. `check_owl.py` fails the build if one IRI is two
+kinds of thing.
+
+A proposition becomes an OWL axiom only when its scope is universal, it is not
+negated, every statement under it is `modality: observed`, and a synthesis
+assessment supports it. On the examples nothing passes, which is correct:
+they are assertional or prototypical, and OWL cannot say "typically".
+`project/reports/projection.md` lists every proposition and why it was or was
+not projected.
+
+### Profiles: WARP with fewer predicate groups
+
+A project that only records causal statements, or causal and interaction
+statements, can use a **profile**: WARP restricted to those groups. Profiles
+are listed in `config/profiles.yaml` and generated by
+`scripts/subset_schema.py` (`make profiles`) into `project/profiles/`:
+
+| File | Holds |
+|---|---|
+| `warp_causal.yaml` | The schema with the shared core and the causal group (20 of 55 classes) |
+| `warp_causal-interaction.yaml` | The shared core, causal and interaction (23 classes) |
+| `warp-relations_<name>.ttl` | `warp-relations.ttl` without the predicates of the groups left out |
+
+A profile keeps the shared core (statements, propositions, evidence lines,
+agents, contributions, CARE, assessments, the shared slots), the groups it
+names, and only the optional lists it asks for (`strategy_definitions`,
+`site_definitions`, `criteria_sets`). Anything else is kept only if something
+kept refers to it. Every IRI is WARP's own, so a profile is a strict subset:
+data valid against a profile is valid against `warp.yaml`, and gives the same
+derived IDs and the same RDF as a full build. The scripts take the profile
+with `--schema`:
+
+```
+make profile PROFILE=causal     # build and check one profile on its examples
+                                # (output in build/profiles/causal/)
+python scripts/derive_propositions.py in.yaml out.yaml --schema project/profiles/warp_causal.yaml
+```
+
+`make all` checks every profile (`make profile-check`), including that each
+profile's derived records equal the full build's. To add a profile, add an
+entry to `config/profiles.yaml` naming its groups, lists and example sets.
 
 ## 9. Known gaps and upstream contributions
 
@@ -242,15 +400,19 @@ EL with ROBOT), and `patterns/data/*.tsv`, the same fillings as DOSDP input.
   top-level `slots` would let this profile reuse them instead of re-listing
   them, and clears many of the "ambiguous attribute" warnings from `gen-owl`.
 - Rename edge `direction` and `strength` to match the names used here.
-- Replace `token_or_type` with `scope`.
+- CAMO 0.10.0 already replaces `token_or_type` with `scope`; WARP keeps its
+  existing scope enum and IRIs for compatibility.
 
 **Elsewhere:**
 - Semantic unit definitions are working glosses; confirm against Vogt.
 - ECO lacks ecological study designs (natural experiment, BACI, case study,
   practitioner experience, Indigenous knowledge): a joint ECO term request.
-- CAMO node `entity_term`s in the example are free text (`TODO` Wikidata
-  QIDs); their template fillings use verified NCBITaxon IDs. The planting
-  action is a placeholder (`ELMO:TODO_planting`).
+- CAMO node `entity_term`s in the examples are free text (`TODO` Wikidata
+  QIDs). Every unverified term is a `TODO:` placeholder, listed in
+  `TODOS.md` section 8.1.
+- LinkML's OWL generator needs post-processing (`clean_owl.py`); the
+  candidate upstream issues are in `TODOS.md` section 8.4.
+- SEPIO's slots have WARP IRIs until SEPIO grounds its own (Q13).
 
 ## 10. Next: the annotation workflow
 
@@ -259,7 +421,7 @@ Questions this design raises for Loom:
 - **What annotators see.** Can Loom keep presenting a CAMO edge form and
   write `CausalStatement`s behind it, with predicate qualifiers as a collapsible
   section?
-- **Scope.** Annotators currently choose token or type. Is the four-way
+- **Scope.** CAMO 0.10.0 and WARP use four substantive scopes plus unclear. Is the four-way
   scope choice teachable to undergraduate annotators, or should Loom ask a
   simpler question ("about one place and time, or in general?") and map it?
 - **Evidence lines.** Who creates them: annotators (one per evidence type
@@ -269,67 +431,69 @@ Questions this design raises for Loom:
   consent captured?
 - **When derivation runs.** On every export, nightly, or before each
   synthesis? Who reviews statements left ungrouped because scope is unclear?
-- **Migration.** Existing CAMO 0.8 edges → `CausalStatement` via `camo_edge_id`,
-  with `token_or_type` mapped to scope and flagged for review.
+- **Migration.** CAMO 0.10.0 edges → `CausalStatement` via `camo_edge_id`,
+  preserving scope and dose. Older `token_or_type` values still need mapping
+  and review. Claim certainty is not automatically an evidence assessment.
 
 ## Layout
 
 ```
 src/warp/schema/
-  warp.yaml              the profile (edit this)
-  warp_templates.yaml           schema for node templates
+  warp.yaml                   the profile (edit this)
+  warp_templates.yaml         schema for node templates
   upstream/                   vendored SEPIO and CAMO (never edit)
+src/warp/owl/
+  warp-relations.ttl          WARP's predicates, declared once (edit this)
+  catalog-v001.xml            resolves owl:imports for ROBOT
 templates/
   node_templates.yaml         node templates (edit this)
+vocab/
+  scales.yaml                 source scales (edit this) → SKOS
+  local/                      local term register (edit this): criteria concepts,
+                              local places → SKOS; local classes → OWL
+config/cost_transfer/         versioned cost transfer rules and selections (edit this)
+config/profiles.yaml          predicate-group profiles (edit this)
+config/rosetta.yaml           how each slot reads in a statement's English sentence (edit this)
 patterns/                     GENERATED DOSDP patterns, prefixes, fill tables
 scripts/
-  derive_propositions.py      proposition derivation, all groups (identity rule v3)
-  check_statements.py         checks the schema cannot express
+  derive_strategies.py        canonical strategy nodes (warp-strategy-identity/1)
+  derive_propositions.py      propositions, all groups (warp-prop-identity/4, group rule names)
+  derive_projects.py          projects from implementation statements (warp-impl-identity/1)
+  transfer_costs.py           explicit cost transfer under a versioned rule
+  check_statements.py         Assertion Mode, negation, roles, CARE, references by name
+  check_refs.py               every reference resolves (schema-driven)
+  check_values.py             CURIEs, units, places, scales, dates
+  check_tolerance.py          tolerance object kinds and curves
+  check_cost.py               per-predicate cost rules
+  check_sites.py              sites, implementation objects, criteria statements
+  check_owl.py                OWL lint over every generated Turtle file
+  expand_nodes.py             nodes → OWL classes, strategies, site individuals, DOSDP fill tables
   gen_dosdp.py                templates → DOSDP patterns
-  expand_nodes.py             node definitions → OWL + DOSDP fill tables
+  gen_vocab.py                vocab/ → SKOS and local OWL classes
+  clean_owl.py                gen-owl output → OWL 2 DL schema (project/warp.owl.ttl)
+  export_rdf.py               statement sets → project/statements.ttl (reification layer)
+  project_owl.py              the gate → project/axioms.ttl; project individuals → projects.ttl
+  report_*.py                 guidance, tolerance, cost completeness, Target 2
+  render_statements.py        statements → English sentences (config/rosetta.yaml); coverage check
+  subset_schema.py            profiles: the schema restricted to some groups
+  build_profile.py            build and check one profile on its examples
   templates_lib.py            shared template code
+  warp_schema.py              schema-driven helpers (prefixes, walking records)
+  warp_time.py                ISO 8601 dates → xsd:dateTime bounds, overlap
   update_upstream.sh          re-vendor upstream at pinned commits
-docs/                         how-to guides
-examples/                     worked example
-project/                      GENERATED JSON Schema, OWL, node classes
+docs/                         how-to guides and the RDF/OWL contract
+tests/                        pytest suite (make test)
+examples/                     worked examples (inputs; *.derived.yaml GENERATED)
+project/                      GENERATED JSON Schema, OWL, RDF, SKOS, reports, profiles
+build/                        GENERATED profile builds (not committed)
 ```
 
 Requires Python 3.10+ with `pip install -r requirements.txt`. The optional
 `make owl-dosdp` route needs [dosdp-tools](https://github.com/INCATools/dosdp-tools)
-(and Java).
+(and Java). `make owl-check` needs [ROBOT](https://robot.obolibrary.org/); without
+it the profile checks are skipped with a warning, and releases are checked
+with it.
 
 ## Changes
 
-- **0.5.0**: provenance the SEPIO way, and checks for what the schema cannot
-  say. New `EcoAgent`, `EcoContribution` (with `role`) and
-  `EcoRecordMetadata`; `StatementSet.agents`. Who made a statement is now a
-  contribution with role author (replaces `agent_kind` on the statement,
-  which moves to the agent); `annotator` and `annotation_timestamp` move to
-  `recordMetadata`; evidence lines can record who judged them
-  (`evidence_assessor`). `CareMetadata.knowledge_holder` (text) →
-  `knowledge_holders` (agent ids). `evidence_type` and `role` documented as
-  specializations of SEPIO's `subtype` and `activityType`. New
-  `scripts/check_statements.py` and `make check`. Identity rule
-  `warp-prop-identity/3`: the key says "affirmed" rather than "asserted";
-  derived proposition ids change.
-- **0.4.0**: back to SEPIO's own terms. "Claim" is now "statement"
-  throughout: `Claim` → `EcoStatement`, `CausalClaim` → `CausalStatement`,
-  `InteractionClaim` → `InteractionStatement`, `ClaimSet` → `StatementSet`;
-  slots `causal_claims` / `interaction_claims` / `derived_from_claims` →
-  `*_statements`, `claimant_kind` → `agent_kind` (`AgentKindEnum`); registry
-  annotation `warp_claims_slot` → `warp_statements_slot`; example ids
-  `warp:claim/…` → `warp:statement/…`. Profile classes get their own
-  `class_uri`s (`warp:EcoProposition`, `warp:EcoEvidenceLine`, …) instead of
-  names that look like SEPIO's; example `type` values name the concrete
-  class. Derivation now also fills `targetProposition` on each statement's
-  evidence lines. Identity rule and proposition ids unchanged.
-- **0.3.0**: renamed WARP (Weaving Assertions, Reasons and Provenance), from
-  "EcoWeaver Claims". Namespace `https://w3id.org/ecoweaver/warp/` and CURIE
-  prefix `warp:` (were `.../claims/` and `ew:`); schema files `warp.yaml` and
-  `warp_templates.yaml`; group registry annotations `warp_*`; identity rule
-  renamed `warp-prop-identity/2` (same rule as before). No structural changes.
-- **0.2.0**: node templates (LinkML → DOSDP and OWL); predicate group
-  registry and the biotic interaction group; `EcoProposition` base class;
-  `propositions` list renamed `causal_propositions`; identity rule v2 adds
-  the group to the key.
-- **0.1.0**: first draft of the SEPIO profile.
+See [CHANGELOG.md](CHANGELOG.md).

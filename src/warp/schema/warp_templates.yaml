@@ -18,7 +18,7 @@ id: https://w3id.org/ecoweaver/templates
 name: ecoweaver-templates
 title: WARP node templates
 license: CC0
-version: 0.1.0
+version: 0.7.0
 
 prefixes:
   linkml: https://w3id.org/linkml/
@@ -82,28 +82,57 @@ classes:
         description: >-
           The CAMO EntityTypeEnum value that nodes made from this template
           should carry (taxon, environmental_variable, environmental_process,
-          management_intervention).
-        required: true
+          management_intervention). Empty for particulars (sites), which are
+          not CAMO node kinds.
+      kind:
+        description: >-
+          What the template's nodes are and how their OWL is made.
+          class_expression (the default): a fillable shape with vars and an
+          equivalent_to definition, compiled to DOSDP and OWL classes.
+          composite: a class defined by a variable number of parts (a
+          management strategy), generated directly from its definitions with
+          no DOSDP pattern. particular: one thing, not a kind (a site),
+          emitted as an OWL individual, never a class.
+        range: TemplateKindEnum
+        ifabsent: string(class_expression)
+      parent_class:
+        description: >-
+          composite only: the class every node of this template is a subclass
+          of (planned process for strategies). Must have a label in terms.
+        range: uriorcurie
+      part_property:
+        description: >-
+          composite only: the relation from the node to each required part,
+          used only inside someValuesFrom (BFO has part). Must have a label in
+          terms.
+        range: uriorcurie
       vars:
-        description: "The slots an annotator or curator fills."
+        description: >-
+          The slots an annotator or curator fills. Required for
+          class_expression templates (checked by scripts/templates_lib.py).
         range: TemplateVar
         multivalued: true
         inlined_as_list: true
-        required: true
       name:
         description: >-
           Label template using {var} placeholders, e.g.
           "{quality} of {process} of {taxon} population". Filled with the
-          labels of the filler terms.
-        required: true
+          labels of the filler terms. Required for class_expression templates.
       definition:
-        description: "Textual definition template, same placeholder syntax."
-        required: true
+        description: "Textual definition template, same placeholder syntax. Required for class_expression templates."
       equivalent_to:
-        description: "The logical definition, as a nested class expression."
+        description: "The logical definition, as a nested class expression. Required for class_expression templates."
         range: ClassExpression
         inlined: true
-        required: true
+      refinements:
+        description: >-
+          Optional fields of a node definition (NodeDefinition attributes, such
+          as depth and season) that narrow the node without a logical
+          rendering. A node with any of them filled is written as a SUBCLASS of
+          the template's expression, with the refinement in its label,
+          definition and an rdfs:comment, never as an equivalent class: two
+          nodes differing only by depth must not become the same class.
+        multivalued: true
       examples:
         description: "Example fillings, as var=CURIE strings, for documentation."
         multivalued: true
@@ -198,6 +227,16 @@ enums:
     permissible_values:
       class:
       object_property:
+
+  TemplateKindEnum:
+    description: "How a template's nodes become OWL."
+    permissible_values:
+      class_expression:
+        description: "A fillable class expression: DOSDP pattern and OWL equivalent-class axiom."
+      composite:
+        description: "A class made of a variable number of parts; OWL subclass axioms generated from definitions; no DOSDP."
+      particular:
+        description: "One thing, not a kind: an OWL named individual in its own IRI space; no DOSDP."
 
   TemplateStatusEnum:
     description: "Lifecycle status of a template."

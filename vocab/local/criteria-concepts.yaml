@@ -1,0 +1,40 @@
+# Criteria concepts: what a criteria set defines.
+#
+# Part of the local term register (docs/terminology.md). scripts/gen_vocab.py
+# writes these as SKOS concepts to project/local_terms.ttl.
+# CriteriaConceptEnum's values point at the same IRIs with `meaning:`, so each
+# concept exists once (decision D14). They are skos:Concept and never
+# owl:Class: a criteria set is a stated test, not an OWL definition.
+#
+# The definitions are working glosses, not anyone's official definition
+# (that is what criteria sets are for). TODO: review.
+
+scheme:
+  id: criteria-concepts
+  label: WARP criteria concepts
+  prefix: concept
+  kind: concept
+
+terms:
+  - id: degraded_area
+    label: degraded area
+    definition: >-
+      An area whose ecological condition is judged, under some named and
+      versioned definition, to have declined relative to a reference.
+    upstream:
+      status: not_appropriate
+      reason: >-
+        A WARP design decision (D14): the concept only names what a criteria
+        set defines. Its meaning is whichever versioned criteria set is
+        applied, so there is no single definition to give an ontology.
+  - id: effective_restoration
+    label: effective restoration
+    definition: >-
+      Restoration judged, under some named and versioned definition, to be
+      achieving or to have achieved its intended recovery.
+    upstream:
+      status: not_appropriate
+      reason: >-
+        A WARP design decision (D14): the concept only names what a criteria
+        set defines. Its meaning is whichever versioned criteria set is
+        applied, so there is no single definition to give an ontology.

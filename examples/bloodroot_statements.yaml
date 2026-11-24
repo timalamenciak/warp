@@ -7,7 +7,7 @@
 # design conversations; its citation, wording and data are placeholders (TODO).
 
 id: warp:statementset/bloodroot-example
-profile_version: 0.5.0
+profile_version: 0.7.0
 
 # Who makes, records and judges statements. Contributions and CARE metadata
 # refer to these by id.
@@ -62,7 +62,7 @@ node_definitions:
   - node: node:planting_of_sanguinaria_canadensis
     template: intervention_involving_taxon
     fillers:
-      - {var: action, value: "ELMO:TODO_planting", label: planting}   # TODO: ELMO action term
+      - {var: action, value: "TODO:planting", label: planting}   # TODO: ELMO planting action term
       - {var: taxon, value: "NCBITaxon:3472", label: Sanguinaria canadensis}
   - node: node:population_of_odocoileus_virginianus
     template: population_of_taxon
@@ -100,18 +100,18 @@ study_results:
     type: EcoStudyResult
     focus: node:rate_of_population_growth_of_alliaria_petiolata
     dataItems:
-      - {id: warp:data/murphy2005-planted-mean, type: DataItem, subtype: {label: mean}, value: "TODO"}
-      - {id: warp:data/murphy2005-planted-sd, type: DataItem, subtype: {label: standard deviation}, value: "TODO"}
-      - {id: warp:data/murphy2005-planted-n, type: DataItem, subtype: {label: number of plots}, value: "TODO"}
+      - {id: warp:data/murphy2005-planted-mean, type: EcoDataItem, subtype: {label: mean}, value: "TODO"}
+      - {id: warp:data/murphy2005-planted-sd, type: EcoDataItem, subtype: {label: standard deviation}, value: "TODO"}
+      - {id: warp:data/murphy2005-planted-n, type: EcoDataItem, subtype: {label: number of plots}, value: "TODO"}
     sourceDataSet:
-      - {id: warp:dataset/murphy2005, type: DataSet, version: "TODO"}
+      - {id: warp:dataset/murphy2005, type: EcoDataSet, version: "TODO"}
   - id: warp:result/murphy2005-control
     type: EcoStudyResult
     focus: node:rate_of_population_growth_of_alliaria_petiolata
     dataItems:
-      - {id: warp:data/murphy2005-control-mean, type: DataItem, subtype: {label: mean}, value: "TODO"}
+      - {id: warp:data/murphy2005-control-mean, type: EcoDataItem, subtype: {label: mean}, value: "TODO"}
     sourceDataSet:
-      - {id: warp:dataset/murphy2005, type: DataSet, version: "TODO"}
+      - {id: warp:dataset/murphy2005, type: EcoDataSet, version: "TODO"}
 
 causal_statements:
 

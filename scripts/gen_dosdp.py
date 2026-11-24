@@ -18,7 +18,8 @@ from pathlib import Path
 import yaml
 
 from templates_lib import (
-    TemplateError, check_template, load_collection, manchester, text_template,
+    CLASS_EXPRESSION, TemplateError, check_template, load_collection, manchester, template_kind,
+    text_template,
 )
 
 PATTERN_BASE = "https://w3id.org/ecoweaver/patterns/"
@@ -77,6 +78,18 @@ def main(argv=None):
     args.outdir.mkdir(parents=True, exist_ok=True)
     failed = False
     for tid, template in coll["templates"].items():
+        if template_kind(template) != CLASS_EXPRESSION:
+            # Composite (strategies) and particular (sites) templates have no
+            # fixed var list, so no DOSDP pattern; expand_nodes.py writes
+            # their OWL directly. Still check them.
+            try:
+                check_template(template, coll["labels"], coll["kinds"])
+            except TemplateError as err:
+                print(f"ERROR {err}", file=sys.stderr)
+                failed = True
+            else:
+                print(f"skipped {tid}: {template_kind(template)} template, no DOSDP pattern")
+            continue
         try:
             pattern = to_dosdp(template, coll["labels"], coll["kinds"])
         except TemplateError as err:

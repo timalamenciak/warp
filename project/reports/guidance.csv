@@ -1,0 +1,6 @@
+statement,claimant,guidance,subject,object,proposition,justified_by,findings,assessments,weakest_certainty
+stmt:ms-11-rec,org:dfo,avoid,node:stocking_of_predacious_sportfish_milk_river,node:decrease_in_abundance_of_mountain_sucker_milk_river,warp:prop/69ccdaf69ec4,warp:prop/4f9905a0d7a2,self-supporting,,
+stmt:ms-09-rec,org:dfo,do,node:water_conservation_measures_milk_river,node:maintained_habitat_quantity_of_mountain_sucker_milk_river,warp:prop/2812c13c41fc,warp:prop/c16be9de6aa6,self-supporting,,
+stmt:burn-do-plan,org:grassland-plan-authors,do,node:prescribed_burning_of_grassland,node:decrease_in_shrub_cover_in_grassland,warp:prop/9c043c560227,warp:prop/247fc9907bf5,,warp:prop/247fc9907bf5 supports moderate,moderate
+stmt:burn-avoid-agency,org:air-quality-agency,avoid,node:prescribed_burning_of_grassland,node:decrease_in_shrub_cover_in_grassland,warp:prop/c34ece72a226,warp:prop/247fc9907bf5,,warp:prop/247fc9907bf5 supports moderate,moderate
+stmt:burn-do-practitioner,person:practitioner-2,do,node:prescribed_burning_of_grassland,node:decrease_in_shrub_cover_in_grassland,warp:prop/9c043c560227,,unsupported,,

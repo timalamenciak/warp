@@ -44,9 +44,28 @@ def walk(expr):
         yield from walk(r["filler"])
 
 
+CLASS_EXPRESSION = "class_expression"
+
+
+def template_kind(template):
+    return template.get("kind") or CLASS_EXPRESSION
+
+
 def check_template(template, labels, kinds):
     """Raise TemplateError for anything a generator would trip over."""
     tid = template["id"]
+    kind = template_kind(template)
+    if kind == "composite":
+        for field, want in (("parent_class", "class"), ("part_property", "object_property")):
+            if not template.get(field):
+                raise TemplateError(f"{tid}: a composite template needs {field}")
+            need(template[field], want, labels, kinds, tid)
+        return
+    if kind == "particular":
+        return
+    for field in ("vars", "name", "definition", "equivalent_to"):
+        if not template.get(field):
+            raise TemplateError(f"{tid}: a class_expression template needs {field}")
     declared = [v["name"] for v in template["vars"]]
     if len(set(declared)) != len(declared):
         raise TemplateError(f"{tid}: duplicate variable names")

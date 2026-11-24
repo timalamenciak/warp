@@ -1,0 +1,5 @@
+defined_class	defined_class_label	quality	quality_label	material	material_label
+node:ph_of_soil	pH of soil	TODO:ph	pH	ENVO:00001998	soil
+node:temperature_of_water	temperature of liquid water	PATO:0000146	temperature	ENVO:00002006	liquid water
+node:texture_class_of_soil	texture of soil	TODO:soil_texture	texture	ENVO:00001998	soil
+node:wetness_of_soil	wetness of soil	PATO:0001822	wetness	ENVO:00001998	soil

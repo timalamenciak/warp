@@ -1,0 +1,27 @@
+@prefix ISO3166-2: <https://www.iso.org/obp/ui/#iso:code:3166:> .
+@prefix TODO: <https://w3id.org/ecoweaver/warp/TODO/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix site: <https://w3id.org/ecoweaver/warp/site/> .
+@prefix warp: <https://w3id.org/ecoweaver/warp/> .
+
+warp:in_jurisdiction a owl:ObjectProperty .
+
+<https://w3id.org/ecoweaver/warp/ontology/sites> a owl:Ontology ;
+    rdfs:label "WARP sites (individuals)" ;
+    rdfs:comment "Sites are particulars: OWL named individuals, never classes. Geometry is never exported." .
+
+site:0412 a owl:NamedIndividual,
+        TODO:grassland ;
+    rdfs:label "Agreement site 0412" ;
+    warp:in_jurisdiction ISO3166-2:CA-SK .
+
+site:0517 a owl:NamedIndividual,
+        TODO:grassland ;
+    rdfs:label "Site 0517" ;
+    warp:in_jurisdiction ISO3166-2:CA-SK .
+
+TODO:grassland a owl:Class .
+
+ISO3166-2:CA-SK a owl:NamedIndividual .
+
